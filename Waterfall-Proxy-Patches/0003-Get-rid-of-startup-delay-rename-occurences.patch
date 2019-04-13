@@ -1,0 +1,112 @@
+From 5b1161687c253d4366ef21e9cbe4070e8e90ee0f Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Sat, 13 Apr 2019 20:09:46 +0300
+Subject: [PATCH] Get rid of startup delay rename occurences
+
+
+diff --git a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
+index a4516ed9..262f2a68 100644
+--- a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
++++ b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
+@@ -7,7 +7,7 @@ public class Bootstrap
+     {
+         if ( Float.parseFloat( System.getProperty( "java.class.version" ) ) < 52.0 )
+         {
+-            System.err.println( "*** ERROR *** Waterfall requires Java 8 or above to function! Please download and install it!" );
++            System.err.println( "*** ERROR *** IvanCord requires Java 8 or above to function! Please download and install it!" );
+             System.out.println( "You can check your Java version with the command: java -version" );
+             return;
+         }
+diff --git a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+index d703d6d2..e877d9ef 100644
+--- a/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
++++ b/log/src/main/java/net/md_5/bungee/log/LogDispatcher.java
+@@ -12,7 +12,7 @@ public class LogDispatcher extends Thread
+ 
+     public LogDispatcher(BungeeLogger logger)
+     {
+-        super( "Waterfall Logger Thread" );
++        super( "IvanCord Logger Thread" );
+         this.logger = logger;
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 5a08a2c8..ce97e311 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -191,7 +191,7 @@ public class BungeeCord extends ProxyServer
+     public BungeeCord() throws IOException
+     {
+         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
+-        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Waterfall in directory with ! in path." );
++        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use IvanCord in directory with ! in path." );
+ 
+         try
+         {
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+index 624eb5f0..0303e24d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -40,6 +40,7 @@ public class BungeeCordLauncher
+             return;
+         }
+ 
++        /* IvanCord - get rid of startup delay
+         if ( BungeeCord.class.getPackage().getSpecificationVersion() != null && System.getProperty( "IReallyKnowWhatIAmDoingISwear" ) == null )
+         {
+             Date buildDate = new SimpleDateFormat( "yyyyMMdd" ).parse( BungeeCord.class.getPackage().getSpecificationVersion() );
+@@ -55,10 +56,11 @@ public class BungeeCordLauncher
+                 Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
+             }
+         }
++         */
+ 
+         BungeeCord bungee = new BungeeCord();
+         ProxyServer.setInstance( bungee );
+-        bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
++        bungee.getLogger().info( "Enabled IvanCord version " + bungee.getVersion() );
+         bungee.start();
+ 
+         if ( !options.has( "noconsole" ) )
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+index b26035cf..430ed174 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+@@ -16,6 +16,6 @@ public class CommandBungee extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
+-        sender.sendMessage( ChatColor.BLUE + "This server is running Waterfall version " + ProxyServer.getInstance().getVersion() + " by md_5" );
++        sender.sendMessage( ChatColor.BLUE + "This server is running IvanCord version " + ProxyServer.getInstance().getVersion() + " by md_5" );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index f5c028dd..6d066ef7 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -23,7 +23,7 @@ public class CommandReload extends Command
+         BungeeCord.getInstance().startListeners();
+         BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
+ 
+-        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "Waterfall has been reloaded."
+-                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart Waterfall ASAP." );
++        sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "IvanCord has been reloaded."
++                + " This is NOT advisable and you will not be supported with any issues that arise! Please restart IvanCord ASAP." );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 44011a96..9c187f73 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -224,7 +224,7 @@ public class YamlConfig implements ConfigurationAdapter
+             Map<String, Object> val = entry.getValue();
+             String name = entry.getKey();
+             String addr = get( "address", "localhost:25565", val );
+-            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another Waterfall - Forced Host", val ) );
++            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another IvanCord - Forced Host", val ) );
+             boolean restricted = get( "restricted", false, val );
+             InetSocketAddress address = Util.getAddr( addr );
+             ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
+-- 
+2.21.0.windows.1
+

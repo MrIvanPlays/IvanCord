@@ -1,0 +1,637 @@
+From 504377bbfbc8ffbe6a565b73c21e3ec13bde7119 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Sat, 13 Apr 2019 19:51:17 +0300
+Subject: [PATCH] POM changes
+
+
+diff --git a/api/pom.xml b/api/pom.xml
+index 0e46cbbe..edf8e9b3 100644
+--- a/api/pom.xml
++++ b/api/pom.xml
+@@ -4,42 +4,41 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>com.github.mrivanplays</groupId>
++        <artifactId>ivancord-parent</artifactId>
+         <version>1.13-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-api</artifactId>
++    <artifactId>ivancord-api</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-API</name>
++    <name>IvanCord-API</name>
+     <description>API implemented by the Elastic Portal Suite</description>
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-chat</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-chat</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-config</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-config</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-event</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-event</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-protocol</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-protocol</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
+index 6cacf112..1101800e 100644
+--- a/bootstrap/pom.xml
++++ b/bootstrap/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>com.github.mrivanplays</groupId>
++        <artifactId>ivancord-parent</artifactId>
+         <version>1.13-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-bootstrap</artifactId>
++    <artifactId>ivancord-bootstrap</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Bootstrap</name>
+-    <description>Java 1.6 loader for Waterfall</description>
++    <name>IvanCord-Bootstrap</name>
++    <description>Java 1.6 loader for IvanCord</description>
+ 
+     <properties>
+         <maven.deploy.skip>true</maven.deploy.skip>
+@@ -27,15 +26,15 @@
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-proxy</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-proxy</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+     </dependencies>
+ 
+     <build>
+-        <finalName>Waterfall</finalName>
++        <finalName>IvanCord</finalName>
+         <plugins>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+diff --git a/chat/pom.xml b/chat/pom.xml
+index c9328ac3..75001396 100644
+--- a/chat/pom.xml
++++ b/chat/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>com.github.mrivanplays</groupId>
++        <artifactId>ivancord-parent</artifactId>
+         <version>1.13-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-chat</artifactId>
++    <artifactId>ivancord-chat</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Chat</name>
+-    <description>Minecraft JSON chat API intended for use with Waterfall</description>
++    <name>IvanCord-Chat</name>
++    <description>Minecraft JSON chat API intended for use with IvanCord</description>
+ 
+     <dependencies>
+         <dependency>
+diff --git a/config/pom.xml b/config/pom.xml
+index 1bc01b9a..bf29be67 100644
+--- a/config/pom.xml
++++ b/config/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>com.github.mrivanplays</groupId>
++        <artifactId>ivancord-parent</artifactId>
+         <version>1.13-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-config</artifactId>
++    <artifactId>ivancord-config</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Config</name>
+-    <description>Generic java configuration API intended for use with Waterfall</description>
++    <name>IvanCord-Config</name>
++    <description>Generic java configuration API intended for use with IvanCord</description>
+ 
+     <dependencies>
+         <dependency>
+diff --git a/event/pom.xml b/event/pom.xml
+index e778b3d9..f4d740c4 100644
+--- a/event/pom.xml
++++ b/event/pom.xml
+@@ -4,17 +4,16 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>com.github.mrivanplays</groupId>
++        <artifactId>ivancord-parent</artifactId>
+         <version>1.13-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-event</artifactId>
++    <artifactId>ivancord-event</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Event</name>
+-    <description>Generic java event dispatching API intended for use with Waterfall.</description>
++    <name>IvanCord-Event</name>
++    <description>Generic java event dispatching API intended for use with IvanCord</description>
+ </project>
+diff --git a/log/pom.xml b/log/pom.xml
+index e24b3e40..f12800ad 100644
+--- a/log/pom.xml
++++ b/log/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>com.github.mrivanplays</groupId>
++        <artifactId>ivancord-parent</artifactId>
+         <version>1.13-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-log</artifactId>
++    <artifactId>ivancord-log</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Log</name>
+-    <description>Simplistic and performant java.util.Logger based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
++    <name>IvanCord-Log</name>
++    <description>Simplistic and performant java.util.Logger based logger and console API designed for use with IvanCord and Minecraft related applications.</description>
+ 
+     <dependencies>
+         <dependency>
+@@ -26,8 +25,8 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-chat</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-chat</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+diff --git a/log4j/pom.xml b/log4j/pom.xml
+index 33f1b659..93f06e7f 100644
+--- a/log4j/pom.xml
++++ b/log4j/pom.xml
+@@ -3,19 +3,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>com.github.mrivanplays</groupId>
++        <artifactId>ivancord-parent</artifactId>
+         <version>1.13-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-log4j</artifactId>
++    <artifactId>ivancord-log4j</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Log</name>
+-    <description>Simplistic and performant Log4j2 based logger and console API designed for use with Waterfall and Minecraft related applications.</description>
++    <name>IvanCord-Log</name>
++    <description>Simplistic and performant Log4j2 based logger and console API designed for use with IvanCord and Minecraft related applications.</description>
+ 
+     <properties>
+         <log4j2.version>2.11.1</log4j2.version>
+diff --git a/native/pom.xml b/native/pom.xml
+index 7073b404..793b084f 100644
+--- a/native/pom.xml
++++ b/native/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>com.github.mrivanplays</groupId>
++        <artifactId>ivancord-parent</artifactId>
+         <version>1.13-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-native</artifactId>
++    <artifactId>ivancord-native</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Native</name>
+-    <description>Optional native code to speed up and enhance Waterfall functionality.</description>
++    <name>IvanCord-Native</name>
++    <description>Optional native code to speed up and enhance IvanCord functionality.</description>
+ 
+     <dependencies>
+         <dependency>
+diff --git a/pom.xml b/pom.xml
+index fd2bc4cc..f9271ace 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -3,26 +3,17 @@
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <modelVersion>4.0.0</modelVersion>
+ 
+-    <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-super</artifactId>
+-        <version>dev-SNAPSHOT</version>
+-        <relativePath>../pom.xml</relativePath>
+-    </parent>
+-
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-parent</artifactId>
++    <groupId>com.github.mrivanplays</groupId>
++    <artifactId>ivancord-parent</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>pom</packaging>
+ 
+-    <name>Waterfall-Parent</name>
+-    <description>Parent project for all Waterfall modules.</description>
+-    <url>https://github.com/WaterfallMC/Waterfall</url>
+-    <inceptionYear>2015</inceptionYear>
+-    <organization>
+-        <name>WaterfallMC</name>
+-        <url>https://github.com/WaterfallMC</url>
+-    </organization>
++    <name>IvanCord-Parent</name>
++    <description>Parent project for all IvanCord modules.</description>
++    <url>https://github.com/MrIvanPlays/IvanCord</url>
++
++    <inceptionYear>2019</inceptionYear>
++
+     <licenses>
+         <license>
+             <name>The BSD 3-Clause License</name>
+@@ -33,19 +24,7 @@
+ 
+     <developers>
+         <developer>
+-            <id>Tux</id>
+-        </developer>
+-        <developer>
+-            <id>Techcable</id>
+-        </developer>
+-        <developer>
+-            <id>kashike</id>
+-        </developer>
+-        <developer>
+-            <id>jamierocks</id>
+-        </developer>
+-        <developer>
+-            <id>fuzzybot</id>
++            <id>MrIvanPlays</id>
+         </developer>
+     </developers>
+ 
+@@ -57,7 +36,6 @@
+         <module>event</module>
+         <module>log</module>
+         <module>log4j</module>
+-        <module>module</module>
+         <module>protocol</module>
+         <module>proxy</module>
+         <module>query</module>
+@@ -65,29 +43,10 @@
+     </modules>
+ 
+     <scm>
+-        <connection>scm:git:git@github.com:com:WaterfallMC/Waterfall.git</connection>
+-        <developerConnection>scm:git:git@github.com:WaterfallMC/Waterfall.git</developerConnection>
+-        <url>git@github.com:WaterfallMC/Waterfall.git</url>
++        <connection>scm:git:git@github.com:com:MrIvanPlays/IvanCord.git</connection>
++        <developerConnection>scm:git:git@github.com:MrIvanPlays/IvanCord.git</developerConnection>
++        <url>git@github.com:MrIvanPlays/IvanCord.git</url>
+     </scm>
+-    <issueManagement>
+-        <system>GitHub</system>
+-        <url>https://github.com/PaperMC/Waterfall/issues</url>
+-    </issueManagement>
+-    <ciManagement>
+-        <system>jenkins</system>
+-        <url>https://papermc.io/ci/job/Waterfall/</url>
+-    </ciManagement>
+-
+-    <distributionManagement>
+-        <repository>
+-            <id>papermc-releases</id>
+-            <url>https://papermc.io/repo/repository/maven-releases/</url>
+-        </repository>
+-        <snapshotRepository>
+-            <id>papermc-snapshots</id>
+-            <url>https://papermc.io/repo/repository/maven-snapshots/</url>
+-        </snapshotRepository>
+-    </distributionManagement>
+ 
+     <properties>
+         <build.number>unknown</build.number>
+@@ -186,86 +145,4 @@
+         </pluginManagement>
+     </build>
+ 
+-    <profiles>
+-        <profile>
+-            <id>deployment</id>
+-            <build>
+-                <plugins>
+-                    <plugin>
+-                        <groupId>org.projectlombok</groupId>
+-                        <artifactId>lombok-maven-plugin</artifactId>
+-                        <version>1.18.4.0</version>
+-                        <executions>
+-                            <execution>
+-                                <id>delombok</id>
+-                                <phase>generate-sources</phase>
+-                                <goals>
+-                                    <goal>delombok</goal>
+-                                </goals>
+-                                <configuration>
+-                                    <addOutputDirectory>false</addOutputDirectory>
+-                                    <sourceDirectory>src/main/java</sourceDirectory>
+-                                </configuration>
+-                            </execution>
+-                        </executions>
+-                    </plugin>
+-                    <plugin>
+-                        <groupId>org.apache.maven.plugins</groupId>
+-                        <artifactId>maven-javadoc-plugin</artifactId>
+-                        <version>3.1.0</version>
+-                        <configuration>
+-                            <doclint>none</doclint>
+-                        </configuration>
+-                        <executions>
+-                            <execution>
+-                                <id>attach-javadocs</id>
+-                                <phase>package</phase>
+-                                <goals>
+-                                    <goal>jar</goal>
+-                                </goals>
+-                                <configuration>
+-                                    <sourcepath>target/generated-sources/delombok</sourcepath>
+-                                </configuration>
+-                            </execution>
+-                            <execution>
+-                                <id>aggregate-javadocs</id>
+-                                <phase>package</phase>
+-                                <goals>
+-                                    <goal>javadoc</goal>
+-                                </goals>
+-                                <inherited>false</inherited>
+-                                <configuration>
+-                                    <doctitle>Waterfall ${project.version} API</doctitle>
+-                                    <windowtitle>Waterfall ${project.version} API</windowtitle>
+-                                    <sourcepath>
+-                                        api/target/generated-sources/delombok;
+-                                        chat/target/generated-sources/delombok
+-                                    </sourcepath>
+-                                </configuration>
+-                            </execution>
+-                        </executions>
+-                    </plugin>
+-                    <plugin>
+-                        <groupId>org.apache.maven.plugins</groupId>
+-                        <artifactId>maven-source-plugin</artifactId>
+-                        <version>2.4</version>
+-                        <executions>
+-                            <execution>
+-                                <id>attach-sources</id>
+-                                <phase>package</phase>
+-                                <goals>
+-                                    <goal>jar-no-fork</goal>
+-                                </goals>
+-                            </execution>
+-                        </executions>
+-                    </plugin>
+-                    <plugin>
+-                        <groupId>org.apache.maven.plugins</groupId>
+-                        <artifactId>maven-deploy-plugin</artifactId>
+-                        <version>2.7</version>
+-                    </plugin>
+-                </plugins>
+-            </build>
+-        </profile>
+-    </profiles>
+ </project>
+diff --git a/protocol/pom.xml b/protocol/pom.xml
+index ee513895..76d03f12 100644
+--- a/protocol/pom.xml
++++ b/protocol/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>com.github.mrivanplays</groupId>
++        <artifactId>ivancord-parent</artifactId>
+         <version>1.13-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-protocol</artifactId>
++    <artifactId>ivancord-protocol</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Protocol</name>
+-    <description>Minimal implementation of the Minecraft protocol for use in Waterfall</description>
++    <name>IvanCord-Protocol</name>
++    <description>Minimal implementation of the Minecraft protocol for use in IvanCord</description>
+ 
+     <!-- We really shouldn't depend on external repositories, but at least this is the Central staging one -->
+     <repositories>
+@@ -41,8 +40,8 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-chat</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-chat</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+diff --git a/proxy/pom.xml b/proxy/pom.xml
+index f0497f59..22419f27 100644
+--- a/proxy/pom.xml
++++ b/proxy/pom.xml
+@@ -4,18 +4,17 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>com.github.mrivanplays</groupId>
++        <artifactId>ivancord-parent</artifactId>
+         <version>1.13-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-proxy</artifactId>
++    <artifactId>ivancord-proxy</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Proxy</name>
++    <name>IvanCord-Proxy</name>
+     <description>Proxy component of the Elastic Portal Suite</description>
+ 
+     <properties>
+@@ -63,32 +62,32 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-api</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-api</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-log4j</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-log4j</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-native</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-native</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-protocol</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-protocol</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-query</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-query</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+diff --git a/query/pom.xml b/query/pom.xml
+index 4ae682ee..9809009b 100644
+--- a/query/pom.xml
++++ b/query/pom.xml
+@@ -4,19 +4,18 @@
+     <modelVersion>4.0.0</modelVersion>
+ 
+     <parent>
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
++        <groupId>com.github.mrivanplays</groupId>
++        <artifactId>ivancord-parent</artifactId>
+         <version>1.13-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-query</artifactId>
++    <artifactId>ivancord-query</artifactId>
+     <version>1.13-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Waterfall-Query</name>
+-    <description>Minecraft query implementation based on the Waterfall API.</description>
++    <name>IvanCord-Query</name>
++    <description>Minecraft query implementation based on the IvanCord API.</description>
+ 
+     <dependencies>
+         <dependency>
+@@ -26,8 +25,8 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>io.github.waterfallmc</groupId>
+-            <artifactId>waterfall-api</artifactId>
++            <groupId>com.github.mrivanplays</groupId>
++            <artifactId>ivancord-api</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+-- 
+2.21.0.windows.1
+

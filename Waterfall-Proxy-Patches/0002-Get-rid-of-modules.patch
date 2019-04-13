@@ -1,0 +1,779 @@
+From 455fe83e62338a60d8bd4b816abe864e5666182f Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Sat, 13 Apr 2019 20:04:14 +0300
+Subject: [PATCH] Get rid of modules
+
+
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlert.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlert.java
+new file mode 100644
+index 00000000..6a8c0bc5
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlert.java
+@@ -0,0 +1,46 @@
++package com.github.mrivanplays.ivancord.modules;
++
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.plugin.Command;
++
++public class CommandAlert extends Command
++{
++
++    public CommandAlert()
++    {
++        super( "alert", "bungeecord.command.alert" );
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args)
++    {
++        if ( args.length == 0 )
++        {
++            sender.sendMessage( ChatColor.RED + "You must supply a message." );
++        } else
++        {
++            StringBuilder builder = new StringBuilder();
++            if ( args[0].startsWith( "&h" ) )
++            {
++                // Remove &h
++                args[0] = args[0].substring( 2, args[0].length() );
++            } else
++            {
++                builder.append( ProxyServer.getInstance().getTranslation( "alert" ) );
++            }
++
++            for ( String s : args )
++            {
++                builder.append( ChatColor.translateAlternateColorCodes( '&', s ) );
++                builder.append( " " );
++            }
++
++            String message = builder.substring( 0, builder.length() - 1 );
++
++            ProxyServer.getInstance().broadcast( TextComponent.fromLegacyText( message ) );
++        }
++    }
++}
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlertRaw.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlertRaw.java
+new file mode 100644
+index 00000000..d5b3e427
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlertRaw.java
+@@ -0,0 +1,75 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.modules;
++
++import com.google.common.base.Joiner;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.md_5.bungee.api.chat.HoverEvent;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.chat.ComponentSerializer;
++
++public class CommandAlertRaw extends Command
++{
++
++    public CommandAlertRaw()
++    {
++        super( "alertraw", "bungeecord.command.alert" );
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args)
++    {
++        if ( args.length == 0 )
++        {
++            sender.sendMessage( ChatColor.RED + "You must supply a message." );
++        } else
++        {
++            String message = Joiner.on( ' ' ).join( args );
++
++            try
++            {
++                ProxyServer.getInstance().broadcast( ComponentSerializer.parse( message ) );
++            } catch ( Exception e )
++            {
++                Throwable error = e;
++                while ( error.getCause() != null )
++                {
++                    error = error.getCause();
++                }
++                if ( sender instanceof ProxiedPlayer )
++                {
++                    sender.sendMessage( new ComponentBuilder( "An error occurred while parsing your message. (Hover for details)" )
++                            .color( ChatColor.RED )
++                            .underlined( true )
++                            .event( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder( error.getMessage() ).color( ChatColor.RED ).create() ) )
++                            .create()
++                    );
++                } else
++                {
++                    sender.sendMessage( new ComponentBuilder( "An error occurred while parsing your message: " ).color( ChatColor.RED ).append( error.getMessage() ).create() );
++                }
++            }
++        }
++    }
++}
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandFind.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandFind.java
+new file mode 100644
+index 00000000..b6f14ff8
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandFind.java
+@@ -0,0 +1,55 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.modules;
++
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.command.PlayerCommand;
++
++public class CommandFind extends PlayerCommand
++{
++
++    public CommandFind()
++    {
++        super( "find", "bungeecord.command.find" );
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args)
++    {
++        if ( args.length != 1 )
++        {
++            sender.sendMessage( new ComponentBuilder( "Please follow this command by a user name" ).color( ChatColor.RED ).create() );
++        } else
++        {
++            ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
++            if ( player == null || player.getServer() == null )
++            {
++                sender.sendMessage( new ComponentBuilder( "That user is not online" ).color( ChatColor.RED ).create() );
++            } else
++            {
++                sender.sendMessage( new ComponentBuilder( args[0] ).color( ChatColor.GREEN ).append( " is online at " ).append( player.getServer().getInfo().getName() ).create() );
++            }
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandList.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandList.java
+new file mode 100644
+index 00000000..99814a28
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandList.java
+@@ -0,0 +1,66 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.modules;
++
++import java.util.ArrayList;
++import java.util.Collections;
++import java.util.List;
++import net.md_5.bungee.Util;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Command;
++
++/**
++ * Command to list all players connected to the proxy.
++ */
++public class CommandList extends Command
++{
++
++    public CommandList()
++    {
++        super( "glist", "bungeecord.command.list" );
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args)
++    {
++        for ( ServerInfo server : ProxyServer.getInstance().getServers().values() )
++        {
++            if ( !server.canAccess( sender ) )
++            {
++                continue;
++            }
++
++            List<String> players = new ArrayList<>();
++            for ( ProxiedPlayer player : server.getPlayers() )
++            {
++                players.add( player.getDisplayName() );
++            }
++            Collections.sort( players, String.CASE_INSENSITIVE_ORDER );
++
++            sender.sendMessage( ProxyServer.getInstance().getTranslation( "command_list", server.getName(), server.getPlayers().size(), Util.format( players, ChatColor.RESET + ", " ) ) );
++        }
++
++        sender.sendMessage( ProxyServer.getInstance().getTranslation( "total_players", ProxyServer.getInstance().getOnlineCount() ) );
++    }
++}
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandSend.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandSend.java
+new file mode 100644
+index 00000000..2c7c501d
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandSend.java
+@@ -0,0 +1,149 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.modules;
++
++import com.google.common.collect.ImmutableSet;
++import java.util.HashSet;
++import java.util.Locale;
++import java.util.Set;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.event.ServerConnectEvent;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.TabExecutor;
++
++public class CommandSend extends Command implements TabExecutor
++{
++
++    public CommandSend()
++    {
++        super( "send", "bungeecord.command.send" );
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args)
++    {
++        if ( args.length != 2 )
++        {
++            sender.sendMessage( ChatColor.RED + "Not enough arguments, usage: /send <server|player|all|current> <target>" );
++            return;
++        }
++        ServerInfo target = ProxyServer.getInstance().getServerInfo( args[1] );
++        if ( target == null )
++        {
++            sender.sendMessage( ProxyServer.getInstance().getTranslation( "no_server" ) );
++            return;
++        }
++
++        if ( args[0].equalsIgnoreCase( "all" ) )
++        {
++            for ( ProxiedPlayer p : ProxyServer.getInstance().getPlayers() )
++            {
++                summon( p, target, sender );
++            }
++        } else if ( args[0].equalsIgnoreCase( "current" ) )
++        {
++            if ( !( sender instanceof ProxiedPlayer ) )
++            {
++                sender.sendMessage( ChatColor.RED + "Only in game players can use this command" );
++                return;
++            }
++            ProxiedPlayer player = (ProxiedPlayer) sender;
++            for ( ProxiedPlayer p : player.getServer().getInfo().getPlayers() )
++            {
++                summon( p, target, sender );
++            }
++        } else
++        {
++            // If we use a server name, send the entire server. This takes priority over players.
++            ServerInfo serverTarget = ProxyServer.getInstance().getServerInfo( args[0] );
++            if ( serverTarget != null )
++            {
++                for ( ProxiedPlayer p : serverTarget.getPlayers() )
++                {
++                    summon( p, target, sender );
++                }
++            } else
++            {
++                ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
++                if ( player == null )
++                {
++                    sender.sendMessage( ChatColor.RED + "That player is not online" );
++                    return;
++                }
++                summon( player, target, sender );
++            }
++        }
++        sender.sendMessage( ChatColor.GREEN + "Successfully summoned player(s)" );
++    }
++
++    private void summon(ProxiedPlayer player, ServerInfo target, CommandSender sender)
++    {
++        if ( player.getServer() != null && !player.getServer().getInfo().equals( target ) )
++        {
++            player.connect( target, ServerConnectEvent.Reason.COMMAND );
++            player.sendMessage( ChatColor.GOLD + "Summoned to " + target.getName() + " by " + sender.getName() );
++        }
++    }
++
++    @Override
++    public Iterable<String> onTabComplete(CommandSender sender, String[] args)
++    {
++        if ( args.length > 2 || args.length == 0 )
++        {
++            return ImmutableSet.of();
++        }
++
++        Set<String> matches = new HashSet<>();
++        if ( args.length == 1 )
++        {
++            String search = args[0].toLowerCase( Locale.ROOT );
++            for ( ProxiedPlayer player : ProxyServer.getInstance().getPlayers() )
++            {
++                if ( player.getName().toLowerCase( Locale.ROOT ).startsWith( search ) )
++                {
++                    matches.add( player.getName() );
++                }
++            }
++            if ( "all".startsWith( search ) )
++            {
++                matches.add( "all" );
++            }
++            if ( "current".startsWith( search ) )
++            {
++                matches.add( "current" );
++            }
++        } else
++        {
++            String search = args[1].toLowerCase( Locale.ROOT );
++            for ( String server : ProxyServer.getInstance().getServers().keySet() )
++            {
++                if ( server.toLowerCase( Locale.ROOT ).startsWith( search ) )
++                {
++                    matches.add( server );
++                }
++            }
++        }
++        return matches;
++    }
++}
+\ No newline at end of file
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandServer.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandServer.java
+new file mode 100644
+index 00000000..2c9f714f
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandServer.java
+@@ -0,0 +1,124 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.modules;
++
++import com.google.common.base.Function;
++import com.google.common.base.Predicate;
++import com.google.common.collect.Iterables;
++import java.util.Collections;
++import java.util.Locale;
++import java.util.Map;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.ClickEvent;
++import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.md_5.bungee.api.chat.HoverEvent;
++import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.event.ServerConnectEvent;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.TabExecutor;
++
++/**
++ * Command to list and switch a player between available servers.
++ */
++public class CommandServer extends Command implements TabExecutor
++{
++
++    public CommandServer()
++    {
++        super( "server", "bungeecord.command.server" );
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args)
++    {
++        Map<String, ServerInfo> servers = ProxyServer.getInstance().getServers();
++        if ( args.length == 0 )
++        {
++            if ( sender instanceof ProxiedPlayer )
++            {
++                sender.sendMessage( ProxyServer.getInstance().getTranslation( "current_server", ( (ProxiedPlayer) sender ).getServer().getInfo().getName() ) );
++            }
++
++            ComponentBuilder serverList = new ComponentBuilder( "" ).append( TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "server_list" ) ) );
++            boolean first = true;
++            for ( ServerInfo server : servers.values() )
++            {
++                if ( server.canAccess( sender ) )
++                {
++                    TextComponent serverTextComponent = new TextComponent( first ? server.getName() : ", " + server.getName() );
++                    int count = server.getPlayers().size();
++                    serverTextComponent.setHoverEvent( new HoverEvent(
++                            HoverEvent.Action.SHOW_TEXT,
++                            new ComponentBuilder( count + ( count == 1 ? " player" : " players" ) + "\n" ).append( "Click to connect to the server" ).italic( true ).create() )
++                    );
++                    serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
++                    serverList.append( serverTextComponent );
++                    first = false;
++                }
++            }
++            sender.sendMessage( serverList.create() );
++        } else
++        {
++            if ( !( sender instanceof ProxiedPlayer ) )
++            {
++                return;
++            }
++            ProxiedPlayer player = (ProxiedPlayer) sender;
++
++            ServerInfo server = servers.get( args[0] );
++            if ( server == null )
++            {
++                player.sendMessage( ProxyServer.getInstance().getTranslation( "no_server" ) );
++            } else if ( !server.canAccess( player ) )
++            {
++                player.sendMessage( ProxyServer.getInstance().getTranslation( "no_server_permission" ) );
++            } else
++            {
++                player.connect( server, ServerConnectEvent.Reason.COMMAND );
++            }
++        }
++    }
++
++    @Override
++    public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
++    {
++        return ( args.length > 1 ) ? Collections.EMPTY_LIST : Iterables.transform( Iterables.filter( ProxyServer.getInstance().getServersCopy().values(), new Predicate<ServerInfo>() // Waterfall: use #getServersCopy()
++        {
++            private final String lower = ( args.length == 0 ) ? "" : args[0].toLowerCase( Locale.ROOT );
++
++            @Override
++            public boolean apply(ServerInfo input)
++            {
++                return input.getName().toLowerCase( Locale.ROOT ).startsWith( lower ) && input.canAccess( sender );
++            }
++        } ), new Function<ServerInfo, String>()
++        {
++            @Override
++            public String apply(ServerInfo input)
++            {
++                return input.getName();
++            }
++        } );
++    }
++}
+\ No newline at end of file
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
+new file mode 100644
+index 00000000..941cc775
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
+@@ -0,0 +1,134 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.modules;
++
++import net.md_5.bungee.api.AbstractReconnectHandler;
++import java.io.File;
++import java.io.FileReader;
++import java.io.FileWriter;
++import java.io.IOException;
++import java.net.InetSocketAddress;
++import java.util.HashMap;
++import java.util.Map;
++import java.util.concurrent.locks.ReadWriteLock;
++import java.util.concurrent.locks.ReentrantReadWriteLock;
++import java.util.logging.Level;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.util.CaseInsensitiveMap;
++import org.yaml.snakeyaml.Yaml;
++
++public class YamlReconnectHandler extends AbstractReconnectHandler
++{
++
++    private final Yaml yaml = new Yaml();
++    private final File file = new File( "locations.yml" );
++    private final ReadWriteLock lock = new ReentrantReadWriteLock();
++    /*========================================================================*/
++    private CaseInsensitiveMap< String> data;
++
++    @SuppressWarnings("unchecked")
++    public YamlReconnectHandler()
++    {
++        try
++        {
++            file.createNewFile();
++            try ( FileReader rd = new FileReader( file ) )
++            {
++                Map map = yaml.loadAs( rd, Map.class );
++                if ( map != null )
++                {
++                    data = new CaseInsensitiveMap<>( map );
++                }
++            }
++        } catch ( Exception ex )
++        {
++            file.renameTo( new File( "locations.yml.old" ) );
++            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Could not load reconnect locations, resetting them" );
++        }
++
++        if ( data == null )
++        {
++            data = new CaseInsensitiveMap<>();
++        }
++    }
++
++    @Override
++    protected ServerInfo getStoredServer(ProxiedPlayer player)
++    {
++        ServerInfo server = null;
++        lock.readLock().lock();
++        try
++        {
++            server = ProxyServer.getInstance().getServerInfo( data.get( key( player ) ) );
++        } finally
++        {
++            lock.readLock().unlock();
++        }
++        return server;
++    }
++
++    @Override
++    public void setServer(ProxiedPlayer player)
++    {
++        lock.writeLock().lock();
++        try
++        {
++            data.put( key( player ), ( player.getReconnectServer() != null ) ? player.getReconnectServer().getName() : player.getServer().getInfo().getName() );
++        } finally
++        {
++            lock.writeLock().unlock();
++        }
++    }
++
++    private String key(ProxiedPlayer player)
++    {
++        InetSocketAddress host = player.getPendingConnection().getVirtualHost();
++        return player.getName() + ";" + host.getHostString() + ":" + host.getPort();
++    }
++
++    @Override
++    public void save()
++    {
++        Map<String, String> copy = new HashMap<>();
++        lock.readLock().lock();
++        try
++        {
++            copy.putAll( data );
++        } finally
++        {
++            lock.readLock().unlock();
++        }
++
++        try ( FileWriter wr = new FileWriter( file ) )
++        {
++            yaml.dump( copy, wr );
++        } catch ( IOException ex )
++        {
++            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Could not save reconnect locations", ex );
++        }
++    }
++
++    @Override
++    public void close()
++    {
++    }
++}
+\ No newline at end of file
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 4ff03488..5a08a2c8 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -91,6 +91,14 @@ import net.md_5.bungee.query.RemoteQuery;
+ import net.md_5.bungee.scheduler.BungeeScheduler;
+ import net.md_5.bungee.util.CaseInsensitiveMap;
+ 
++import com.github.mrivanplays.ivancord.modules.CommandAlert;
++import com.github.mrivanplays.ivancord.modules.CommandAlertRaw;
++import com.github.mrivanplays.ivancord.modules.CommandFind;
++import com.github.mrivanplays.ivancord.modules.CommandList;
++import com.github.mrivanplays.ivancord.modules.CommandSend;
++import com.github.mrivanplays.ivancord.modules.CommandServer;
++import com.github.mrivanplays.ivancord.modules.YamlReconnectHandler;
++
+ /**
+  * Main BungeeCord proxy class.
+  */
+@@ -164,7 +172,9 @@ public class BungeeCord extends ProxyServer
+             .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
+     @Getter
+     private ConnectionThrottle connectionThrottle;
++    /* IvanCord - remove module maanger
+     private final ModuleManager moduleManager = new ModuleManager();
++     */
+ 
+     
+     {
+@@ -223,6 +233,15 @@ public class BungeeCord extends ProxyServer
+         getPluginManager().registerCommand( null, new CommandBungee() );
+         getPluginManager().registerCommand( null, new CommandPerms() );
+ 
++        // IvanCord start - register module commands
++        getPluginManager().registerCommand( null, new CommandAlert() );
++        getPluginManager().registerCommand( null, new CommandAlertRaw() );
++        getPluginManager().registerCommand( null, new CommandFind() );
++        getPluginManager().registerCommand( null, new CommandList() );
++        getPluginManager().registerCommand( null, new CommandSend() );
++        getPluginManager().registerCommand( null, new CommandServer() );
++        // IvanCord end
++
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         {
+             if ( EncryptionUtil.nativeFactory.load() )
+@@ -260,9 +279,11 @@ public class BungeeCord extends ProxyServer
+         bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
+         workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
+ 
++        /* IvanCord - remove modules
+         File moduleDirectory = new File( "modules" );
+         moduleManager.load( this, moduleDirectory );
+         pluginManager.detectPlugins( moduleDirectory );
++         */
+ 
+         pluginsFolder.mkdir();
+         pluginManager.detectPlugins( pluginsFolder );
+@@ -279,6 +300,17 @@ public class BungeeCord extends ProxyServer
+ 
+         isRunning = true;
+ 
++        // IvanCord start - set reconnect handler from modules
++        for ( ListenerInfo info : getConfig().getListeners() )
++        {
++            if ( !info.isForceDefault() && getReconnectHandler() == null )
++            {
++                setReconnectHandler( new YamlReconnectHandler() );
++                break;
++            }
++        }
++        // IvanCord end
++
+         pluginManager.enablePlugins();
+ 
+         if ( config.getThrottle() > 0 )
+-- 
+2.21.0.windows.1
+
