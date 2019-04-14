@@ -1,0 +1,78 @@
+From cc4708509637d6227da3df0e4d6456046c31f5ff Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Sun, 14 Apr 2019 08:54:05 +0300
+Subject: [PATCH] Add IvanCord specific configuration
+
+
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+new file mode 100644
+index 00000000..96bb60f5
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+@@ -0,0 +1,37 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.conf;
++
++import java.io.File;
++
++import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
++import net.md_5.bungee.conf.YamlConfig;
++
++public class IvanCordConfiguration extends WaterfallConfiguration
++{
++
++    @Override
++    public void load()
++    {
++        super.load();
++        YamlConfig config = new YamlConfig( new File( "ivancord.yml" ) );
++        config.load( false );
++    }
++}
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index 41a71f65..f316810b 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -7,7 +7,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
+ import java.io.File;
+ 
+-public class WaterfallConfiguration extends Configuration {
++public abstract class WaterfallConfiguration extends Configuration { // IvanCord - abstract
+ 
+     /**
+      * Whether we log InitialHandler connections
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index ce97e311..696f439e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -113,7 +113,7 @@ public class BungeeCord extends ProxyServer
+      * Configuration.
+      */
+     @Getter
+-    public final Configuration config = new WaterfallConfiguration();
++    public final Configuration config = new com.github.mrivanplays.ivancord.conf.IvanCordConfiguration(); // IvanCord - ivancord specific configuration
+     /**
+      * Localization bundle.
+      */
+-- 
+2.21.0.windows.1
+
