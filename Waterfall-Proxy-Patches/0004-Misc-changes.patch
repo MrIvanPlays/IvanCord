@@ -1,4 +1,4 @@
-From 5ad7f4cc98b04ca4dd3bf3834671c875a4cc1bfc Mon Sep 17 00:00:00 2001
+From a10a27315fde2f04c6ec094fc58d956255e41d84 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -70,7 +70,7 @@ index 3b3525f0..1462f89a 100644
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e649678e..17e49b41 100644
+index e649678e..ab879365 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -445,6 +445,24 @@ public final class UserConnection implements ProxiedPlayer
@@ -90,7 +90,7 @@ index e649678e..17e49b41 100644
 +    public void chat(BaseComponent... message)
 +    {
 +        Preconditions.checkState( server != null, "Not connected to server" );
-+        server.getCh().write( new Chat( new TextComponent( message ).toLegacyText() ) );
++        server.getCh().write( new Chat( BaseComponent.toLegacyText( message ) ) );
 +    }
 +
 +    // IvanCord end
