@@ -1,0 +1,122 @@
+From 81759852e6a47ca2e5584b75ee4a436ae66028e7 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Mon, 22 Apr 2019 10:45:15 +0300
+Subject: [PATCH] Kick to lobby support
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 706c5091..79b78409 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -256,5 +256,13 @@ public interface ProxyConfig
+      * @return restart script
+      */
+     String getRestartScriptPath();
++
++    /**
++     * If this is true, a listener to {@link net.md_5.bungee.api.event.ServerKickEvent} will be
++     * registered, which will send a kicked player from x server to the first server in {@link ListenerInfo#getServerPriority()}
++     *
++     * @return should the player kicked be transferred to lobby
++     */
++    boolean isKickToLobby();
+     // IvanCord end
+ }
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+index 2fa867f4..95703d1c 100644
+--- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+@@ -31,6 +31,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+ 
+     private String restartMessage = "Proxy is restarting";
+     private String restartScriptPath = "./restart.sh";
++    private boolean kickToLobby = true;
+ 
+     @Override
+     public void load()
+@@ -41,5 +42,6 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+ 
+         restartMessage = config.getString( "restart_message", restartMessage );
+         restartScriptPath = config.getString( "restart_script_path", restartScriptPath );
++        kickToLobby = config.getBoolean( "kick_to_lobby", kickToLobby );
+     }
+ }
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
+new file mode 100644
+index 00000000..ce30dff1
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
+@@ -0,0 +1,44 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.listeners;
++
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.config.ListenerInfo;
++import net.md_5.bungee.api.event.ServerKickEvent;
++import net.md_5.bungee.api.plugin.Listener;
++import net.md_5.bungee.event.EventHandler;
++
++public class ServerKickListener implements Listener
++{
++
++    private ProxyServer proxy = ProxyServer.getInstance();
++
++    @EventHandler
++    public void onKick(ServerKickEvent event)
++    {
++        event.setCancelled( true );
++        String serverConnectedTo = null;
++        for ( ListenerInfo info : proxy.getConfig().getListeners() )
++        {
++            serverConnectedTo = info.getServerPriority().get( 0 );
++        }
++        event.setCancelServer( proxy.getServerInfo( serverConnectedTo ) );
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 3ccb5c71..42ca47c5 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -92,6 +92,7 @@ import net.md_5.bungee.scheduler.BungeeScheduler;
+ import net.md_5.bungee.util.CaseInsensitiveMap;
+ 
+ import com.github.mrivanplays.ivancord.command.CommandRestart;
++import com.github.mrivanplays.ivancord.listeners.ServerKickListener;
+ import com.github.mrivanplays.ivancord.modules.CommandAlert;
+ import com.github.mrivanplays.ivancord.modules.CommandAlertRaw;
+ import com.github.mrivanplays.ivancord.modules.CommandFind;
+@@ -244,6 +245,13 @@ public class BungeeCord extends ProxyServer
+         getPluginManager().registerCommand( null, new CommandServer() );
+         // IvanCord end
+ 
++        // IvanCord start - check if its kick to lobby
++        if ( getConfig().isKickToLobby() )
++        {
++            getPluginManager().registerListener( null, new ServerKickListener() );
++        }
++        // IvanCord end
++
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         {
+             if ( EncryptionUtil.nativeFactory.load() )
+-- 
+2.21.0.windows.1
+
