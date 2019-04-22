@@ -1,4 +1,4 @@
-From 81759852e6a47ca2e5584b75ee4a436ae66028e7 Mon Sep 17 00:00:00 2001
+From 5f6303595edec7aa20a9147468c9c6ddb202d286 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 22 Apr 2019 10:45:15 +0300
 Subject: [PATCH] Kick to lobby support
@@ -43,10 +43,10 @@ index 2fa867f4..95703d1c 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
 new file mode 100644
-index 00000000..ce30dff1
+index 00000000..8656c940
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,47 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -68,7 +68,10 @@ index 00000000..ce30dff1
 + **/
 +package com.github.mrivanplays.ivancord.listeners;
 +
++import net.md_5.bungee.api.ChatMessageType;
 +import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.api.chat.TextComponent;
 +import net.md_5.bungee.api.config.ListenerInfo;
 +import net.md_5.bungee.api.event.ServerKickEvent;
 +import net.md_5.bungee.api.plugin.Listener;
@@ -77,18 +80,18 @@ index 00000000..ce30dff1
 +public class ServerKickListener implements Listener
 +{
 +
-+    private ProxyServer proxy = ProxyServer.getInstance();
-+
 +    @EventHandler
 +    public void onKick(ServerKickEvent event)
 +    {
 +        event.setCancelled( true );
 +        String serverConnectedTo = null;
-+        for ( ListenerInfo info : proxy.getConfig().getListeners() )
++        for ( ListenerInfo info : ProxyServer.getInstance().getConfig().getListeners() )
 +        {
 +            serverConnectedTo = info.getServerPriority().get( 0 );
 +        }
-+        event.setCancelServer( proxy.getServerInfo( serverConnectedTo ) );
++        event.setCancelServer( ProxyServer.getInstance().getServerInfo( serverConnectedTo ) );
++        String messageSent = "You were kicked from server " + event.getKickedFrom().getName() + " with reason " + BaseComponent.toLegacyText( event.getKickReasonComponent() );
++        event.getPlayer().sendMessage( ChatMessageType.SYSTEM, TextComponent.fromLegacyText( messageSent ) );
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
