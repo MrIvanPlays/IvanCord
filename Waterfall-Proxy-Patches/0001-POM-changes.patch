@@ -1,4 +1,4 @@
-From 504377bbfbc8ffbe6a565b73c21e3ec13bde7119 Mon Sep 17 00:00:00 2001
+From 3485efdccacc9318635337387412f9b7c3ed8c9f Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 19:51:17 +0300
 Subject: [PATCH] POM changes
@@ -295,7 +295,7 @@ index 7073b404..793b084f 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index fd2bc4cc..f9271ace 100644
+index fd2bc4cc..05dba2e0 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -354,15 +354,17 @@ index fd2bc4cc..f9271ace 100644
          </developer>
      </developers>
  
-@@ -57,7 +36,6 @@
+@@ -57,7 +36,9 @@
          <module>event</module>
          <module>log</module>
          <module>log4j</module>
--        <module>module</module>
++        <!-- IvanCord - remove modules
+         <module>module</module>
++        -->
          <module>protocol</module>
          <module>proxy</module>
          <module>query</module>
-@@ -65,29 +43,10 @@
+@@ -65,29 +46,10 @@
      </modules>
  
      <scm>
@@ -395,7 +397,16 @@ index fd2bc4cc..f9271ace 100644
  
      <properties>
          <build.number>unknown</build.number>
-@@ -186,86 +145,4 @@
+@@ -108,7 +70,7 @@
+         <dependency>
+             <groupId>com.google.guava</groupId>
+             <artifactId>guava</artifactId>
+-            <version>20.0</version>
++            <version>25.0-jre</version> <!-- IvanCord - update guava version -->
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+@@ -186,86 +148,4 @@
          </pluginManagement>
      </build>
  

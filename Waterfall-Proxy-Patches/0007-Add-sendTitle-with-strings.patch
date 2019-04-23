@@ -1,4 +1,4 @@
-From 4dfe382e427f135847666a8321d7e4e3a4be9209 Mon Sep 17 00:00:00 2001
+From 3e9aee7b6bc5f92f8b76645cdd1b3b7bb1568872 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 21 Apr 2019 17:51:53 +0300
 Subject: [PATCH] Add sendTitle with strings
@@ -27,10 +27,10 @@ index 234fe5f7..f799ae17 100644
       * Gets whether this player is using a FML client.
       * <p>
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 5854f73b..2903ed20 100644
+index ab879365..63796290 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -722,6 +722,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -730,6 +730,14 @@ public final class UserConnection implements ProxiedPlayer
          title.send( this );
      }
  

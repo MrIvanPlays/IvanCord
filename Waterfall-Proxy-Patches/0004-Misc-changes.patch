@@ -1,4 +1,4 @@
-From c505443f7be15ad9084dc7cdbdda29458fecef66 Mon Sep 17 00:00:00 2001
+From b1b7e1c9217768a7b6e86d13682d3f73c08cd22f Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -70,10 +70,10 @@ index 3b3525f0..1462f89a 100644
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ade817e9..5854f73b 100644
+index e649678e..ab879365 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -437,6 +437,24 @@ public final class UserConnection implements ProxiedPlayer
+@@ -445,6 +445,24 @@ public final class UserConnection implements ProxiedPlayer
          server.getCh().write( new Chat( message ) );
      }
  
