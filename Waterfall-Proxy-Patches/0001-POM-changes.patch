@@ -1,11 +1,11 @@
-From 3485efdccacc9318635337387412f9b7c3ed8c9f Mon Sep 17 00:00:00 2001
+From abd35d882a292fbcc8ba5a0f8c8b8fa7fc3d1fbe Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 19:51:17 +0300
 Subject: [PATCH] POM changes
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 0e46cbbe..edf8e9b3 100644
+index b79d7ed6..665e724b 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -64,7 +64,7 @@ index 0e46cbbe..edf8e9b3 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 6cacf112..1101800e 100644
+index 487fb3bb..699c91c9 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,18 @@
@@ -112,7 +112,7 @@ index 6cacf112..1101800e 100644
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
 diff --git a/chat/pom.xml b/chat/pom.xml
-index c9328ac3..75001396 100644
+index 7ad05abb..56f778fe 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -4,19 +4,18 @@
@@ -141,7 +141,7 @@ index c9328ac3..75001396 100644
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 1bc01b9a..bf29be67 100644
+index 9d0fe24b..32a005ff 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,18 @@
@@ -170,7 +170,7 @@ index 1bc01b9a..bf29be67 100644
      <dependencies>
          <dependency>
 diff --git a/event/pom.xml b/event/pom.xml
-index e778b3d9..f4d740c4 100644
+index d6efe097..89ef2266 100644
 --- a/event/pom.xml
 +++ b/event/pom.xml
 @@ -4,17 +4,16 @@
@@ -197,7 +197,7 @@ index e778b3d9..f4d740c4 100644
 +    <description>Generic java event dispatching API intended for use with IvanCord</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index e24b3e40..f12800ad 100644
+index fd999b51..c3eee5f9 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
 @@ -4,19 +4,18 @@
@@ -237,7 +237,7 @@ index e24b3e40..f12800ad 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index 33f1b659..93f06e7f 100644
+index e03fe0d7..4eeb9046 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -3,19 +3,18 @@
@@ -266,7 +266,7 @@ index 33f1b659..93f06e7f 100644
      <properties>
          <log4j2.version>2.11.1</log4j2.version>
 diff --git a/native/pom.xml b/native/pom.xml
-index 7073b404..793b084f 100644
+index b5aeb99e..ca5f1845 100644
 --- a/native/pom.xml
 +++ b/native/pom.xml
 @@ -4,19 +4,18 @@
@@ -295,7 +295,7 @@ index 7073b404..793b084f 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index fd2bc4cc..05dba2e0 100644
+index eff0bf2e..f5d416f2 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -406,7 +406,7 @@ index fd2bc4cc..05dba2e0 100644
              <scope>compile</scope>
          </dependency>
          <dependency>
-@@ -186,86 +148,4 @@
+@@ -233,86 +195,4 @@
          </pluginManagement>
      </build>
  
@@ -494,7 +494,7 @@ index fd2bc4cc..05dba2e0 100644
 -    </profiles>
  </project>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index ee513895..76d03f12 100644
+index 2493fc17..65e4710f 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,18 @@
@@ -534,7 +534,7 @@ index ee513895..76d03f12 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index f0497f59..22419f27 100644
+index f15927ec..933576f7 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -604,7 +604,7 @@ index f0497f59..22419f27 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/query/pom.xml b/query/pom.xml
-index 4ae682ee..9809009b 100644
+index 1fd54029..5a04212d 100644
 --- a/query/pom.xml
 +++ b/query/pom.xml
 @@ -4,19 +4,18 @@

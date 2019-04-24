@@ -1,14 +1,14 @@
-From 16ffd05553e9da956683356c92f4948f9b51300a Mon Sep 17 00:00:00 2001
+From 6c3c2f9fd4c5ac9e42a9792dd913a2ae905feb7b Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 22 Apr 2019 10:45:15 +0300
 Subject: [PATCH] Kick to lobby support
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 706c5091..79b78409 100644
+index 2a37d10d..1b3b1a5d 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -256,5 +256,13 @@ public interface ProxyConfig
+@@ -255,5 +255,13 @@ public interface ProxyConfig
       * @return restart script
       */
      String getRestartScriptPath();
@@ -43,10 +43,10 @@ index 2fa867f4..95703d1c 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
 new file mode 100644
-index 00000000..7c4e4f2d
+index 00000000..faed5e45
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,55 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -68,7 +68,9 @@ index 00000000..7c4e4f2d
 + **/
 +package com.github.mrivanplays.ivancord.listeners;
 +
-+import net.md_5.bungee.api.ChatMessageType;
++import java.util.ArrayList;
++import java.util.List;
++
 +import net.md_5.bungee.api.ProxyServer;
 +import net.md_5.bungee.api.chat.BaseComponent;
 +import net.md_5.bungee.api.chat.TextComponent;
@@ -87,11 +89,8 @@ index 00000000..7c4e4f2d
 +    {
 +        ProxiedPlayer player = event.getPlayer();
 +        event.setCancelled( true );
-+        String serverConnectedTo = null;
-+        for ( ListenerInfo info : ProxyServer.getInstance().getConfig().getListeners() )
-+        {
-+            serverConnectedTo = info.getServerPriority().get( 0 );
-+        }
++        List<ListenerInfo> listenerInfoList = new ArrayList<>( ProxyServer.getInstance().getConfig().getListeners() );
++        String serverConnectedTo = listenerInfoList.get( 0 ).getServerPriority().get( 0 );
 +        ServerInfo connect = ProxyServer.getInstance().getServerInfo( serverConnectedTo );
 +        if ( player.getServer().getInfo().equals( connect ) )
 +        {
@@ -100,11 +99,11 @@ index 00000000..7c4e4f2d
 +        }
 +        event.setCancelServer( connect );
 +        String messageSent = "You were kicked from server '" + event.getKickedFrom().getName() + "' with reason '" + BaseComponent.toLegacyText( event.getKickReasonComponent() ) + "'.";
-+        player.sendMessage( ChatMessageType.SYSTEM, TextComponent.fromLegacyText( messageSent ) );
++        player.sendMessage( TextComponent.fromLegacyText( messageSent ) );
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 3ccb5c71..42ca47c5 100644
+index da1ccf1d..25698505 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -92,6 +92,7 @@ import net.md_5.bungee.scheduler.BungeeScheduler;
@@ -115,7 +114,7 @@ index 3ccb5c71..42ca47c5 100644
  import com.github.mrivanplays.ivancord.modules.CommandAlert;
  import com.github.mrivanplays.ivancord.modules.CommandAlertRaw;
  import com.github.mrivanplays.ivancord.modules.CommandFind;
-@@ -244,6 +245,13 @@ public class BungeeCord extends ProxyServer
+@@ -243,6 +244,13 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandServer() );
          // IvanCord end
  
