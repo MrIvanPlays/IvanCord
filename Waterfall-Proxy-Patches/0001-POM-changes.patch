@@ -16,14 +16,14 @@ index 0e46cbbe..edf8e9b3 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.13-SNAPSHOT</version>
+         <version>1.14-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-api</artifactId>
 +    <artifactId>ivancord-api</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-API</name>
@@ -75,14 +75,14 @@ index 6cacf112..1101800e 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.13-SNAPSHOT</version>
+         <version>1.14-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-bootstrap</artifactId>
 +    <artifactId>ivancord-bootstrap</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Bootstrap</name>
@@ -123,14 +123,14 @@ index c9328ac3..75001396 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.13-SNAPSHOT</version>
+         <version>1.14-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-chat</artifactId>
 +    <artifactId>ivancord-chat</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Chat</name>
@@ -152,14 +152,14 @@ index 1bc01b9a..bf29be67 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.13-SNAPSHOT</version>
+         <version>1.14-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-config</artifactId>
 +    <artifactId>ivancord-config</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Config</name>
@@ -181,14 +181,14 @@ index e778b3d9..f4d740c4 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.13-SNAPSHOT</version>
+         <version>1.14-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-event</artifactId>
 +    <artifactId>ivancord-event</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Event</name>
@@ -208,14 +208,14 @@ index e24b3e40..f12800ad 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.13-SNAPSHOT</version>
+         <version>1.14-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-log</artifactId>
 +    <artifactId>ivancord-log</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Log</name>
@@ -248,14 +248,14 @@ index 33f1b659..93f06e7f 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.13-SNAPSHOT</version>
+         <version>1.14-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-log4j</artifactId>
 +    <artifactId>ivancord-log4j</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Log</name>
@@ -277,14 +277,14 @@ index 7073b404..793b084f 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.13-SNAPSHOT</version>
+         <version>1.14-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-native</artifactId>
 +    <artifactId>ivancord-native</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Native</name>
@@ -313,7 +313,7 @@ index fd2bc4cc..05dba2e0 100644
 -    <artifactId>waterfall-parent</artifactId>
 +    <groupId>com.github.mrivanplays</groupId>
 +    <artifactId>ivancord-parent</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>pom</packaging>
  
 -    <name>Waterfall-Parent</name>
@@ -505,14 +505,14 @@ index ee513895..76d03f12 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.13-SNAPSHOT</version>
+         <version>1.14-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-protocol</artifactId>
 +    <artifactId>ivancord-protocol</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Protocol</name>
@@ -545,14 +545,14 @@ index f0497f59..22419f27 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.13-SNAPSHOT</version>
+         <version>1.14-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-proxy</artifactId>
 +    <artifactId>ivancord-proxy</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Proxy</name>
@@ -615,14 +615,14 @@ index 4ae682ee..9809009b 100644
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.13-SNAPSHOT</version>
+         <version>1.14-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-query</artifactId>
 +    <artifactId>ivancord-query</artifactId>
-     <version>1.13-SNAPSHOT</version>
+     <version>1.14-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Query</name>
