@@ -1,0 +1,130 @@
+From af68b9619f2874984d742b47dab5488c3b8cc280 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Sun, 28 Apr 2019 09:53:09 +0300
+Subject: [PATCH] ServerChatEvent
+
+
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServerChatEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServerChatEvent.java
+new file mode 100644
+index 00000000..5ecb7da4
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServerChatEvent.java
+@@ -0,0 +1,61 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.event;
++
++import lombok.Getter;
++import lombok.RequiredArgsConstructor;
++import lombok.Setter;
++import net.md_5.bungee.api.ChatMessageType;
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.plugin.Cancellable;
++import net.md_5.bungee.api.plugin.Event;
++
++/**
++ * Represents a event, fired when a server is "chatting".
++ * A pure example of when a server "chat" is when a player
++ * joins/quits the server.
++ */
++@Getter
++@Setter
++@RequiredArgsConstructor
++public class ServerChatEvent extends Event implements Cancellable
++{
++
++    /**
++     * Returns whenever this event is cancelled or not
++     */
++    private boolean cancelled = false;
++
++    /**
++     * Gets the sent message position
++     */
++    private final ChatMessageType messagePosition;
++
++    /**
++     * Gets the server, which is "chatting"
++     */
++    private final ServerInfo server;
++
++    /**
++     * Gets the message, that the server "chatted"
++     */
++    private final BaseComponent[] message;
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 1f8a2439..693fdc6c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.ServerConnection;
+ import net.md_5.bungee.UserConnection;
+ import net.md_5.bungee.Util;
++import net.md_5.bungee.api.ChatMessageType;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.api.config.ServerInfo;
+@@ -49,6 +50,7 @@ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ import net.md_5.bungee.protocol.packet.BossBar;
++import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.Commands;
+ import net.md_5.bungee.protocol.packet.EntityEffect;
+ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
+@@ -64,6 +66,8 @@ import net.md_5.bungee.protocol.packet.SetCompression;
+ import net.md_5.bungee.protocol.packet.TabCompleteResponse;
+ import net.md_5.bungee.tab.TabList;
+ 
++import com.github.mrivanplays.ivancord.api.event.ServerChatEvent;
++
+ @RequiredArgsConstructor
+ public class DownstreamBridge extends PacketHandler
+ {
+@@ -663,6 +667,24 @@ public class DownstreamBridge extends PacketHandler
+         }
+     }
+ 
++    // IvanCord start - handle server chat event
++    @Override
++    public void handle(Chat chat)
++    {
++        ChatMessageType position = ChatMessageType.values()[chat.getPosition()];
++        ServerChatEvent event = new ServerChatEvent( position, con.getServer().getInfo(), ComponentSerializer.parse( chat.getMessage() ) );
++
++        if ( !bungee.getPluginManager().callEvent( event ).isCancelled() )
++        {
++            chat.setMessage( ComponentSerializer.toString( event.getMessage() ) );
++            chat.setPosition( (byte) event.getMessagePosition().ordinal() );
++            con.unsafe().sendPacket( chat );
++        }
++        throw CancelSendSignal.INSTANCE;
++    }
++
++    // IvanCord end
++
+     @Override
+     public String toString()
+     {
+-- 
+2.21.0.windows.1
+
