@@ -1,4 +1,4 @@
-From 0e6b22ce1b357362aa00705fd72cfe4931f52a21 Mon Sep 17 00:00:00 2001
+From fcf1aa83a434387f83d784a932ba621a299e75f6 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:09:46 +0300
 Subject: [PATCH] Get rid of startup delay rename occurences
@@ -31,7 +31,7 @@ index d703d6d2..e877d9ef 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 761329bb..f5bc0979 100644
+index 761329bb..a25000b4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -190,7 +190,7 @@ public class BungeeCord extends ProxyServer
@@ -43,6 +43,15 @@ index 761329bb..f5bc0979 100644
  
          try
          {
+@@ -527,7 +527,7 @@ public class BungeeCord extends ProxyServer
+     @Override
+     public String getName()
+     {
+-        return "Waterfall";
++        return "IvanCord";
+     }
+ 
+     @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 index 624eb5f0..0303e24d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
