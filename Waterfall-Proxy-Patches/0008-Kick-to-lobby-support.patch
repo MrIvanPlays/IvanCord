@@ -1,4 +1,4 @@
-From 6c3c2f9fd4c5ac9e42a9792dd913a2ae905feb7b Mon Sep 17 00:00:00 2001
+From fc805ca70c90c228efc4f28868b2d6b674341952 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 22 Apr 2019 10:45:15 +0300
 Subject: [PATCH] Kick to lobby support
@@ -43,10 +43,10 @@ index 2fa867f4..95703d1c 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
 new file mode 100644
-index 00000000..faed5e45
+index 00000000..3ed5b7c5
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,60 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -92,6 +92,11 @@ index 00000000..faed5e45
 +        List<ListenerInfo> listenerInfoList = new ArrayList<>( ProxyServer.getInstance().getConfig().getListeners() );
 +        String serverConnectedTo = listenerInfoList.get( 0 ).getServerPriority().get( 0 );
 +        ServerInfo connect = ProxyServer.getInstance().getServerInfo( serverConnectedTo );
++        if ( player.getServer() == null )
++        {
++            // outdated client found or other reason for that the player didn't connect
++            return;
++        }
 +        if ( player.getServer().getInfo().equals( connect ) )
 +        {
 +            player.disconnect( event.getKickReasonComponent() );
@@ -103,7 +108,7 @@ index 00000000..faed5e45
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index da1ccf1d..25698505 100644
+index 9fe49f97..f1444439 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -92,6 +92,7 @@ import net.md_5.bungee.scheduler.BungeeScheduler;
