@@ -1,4 +1,4 @@
-From f902075289db0106f7b00a405043889d472e4569 Mon Sep 17 00:00:00 2001
+From 171e67ecb7548698fe0fcb3b975faae04b228444 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 19:51:17 +0300
 Subject: [PATCH] POM changes
@@ -295,7 +295,7 @@ index b5aeb99e..ca5f1845 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index eff0bf2e..c47f597a 100644
+index eff0bf2e..f5d416f2 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -406,24 +406,7 @@ index eff0bf2e..c47f597a 100644
              <scope>compile</scope>
          </dependency>
          <dependency>
-@@ -152,7 +114,7 @@
-                     <doclint>none</doclint>
-                 </configuration>
-             </plugin>
--            <!-- Alow manging of import orders to allow avoiding conflicts
-+            <!-- IvanCord - uncomment the checkstyle -->
-              <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
-                 <artifactId>maven-checkstyle-plugin</artifactId>
-@@ -178,7 +140,6 @@
-                     </dependency>
-                 </dependencies>
-             </plugin>
--            -->
-             <plugin>
-                 <groupId>org.codehaus.mojo</groupId>
-                 <artifactId>animal-sniffer-maven-plugin</artifactId>
-@@ -233,86 +194,4 @@
+@@ -233,86 +195,4 @@
          </pluginManagement>
      </build>
  
