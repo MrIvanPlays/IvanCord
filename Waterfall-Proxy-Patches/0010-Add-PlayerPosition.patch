@@ -1,4 +1,4 @@
-From 579c24628281e121773e0175badd82c74be785ac Mon Sep 17 00:00:00 2001
+From e1197a4836a96627efa24ffb1decba27a019601d Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 19 May 2019 14:58:39 +0300
 Subject: [PATCH] Add PlayerPosition
@@ -222,7 +222,7 @@ index 00000000..f3e4c677
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 55bff981..3e1b569d 100644
+index 55bff981..a6b819b2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -64,6 +64,15 @@ import net.md_5.bungee.tab.TabList;
@@ -251,40 +251,18 @@ index 55bff981..3e1b569d 100644
  
      public void init()
      {
-@@ -765,6 +777,36 @@ public final class UserConnection implements ProxiedPlayer
+@@ -765,6 +777,14 @@ public final class UserConnection implements ProxiedPlayer
          return serverSentScoreboard;
      }
  
-+<<<<<<< HEAD
-+=======
-+    // IvanCord start
-+    @Override
-+    public void playSound(Sound sound, SoundAttributes attributes)
-+    {
-+        playSound( sound, SoundCategory.MASTER, attributes );
-+    }
-+
-+    @Override
-+    public void playSound(Sound sound, SoundCategory soundCategory, SoundAttributes attributes)
-+    {
-+        SoundPlayToPlayerEvent event = new SoundPlayToPlayerEvent( this, sound, soundCategory, attributes );
-+        if ( !bungee.getPluginManager().callEvent( event ).isCancelled() )
-+        {
-+            unsafe().sendPacket( new PlaySound( sound.getMinecraftSoundName(), soundCategory.ordinal(), attributes.getX(),
-+                attributes.getY(), attributes.getZ(), attributes.getVolume(), attributes.getPitch() ) );
-+        }
-+    }
-+
-+    // IvanCord end
-+
 +    // IvanCord start - player position
 +    @Override
 +    public void setPosition(com.github.mrivanplays.ivancord.api.position.Position position)
 +    {
 +        this.position = position;
 +    }
++    // IvanCord end
 +
-+>>>>>>> 5f58e3c2... Add PlayerPosition
      // Waterfall start
      public boolean isDisableEntityMetadataRewrite() {
          return disableEntityMetadaRewrite;
