@@ -1,4 +1,4 @@
-From 784e33049882c62a9432f299d22c4417ff09aae2 Mon Sep 17 00:00:00 2001
+From a7a9bb001bb004f2e0e31f2689d4837a3bdfea63 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Fri, 17 May 2019 11:32:24 +0300
 Subject: [PATCH] Add PlaySound packet
@@ -931,7 +931,7 @@ index 00000000..08cd797b
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/sound/SoundAttributes.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/sound/SoundAttributes.java
 new file mode 100644
-index 00000000..a7a84caa
+index 00000000..f284fe70
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/sound/SoundAttributes.java
 @@ -0,0 +1,59 @@
@@ -972,17 +972,17 @@ index 00000000..a7a84caa
 +    /**
 +     * The X location of the sound
 +     */
-+    private double x;
++    private int x;
 +
 +    /**
 +     * The Y location of the sound
 +     */
-+    private double y;
++    private int y;
 +
 +    /**
 +     * The Z location of the sound
 +     */
-+    private double z;
++    private int z;
 +
 +    /**
 +     * The volume of the sound
@@ -992,7 +992,7 @@ index 00000000..a7a84caa
 +    /**
 +     * The pitch of the sound
 +     */
-+    private float pitch;
++    private int pitch;
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/sound/SoundCategory.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/sound/SoundCategory.java
 new file mode 100644
@@ -1128,7 +1128,7 @@ index 87093807..72f2165b 100644
      // 1
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
 new file mode 100644
-index 00000000..a4ebe711
+index 00000000..cca3d0cd
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
 @@ -0,0 +1,74 @@
@@ -1170,20 +1170,20 @@ index 00000000..a4ebe711
 +
 +    private String soundName;
 +    private int soundCategory;
-+    private double posX;
-+    private double posY;
-+    private double posZ;
++    private int posX;
++    private int posY;
++    private int posZ;
 +    private float volume;
-+    private float pitch;
++    private int pitch;
 +
 +    @Override
 +    public void read(ByteBuf buf)
 +    {
 +        soundName = readString( buf );
 +        soundCategory = readVarInt( buf );
-+        posX = buf.readDouble();
-+        posY = buf.readDouble();
-+        posZ = buf.readDouble();
++        posX = readVarInt( buf );
++        posY = readVarInt( buf );
++        posZ = readVarInt( buf );
 +        volume = readVarInt( buf );
 +        pitch = buf.readUnsignedByte();
 +    }
@@ -1193,11 +1193,11 @@ index 00000000..a4ebe711
 +    {
 +        writeString( soundName, buf );
 +        writeVarInt( soundCategory, buf );
-+        buf.writeDouble( posX );
-+        buf.writeDouble( posY );
-+        buf.writeDouble( posZ );
++        writeVarInt( posX, buf );
++        writeVarInt( posY, buf );
++        writeVarInt( posZ, buf );
 +        buf.writeFloat( volume );
-+        buf.writeFloat( pitch );
++        buf.writeByte( pitch );
 +    }
 +
 +    @Override
