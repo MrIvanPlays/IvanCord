@@ -1,4 +1,4 @@
-From 16f5381092687070ec854e7766f1ab983eb68a46 Mon Sep 17 00:00:00 2001
+From 8265d0e29eaba3f1ad65b98da7be95726ce5835d Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 27 May 2019 16:01:55 +0300
 Subject: [PATCH] Add PlaySound packet
@@ -47,6 +47,68 @@ index 00000000..713842ad
 +    public static final int PLAYERS = 7;
 +    public static final int AMBIENT = 8;
 +    public static final int VOICE = 9;
++}
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
+new file mode 100644
+index 00000000..511f6511
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
+@@ -0,0 +1,56 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.event;
++
++import lombok.AllArgsConstructor;
++import lombok.Getter;
++import lombok.ToString;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Event;
++
++/**
++ * Event, called when a sound is played
++ */
++@Getter
++@AllArgsConstructor
++@ToString
++public class SoundPlayedEvent extends Event
++{
++
++    /**
++     * The player, played to
++     */
++    private ProxiedPlayer player;
++
++    /**
++     * The sound played
++     */
++    private String sound;
++
++    /**
++     * X, Y, Z location and pitch of the sound
++     */
++    private int x, y, z, pitch;
++
++    /**
++     * Sound volume
++     */
++    private float volume;
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 index f799ae17..23a02da0 100644
@@ -128,7 +190,7 @@ index 450b3cf4..47ba0d66 100644
      // 1
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
 new file mode 100644
-index 00000000..491b3e42
+index 00000000..4b3c7edb
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
 @@ -0,0 +1,89 @@
@@ -183,7 +245,7 @@ index 00000000..491b3e42
 +        y = buf.readInt();
 +        z = buf.readInt();
 +        volume = buf.readFloat();
-+        if ( protocolVersion <= ProtocolConstants.MINECRAFT_1_9 )
++        if ( protocolVersion <= ProtocolConstants.MINECRAFT_1_9_4 )
 +        {
 +            pitch = buf.readUnsignedByte();
 +        } else
@@ -206,7 +268,7 @@ index 00000000..491b3e42
 +        buf.writeInt( y );
 +        buf.writeInt( z );
 +        buf.writeFloat( volume );
-+        if ( protocolVersion <= ProtocolConstants.MINECRAFT_1_9 )
++        if ( protocolVersion <= ProtocolConstants.MINECRAFT_1_9_4 )
 +        {
 +            buf.writeByte( pitch );
 +        } else
@@ -248,6 +310,43 @@ index 55bff981..d42d772d 100644
      // Waterfall start
      public boolean isDisableEntityMetadataRewrite() {
          return disableEntityMetadaRewrite;
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 693fdc6c..4bf74b72 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -56,6 +56,7 @@ import net.md_5.bungee.protocol.packet.EntityEffect;
+ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
+ import net.md_5.bungee.protocol.packet.KeepAlive;
+ import net.md_5.bungee.protocol.packet.Kick;
++import net.md_5.bungee.protocol.packet.PlaySound;
+ import net.md_5.bungee.protocol.packet.PlayerListItem;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.protocol.packet.Respawn;
+@@ -67,6 +68,7 @@ import net.md_5.bungee.protocol.packet.TabCompleteResponse;
+ import net.md_5.bungee.tab.TabList;
+ 
+ import com.github.mrivanplays.ivancord.api.event.ServerChatEvent;
++import com.github.mrivanplays.ivancord.api.event.SoundPlayedEvent;
+ 
+ @RequiredArgsConstructor
+ public class DownstreamBridge extends PacketHandler
+@@ -685,6 +687,16 @@ public class DownstreamBridge extends PacketHandler
+ 
+     // IvanCord end
+ 
++    // IvanCord start - handle SoundPlayedEvent
++    @Override
++    public void handle(PlaySound playSound)
++    {
++        SoundPlayedEvent event = new SoundPlayedEvent( con, playSound.getName(), playSound.getX(),
++            playSound.getY(), playSound.getZ(), playSound.getPitch(), playSound.getVolume() );
++        bungee.getPluginManager().callEvent( event );
++    }
++    // IvanCord end
++
+     @Override
+     public String toString()
+     {
 -- 
 2.21.0.windows.1
 
