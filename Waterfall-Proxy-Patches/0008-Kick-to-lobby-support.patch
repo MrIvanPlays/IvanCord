@@ -1,4 +1,4 @@
-From fc805ca70c90c228efc4f28868b2d6b674341952 Mon Sep 17 00:00:00 2001
+From f50eb8ad0b1ab4cc25a94447940563c81e82be37 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 22 Apr 2019 10:45:15 +0300
 Subject: [PATCH] Kick to lobby support
@@ -43,7 +43,7 @@ index 2fa867f4..95703d1c 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
 new file mode 100644
-index 00000000..3ed5b7c5
+index 00000000..22de7ffe
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
 @@ -0,0 +1,60 @@
@@ -103,8 +103,8 @@ index 00000000..3ed5b7c5
 +            return;
 +        }
 +        event.setCancelServer( connect );
-+        String messageSent = "You were kicked from server '" + event.getKickedFrom().getName() + "' with reason '" + BaseComponent.toLegacyText( event.getKickReasonComponent() ) + "'.";
-+        player.sendMessage( TextComponent.fromLegacyText( messageSent ) );
++        player.sendMessage( TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "kick_to_lobby", event.getKickedFrom().getName(),
++            BaseComponent.toLegacyText( event.getKickReasonComponent() ) ) ) );
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
@@ -133,6 +133,15 @@ index 9fe49f97..f1444439 100644
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
              if ( EncryptionUtil.nativeFactory.load() )
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+index dfb58c12..59c85d80 100644
+--- a/proxy/src/main/resources/messages.properties
++++ b/proxy/src/main/resources/messages.properties
+@@ -24,3 +24,4 @@ name_too_long=Cannot have username longer than 16 characters
+ name_invalid=Username contains invalid characters.
+ ping_cannot_connect=\u00a7c[Bungee] Can't connect to server.
+ offline_mode_player=Not authenticated with Minecraft.net
++kick_to_lobby=You were kicked from server {0} with reason '{1}'
 -- 
 2.21.0.windows.1
 
