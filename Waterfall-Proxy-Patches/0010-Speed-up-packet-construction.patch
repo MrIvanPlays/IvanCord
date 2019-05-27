@@ -1,0 +1,365 @@
+From d0937a9a84eb9ca5a41b46efa4408afccc82fd41 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Mon, 27 May 2019 14:25:44 +0300
+Subject: [PATCH] Speed up packet construction
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 87093807..450b3cf4 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -7,6 +7,7 @@ import gnu.trove.map.TObjectIntMap;
+ import gnu.trove.map.hash.TIntObjectHashMap;
+ import gnu.trove.map.hash.TObjectIntHashMap;
+ import java.lang.reflect.Constructor;
++import java.util.function.Supplier;
+ import lombok.Data;
+ import lombok.Getter;
+ import net.md_5.bungee.protocol.packet.BossBar;
+@@ -53,6 +54,7 @@ public enum Protocol
+         {
+             TO_SERVER.registerPacket(
+                     Handshake.class,
++                    Handshake::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
+             );
+         }
+@@ -64,6 +66,7 @@ public enum Protocol
+         {
+             TO_CLIENT.registerPacket(
+                     KeepAlive.class,
++                    KeepAlive::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x00 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x1F ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x21 ),
+@@ -71,18 +74,21 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     Login.class,
++                    Login::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x01 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x23 ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x25 )
+             );
+             TO_CLIENT.registerPacket(
+                     Chat.class,
++                    Chat::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x02 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x0F ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x0E )
+             );
+             TO_CLIENT.registerPacket(
+                     Respawn.class,
++                    Respawn::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x07 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x33 ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x34 ),
+@@ -92,11 +98,13 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     BossBar.class,
++                    BossBar::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x0C )
+             );
+             // Waterfall start
+             TO_CLIENT.registerPacket(
+                     EntityEffect.class,
++                    EntityEffect::new, // IvanCord - speed up packet construction
+                     map(ProtocolConstants.MINECRAFT_1_8, 0x1D),
+                     map(ProtocolConstants.MINECRAFT_1_9, 0x4C),
+                     map(ProtocolConstants.MINECRAFT_1_9_4, 0x4B),
+@@ -107,6 +115,7 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     EntityRemoveEffect.class,
++                    EntityRemoveEffect::new, // IvanCord - speed up packet construction
+                     map(ProtocolConstants.MINECRAFT_1_8, 0x1E),
+                     map(ProtocolConstants.MINECRAFT_1_9, 0x31),
+                     map(ProtocolConstants.MINECRAFT_1_12, 0x32),
+@@ -117,6 +126,7 @@ public enum Protocol
+             // Waterfall end
+             TO_CLIENT.registerPacket(
+                     PlayerListItem.class, // PlayerInfo
++                    PlayerListItem::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x38 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x2D ),
+                     map( ProtocolConstants.MINECRAFT_1_12_1, 0x2E ),
+@@ -125,12 +135,14 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     TabCompleteResponse.class,
++                    TabCompleteResponse::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x3A ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x0E ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x10 )
+             );
+             TO_CLIENT.registerPacket(
+                     ScoreboardObjective.class,
++                    ScoreboardObjective::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x3B ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x3F ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x41 ),
+@@ -140,6 +152,7 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     ScoreboardScore.class,
++                    ScoreboardScore::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x3C ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x42 ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x44 ),
+@@ -149,6 +162,7 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     ScoreboardDisplay.class,
++                    ScoreboardDisplay::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x3D ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x38 ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x3A ),
+@@ -158,6 +172,7 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     Team.class,
++                    Team::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x3E ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x41 ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x43 ),
+@@ -167,6 +182,7 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     PluginMessage.class,
++                    PluginMessage::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x3F ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x18 ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x19 ),
+@@ -174,6 +190,7 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     Kick.class,
++                    Kick::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x40 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x1A ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x1B ),
+@@ -181,6 +198,7 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     Title.class,
++                    Title::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x45 ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x47 ),
+                     map( ProtocolConstants.MINECRAFT_1_12_1, 0x48 ),
+@@ -189,6 +207,7 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     PlayerListHeaderFooter.class,
++                    PlayerListHeaderFooter::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x47 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x48 ),
+                     map( ProtocolConstants.MINECRAFT_1_9_4, 0x47 ),
+@@ -199,6 +218,7 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     EntityStatus.class,
++                    EntityStatus::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x1A ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x1B ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x1C ),
+@@ -206,15 +226,18 @@ public enum Protocol
+             );
+             TO_CLIENT.registerPacket(
+                     Commands.class,
++                    Commands::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x11 )
+             );
+             TO_CLIENT.registerPacket(
+                     ViewDistance.class,
++                    ViewDistance::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x41 )
+             );
+ 
+             TO_SERVER.registerPacket(
+                     KeepAlive.class,
++                    KeepAlive::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x00 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x0B ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x0C ),
+@@ -224,6 +247,7 @@ public enum Protocol
+             );
+             TO_SERVER.registerPacket(
+                     Chat.class,
++                    Chat::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x01 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x02 ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x03 ),
+@@ -232,6 +256,7 @@ public enum Protocol
+             );
+             TO_SERVER.registerPacket(
+                     TabCompleteRequest.class,
++                    TabCompleteRequest::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x14 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x01 ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x02 ),
+@@ -241,6 +266,7 @@ public enum Protocol
+             );
+             TO_SERVER.registerPacket(
+                     ClientSettings.class,
++                    ClientSettings::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x15 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x04 ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x05 ),
+@@ -249,6 +275,7 @@ public enum Protocol
+             );
+             TO_SERVER.registerPacket(
+                     PluginMessage.class,
++                    PluginMessage::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x17 ),
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x09 ),
+                     map( ProtocolConstants.MINECRAFT_1_12, 0x0A ),
+@@ -265,19 +292,23 @@ public enum Protocol
+         {
+             TO_CLIENT.registerPacket(
+                     StatusResponse.class,
++                    StatusResponse::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
+             );
+             TO_CLIENT.registerPacket(
+                     PingPacket.class,
++                    PingPacket::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
+             );
+ 
+             TO_SERVER.registerPacket(
+                     StatusRequest.class,
++                    StatusRequest::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
+             );
+             TO_SERVER.registerPacket(
+                     PingPacket.class,
++                    PingPacket::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
+             );
+         }
+@@ -289,35 +320,43 @@ public enum Protocol
+         {
+             TO_CLIENT.registerPacket(
+                     Kick.class,
++                    Kick::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
+             );
+             TO_CLIENT.registerPacket(
+                     EncryptionRequest.class,
++                    EncryptionRequest::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
+             );
+             TO_CLIENT.registerPacket(
+                     LoginSuccess.class,
++                    LoginSuccess::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x02 )
+             );
+             TO_CLIENT.registerPacket(
+                     SetCompression.class,
++                    SetCompression::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x03 )
+             );
+             TO_CLIENT.registerPacket(
+                     LoginPayloadRequest.class,
++                    LoginPayloadRequest::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x04 )
+             );
+ 
+             TO_SERVER.registerPacket(
+                     LoginRequest.class,
++                    LoginRequest::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x00 )
+             );
+             TO_SERVER.registerPacket(
+                     EncryptionResponse.class,
++                    EncryptionResponse::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x01 )
+             );
+             TO_SERVER.registerPacket(
+                     LoginPayloadResponse.class,
++                    LoginPayloadResponse::new, // IvanCord - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x02 )
+             );
+         }
+@@ -368,7 +407,7 @@ public enum Protocol
+ 
+         private final int protocolVersion;
+         private final TObjectIntMap<Class<? extends DefinedPacket>> packetMap = new TObjectIntHashMap<>( MAX_PACKET_ID );
+-        private final Constructor<? extends DefinedPacket>[] packetConstructors = new Constructor[ MAX_PACKET_ID ];
++        private final Supplier<? extends DefinedPacket>[] packetConstructors = new Supplier[ MAX_PACKET_ID ]; // IvanCord - speed up packet construction
+     }
+ 
+     @Data
+@@ -436,21 +475,25 @@ public enum Protocol
+                 throw new BadPacketException( "Packet with id " + id + " outside of range " );
+             }
+ 
+-            Constructor<? extends DefinedPacket> constructor = protocolData.packetConstructors[id];
++            // IvanCord start - speed up packet construction
++            Supplier<? extends DefinedPacket> constructor = protocolData.packetConstructors[id];
+             try
+             {
+-                return ( constructor == null ) ? null : constructor.newInstance();
+-            } catch ( ReflectiveOperationException ex )
++                return ( constructor == null ) ? null : constructor.get();
++            } catch ( Throwable ex )
+             {
++                // IvanCord end
+                 throw new BadPacketException( "Could not construct packet with id " + id, ex );
+             }
+         }
+ 
+-        private void registerPacket(Class<? extends DefinedPacket> packetClass, ProtocolMapping... mappings)
++        // IvanCord start - speed up packet construction
++        private <T extends DefinedPacket> void registerPacket(Class<T> packetClass, Supplier<T> constructor, ProtocolMapping... mappings)
+         {
+             try
+             {
+-                Constructor<? extends DefinedPacket> constructor = packetClass.getDeclaredConstructor();
++                // Constructor<? extends DefinedPacket> constructor = packetClass.getDeclaredConstructor();
++                // IvanCord end
+ 
+                 int mappingIndex = 0;
+                 ProtocolMapping mapping = mappings[mappingIndex];
+@@ -479,11 +522,36 @@ public enum Protocol
+                     data.packetMap.put( packetClass, mapping.packetID );
+                     data.packetConstructors[mapping.packetID] = constructor;
+                 }
+-            } catch ( NoSuchMethodException ex )
++            } catch ( Throwable ex ) // IvanCord - speed up packet construction
++            {
++                throw new BadPacketException( "No NoArgsConstructor for packet class " + packetClass );
++            }
++        }
++
++        // IvanCord start - add old construction
++        private <T extends DefinedPacket> void registerPacket(Class<T> packetClass, ProtocolMapping... mappings)
++        {
++            Supplier<T> packetSupplier;
++            try
++            {
++                Constructor<? extends DefinedPacket> constructor = packetClass.getDeclaredConstructor();
++                packetSupplier = () ->
++                {
++                    try
++                    {
++                        return (T) constructor.newInstance();
++                    } catch ( Throwable e )
++                    {
++                        throw new RuntimeException( e );
++                    }
++                };
++            } catch ( ReflectiveOperationException e )
+             {
+                 throw new BadPacketException( "No NoArgsConstructor for packet class " + packetClass );
+             }
++            registerPacket( packetClass, packetSupplier, mappings );
+         }
++        // IvanCord end
+ 
+         final int getId(Class<? extends DefinedPacket> packet, int version)
+         {
+-- 
+2.21.0.windows.1
+
