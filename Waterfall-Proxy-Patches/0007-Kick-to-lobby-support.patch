@@ -1,4 +1,4 @@
-From 181326287223ce9ac8512da79e32899b48a36a39 Mon Sep 17 00:00:00 2001
+From 9ff21bf6d100d2b1609d4ea8d1f77af91b744cbe Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 22 Apr 2019 10:45:15 +0300
 Subject: [PATCH] Kick to lobby support
@@ -25,10 +25,17 @@ index cbcf8a24..4687e7c4 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 96bb60f5..d657e3ce 100644
+index 96bb60f5..dea499b2 100644
 --- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-@@ -27,11 +27,14 @@ import net.md_5.bungee.conf.YamlConfig;
+@@ -22,16 +22,21 @@ package com.github.mrivanplays.ivancord.conf;
+ import java.io.File;
+ 
+ import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
++import lombok.Getter;
+ import net.md_5.bungee.conf.YamlConfig;
+ 
++@Getter
  public class IvanCordConfiguration extends WaterfallConfiguration
  {
  
