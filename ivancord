@@ -16,16 +16,20 @@ case "$1" in
     "e" | "edit")
         scripts/edit.sh
     ;;
+    "macu")
+        scripts/mergeAndCommitUpstream.sh
+    ;;
     *)
-        echo "IvanCOrd build tool command. This provides a variety of commands to control the IvanCord"
+        echo "IvanCord build tool command. This provides a variety of commands to control the IvanCord"
         echo "build. View below for details of the available commands."
         echo ""
         echo "Commands:"
         echo "  * rb, rbp, rebuild | Rebuilds the patches"
-        echo "  * p, patch         | Applies all the patches to BungeeCord"
+        echo "  * p, patch         | Applies all the patches to IvanCord"
         echo "  * m, up, merge     | Utility to aid in merging upstream"
         echo "  * b, build         | Builds the project"
         echo "                     | The bootstrap artifact can be found in IvanCord-Proxy/bootstrap/target/"
-        echo "  * e, edit          | Runs git rebase -i for Waterfall, allowing patches to be easily modified"
+        echo "  * e, edit          | Runs git rebase -i for IvanCord, allowing patches to be easily modified"
+        echo "  * macu             | Merges upstream and runs commit"
     ;;
 esac
