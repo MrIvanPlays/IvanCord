@@ -25,7 +25,7 @@ case "$1" in
         echo ""
         echo "Commands:"
         echo "  * rb, rbp, rebuild | Rebuilds the patches"
-        echo "  * p, patch         | Applies all the patches to IvanCord"
+        echo "  * p, patch         | Applies all the patches to Waterfall"
         echo "  * m, up, merge     | Utility to aid in merging upstream"
         echo "  * b, build         | Builds the project"
         echo "                     | The bootstrap artifact can be found in IvanCord-Proxy/bootstrap/target/"
