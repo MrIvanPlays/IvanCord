@@ -1,4 +1,4 @@
-From 8302a7d22878ffa0d44e40cb321253a54dd5912e Mon Sep 17 00:00:00 2001
+From aa6d6f5924d53ce26899af00e8aea538245d5577 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -194,16 +194,17 @@ index d87d0b95..055b3bb6 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1f8a2439..5fd608ea 100644
+index 1f8a2439..4739050e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -597,22 +597,28 @@ public class DownstreamBridge extends PacketHandler
+@@ -597,22 +597,30 @@ public class DownstreamBridge extends PacketHandler
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
              throw CancelSendSignal.INSTANCE;
          }
 -        con.getPotions().put(rewriteEntityId(entityEffect.getEntityId()), entityEffect.getEffectId());
 +        // IvanCord start - rewrite this
 +        con.getPotions().add(entityEffect.getEffectId());
++        con.unsafe().sendPacket( entityEffect );
      }
  
      @Override
@@ -212,6 +213,7 @@ index 1f8a2439..5fd608ea 100644
          if (con.isDisableEntityMetadataRewrite()) return; // Waterfall
 -        con.getPotions().remove(rewriteEntityId(removeEffect.getEntityId()), removeEffect.getEffectId());
 +        con.getPotions().remove(removeEffect.getEffectId());
++        con.unsafe().sendPacket( removeEffect );
 +        // IvanCord end
      }
  
