@@ -1,4 +1,4 @@
-From b1b7e1c9217768a7b6e86d13682d3f73c08cd22f Mon Sep 17 00:00:00 2001
+From c0fd235d444c5332ee869ee0ac2e8f8cf0831f6e Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -17,10 +17,17 @@ index 0cccc175..b040daa4 100644
  {
  
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index f7459860..234fe5f7 100644
+index f7459860..bac6b5fb 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -224,6 +224,26 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.api.connection;
+ 
++import java.util.Collection;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.UUID;
+@@ -224,6 +225,26 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      void chat(String message);
  
@@ -47,6 +54,31 @@ index f7459860..234fe5f7 100644
      /**
       * Get the server which this player will be sent to next time the log in.
       *
+@@ -372,4 +393,24 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      * @return this player's {@link Scoreboard}
+      */
+     Scoreboard getScoreboard();
++
++    // IvanCord start - add way to apply potion effects
++    /**
++     * Adds potion effect to this player.
++     * All effect ids can be seen <a href="https://minecraft.gamepedia.com/Status_effect#Data_values">here</a>
++     *
++     * @param effectId id of the effect.
++     * @param amplifier effect amplifier
++     * @param duration effect duration
++     * @param hideParticles should particles be hided or not
++     */
++    void addPotionEffect(int effectId, int amplifier, int duration, boolean hideParticles);
++
++    /**
++     * Gets the potion effects which this player has
++     *
++     * @return potion effects
++     */
++    Collection<Integer> getCurrentPotionEffects();
++    // IvanCord end
+ }
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
 index 3b3525f0..1462f89a 100644
 --- a/log4j/src/main/resources/log4j2.xml
@@ -70,10 +102,18 @@ index 3b3525f0..1462f89a 100644
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e649678e..ab879365 100644
+index 15f7c5b5..5c9a864f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -445,6 +445,24 @@ public final class UserConnection implements ProxiedPlayer
+@@ -55,6 +55,7 @@ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.Protocol;
+ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.ClientSettings;
++import net.md_5.bungee.protocol.packet.EntityEffect;
+ import net.md_5.bungee.protocol.packet.Kick;
+ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
+@@ -445,6 +446,24 @@ public final class UserConnection implements ProxiedPlayer
          server.getCh().write( new Chat( message ) );
      }
  
@@ -98,6 +138,29 @@ index e649678e..ab879365 100644
      @Override
      public void sendMessage(String message)
      {
+@@ -739,6 +758,22 @@ public final class UserConnection implements ProxiedPlayer
+         return serverSentScoreboard;
+     }
+ 
++    // IvanCord start
++
++    @Override
++    public void addPotionEffect(int effectId, int amplifier, int duration, boolean hideParticles)
++    {
++        unsafe().sendPacket( new EntityEffect( getClientEntityId(), effectId, amplifier, duration, hideParticles ) );
++    }
++
++    @Override
++    public Collection<Integer> getCurrentPotionEffects()
++    {
++        return Collections.unmodifiableCollection( potions.values() );
++    }
++
++    // IvanCord end
++
+     // Waterfall start
+     public boolean isDisableEntityMetadataRewrite() {
+         return disableEntityMetadaRewrite;
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
 index d87d0b95..055b3bb6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java

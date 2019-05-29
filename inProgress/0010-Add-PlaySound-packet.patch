@@ -1,4 +1,4 @@
-From 8265d0e29eaba3f1ad65b98da7be95726ce5835d Mon Sep 17 00:00:00 2001
+From af0262f42d21fcdc1b0adf635994cb3dde75a3d3 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 27 May 2019 16:01:55 +0300
 Subject: [PATCH] Add PlaySound packet
@@ -111,15 +111,14 @@ index 00000000..511f6511
 +    private float volume;
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index f799ae17..23a02da0 100644
+index 28591dca..7228a227 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -403,4 +403,21 @@ public interface ProxiedPlayer extends Connection, CommandSender
-      * @return this player's {@link Scoreboard}
+@@ -423,5 +423,20 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      * @return potion effects
       */
-     Scoreboard getScoreboard();
-+
-+    // IvanCord start - add api for playing sounds
+     Collection<Integer> getCurrentPotionEffects();
++    // add api for playing sounds
 +
 +    /**
 +     * Plays sound to the specified player
@@ -134,7 +133,7 @@ index f799ae17..23a02da0 100644
 +     */
 +    void playSound(String sound, int category, int x, int y, int z, float volume, int pitch);
 +
-+    // IvanCord end
+     // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 index e4f14974..cb66c36d 100644
@@ -284,32 +283,30 @@ index 00000000..4b3c7edb
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 55bff981..d42d772d 100644
+index 6e985d36..30311a1e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -56,6 +56,7 @@ import net.md_5.bungee.protocol.Protocol;
- import net.md_5.bungee.protocol.packet.Chat;
+@@ -57,6 +57,7 @@ import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
+ import net.md_5.bungee.protocol.packet.EntityEffect;
  import net.md_5.bungee.protocol.packet.Kick;
 +import net.md_5.bungee.protocol.packet.PlaySound;
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.SetCompression;
-@@ -765,6 +766,14 @@ public final class UserConnection implements ProxiedPlayer
-         return serverSentScoreboard;
+@@ -780,6 +781,12 @@ public final class UserConnection implements ProxiedPlayer
+         return Collections.unmodifiableCollection( potions.values() );
      }
  
-+    // IvanCord start - implement playSound
++    // implement playSound
 +    @Override
 +    public void playSound(String sound, int category, int x, int y, int z, float volume, int pitch)
 +    {
 +        unsafe().sendPacket( new PlaySound( sound, category, x, y, z, pitch, volume ) );
 +    }
-+    // IvanCord end
-+
+     // IvanCord end
+ 
      // Waterfall start
-     public boolean isDisableEntityMetadataRewrite() {
-         return disableEntityMetadaRewrite;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 index 693fdc6c..4bf74b72 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
