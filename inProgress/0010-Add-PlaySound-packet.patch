@@ -1,4 +1,4 @@
-From af0262f42d21fcdc1b0adf635994cb3dde75a3d3 Mon Sep 17 00:00:00 2001
+From 5b5e6d1839c3ac66c266455373f74d5e4945e21c Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 27 May 2019 16:01:55 +0300
 Subject: [PATCH] Add PlaySound packet
@@ -50,10 +50,10 @@ index 00000000..713842ad
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
 new file mode 100644
-index 00000000..511f6511
+index 00000000..3ff06600
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,72 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -75,24 +75,28 @@ index 00000000..511f6511
 + **/
 +package com.github.mrivanplays.ivancord.api.event;
 +
-+import lombok.AllArgsConstructor;
-+import lombok.Getter;
-+import lombok.ToString;
++import lombok.AccessLevel;
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.Setter;
 +import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Cancellable;
 +import net.md_5.bungee.api.plugin.Event;
 +
 +/**
 + * Event, called when a sound is played
 + */
-+@Getter
-+@AllArgsConstructor
-+@ToString
-+public class SoundPlayedEvent extends Event
++@Data
++@EqualsAndHashCode(callSuper = false)
++public class SoundPlayedEvent extends Event implements Cancellable
 +{
++
++    private boolean cancelled;
 +
 +    /**
 +     * The player, played to
 +     */
++    @Setter(AccessLevel.NONE)
 +    private ProxiedPlayer player;
 +
 +    /**
@@ -103,12 +107,24 @@ index 00000000..511f6511
 +    /**
 +     * X, Y, Z location and pitch of the sound
 +     */
-+    private int x, y, z, pitch;
++    private int x, y, z, pitch, category;
 +
 +    /**
 +     * Sound volume
 +     */
 +    private float volume;
++
++    public SoundPlayedEvent(ProxiedPlayer player, String sound, int x, int y, int z, int category, float volume, int pitch)
++    {
++        this.player = player;
++        this.sound = sound;
++        this.x = x;
++        this.y = y;
++        this.z = z;
++        this.category = category;
++        this.volume = volume;
++        this.pitch = pitch;
++    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 index 28591dca..7228a227 100644
@@ -308,7 +324,7 @@ index 6e985d36..30311a1e 100644
  
      // Waterfall start
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 693fdc6c..4bf74b72 100644
+index 693fdc6c..c1bbb514 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -56,6 +56,7 @@ import net.md_5.bungee.protocol.packet.EntityEffect;
@@ -327,7 +343,7 @@ index 693fdc6c..4bf74b72 100644
  
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
-@@ -685,6 +687,16 @@ public class DownstreamBridge extends PacketHandler
+@@ -685,6 +687,42 @@ public class DownstreamBridge extends PacketHandler
  
      // IvanCord end
  
@@ -336,8 +352,34 @@ index 693fdc6c..4bf74b72 100644
 +    public void handle(PlaySound playSound)
 +    {
 +        SoundPlayedEvent event = new SoundPlayedEvent( con, playSound.getName(), playSound.getX(),
-+            playSound.getY(), playSound.getZ(), playSound.getPitch(), playSound.getVolume() );
-+        bungee.getPluginManager().callEvent( event );
++            playSound.getY(), playSound.getZ(), playSound.getCategory(), playSound.getVolume(), playSound.getPitch() );
++        SoundPlayedEvent called = bungee.getPluginManager().callEvent( event );
++        if ( !called.isCancelled() )
++        {
++            boolean changed = false;
++            String soundName = called.getSound();
++            int x = called.getX();
++            int y = called.getY();
++            int z = called.getZ();
++            int category = called.getCategory();
++            float volume = called.getVolume();
++            int pitch = called.getPitch();
++            if ( soundName.equalsIgnoreCase( playSound.getName() ) && x == playSound.getX() && y == playSound.getY() && z == playSound.getZ()
++                    && category == playSound.getCategory() && volume == playSound.getVolume() && pitch == playSound.getPitch() )
++            {
++                changed = true;
++            }
++            if ( changed )
++            {
++                PlaySound packet = new PlaySound( soundName, x, y, z, category, pitch, volume );
++                con.unsafe().sendPacket( packet );
++                throw CancelSendSignal.INSTANCE;
++            } else
++            {
++                con.unsafe().sendPacket( playSound );
++                throw CancelSendSignal.INSTANCE;
++            }
++        }
 +    }
 +    // IvanCord end
 +
