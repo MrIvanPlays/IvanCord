@@ -1,4 +1,4 @@
-From aa6d6f5924d53ce26899af00e8aea538245d5577 Mon Sep 17 00:00:00 2001
+From 1886c9b28f21939ba88fc585228112031f51a3d0 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -266,6 +266,25 @@ index 51d0c6cf..47fe9710 100644
      @Override
      public String toString()
      {
+diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
+index c1272da3..eda5566d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
+@@ -105,9 +105,12 @@ public class ForgeClientHandler
+ 
+     private void resetAllThePotions(UserConnection con) {
+         // Just to be sure
+-        for (Map.Entry<Integer, Integer> entry: con.getPotions().entries()) {
+-            con.unsafe().sendPacket(new EntityRemoveEffect(entry.getKey(), entry.getValue()));
++        // IvanCord start - rewrite this
++        for ( int potion : con.getPotions() )
++        {
++            con.unsafe().sendPacket( new EntityRemoveEffect( con.getClientEntityId(), potion ) );
+         }
++        // IvanCord end
+         con.getPotions().clear();
+     }
+ 
 -- 
 2.21.0.windows.1
 
