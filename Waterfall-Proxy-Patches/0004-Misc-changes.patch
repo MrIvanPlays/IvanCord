@@ -1,4 +1,4 @@
-From c0fd235d444c5332ee869ee0ac2e8f8cf0831f6e Mon Sep 17 00:00:00 2001
+From 8302a7d22878ffa0d44e40cb321253a54dd5912e Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -102,10 +102,20 @@ index 3b3525f0..1462f89a 100644
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 15f7c5b5..5c9a864f 100644
+index 15f7c5b5..539f1e03 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -55,6 +55,7 @@ import net.md_5.bungee.protocol.PacketWrapper;
+@@ -1,9 +1,7 @@
+ package net.md_5.bungee;
+ 
+ import com.google.common.base.Preconditions;
+-import com.google.common.collect.HashMultimap;
+ import com.google.common.collect.ImmutableMap;
+-import com.google.common.collect.Multimap;
+ import io.netty.bootstrap.Bootstrap;
+ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelFuture;
+@@ -55,6 +53,7 @@ import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.Protocol;
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
@@ -113,7 +123,16 @@ index 15f7c5b5..5c9a864f 100644
  import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PluginMessage;
-@@ -445,6 +446,24 @@ public final class UserConnection implements ProxiedPlayer
+@@ -129,7 +128,7 @@ public final class UserConnection implements ProxiedPlayer
+     private final Collection<UUID> sentBossBars = new HashSet<>();
+     // Waterfall start
+     @Getter
+-    private final Multimap<Integer, Integer> potions = HashMultimap.create();
++    private final Collection<Integer> potions = new HashSet<>(); // IvanCord - handle potions differently
+     // Waterfall end
+     /*========================================================================*/
+     @Getter
+@@ -445,6 +444,24 @@ public final class UserConnection implements ProxiedPlayer
          server.getCh().write( new Chat( message ) );
      }
  
@@ -138,7 +157,7 @@ index 15f7c5b5..5c9a864f 100644
      @Override
      public void sendMessage(String message)
      {
-@@ -739,6 +758,22 @@ public final class UserConnection implements ProxiedPlayer
+@@ -739,6 +756,22 @@ public final class UserConnection implements ProxiedPlayer
          return serverSentScoreboard;
      }
  
@@ -153,7 +172,7 @@ index 15f7c5b5..5c9a864f 100644
 +    @Override
 +    public Collection<Integer> getCurrentPotionEffects()
 +    {
-+        return Collections.unmodifiableCollection( potions.values() );
++        return Collections.unmodifiableCollection( potions );
 +    }
 +
 +    // IvanCord end
@@ -174,6 +193,77 @@ index d87d0b95..055b3bb6 100644
      }
  
      @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 1f8a2439..5fd608ea 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -597,22 +597,28 @@ public class DownstreamBridge extends PacketHandler
+         if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
+             throw CancelSendSignal.INSTANCE;
+         }
+-        con.getPotions().put(rewriteEntityId(entityEffect.getEntityId()), entityEffect.getEffectId());
++        // IvanCord start - rewrite this
++        con.getPotions().add(entityEffect.getEffectId());
+     }
+ 
+     @Override
+     public void handle(EntityRemoveEffect removeEffect) throws Exception
+     {
+         if (con.isDisableEntityMetadataRewrite()) return; // Waterfall
+-        con.getPotions().remove(rewriteEntityId(removeEffect.getEntityId()), removeEffect.getEffectId());
++        con.getPotions().remove(removeEffect.getEffectId());
++        // IvanCord end
+     }
+ 
++    // IvanCord start - this is not needed now
++    /*
+     private int rewriteEntityId(int entityId) {
+         if (entityId == con.getServerEntityId()) {
+             return con.getClientEntityId();
+         }
+         return entityId;
+     }
++     */
++    // IvanCord end
+     // Waterfall end
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 51d0c6cf..47fe9710 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -26,6 +26,8 @@ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.ClientSettings;
++import net.md_5.bungee.protocol.packet.EntityEffect;
++import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
+ import net.md_5.bungee.protocol.packet.KeepAlive;
+ import net.md_5.bungee.protocol.packet.PlayerListItem;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
+@@ -266,6 +268,22 @@ public class UpstreamBridge extends PacketHandler
+         }
+     }
+ 
++    // IvanCord start - handle upstream EntityEffect and EntityRemoveEffect packets
++    // They were not handled by waterfall
++    @Override
++    public void handle(EntityEffect entityEffect)
++    {
++        con.getPotions().add( entityEffect.getEffectId() );
++    }
++
++    @Override
++    public void handle(EntityRemoveEffect entityRemoveEffect)
++    {
++        con.getPotions().remove( entityRemoveEffect.getEffectId() );
++    }
++
++    // IvanCord end
++
+     @Override
+     public String toString()
+     {
 -- 
 2.21.0.windows.1
 

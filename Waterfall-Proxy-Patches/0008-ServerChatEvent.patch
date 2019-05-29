@@ -1,4 +1,4 @@
-From 25b6dde520c3e0e782499b3de02afdbacc0b6b22 Mon Sep 17 00:00:00 2001
+From 985269860731a0c15972b5e8f58e3376c9af70bb Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 28 Apr 2019 09:53:09 +0300
 Subject: [PATCH] ServerChatEvent
@@ -80,7 +80,7 @@ index 00000000..08c617ed
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1f8a2439..693fdc6c 100644
+index 5fd608ea..4f77d9e4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
@@ -108,7 +108,7 @@ index 1f8a2439..693fdc6c 100644
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
  {
-@@ -663,6 +667,24 @@ public class DownstreamBridge extends PacketHandler
+@@ -669,6 +673,24 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
