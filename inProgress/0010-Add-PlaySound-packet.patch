@@ -1,4 +1,4 @@
-From 2236820b3899ae52d0805be5b900f7b905514b5c Mon Sep 17 00:00:00 2001
+From f5b8ad788cc3c3e30af7c9e1eba670b6163ab9e4 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 27 May 2019 16:01:55 +0300
 Subject: [PATCH] Add PlaySound packet
@@ -342,7 +342,7 @@ index e41e9f13..14a349c9 100644
  
      // Waterfall start
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index a8b8ba8b..50020a67 100644
+index a8b8ba8b..2c164742 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -54,6 +54,7 @@ import net.md_5.bungee.protocol.packet.EntityEffect;
@@ -353,15 +353,16 @@ index a8b8ba8b..50020a67 100644
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
-@@ -64,6 +65,7 @@ import net.md_5.bungee.protocol.packet.SetCompression;
+@@ -64,6 +65,8 @@ import net.md_5.bungee.protocol.packet.SetCompression;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
  import net.md_5.bungee.tab.TabList;
  
 +import com.github.mrivanplays.ivancord.api.event.SoundPlayedEvent;
++
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
  {
-@@ -673,6 +675,42 @@ public class DownstreamBridge extends PacketHandler
+@@ -673,6 +676,42 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
