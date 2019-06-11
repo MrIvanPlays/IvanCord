@@ -1,4 +1,4 @@
-From 9ff21bf6d100d2b1609d4ea8d1f77af91b744cbe Mon Sep 17 00:00:00 2001
+From 632af60642923eeeac5699a332467a0d046b0dcb Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 22 Apr 2019 10:45:15 +0300
 Subject: [PATCH] Kick to lobby support
@@ -52,10 +52,10 @@ index 96bb60f5..dea499b2 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
 new file mode 100644
-index 00000000..22de7ffe
+index 00000000..93597376
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,62 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -89,18 +89,20 @@ index 00000000..22de7ffe
 +import net.md_5.bungee.api.event.ServerKickEvent;
 +import net.md_5.bungee.api.plugin.Listener;
 +import net.md_5.bungee.event.EventHandler;
++import net.md_5.bungee.event.EventPriority;
 +
 +public class ServerKickListener implements Listener
 +{
 +
-+    @EventHandler
++    @EventHandler(priority = EventPriority.HIGH)
 +    public void onKick(ServerKickEvent event)
 +    {
 +        ProxiedPlayer player = event.getPlayer();
++        ProxyServer proxy = ProxyServer.getInstance();
 +        event.setCancelled( true );
-+        List<ListenerInfo> listenerInfoList = new ArrayList<>( ProxyServer.getInstance().getConfig().getListeners() );
++        List<ListenerInfo> listenerInfoList = new ArrayList<>( proxy.getConfig().getListeners() );
 +        String serverConnectedTo = listenerInfoList.get( 0 ).getServerPriority().get( 0 );
-+        ServerInfo connect = ProxyServer.getInstance().getServerInfo( serverConnectedTo );
++        ServerInfo connect = proxy.getServerInfo( serverConnectedTo );
 +        if ( player.getServer() == null )
 +        {
 +            // outdated client found or other reason for that the player didn't connect
@@ -112,8 +114,8 @@ index 00000000..22de7ffe
 +            return;
 +        }
 +        event.setCancelServer( connect );
-+        player.sendMessage( TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "kick_to_lobby", event.getKickedFrom().getName(),
-+            BaseComponent.toLegacyText( event.getKickReasonComponent() ) ) ) );
++        String reason = BaseComponent.toLegacyText( event.getKickReasonComponent() );
++        player.sendMessage( proxy.getTranslation( "kick_to_lobby", event.getKickedFrom().getName(), reason ) );
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
@@ -143,14 +145,14 @@ index 6d5f426d..3d0005e9 100644
          {
              if ( EncryptionUtil.nativeFactory.load() )
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index dfb58c12..59c85d80 100644
+index dfb58c12..8a3d2baf 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
 @@ -24,3 +24,4 @@ name_too_long=Cannot have username longer than 16 characters
  name_invalid=Username contains invalid characters.
  ping_cannot_connect=\u00a7c[Bungee] Can't connect to server.
  offline_mode_player=Not authenticated with Minecraft.net
-+kick_to_lobby=You were kicked from server {0} with reason '{1}'
++kick_to_lobby=You were kicked from server '{0}' with reason '{1}'
 -- 
 2.21.0.windows.1
 

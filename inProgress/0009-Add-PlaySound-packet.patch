@@ -1,6 +1,6 @@
-From 0d6176a55feca72915edf2dcd39e337ac2baf2d9 Mon Sep 17 00:00:00 2001
+From d0cdb1607d85db58c1824191951d3770b7ff4287 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
-Date: Mon, 27 May 2019 16:01:55 +0300
+Date: Tue, 11 Jun 2019 19:17:33 +0300
 Subject: [PATCH] Add PlaySound packet
 
 
@@ -50,10 +50,10 @@ index 00000000..713842ad
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
 new file mode 100644
-index 00000000..bd5a67c8
+index 00000000..edc335bd
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,69 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -83,9 +83,6 @@ index 00000000..bd5a67c8
 +import net.md_5.bungee.api.plugin.Cancellable;
 +import net.md_5.bungee.api.plugin.Event;
 +
-+/**
-+ * Event, called when a sound is played
-+ */
 +@Data
 +@EqualsAndHashCode(callSuper = false)
 +public class SoundPlayedEvent extends Event implements Cancellable
@@ -105,12 +102,12 @@ index 00000000..bd5a67c8
 +    private String sound;
 +
 +    /**
-+     * X, Y, Z location and pitch of the sound
++     * X, Y, Z location and category of the sound
 +     */
 +    private int x, y, z, category;
 +
 +    /**
-+     * Sound volume
++     * Sound volume and pitch
 +     */
 +    private float volume, pitch;
 +
@@ -127,14 +124,15 @@ index 00000000..bd5a67c8
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index c6f687a6..f2ef21ac 100644
+index 5e7b51f8..a44202a2 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -425,5 +425,20 @@ public interface ProxiedPlayer extends Connection, CommandSender
-      * @return potion effects
+@@ -386,4 +386,21 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
-     Collection<Integer> getCurrentPotionEffects();
-+    // add api for playing sounds
+     @Deprecated // IvanCord
+     Scoreboard getScoreboard();
++
++    // IvanCord start - add api for playing sounds
 +
 +    /**
 +     * Plays sound to the specified player
@@ -149,7 +147,7 @@ index c6f687a6..f2ef21ac 100644
 +     */
 +    void playSound(String sound, int category, int x, int y, int z, float volume, float pitch);
 +
-     // IvanCord end
++    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 index e4f14974..cb66c36d 100644
@@ -175,7 +173,7 @@ index e4f14974..cb66c36d 100644
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index e830aa15..d57d8b1b 100644
+index e830aa15..892b18a1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -28,6 +28,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
@@ -192,12 +190,12 @@ index e830aa15..d57d8b1b 100644
              );
 +            // IvanCord start - play sound packet
 +            TO_CLIENT.registerPacket(
-+                   PlaySound.class,
-+                   PlaySound::new,
-+                   map( ProtocolConstants.MINECRAFT_1_8, 0x29 ),
-+                   map( ProtocolConstants.MINECRAFT_1_9, 0x19 ),
-+                   map( ProtocolConstants.MINECRAFT_1_13, 0x1A ),
-+                   map( ProtocolConstants.MINECRAFT_1_14, 0x19 )
++                    PlaySound.class,
++                    PlaySound::new,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x29 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x19 ),
++                    map( ProtocolConstants.MINECRAFT_1_13, 0x1A ),
++                    map( ProtocolConstants.MINECRAFT_1_14, 0x19 )
 +            );
 +            // IvanCord end
          }
@@ -205,10 +203,10 @@ index e830aa15..d57d8b1b 100644
      // 1
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
 new file mode 100644
-index 00000000..97c88d0c
+index 00000000..5847c6f6
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
-@@ -0,0 +1,107 @@
+@@ -0,0 +1,132 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -289,6 +287,31 @@ index 00000000..97c88d0c
 +            if ( floatString.contains( "." ) )
 +            {
 +                String probablyInteger = floatString.substring( 0, floatString.indexOf( "." ) );
++                if ( probablyInteger.contains( "f" ) )
++                {
++                    probablyInteger = probablyInteger.replace( "f", "" );
++                }
++                try
++                {
++                    int parsed = Integer.parseInt( probablyInteger );
++                    if ( parsed == 0 )
++                    {
++                        buf.writeByte( 1 );
++                    } else
++                    {
++                        buf.writeByte( parsed );
++                    }
++                } catch ( NumberFormatException e )
++                {
++                    buf.writeByte( 1 );
++                }
++            } else
++            {
++                String probablyInteger = new String( floatString.getBytes() );
++                if ( probablyInteger.contains( "f" ) )
++                {
++                    probablyInteger = probablyInteger.replace( "f", "" );
++                }
 +                try
 +                {
 +                    int parsed = Integer.parseInt( probablyInteger );
@@ -317,94 +340,61 @@ index 00000000..97c88d0c
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 4afa8eb3..0b1b61e3 100644
+index 8bc3b17a..adf1d87b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -55,6 +55,7 @@ import net.md_5.bungee.protocol.packet.Chat;
+@@ -58,6 +58,7 @@ import net.md_5.bungee.protocol.Protocol;
+ import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
- import net.md_5.bungee.protocol.packet.EntityEffect;
  import net.md_5.bungee.protocol.packet.Kick;
 +import net.md_5.bungee.protocol.packet.PlaySound;
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.SetCompression;
-@@ -779,6 +780,12 @@ public final class UserConnection implements ProxiedPlayer
-         return Collections.unmodifiableCollection( potions );
-     }
- 
-+    // implement playSound
-+    @Override
-+    public void playSound(String sound, int category, int x, int y, int z, float volume, float pitch)
-+    {
-+        unsafe().sendPacket( new PlaySound( sound, x, y, z, category, volume, pitch ) );
-+    }
-     // IvanCord end
- 
-     // Waterfall start
-diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 0ee1baeb..7939774a 100644
---- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-+++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -57,6 +57,7 @@ import net.md_5.bungee.protocol.packet.EntityEffect;
- import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
- import net.md_5.bungee.protocol.packet.KeepAlive;
- import net.md_5.bungee.protocol.packet.Kick;
-+import net.md_5.bungee.protocol.packet.PlaySound;
- import net.md_5.bungee.protocol.packet.PlayerListItem;
- import net.md_5.bungee.protocol.packet.PluginMessage;
- import net.md_5.bungee.protocol.packet.Respawn;
-@@ -78,6 +79,8 @@ import net.md_5.bungee.protocol.packet.SetCompression;
- import net.md_5.bungee.protocol.packet.TabCompleteResponse;
- import net.md_5.bungee.tab.TabList;
+@@ -66,6 +67,8 @@ import net.md_5.bungee.tab.TabList;
+ import net.md_5.bungee.util.CaseInsensitiveSet;
+ import net.md_5.bungee.util.ChatComponentTransformer;
  
 +import com.github.mrivanplays.ivancord.api.event.SoundPlayedEvent;
 +
  @RequiredArgsConstructor
- public class DownstreamBridge extends PacketHandler
+ public final class UserConnection implements ProxiedPlayer
  {
-@@ -691,6 +694,42 @@ public class DownstreamBridge extends PacketHandler
-         }
+@@ -758,6 +761,34 @@ public final class UserConnection implements ProxiedPlayer
+         return serverSentScoreboard;
      }
  
-+    // IvanCord start - handle SoundPlayedEvent
++    // IvanCord start - implement playSound
 +    @Override
-+    public void handle(PlaySound playSound)
++    public void playSound(String sound, int category, int x, int y, int z, float volume, float pitch)
 +    {
-+        SoundPlayedEvent event = new SoundPlayedEvent( con, playSound.getName(), playSound.getX(),
-+            playSound.getY(), playSound.getZ(), playSound.getCategory(), playSound.getVolume(), playSound.getPitch() );
++        PlaySound current = new PlaySound( sound, x, y, z, category, volume, pitch );
++        SoundPlayedEvent event = new SoundPlayedEvent( this, sound, x, y, z, category, volume, pitch );
 +        SoundPlayedEvent called = bungee.getPluginManager().callEvent( event );
 +        if ( !called.isCancelled() )
 +        {
 +            boolean changed = true;
-+            String soundName = called.getSound();
-+            int x = called.getX();
-+            int y = called.getY();
-+            int z = called.getZ();
-+            int category = called.getCategory();
-+            float volume = called.getVolume();
-+            float pitch = called.getPitch();
-+            if ( soundName.equalsIgnoreCase( playSound.getName() ) && x == playSound.getX() && y == playSound.getY() && z == playSound.getZ()
-+                    && category == playSound.getCategory() && volume == playSound.getVolume() && pitch == playSound.getPitch() )
++            if ( called.getSound().equalsIgnoreCase( sound ) && called.getCategory() == category && called.getX() == x && called.getY() == y
++                    && called.getZ() == z && called.getVolume() == volume && called.getPitch() == pitch )
 +            {
 +                changed = false;
 +            }
 +            if ( changed )
 +            {
-+                PlaySound packet = new PlaySound( soundName, x, y, z, category, pitch, volume );
-+                con.unsafe().sendPacket( packet );
-+                throw CancelSendSignal.INSTANCE;
++                PlaySound newPacket = new PlaySound( called.getSound(),called.getX(), called.getY(), called.getZ(),
++                        called.getCategory(), called.getVolume(), called.getPitch() );
++                unsafe().sendPacket( newPacket );
 +            } else
 +            {
-+                con.unsafe().sendPacket( playSound );
-+                throw CancelSendSignal.INSTANCE;
++                unsafe().sendPacket( current );
 +            }
 +        }
 +    }
 +    // IvanCord end
 +
-     @Override
-     public String toString()
-     {
+     // IvanCord start - comment this. Not used anywhere, so...
+     /*
+     // Waterfall start
 -- 
 2.21.0.windows.1
 
