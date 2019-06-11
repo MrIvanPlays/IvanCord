@@ -1,14 +1,227 @@
-From 58e124e9f24435a710b396ea58806647f74a4deb Mon Sep 17 00:00:00 2001
+From 03dbd82d822b0be906bf38c6161e633ca68bbac3 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 28 Apr 2019 09:53:09 +0300
 Subject: [PATCH] Remove entity rewrite
 
-This patch gets rid of the entity rewrite.
-Suggesting to NOT change the disable_entity_metadata_rewrite
-option into waterfall.yml. If you change it back to false, this will
-force the proxy to send packets which are useless, that can cause
-memory leaks or more cpu usage
+This patch gets rid of the entity rewrite, ignoring the disable entity
+metadata rewrite thing in Waterfall. It just gets rid of it.
+All score and team packets are not handled by the proxy in no way. They
+dont either register!
 
+diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+index 28591dca..c6f687a6 100644
+--- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
++++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+@@ -402,7 +402,9 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      * Get the {@link Scoreboard} that belongs to this player.
+      *
+      * @return this player's {@link Scoreboard}
++     * @deprecated not handled anymore
+      */
++    @Deprecated // IvanCord
+     Scoreboard getScoreboard();
+ 
+     // IvanCord start - add way to apply potion effects
+diff --git a/api/src/main/java/net/md_5/bungee/api/score/Objective.java b/api/src/main/java/net/md_5/bungee/api/score/Objective.java
+index 0dd25646..1e77f861 100644
+--- a/api/src/main/java/net/md_5/bungee/api/score/Objective.java
++++ b/api/src/main/java/net/md_5/bungee/api/score/Objective.java
+@@ -5,9 +5,12 @@ import lombok.Data;
+ 
+ /**
+  * Represents an objective entry.
++ *
++ * @deprecated not handled anymore
+  */
+ @Data
+ @AllArgsConstructor
++@Deprecated // IvanCord
+ public class Objective
+ {
+ 
+diff --git a/api/src/main/java/net/md_5/bungee/api/score/Position.java b/api/src/main/java/net/md_5/bungee/api/score/Position.java
+index c3da93b2..2f6505d9 100644
+--- a/api/src/main/java/net/md_5/bungee/api/score/Position.java
++++ b/api/src/main/java/net/md_5/bungee/api/score/Position.java
+@@ -2,7 +2,10 @@ package net.md_5.bungee.api.score;
+ 
+ /**
+  * Represents locations for a scoreboard to be displayed.
++ *
++ * @deprecated not handled anymore
+  */
++@Deprecated // IvanCord
+ public enum Position
+ {
+ 
+diff --git a/api/src/main/java/net/md_5/bungee/api/score/Score.java b/api/src/main/java/net/md_5/bungee/api/score/Score.java
+index cb906ddd..3020fc74 100644
+--- a/api/src/main/java/net/md_5/bungee/api/score/Score.java
++++ b/api/src/main/java/net/md_5/bungee/api/score/Score.java
+@@ -4,8 +4,11 @@ import lombok.Data;
+ 
+ /**
+  * Represents a scoreboard score entry.
++ *
++ * @deprecated not handled anymore
+  */
+ @Data
++@Deprecated // IvanCord
+ public class Score
+ {
+ 
+diff --git a/api/src/main/java/net/md_5/bungee/api/score/Scoreboard.java b/api/src/main/java/net/md_5/bungee/api/score/Scoreboard.java
+index c10c7b11..eb1e8a88 100644
+--- a/api/src/main/java/net/md_5/bungee/api/score/Scoreboard.java
++++ b/api/src/main/java/net/md_5/bungee/api/score/Scoreboard.java
+@@ -8,8 +8,12 @@ import java.util.Map;
+ import lombok.Data;
+ import lombok.NoArgsConstructor;
+ 
++/**
++ * @deprecated not handled anymore
++ */
+ @Data
+ @NoArgsConstructor
++@Deprecated // IvanCord
+ public class Scoreboard
+ {
+ 
+diff --git a/api/src/main/java/net/md_5/bungee/api/score/Team.java b/api/src/main/java/net/md_5/bungee/api/score/Team.java
+index 25526320..bdff0641 100644
+--- a/api/src/main/java/net/md_5/bungee/api/score/Team.java
++++ b/api/src/main/java/net/md_5/bungee/api/score/Team.java
+@@ -8,7 +8,11 @@ import java.util.Set;
+ 
+ import io.github.waterfallmc.waterfall.utils.LowMemorySet;
+ 
++/**
++ * @deprecated not handled anymore
++ */
+ @Data
++@Deprecated // IvanCord
+ public class Team
+ {
+ 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 87093807..652e4ca2 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -31,15 +31,20 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
+ import net.md_5.bungee.protocol.packet.PlayerListItem;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.protocol.packet.Respawn;
++// IvanCord - comment these
++/*
+ import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
+ import net.md_5.bungee.protocol.packet.ScoreboardObjective;
+ import net.md_5.bungee.protocol.packet.ScoreboardScore;
++ */
+ import net.md_5.bungee.protocol.packet.SetCompression;
+ import net.md_5.bungee.protocol.packet.StatusRequest;
+ import net.md_5.bungee.protocol.packet.StatusResponse;
+ import net.md_5.bungee.protocol.packet.TabCompleteRequest;
+ import net.md_5.bungee.protocol.packet.TabCompleteResponse;
++/* IvanCord
+ import net.md_5.bungee.protocol.packet.Team;
++ */
+ import net.md_5.bungee.protocol.packet.Title;
+ import net.md_5.bungee.protocol.packet.ViewDistance;
+ 
+@@ -129,6 +134,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x0E ),
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x10 )
+             );
++            // IvanCord start - remove these from handling
++            /*
+             TO_CLIENT.registerPacket(
+                     ScoreboardObjective.class,
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x3B ),
+@@ -165,6 +172,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x47 ),
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x4B )
+             );
++             */
++            // IvanCord end
+             TO_CLIENT.registerPacket(
+                     PluginMessage.class,
+                     map( ProtocolConstants.MINECRAFT_1_8, 0x3F ),
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
+index b8f30276..578095d5 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
+@@ -8,10 +8,14 @@ import lombok.NoArgsConstructor;
+ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ 
++/**
++ * @deprecated not handled anymore
++ */
+ @Data
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
++@Deprecated // IvanCord
+ public class ScoreboardDisplay extends DefinedPacket
+ {
+ 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
+index 3c7905d5..6fa90c03 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
+@@ -10,10 +10,14 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
++/**
++ * @deprecated not handled anymore
++ */
+ @Data
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
++@Deprecated // IvanCord
+ public class ScoreboardObjective extends DefinedPacket
+ {
+ 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
+index 0b27fc86..2e0139ba 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
+@@ -9,10 +9,14 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
++/**
++ * @deprecated not handled anymore
++ */
+ @Data
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
++@Deprecated // IvanCord
+ public class ScoreboardScore extends DefinedPacket
+ {
+ 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
+index 85d386c0..2bfbcb3f 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
+@@ -9,10 +9,14 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ 
++/**
++ * @deprecated not handled anymore
++ */
+ @Data
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
++@Deprecated // IvanCord
+ public class Team extends DefinedPacket
+ {
+ 
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 index f316810b..a5ec787c 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
@@ -22,11 +235,110 @@ index f316810b..a5ec787c 100644
  
      @Override
      public void load() {
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 1375d1e2..1f9f26bc 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -259,6 +259,8 @@ public class ServerConnector extends PacketHandler
+             user.getServer().setObsolete( true );
+             user.getTabListHandler().onServerChange();
+ 
++            // IvanCord start - remove this from handling
++            /*
+             Scoreboard serverScoreboard = user.getServerSentScoreboard();
+             if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
+             for ( Objective objective : serverScoreboard.getObjectives() )
+@@ -275,6 +277,8 @@ public class ServerConnector extends PacketHandler
+             }
+             } // Waterfall
+             serverScoreboard.clear();
++             */
++            // IvanCord end
+ 
+             for ( UUID bossbar : user.getSentBossBars() )
+             {
+@@ -287,14 +291,18 @@ public class ServerConnector extends PacketHandler
+             user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
+ 
+             user.setDimensionChange( true );
++            // IvanCord start - get rid of this
++            /*
+             if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
+             {
+                 user.unsafe().sendPacket( new Respawn( ( login.getDimension() >= 0 ? -1 : 0 ), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
+             }
++             */
++            // IvanCord end
+ 
+             user.setServerEntityId( login.getEntityId() );
+             // Waterfall start
+-            if ( user.isDisableEntityMetadataRewrite() ) {
++            // if ( user.isDisableEntityMetadataRewrite() ) { // IvanCord - comment
+                 // Ensure that we maintain consistency
+                 user.setClientEntityId( login.getEntityId() );
+ 
+@@ -306,7 +314,7 @@ public class ServerConnector extends PacketHandler
+                 if (user.getDimension() == login.getDimension()) {
+                     user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getDifficulty(), login.getGameMode(), login.getLevelType()));
+                 }
+-            }
++            // } // IvanCord - comment
+             // Waterfall end
+             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
+             if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index e41e9f13..4afa8eb3 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -759,6 +759,7 @@ public final class UserConnection implements ProxiedPlayer
+     }
+ 
+     @Override
++    @Deprecated // IvanCord
+     public Scoreboard getScoreboard()
+     {
+         return serverSentScoreboard;
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 4739050e..a8b8ba8b 100644
+index 4739050e..0ee1baeb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -136,7 +136,9 @@ public class DownstreamBridge extends PacketHandler
+@@ -37,11 +37,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
+ import net.md_5.bungee.api.event.ServerKickEvent;
+ import net.md_5.bungee.api.event.TabCompleteResponseEvent;
+ import net.md_5.bungee.api.plugin.Command;
++// IvanCord - comment not needed imports
++/*
+ import net.md_5.bungee.api.score.Objective;
+ import net.md_5.bungee.api.score.Position;
+ import net.md_5.bungee.api.score.Score;
+ import net.md_5.bungee.api.score.Scoreboard;
+ import net.md_5.bungee.api.score.Team;
++ */
+ import net.md_5.bungee.chat.ComponentSerializer;
+ import net.md_5.bungee.netty.ChannelWrapper;
+ import net.md_5.bungee.netty.PacketHandler;
+@@ -57,9 +60,20 @@ import net.md_5.bungee.protocol.packet.Kick;
+ import net.md_5.bungee.protocol.packet.PlayerListItem;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.protocol.packet.Respawn;
++// IvanCord - comment not needed imports
++/*
+ import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
+ import net.md_5.bungee.protocol.packet.ScoreboardObjective;
+ import net.md_5.bungee.protocol.packet.ScoreboardScore;
++ */
++import net.md_5.bungee.netty.ChannelWrapper;
++import net.md_5.bungee.netty.PacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.PacketWrapper;
++import net.md_5.bungee.protocol.ProtocolConstants;
++import net.md_5.bungee.protocol.packet.KeepAlive;
++import net.md_5.bungee.protocol.packet.PlayerListItem;
++import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.protocol.packet.SetCompression;
+ import net.md_5.bungee.protocol.packet.TabCompleteResponse;
+ import net.md_5.bungee.tab.TabList;
+@@ -136,7 +150,9 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PacketWrapper packet) throws Exception
      {
@@ -36,6 +348,24 @@ index 4739050e..a8b8ba8b 100644
          con.sendPacket( packet );
      }
  
+@@ -154,6 +170,8 @@ public class DownstreamBridge extends PacketHandler
+         throw CancelSendSignal.INSTANCE; // Always throw because of profile rewriting
+     }
+ 
++    // IvanCord start - remove these from handling
++    /*
+     @Override
+     public void handle(ScoreboardObjective objective) throws Exception
+     {
+@@ -255,6 +273,8 @@ public class DownstreamBridge extends PacketHandler
+             }
+         }
+     }
++     */
++    // IvanCord end
+ 
+     @Override
+     public void handle(PluginMessage pluginMessage) throws Exception
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 index 47fe9710..2f880268 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java

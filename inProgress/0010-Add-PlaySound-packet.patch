@@ -1,4 +1,4 @@
-From f5b8ad788cc3c3e30af7c9e1eba670b6163ab9e4 Mon Sep 17 00:00:00 2001
+From 0d6176a55feca72915edf2dcd39e337ac2baf2d9 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 27 May 2019 16:01:55 +0300
 Subject: [PATCH] Add PlaySound packet
@@ -127,10 +127,10 @@ index 00000000..bd5a67c8
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 28591dca..10650187 100644
+index c6f687a6..f2ef21ac 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -423,5 +423,20 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -425,5 +425,20 @@ public interface ProxiedPlayer extends Connection, CommandSender
       * @return potion effects
       */
      Collection<Integer> getCurrentPotionEffects();
@@ -175,7 +175,7 @@ index e4f14974..cb66c36d 100644
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 450b3cf4..47ba0d66 100644
+index e830aa15..d57d8b1b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -28,6 +28,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
@@ -186,7 +186,7 @@ index 450b3cf4..47ba0d66 100644
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PluginMessage;
-@@ -283,6 +284,16 @@ public enum Protocol
+@@ -292,6 +293,16 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x0A ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x0B )
              );
@@ -317,7 +317,7 @@ index 00000000..97c88d0c
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e41e9f13..14a349c9 100644
+index 4afa8eb3..0b1b61e3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -55,6 +55,7 @@ import net.md_5.bungee.protocol.packet.Chat;
@@ -328,7 +328,7 @@ index e41e9f13..14a349c9 100644
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.SetCompression;
-@@ -778,6 +779,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -779,6 +780,12 @@ public final class UserConnection implements ProxiedPlayer
          return Collections.unmodifiableCollection( potions );
      }
  
@@ -342,10 +342,10 @@ index e41e9f13..14a349c9 100644
  
      // Waterfall start
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index a8b8ba8b..2c164742 100644
+index 0ee1baeb..7939774a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -54,6 +54,7 @@ import net.md_5.bungee.protocol.packet.EntityEffect;
+@@ -57,6 +57,7 @@ import net.md_5.bungee.protocol.packet.EntityEffect;
  import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
@@ -353,7 +353,7 @@ index a8b8ba8b..2c164742 100644
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
-@@ -64,6 +65,8 @@ import net.md_5.bungee.protocol.packet.SetCompression;
+@@ -78,6 +79,8 @@ import net.md_5.bungee.protocol.packet.SetCompression;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
  import net.md_5.bungee.tab.TabList;
  
@@ -362,7 +362,7 @@ index a8b8ba8b..2c164742 100644
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
  {
-@@ -673,6 +676,42 @@ public class DownstreamBridge extends PacketHandler
+@@ -691,6 +694,42 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
