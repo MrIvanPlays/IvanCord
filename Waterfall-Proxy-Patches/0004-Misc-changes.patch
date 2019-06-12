@@ -1,4 +1,4 @@
-From ef5cd1270ea81b09b120fa5a9f4e28f212ebf7ac Mon Sep 17 00:00:00 2001
+From c79b9cfaed58e5568f79dc6d4b0725bdda2b2e4d Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -61,6 +61,24 @@ index 3b3525f0..1462f89a 100644
                      <!-- Log root and BungeeCord loggers without prefix -->
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 1375d1e2..925150d6 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -282,6 +282,13 @@ public class ServerConnector extends PacketHandler
+                 user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.BossBar( bossbar, 1 ) );
+             }
+             user.getSentBossBars().clear();
++            // IvanCord start
++            // Resets the tab header and footer when server changing.
++            // The server being connected can not have a default tablist
++            // plugin so it will be displayed the one from the previous
++            // server. I dont want this thats why i make it like that
++            user.resetTabHeader();
++            // IvanCord end
+ 
+             // Update debug info from login packet
+             user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 index 15f7c5b5..d641f8e4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java

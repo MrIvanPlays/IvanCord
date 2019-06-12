@@ -1,4 +1,4 @@
-From 79cf002c9b178aa81e83592f6ed5f444bc021431 Mon Sep 17 00:00:00 2001
+From 25096643c88f6b7cc360c98835fea67db29185be Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 28 Apr 2019 09:53:09 +0300
 Subject: [PATCH] Remove entity rewrite
@@ -235,7 +235,7 @@ index f316810b..a5ec787c 100644
      @Override
      public void load() {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 1375d1e2..6c498114 100644
+index 925150d6..241855f6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -226,10 +226,12 @@ public class ServerConnector extends PacketHandler
@@ -269,7 +269,7 @@ index 1375d1e2..6c498114 100644
  
              for ( UUID bossbar : user.getSentBossBars() )
              {
-@@ -287,14 +293,18 @@ public class ServerConnector extends PacketHandler
+@@ -294,14 +300,18 @@ public class ServerConnector extends PacketHandler
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
  
              user.setDimensionChange( true );
@@ -289,7 +289,7 @@ index 1375d1e2..6c498114 100644
                  // Ensure that we maintain consistency
                  user.setClientEntityId( login.getEntityId() );
  
-@@ -306,7 +316,7 @@ public class ServerConnector extends PacketHandler
+@@ -313,7 +323,7 @@ public class ServerConnector extends PacketHandler
                  if (user.getDimension() == login.getDimension()) {
                      user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getDifficulty(), login.getGameMode(), login.getLevelType()));
                  }
