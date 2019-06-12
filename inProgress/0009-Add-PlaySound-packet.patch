@@ -1,4 +1,4 @@
-From c937957242eaca6d8be36a7e7267637f4894db3f Mon Sep 17 00:00:00 2001
+From bfd9a1d2a957eed471bf7b4239bc8da2884a6f54 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 11 Jun 2019 19:17:33 +0300
 Subject: [PATCH] Add PlaySound packet
@@ -47,81 +47,6 @@ index 00000000..713842ad
 +    public static final int PLAYERS = 7;
 +    public static final int AMBIENT = 8;
 +    public static final int VOICE = 9;
-+}
-diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
-new file mode 100644
-index 00000000..edc335bd
---- /dev/null
-+++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
-@@ -0,0 +1,69 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
-+package com.github.mrivanplays.ivancord.api.event;
-+
-+import lombok.AccessLevel;
-+import lombok.Data;
-+import lombok.EqualsAndHashCode;
-+import lombok.Setter;
-+import net.md_5.bungee.api.connection.ProxiedPlayer;
-+import net.md_5.bungee.api.plugin.Cancellable;
-+import net.md_5.bungee.api.plugin.Event;
-+
-+@Data
-+@EqualsAndHashCode(callSuper = false)
-+public class SoundPlayedEvent extends Event implements Cancellable
-+{
-+
-+    private boolean cancelled;
-+
-+    /**
-+     * The player, played to
-+     */
-+    @Setter(AccessLevel.NONE)
-+    private ProxiedPlayer player;
-+
-+    /**
-+     * The sound played
-+     */
-+    private String sound;
-+
-+    /**
-+     * X, Y, Z location and category of the sound
-+     */
-+    private int x, y, z, category;
-+
-+    /**
-+     * Sound volume and pitch
-+     */
-+    private float volume, pitch;
-+
-+    public SoundPlayedEvent(ProxiedPlayer player, String sound, int x, int y, int z, int category, float volume, float pitch)
-+    {
-+        this.player = player;
-+        this.sound = sound;
-+        this.x = x;
-+        this.y = y;
-+        this.z = z;
-+        this.category = category;
-+        this.volume = volume;
-+        this.pitch = pitch;
-+    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 index 5e7b51f8..a44202a2 100644
@@ -203,7 +128,7 @@ index e830aa15..892b18a1 100644
      // 1
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
 new file mode 100644
-index 00000000..5847c6f6
+index 00000000..9c7f5bcb
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
 @@ -0,0 +1,132 @@
@@ -228,7 +153,10 @@ index 00000000..5847c6f6
 + **/
 +package net.md_5.bungee.protocol.packet;
 +
++import java.util.function.BiFunction;
++
 +import io.netty.buffer.ByteBuf;
++import lombok.AccessLevel;
 +import lombok.AllArgsConstructor;
 +import lombok.Data;
 +import lombok.EqualsAndHashCode;
@@ -238,20 +166,60 @@ index 00000000..5847c6f6
 +import net.md_5.bungee.protocol.ProtocolConstants;
 +
 +@NoArgsConstructor
-+@AllArgsConstructor
++@AllArgsConstructor(access = AccessLevel.PRIVATE)
 +@Data
 +@EqualsAndHashCode(callSuper = false)
 +public class PlaySound extends DefinedPacket
 +{
 +
++    private final BiFunction<String, Integer, String> NAME_FUNCTION = (s, protocolVersion) ->
++    {
++        String returned;
++        if ( protocolVersion > ProtocolConstants.MINECRAFT_1_12_2 )
++        {
++            if ( !s.startsWith( "minecraft:" ) )
++            {
++                returned = "minecraft:" + s;
++            } else
++            {
++                returned = s;
++            }
++        } else
++        {
++            if ( s.startsWith( "minecraft:" ) )
++            {
++                returned = s.substring( s.indexOf( ':' ) + 1 );
++            } else
++            {
++                returned = s;
++            }
++        }
++        return returned;
++    };
++
++    public static PlaySound create1_8(String name, int x, int y, int z, float volume, int legacyPitch)
++    {
++        return new PlaySound( name, x * 8, y * 8, z * 8, 0, legacyPitch, volume, 0 );
++    }
++
++    public static PlaySound create1_9(String name, int category, int x, int y, int z, float volume, int legacyPitch)
++    {
++        return new PlaySound( name, x * 8, y * 8, z * 8, category, legacyPitch, volume, 0 );
++    }
++
++    public static PlaySound create(String name, int category, int x, int y, int z, float volume, float pitch)
++    {
++        return new PlaySound( name, x * 8, y * 8, z * 8, category, 0, volume, pitch );
++    }
++
 +    private String name;
-+    private int x, y, z, category;
++    private int x, y, z, category, legacyPitch;
 +    private float volume, pitch;
 +
 +    @Override
 +    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
 +    {
-+        name = readString( buf );
++        name = NAME_FUNCTION.apply( readString( buf ), protocolVersion );
 +        if ( protocolVersion > ProtocolConstants.MINECRAFT_1_8 )
 +        {
 +            category = readVarInt( buf );
@@ -262,7 +230,7 @@ index 00000000..5847c6f6
 +        volume = buf.readFloat();
 +        if ( protocolVersion <= ProtocolConstants.MINECRAFT_1_9_4 )
 +        {
-+            pitch = buf.readUnsignedByte();
++            legacyPitch = buf.readUnsignedByte();
 +        } else
 +        {
 +            pitch = buf.readFloat();
@@ -272,7 +240,7 @@ index 00000000..5847c6f6
 +    @Override
 +    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
 +    {
-+        writeString( name, buf );
++        writeString( NAME_FUNCTION.apply( name, protocolVersion ), buf );
 +        if ( protocolVersion > ProtocolConstants.MINECRAFT_1_8 )
 +        {
 +            writeVarInt( category, buf );
@@ -283,50 +251,7 @@ index 00000000..5847c6f6
 +        buf.writeFloat( volume );
 +        if ( protocolVersion <= ProtocolConstants.MINECRAFT_1_9_4 )
 +        {
-+            String floatString = Float.toString( pitch );
-+            if ( floatString.contains( "." ) )
-+            {
-+                String probablyInteger = floatString.substring( 0, floatString.indexOf( "." ) );
-+                if ( probablyInteger.contains( "f" ) )
-+                {
-+                    probablyInteger = probablyInteger.replace( "f", "" );
-+                }
-+                try
-+                {
-+                    int parsed = Integer.parseInt( probablyInteger );
-+                    if ( parsed == 0 )
-+                    {
-+                        buf.writeByte( 1 );
-+                    } else
-+                    {
-+                        buf.writeByte( parsed );
-+                    }
-+                } catch ( NumberFormatException e )
-+                {
-+                    buf.writeByte( 1 );
-+                }
-+            } else
-+            {
-+                String probablyInteger = new String( floatString.getBytes() );
-+                if ( probablyInteger.contains( "f" ) )
-+                {
-+                    probablyInteger = probablyInteger.replace( "f", "" );
-+                }
-+                try
-+                {
-+                    int parsed = Integer.parseInt( probablyInteger );
-+                    if ( parsed == 0 )
-+                    {
-+                        buf.writeByte( 1 );
-+                    } else
-+                    {
-+                        buf.writeByte( parsed );
-+                    }
-+                } catch ( NumberFormatException e )
-+                {
-+                    buf.writeByte( 1 );
-+                }
-+            }
++            buf.writeByte( legacyPitch );
 +        } else
 +        {
 +            buf.writeFloat( pitch );
@@ -340,10 +265,14 @@ index 00000000..5847c6f6
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 8bc3b17a..adf1d87b 100644
+index 8bc3b17a..d847e124 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -58,6 +58,7 @@ import net.md_5.bungee.protocol.Protocol;
+@@ -55,9 +55,11 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
+ import net.md_5.bungee.protocol.MinecraftEncoder;
+ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.Protocol;
++import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Kick;
@@ -351,16 +280,7 @@ index 8bc3b17a..adf1d87b 100644
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.SetCompression;
-@@ -66,6 +67,8 @@ import net.md_5.bungee.tab.TabList;
- import net.md_5.bungee.util.CaseInsensitiveSet;
- import net.md_5.bungee.util.ChatComponentTransformer;
- 
-+import com.github.mrivanplays.ivancord.api.event.SoundPlayedEvent;
-+
- @RequiredArgsConstructor
- public final class UserConnection implements ProxiedPlayer
- {
-@@ -758,6 +761,34 @@ public final class UserConnection implements ProxiedPlayer
+@@ -758,6 +760,26 @@ public final class UserConnection implements ProxiedPlayer
          return serverSentScoreboard;
      }
  
@@ -368,26 +288,18 @@ index 8bc3b17a..adf1d87b 100644
 +    @Override
 +    public void playSound(String sound, int category, int x, int y, int z, float volume, float pitch)
 +    {
-+        PlaySound current = new PlaySound( sound, x, y, z, category, volume, pitch );
-+        SoundPlayedEvent event = new SoundPlayedEvent( this, sound, x, y, z, category, volume, pitch );
-+        SoundPlayedEvent called = bungee.getPluginManager().callEvent( event );
-+        if ( !called.isCancelled() )
++        int protocolVersion = getPendingConnection().getVersion();
++        if ( protocolVersion < ProtocolConstants.MINECRAFT_1_9 )
 +        {
-+            boolean changed = true;
-+            if ( called.getSound().equalsIgnoreCase( sound ) && called.getCategory() == category && called.getX() == x && called.getY() == y
-+                    && called.getZ() == z && called.getVolume() == volume && called.getPitch() == pitch )
-+            {
-+                changed = false;
-+            }
-+            if ( changed )
-+            {
-+                PlaySound newPacket = new PlaySound( called.getSound(),called.getX(), called.getY(), called.getZ(),
-+                        called.getCategory(), called.getVolume(), called.getPitch() );
-+                unsafe().sendPacket( newPacket );
-+            } else
-+            {
-+                unsafe().sendPacket( current );
-+            }
++            int pitchInt = Math.round( pitch );
++            unsafe().sendPacket( PlaySound.create1_8( sound, x, y, z, volume, pitchInt ) );
++        } else if ( !( protocolVersion > ProtocolConstants.MINECRAFT_1_9_4 ) )
++        {
++            int pitchInt = Math.round( pitch );
++            unsafe().sendPacket( PlaySound.create1_9( sound, category, x, y, z, volume, pitchInt ) );
++        } else
++        {
++            unsafe().sendPacket( PlaySound.create( sound, category, x, y, z, volume, pitch ) );
 +        }
 +    }
 +    // IvanCord end
