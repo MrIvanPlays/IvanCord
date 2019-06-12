@@ -1,4 +1,4 @@
-From c1a824a86dce7b654ce46dbd48541f78867b5962 Mon Sep 17 00:00:00 2001
+From 102f95136ecd0dad0194a778e64fa253794ae382 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 11 Jun 2019 19:17:33 +0300
 Subject: [PATCH] Add PlaySound packet
@@ -256,7 +256,7 @@ index 00000000..eb090471
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 9487476e..5479f3db 100644
+index 9487476e..7f380387 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -55,9 +55,11 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
@@ -271,7 +271,7 @@ index 9487476e..5479f3db 100644
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.SetCompression;
-@@ -769,6 +771,36 @@ public final class UserConnection implements ProxiedPlayer
+@@ -769,6 +771,29 @@ public final class UserConnection implements ProxiedPlayer
          return serverSentScoreboard;
      }
  
@@ -280,28 +280,21 @@ index 9487476e..5479f3db 100644
 +    public void playSound(Position position, String sound, int category, float volume, float pitch)
 +    {
 +        int protocolVersion = getPendingConnection().getVersion();
-+        int[] posi = convertPositionForSound( position );
++        int x = Math.round( Long.valueOf( Math.round( position.getX() ) ).intValue() );
++        int y = Math.round( Long.valueOf( Math.round( position.getY() ) ).intValue() );
++        int z = Math.round( Long.valueOf( Math.round( position.getZ() ) ).intValue() );
 +        if ( protocolVersion < ProtocolConstants.MINECRAFT_1_9 )
 +        {
 +            int pitchInt = Math.round( pitch );
-+            unsafe().sendPacket( PlaySound.create1_8( sound, posi[0], posi[1], posi[2], volume, pitchInt ) );
++            unsafe().sendPacket( PlaySound.create1_8( sound, x, y, z, volume, pitchInt ) );
 +        } else if ( !( protocolVersion > ProtocolConstants.MINECRAFT_1_9_4 ) )
 +        {
 +            int pitchInt = Math.round( pitch );
-+            unsafe().sendPacket( PlaySound.create1_9( sound, category, posi[0], posi[1], posi[2], volume, pitchInt ) );
++            unsafe().sendPacket( PlaySound.create1_9( sound, category, x, y, z, volume, pitchInt ) );
 +        } else
 +        {
-+            unsafe().sendPacket( PlaySound.create( sound, category, posi[0], posi[1], posi[2], volume, pitch ) );
++            unsafe().sendPacket( PlaySound.create( sound, category, x, y, z, volume, pitch ) );
 +        }
-+    }
-+
-+    private int[] convertPositionForSound(Position position)
-+    {
-+        int[] array = new int[3];
-+        array[0] = Math.round( Long.valueOf( Math.round( position.getX() ) ).intValue() );
-+        array[1] = Math.round( Long.valueOf( Math.round( position.getY() ) ).intValue() );
-+        array[2] = Math.round( Long.valueOf( Math.round( position.getZ() ) ).intValue() );
-+        return array;
 +    }
 +    // IvanCord end
 +
