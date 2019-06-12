@@ -1,4 +1,4 @@
-From a26df9d65d72d06f3c987f3f9e416151cbf1cf79 Mon Sep 17 00:00:00 2001
+From ddd4c6bdf1bd77d241b2dc6eb6b2bdd06132094d Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Wed, 12 Jun 2019 20:04:42 +0300
 Subject: [PATCH] Add player positioning api
@@ -270,6 +270,41 @@ index 8bc3b17a..9487476e 100644
  
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index a2bc2bb5..f76b6c36 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -58,6 +58,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
+ import net.md_5.bungee.protocol.packet.KeepAlive;
+ import net.md_5.bungee.protocol.packet.Kick;
+ import net.md_5.bungee.protocol.packet.PlayerListItem;
++import net.md_5.bungee.protocol.packet.PlayerPosition; // IvanCord
+ import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.protocol.packet.Respawn;
+ // IvanCord - comment not needed imports
+@@ -69,6 +70,7 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
+ import net.md_5.bungee.protocol.packet.SetCompression;
+ import net.md_5.bungee.protocol.packet.TabCompleteResponse;
+ import net.md_5.bungee.tab.TabList;
++import com.github.mrivanplays.ivancord.api.Position; // IvanCord
+ 
+ @RequiredArgsConstructor
+ public class DownstreamBridge extends PacketHandler
+@@ -675,6 +677,14 @@ public class DownstreamBridge extends PacketHandler
+         }
+     }
+ 
++    // IvanCord start
++    @Override
++    public void handle(PlayerPosition pac)
++    {
++        con.setPosition( new Position( pac.getX(), pac.getY(), pac.getZ(), pac.getYaw(), pac.getPitch(), pac.isOnGround() ) );
++    }
++    // IvanCord end
++
+     @Override
+     public String toString()
+     {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 index 22313d98..cec27cb7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
