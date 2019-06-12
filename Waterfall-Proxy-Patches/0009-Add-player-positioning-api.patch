@@ -1,4 +1,4 @@
-From ddd4c6bdf1bd77d241b2dc6eb6b2bdd06132094d Mon Sep 17 00:00:00 2001
+From 09799e2ea80a7ba621801299b502493d874d6981 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Wed, 12 Jun 2019 20:04:42 +0300
 Subject: [PATCH] Add player positioning api
@@ -271,7 +271,7 @@ index 8bc3b17a..9487476e 100644
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index a2bc2bb5..f76b6c36 100644
+index a2bc2bb5..331c8c91 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -58,6 +58,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
@@ -290,7 +290,7 @@ index a2bc2bb5..f76b6c36 100644
  
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
-@@ -675,6 +677,14 @@ public class DownstreamBridge extends PacketHandler
+@@ -675,6 +677,25 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -298,7 +298,18 @@ index a2bc2bb5..f76b6c36 100644
 +    @Override
 +    public void handle(PlayerPosition pac)
 +    {
-+        con.setPosition( new Position( pac.getX(), pac.getY(), pac.getZ(), pac.getYaw(), pac.getPitch(), pac.isOnGround() ) );
++        Position packetPos = new Position( pac.getX(), pac.getY(), pac.getZ(), pac.getYaw(), pac.getPitch(), pac.isOnGround() );
++        Position conPos = con.getPosition();
++        boolean changed = true;
++        if ( packetPos.equals( conPos ) )
++        {
++            changed = false;
++        }
++        if ( changed )
++        {
++            con.setPosition( packetPos );
++            con.unsafe().sendPacket( pac );
++        }
 +    }
 +    // IvanCord end
 +
