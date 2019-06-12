@@ -1,4 +1,4 @@
-From bfd9a1d2a957eed471bf7b4239bc8da2884a6f54 Mon Sep 17 00:00:00 2001
+From 37a26c2be68350bc55b8ff919077a716e3b2e577 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 11 Jun 2019 19:17:33 +0300
 Subject: [PATCH] Add PlaySound packet
@@ -128,10 +128,10 @@ index e830aa15..892b18a1 100644
      // 1
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
 new file mode 100644
-index 00000000..9c7f5bcb
+index 00000000..eb090471
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
-@@ -0,0 +1,132 @@
+@@ -0,0 +1,126 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -174,24 +174,18 @@ index 00000000..9c7f5bcb
 +
 +    private final BiFunction<String, Integer, String> NAME_FUNCTION = (s, protocolVersion) ->
 +    {
-+        String returned;
++        String returned = s;
 +        if ( protocolVersion > ProtocolConstants.MINECRAFT_1_12_2 )
 +        {
 +            if ( !s.startsWith( "minecraft:" ) )
 +            {
 +                returned = "minecraft:" + s;
-+            } else
-+            {
-+                returned = s;
 +            }
 +        } else
 +        {
 +            if ( s.startsWith( "minecraft:" ) )
 +            {
 +                returned = s.substring( s.indexOf( ':' ) + 1 );
-+            } else
-+            {
-+                returned = s;
 +            }
 +        }
 +        return returned;
