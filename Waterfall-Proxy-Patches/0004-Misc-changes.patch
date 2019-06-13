@@ -1,4 +1,4 @@
-From 7999bc47dd46bb97511d17ee7172a803cbd5090e Mon Sep 17 00:00:00 2001
+From 1be4f9897f7ea0d7c0949dd58107636e29f9c76f Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -149,10 +149,20 @@ index 1375d1e2..925150d6 100644
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 15f7c5b5..d641f8e4 100644
+index 15f7c5b5..77db6392 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -712,6 +712,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -421,6 +421,9 @@ public final class UserConnection implements ProxiedPlayer
+ 
+     public void disconnect0(final BaseComponent... reason)
+     {
++        // IvanCord start - reset tab header and footer
++        resetTabHeader();
++        // IvanCord end
+         if ( !ch.isClosing() )
+         {
+             bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
+@@ -712,6 +715,14 @@ public final class UserConnection implements ProxiedPlayer
          title.send( this );
      }
  
