@@ -1,4 +1,4 @@
-From 09799e2ea80a7ba621801299b502493d874d6981 Mon Sep 17 00:00:00 2001
+From 7efac024fde6ab7d1acc0d72a2e3e55a7a1e8d62 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Wed, 12 Jun 2019 20:04:42 +0300
 Subject: [PATCH] Add player positioning api
@@ -6,10 +6,10 @@ Subject: [PATCH] Add player positioning api
 
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/Position.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/Position.java
 new file mode 100644
-index 00000000..883bef87
+index 00000000..0db9769d
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/Position.java
-@@ -0,0 +1,62 @@
+@@ -0,0 +1,66 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -32,13 +32,17 @@ index 00000000..883bef87
 +package com.github.mrivanplays.ivancord.api;
 +
 +import lombok.AllArgsConstructor;
++import lombok.EqualsAndHashCode;
 +import lombok.Getter;
++import lombok.ToString;
 +
 +/**
 + * Represents a player position
 + */
 +@Getter
 +@AllArgsConstructor
++@ToString
++@EqualsAndHashCode
 +public class Position
 +{
 +
@@ -71,6 +75,114 @@ index 00000000..883bef87
 +     * Does the player is on ground
 +     */
 +    private boolean onGround;
++}
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/PlayerChangePositionEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/PlayerChangePositionEvent.java
+new file mode 100644
+index 00000000..f3eaca15
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/PlayerChangePositionEvent.java
+@@ -0,0 +1,102 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.event;
++
++import lombok.EqualsAndHashCode;
++import lombok.Getter;
++import lombok.Setter;
++import lombok.ToString;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Cancellable;
++import net.md_5.bungee.api.plugin.Event;
++
++import com.github.mrivanplays.ivancord.api.Position;
++
++/**
++ * Event, called when player is about to change his position.
++ * It can be a server switch, or just normal moving.
++ * If the reason of why this event is being triggered equals
++ * to {@link Reason#PROXY_CONNECT} and the event <b>gets cancelled</b>,
++ * the player won't connect to the server at all! BE AWARE OF THAT!!!
++ */
++@ToString
++@EqualsAndHashCode(callSuper = false)
++@Getter
++public class PlayerChangePositionEvent extends Event implements Cancellable
++{
++
++    @Setter
++    private boolean cancelled;
++
++    /**
++     * The {@link ProxiedPlayer}, which changed position.
++     */
++    private ProxiedPlayer player;
++
++    /**
++     * The position the {@link ProxiedPlayer} moved from.
++     * <b>Can be null if the reason is {@link Reason#PROXY_CONNECT}</b>
++     */
++    private Position movedFrom;
++
++    /**
++     * The position the {@link ProxiedPlayer} moved to.
++     * <b>HUGE WARNING: If the reason is {@link Reason#PROXY_CONNECT}
++     * if you set a new position IT WILL BE IGNORED</b>
++     */
++    @Setter
++    private Position movedTo;
++
++    /**
++     * The reason of why this event this got triggered.
++     */
++    private Reason reason;
++
++    public PlayerChangePositionEvent(ProxiedPlayer player, Position movedFrom, Position movedTo, Reason reason)
++    {
++        this.player = player;
++        this.movedFrom = movedFrom;
++        this.movedTo = movedTo;
++        this.reason = reason;
++    }
++
++    /**
++     * Represents a reason, for which this event was called.
++     */
++    public static enum Reason
++    {
++
++        /**
++         * The representing player is connecting to proxy.
++         */
++        PROXY_CONNECT,
++
++        /**
++         * The representing player is changing servers.
++         */
++        SERVER_SWITCH,
++
++        /**
++         * The representing player is just moving around the world he is located.
++         */
++        MOVE
++        ;
++    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 index 5e7b51f8..2e96fc06 100644
@@ -271,7 +383,7 @@ index 8bc3b17a..9487476e 100644
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index a2bc2bb5..331c8c91 100644
+index a2bc2bb5..c65b04f6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -58,6 +58,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
@@ -282,15 +394,16 @@ index a2bc2bb5..331c8c91 100644
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  // IvanCord - comment not needed imports
-@@ -69,6 +70,7 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
+@@ -69,6 +70,8 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
  import net.md_5.bungee.protocol.packet.SetCompression;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
  import net.md_5.bungee.tab.TabList;
 +import com.github.mrivanplays.ivancord.api.Position; // IvanCord
++import com.github.mrivanplays.ivancord.api.event.PlayerChangePositionEvent;
  
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
-@@ -675,6 +677,25 @@ public class DownstreamBridge extends PacketHandler
+@@ -675,6 +678,43 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -307,8 +420,26 @@ index a2bc2bb5..331c8c91 100644
 +        }
 +        if ( changed )
 +        {
-+            con.setPosition( packetPos );
-+            con.unsafe().sendPacket( pac );
++            PlayerChangePositionEvent event = bungee.getPluginManager().callEvent(
++                    new PlayerChangePositionEvent( con, conPos, packetPos, PlayerChangePositionEvent.Reason.MOVE ) );
++            if ( !event.isCancelled() )
++            {
++                con.setPosition( packetPos );
++                con.unsafe().sendPacket( pac );
++            } else
++            {
++                Position pn = event.getMovedTo();
++                if ( !pn.equals( packetPos ) )
++                {
++                    PlayerPosition packet = new PlayerPosition( pn.getX(), pn.getY(), pn.getZ(), pn.getYaw(), pn.getPitch(), pn.isOnGround() );
++                    con.setPosition( pn );
++                    con.unsafe().sendPacket( packet );
++                } else
++                {
++                    con.setPosition( packetPos );
++                    con.unsafe().sendPacket( pac );
++                }
++            }
 +        }
 +    }
 +    // IvanCord end
@@ -317,10 +448,10 @@ index a2bc2bb5..331c8c91 100644
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 22313d98..cec27cb7 100644
+index 22313d98..4ec28114 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -28,9 +28,11 @@ import net.md_5.bungee.protocol.packet.Chat;
+@@ -28,9 +28,14 @@ import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -328,11 +459,14 @@ index 22313d98..cec27cb7 100644
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.TabCompleteRequest;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
-+import com.github.mrivanplays.ivancord.api.Position; // IvanCord
++// IvanCord start
++import com.github.mrivanplays.ivancord.api.Position;
++import com.github.mrivanplays.ivancord.api.event.PlayerChangePositionEvent;
++// IvanCord end
  
  public class UpstreamBridge extends PacketHandler
  {
-@@ -268,6 +270,14 @@ public class UpstreamBridge extends PacketHandler
+@@ -268,6 +273,50 @@ public class UpstreamBridge extends PacketHandler
          }
      }
  
@@ -340,7 +474,43 @@ index 22313d98..cec27cb7 100644
 +    @Override
 +    public void handle(PlayerPosition pac)
 +    {
-+        con.setPosition( new Position( pac.getX(), pac.getY(), pac.getZ(), pac.getYaw(), pac.getPitch(), pac.isOnGround() ) );
++        Position packetPos = new Position( pac.getX(), pac.getY(), pac.getZ(), pac.getYaw(), pac.getPitch(), pac.isOnGround() );
++        PlayerChangePositionEvent event;
++        if ( con.getServer() == null )
++        {
++            event = new PlayerChangePositionEvent( con, null, packetPos, PlayerChangePositionEvent.Reason.PROXY_CONNECT );
++        } else
++        {
++            event = new PlayerChangePositionEvent( con, con.getPosition(), packetPos, PlayerChangePositionEvent.Reason.SERVER_SWITCH );
++        }
++        PlayerChangePositionEvent called = bungee.getPluginManager().callEvent( event );
++        if ( !called.isCancelled() )
++        {
++            if ( called.getReason() == PlayerChangePositionEvent.Reason.PROXY_CONNECT )
++            {
++                con.setPosition( packetPos );
++            } else
++            {
++                Position pnp = called.getMovedTo();
++                if ( !pnp.equals( packetPos ) )
++                {
++                    con.setPosition( pnp );
++                    PlayerPosition packet = new PlayerPosition( pnp.getX(), pnp.getY(), pnp.getZ(), pnp.getYaw(), pnp.getPitch(), pnp.isOnGround() );
++                    con.unsafe().sendPacket( packet );
++                } else
++                {
++                    con.setPosition( packetPos );
++                }
++            }
++        } else
++        {
++            if ( called.getReason() == PlayerChangePositionEvent.Reason.PROXY_CONNECT )
++            {
++                bungee.getLogger().warning( "PlayerChangePositionEvent being triggered on " +
++                        "PROXY_CONNECT and being cancelled, disconnecting " + con.getName() );
++                con.disconnect( "PlayerChangePositionEvent cancelled" );
++            }
++        }
 +    }
 +    // IvanCord end
 +
