@@ -1,4 +1,4 @@
-From c79b9cfaed58e5568f79dc6d4b0725bdda2b2e4d Mon Sep 17 00:00:00 2001
+From 7999bc47dd46bb97511d17ee7172a803cbd5090e Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -39,6 +39,58 @@ index f7459860..b7b89c42 100644
      /**
       * Gets whether this player is using a FML client.
       * <p>
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Event.java b/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
+index e2e01ecb..1ae37ef5 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
+@@ -1,5 +1,7 @@
+ package net.md_5.bungee.api.plugin;
+ 
++import net.md_5.bungee.api.ProxyServer;
++
+ /**
+  * Dummy class which all callable events must extend.
+  */
+@@ -12,4 +14,21 @@ public abstract class Event
+     public void postCall()
+     {
+     }
++
++    // IvanCord start - add shortcut to call the event
++
++    /**
++     * Calls the representing event. If the event is a
++     * {@link Cancellable}, it will return if the event
++     * is being cancelled. Otherwise, it will return true.
++     *
++     * @return if cancellable the result of {@link Cancellable#isCancelled()},
++     *         otherwise <code>true</code>
++     */
++    public final boolean call()
++    {
++        ProxyServer.getInstance().getPluginManager().callEvent( this );
++        return !( this instanceof Cancellable ) || ( (Cancellable) this ).isCancelled();
++    }
++    // IvanCord end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 884f78c8..216ee68b 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -454,11 +454,13 @@ public class PluginManager
+      */
+     public void registerListener(Plugin plugin, Listener listener)
+     {
++        /* IvanCord - remove that outdated and dumb warning
+         for ( Method method : listener.getClass().getDeclaredMethods() )
+         {
+             Preconditions.checkArgument( !method.isAnnotationPresent( Subscribe.class ),
+                     "Listener %s has registered using deprecated subscribe annotation! Please update to @EventHandler.", listener );
+         }
++         */
+         eventBus.register( listener );
+         listenersByPlugin.put( plugin, listener );
+     }
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
 index 3b3525f0..1462f89a 100644
 --- a/log4j/src/main/resources/log4j2.xml
@@ -61,6 +113,23 @@ index 3b3525f0..1462f89a 100644
                      <!-- Log root and BungeeCord loggers without prefix -->
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index a25000b4..d2701b5f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -483,8 +483,10 @@ public class BungeeCord extends ProxyServer
+                 }
+ 
+                 getLogger().info( "Closing IO threads" );
+-                bossEventLoopGroup.shutdownGracefully();
+-                workerEventLoopGroup.shutdownGracefully();
++                // IvanCord start - speed up shutdown
++                bossEventLoopGroup.shutdownGracefully( 100, 5000, TimeUnit.MILLISECONDS );
++                workerEventLoopGroup.shutdownGracefully( 100, 500, TimeUnit.MILLISECONDS );
++                // IvanCord end
+                 while (true) {
+                     try {
+                         bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 index 1375d1e2..925150d6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
@@ -98,6 +167,19 @@ index 15f7c5b5..d641f8e4 100644
      public String getExtraDataInHandshake()
      {
          return this.getPendingConnection().getExtraDataInHandshake();
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+index 430ed174..30dfc7db 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
+@@ -10,7 +10,7 @@ public class CommandBungee extends Command
+ 
+     public CommandBungee()
+     {
+-        super( "bungee" );
++        super( "bungee", "bungeecord.command.bungee" ); // IvanCord - add missing permission
+     }
+ 
+     @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
 index d87d0b95..055b3bb6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
@@ -108,6 +190,19 @@ index d87d0b95..055b3bb6 100644
      {
 -        super( "end", "bungeecord.command.end" );
 +        super( "end", "bungeecord.command.end", "stop" ); // IvanCord - alias stop
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
+index 610825ca..d47518e4 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
+@@ -13,7 +13,7 @@ public class CommandPerms extends Command
+ 
+     public CommandPerms()
+     {
+-        super( "perms" );
++        super( "perms", "bungeecord.command.ip" ); // IvanCord - add missing permission
      }
  
      @Override

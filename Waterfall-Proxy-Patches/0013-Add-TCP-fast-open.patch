@@ -1,0 +1,159 @@
+From 5d1f0e1b8fcd6b3c66c074430e1e25b1f960b309 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Thu, 13 Jun 2019 19:20:09 +0300
+Subject: [PATCH] Add TCP fast open
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index d13923fc..0643d08f 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -257,5 +257,19 @@ public interface ProxyConfig
+      */
+     boolean isDisableTabListRewrite();
+ 
++    /**
++     * Returns whenever the TCP fast open mode is enabled.
++     *
++     * @return is tcp fast open mode enabled
++     */
++    boolean isTCPFastOpenEnabled();
++
++    /**
++     * Gets the TCP fast open mode
++     *
++     * @return tcp fast open mode
++     */
++    int getTCPFastOpenMode();
++
+     // IvanCord end
+ }
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+index 912ead47..0cc44338 100644
+--- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+@@ -20,11 +20,16 @@
+ package com.github.mrivanplays.ivancord.conf;
+ 
+ import java.io.File;
++import java.util.logging.Level;
+ 
+ import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
+ import lombok.Getter;
++import lombok.experimental.Accessors;
++import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.conf.YamlConfig;
+ 
++import com.github.mrivanplays.ivancord.tcpfastopen.TCPFastOpenMode;
++
+ @Getter
+ public class IvanCordConfiguration extends WaterfallConfiguration
+ {
+@@ -32,6 +37,11 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+     private boolean kickToLobby = true;
+     private boolean disableTabListRewrite = false;
+ 
++    @Accessors(fluent = true)
++    private boolean isTCPFastOpenEnabled = true;
++    @Accessors(fluent = true)
++    private int getTCPFastOpenMode = TCPFastOpenMode.CLIENT_ONLY.getValue();
++
+     @Override
+     public void load()
+     {
+@@ -40,5 +50,14 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+         config.load( false );
+         kickToLobby = config.getBoolean( "kick_to_lobby", kickToLobby );
+         disableTabListRewrite = config.getBoolean( "disable_tablist_rewrite", disableTabListRewrite );
++        isTCPFastOpenEnabled = config.getBoolean( "tcp_fast_open_enabled", isTCPFastOpenEnabled );
++        getTCPFastOpenMode = setupTFO( config.getInt( "tcp_fast_open_mode", getTCPFastOpenMode ) );
++    }
++
++    private int setupTFO(int incoming)
++    {
++        TCPFastOpenMode actual = TCPFastOpenMode.fromValue( incoming );
++        ProxyServer.getInstance().getLogger().log( Level.INFO, "TCP fast open mode is set to {0}", actual.name() );
++        return actual.getValue();
+     }
+ }
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java
+new file mode 100644
+index 00000000..da2abd82
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java
+@@ -0,0 +1,46 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.tcpfastopen;
++
++import java.util.Arrays;
++
++import lombok.Getter;
++
++public enum TCPFastOpenMode
++{
++    DISABLED( 0 ),
++    CLIENT_ONLY( 1 ),
++    SERVER_ONLY( 2 ),
++    BOTH( 3 )
++    ;
++
++    @Getter
++    private int value;
++
++    TCPFastOpenMode(int value)
++    {
++        this.value = value;
++    }
++
++    public static TCPFastOpenMode fromValue(int value)
++    {
++        return Arrays.stream( values() ).filter( a -> a.getValue() == value ).findFirst().orElse( DISABLED );
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 051430ce..0e1c2fc8 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -9,6 +9,7 @@ import io.netty.channel.EventLoopGroup;
+ import io.netty.channel.ServerChannel;
+ import io.netty.channel.WriteBufferWaterMark;
+ import io.netty.channel.epoll.Epoll;
++import io.netty.channel.epoll.EpollChannelOption;
+ import io.netty.channel.epoll.EpollDatagramChannel;
+ import io.netty.channel.epoll.EpollEventLoopGroup;
+ import io.netty.channel.epoll.EpollServerSocketChannel;
+@@ -144,6 +145,13 @@ public class PipelineUtils
+             ch.config().setOption( ChannelOption.TCP_NODELAY, true );
+             ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
+             ch.config().setWriteBufferWaterMark( MARK );
++            // IvanCord start - TCP fast open
++            int configValue = ProxyServer.getInstance().getConfig().getTCPFastOpenMode();
++            if ( epoll && ProxyServer.getInstance().getConfig().isTCPFastOpenEnabled() )
++            {
++                ch.config().setOption( EpollChannelOption.TCP_FASTOPEN, configValue );
++            }
++            // IvanCord end
+ 
+             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
+             ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder( BungeeCord.getInstance().getConfig().isAllowEmptyPackets()) ); // Waterfall
+-- 
+2.21.0.windows.1
+
