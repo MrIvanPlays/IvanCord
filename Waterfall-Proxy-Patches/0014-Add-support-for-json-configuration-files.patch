@@ -1,4 +1,4 @@
-From e9fb5123e32b10ead88b4fbb3ef91353e41487f0 Mon Sep 17 00:00:00 2001
+From ddc2b67059fc94a4a058e6f7d95c136d7fe91062 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Fri, 14 Jun 2019 16:38:20 +0300
 Subject: [PATCH] Add support for json configuration files
@@ -57,28 +57,30 @@ index eece8870..d5c5420d 100644
  
 diff --git a/config/src/main/java/net/md_5/bungee/config/JsonConfiguration.java b/config/src/main/java/net/md_5/bungee/config/JsonConfiguration.java
 new file mode 100644
-index 00000000..69c1165a
+index 00000000..a86f7209
 --- /dev/null
 +++ b/config/src/main/java/net/md_5/bungee/config/JsonConfiguration.java
-@@ -0,0 +1,146 @@
+@@ -0,0 +1,140 @@
 +package net.md_5.bungee.config;
 +// IvanCord start
 +
 +import java.io.File;
++import java.io.FileOutputStream;
 +import java.io.FileReader;
-+import java.io.FileWriter;
 +import java.io.IOException;
 +import java.io.InputStream;
 +import java.io.InputStreamReader;
++import java.io.OutputStreamWriter;
 +import java.io.Reader;
 +import java.io.Writer;
 +import java.util.LinkedHashMap;
 +import java.util.Map;
 +
++import com.google.common.base.Charsets;
 +import com.google.gson.Gson;
 +import com.google.gson.GsonBuilder;
++import com.google.gson.JsonObject;
 +import com.google.gson.reflect.TypeToken;
-+import com.google.gson.stream.JsonWriter;
 +
 +public class JsonConfiguration extends ConfigurationProvider
 +{
@@ -99,7 +101,7 @@ index 00000000..69c1165a
 +    @Override
 +    public void save(Configuration config, File file) throws IOException
 +    {
-+        try ( FileWriter writer = new FileWriter( file ) )
++        try ( Writer writer = new OutputStreamWriter( new FileOutputStream( file ), Charsets.UTF_8 ) )
 +        {
 +            save( config, writer );
 +        }
@@ -108,30 +110,33 @@ index 00000000..69c1165a
 +    @Override
 +    public void save(Configuration config, Writer writer)
 +    {
-+        try ( JsonWriter jsonWriter = gson.newJsonWriter( writer ) )
++        gson.toJson( intoObject( config.self ), writer );
++    }
++
++    private JsonObject intoObject(Map<String, Object> map)
++    {
++        JsonObject object = new JsonObject();
++        for ( Map.Entry<String, Object> entry : map.entrySet() )
 +        {
-+            jsonWriter.beginObject();
-+            for ( Map.Entry<String, Object> entry : config.self.entrySet() )
++            Object value = entry.getValue();
++            if ( value instanceof Boolean )
 +            {
-+                Object value = entry.getValue();
-+                if ( value instanceof Boolean )
-+                {
-+                    jsonWriter.name( entry.getKey() ).value( (Boolean) value );
-+                }
-+                if ( value instanceof String )
-+                {
-+                    jsonWriter.name( entry.getKey() ).value( (String) value );
-+                }
-+                if ( value instanceof Number )
-+                {
-+                    jsonWriter.name( entry.getKey() ).value( (Number) value );
-+                }
++                object.addProperty( entry.getKey(), (Boolean) value );
 +            }
-+            jsonWriter.endObject();
-+        } catch ( IOException e )
-+        {
-+            e.printStackTrace();
++            if ( value instanceof String )
++            {
++                object.addProperty( entry.getKey(), (String) value );
++            }
++            if ( value instanceof Number )
++            {
++                object.addProperty( entry.getKey(), (Number) value );
++            }
++            if ( value instanceof Configuration )
++            {
++                object.add( entry.getKey(), intoObject( ( (Configuration) value ).self ) );
++            }
 +        }
++        return object;
 +    }
 +
 +    @Override
@@ -175,18 +180,7 @@ index 00000000..69c1165a
 +    @Override
 +    public Configuration load(InputStream is, Configuration defaults)
 +    {
-+        try ( InputStreamReader reader = new InputStreamReader( is ) )
-+        {
-+            Map<String, Object> map = gson.fromJson( reader, new TypeToken<Map<String, Object>>(){}.getType() );
-+            if ( map == null )
-+            {
-+                map = new LinkedHashMap<>();
-+            }
-+            return new Configuration( map, defaults );
-+        } catch ( IOException e )
-+        {
-+            return new Configuration( new LinkedHashMap<>(), defaults );
-+        }
++        return load( new InputStreamReader( is ), defaults );
 +    }
 +
 +    @Override
