@@ -1,4 +1,4 @@
-From ddc2b67059fc94a4a058e6f7d95c136d7fe91062 Mon Sep 17 00:00:00 2001
+From 6fc32c6975985682866ed665c190b01c63a5f628 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Fri, 14 Jun 2019 16:38:20 +0300
 Subject: [PATCH] Add support for json configuration files
@@ -22,10 +22,26 @@ index 32a005ff..d4f495bf 100644
      </dependencies>
  </project>
 diff --git a/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java b/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
-index eece8870..d5c5420d 100644
+index eece8870..24ed163f 100644
 --- a/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
 +++ b/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
-@@ -20,9 +20,29 @@ public abstract class ConfigurationProvider
+@@ -12,17 +12,51 @@ public abstract class ConfigurationProvider
+ {
+ 
+     private static final Map<Class<? extends ConfigurationProvider>, ConfigurationProvider> providers = new HashMap<>();
++    // IvanCord start
++    private static JsonConfiguration providerPrettyJson;
++    private static JsonConfiguration providerNonPrettyJson;
++    // IvanCord end
+ 
+     static
+     {
+         providers.put( YamlConfiguration.class, new YamlConfiguration() );
++        // IvanCord start
++        ConfigurationProvider.providerPrettyJson = new JsonConfiguration( true );
++        ConfigurationProvider.providerNonPrettyJson = new JsonConfiguration( false );
++        // IvanCord end
+     }
  
      public static ConfigurationProvider getProvider(Class<? extends ConfigurationProvider> provider)
      {
@@ -48,7 +64,13 @@ index eece8870..d5c5420d 100644
 +     */
 +    public static ConfigurationProvider getJsonConfigurationProvider(boolean prettyPrinting)
 +    {
-+        return new JsonConfiguration( prettyPrinting );
++        if ( prettyPrinting )
++        {
++            return providerPrettyJson;
++        } else
++        {
++            return providerNonPrettyJson;
++        }
 +    }
 +    // IvanCord end
 +
