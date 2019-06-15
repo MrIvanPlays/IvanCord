@@ -1,4 +1,4 @@
-From a5a45212e8a8daa8c304e3adbe68ffc19251f187 Mon Sep 17 00:00:00 2001
+From 78c75f08fcf2e3a07f48981855893111a1c86c83 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 22 Apr 2019 10:45:15 +0300
 Subject: [PATCH] Kick to lobby support
@@ -50,100 +50,52 @@ index 96bb60f5..dea499b2 100644
 +        kickToLobby = config.getBoolean( "kick_to_lobby", kickToLobby );
      }
  }
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
-new file mode 100644
-index 00000000..93597376
---- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/listeners/ServerKickListener.java
-@@ -0,0 +1,62 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
-+package com.github.mrivanplays.ivancord.listeners;
-+
-+import java.util.ArrayList;
-+import java.util.List;
-+
-+import net.md_5.bungee.api.ProxyServer;
-+import net.md_5.bungee.api.chat.BaseComponent;
-+import net.md_5.bungee.api.chat.TextComponent;
-+import net.md_5.bungee.api.config.ListenerInfo;
-+import net.md_5.bungee.api.config.ServerInfo;
-+import net.md_5.bungee.api.connection.ProxiedPlayer;
-+import net.md_5.bungee.api.event.ServerKickEvent;
-+import net.md_5.bungee.api.plugin.Listener;
-+import net.md_5.bungee.event.EventHandler;
-+import net.md_5.bungee.event.EventPriority;
-+
-+public class ServerKickListener implements Listener
-+{
-+
-+    @EventHandler(priority = EventPriority.HIGH)
-+    public void onKick(ServerKickEvent event)
-+    {
-+        ProxiedPlayer player = event.getPlayer();
-+        ProxyServer proxy = ProxyServer.getInstance();
-+        event.setCancelled( true );
-+        List<ListenerInfo> listenerInfoList = new ArrayList<>( proxy.getConfig().getListeners() );
-+        String serverConnectedTo = listenerInfoList.get( 0 ).getServerPriority().get( 0 );
-+        ServerInfo connect = proxy.getServerInfo( serverConnectedTo );
-+        if ( player.getServer() == null )
-+        {
-+            // outdated client found or other reason for that the player didn't connect
-+            return;
-+        }
-+        if ( player.getServer().getInfo().equals( connect ) )
-+        {
-+            player.disconnect( event.getKickReasonComponent() );
-+            return;
-+        }
-+        event.setCancelServer( connect );
-+        String reason = BaseComponent.toLegacyText( event.getKickReasonComponent() );
-+        player.sendMessage( proxy.getTranslation( "kick_to_lobby", event.getKickedFrom().getName(), reason ) );
-+    }
-+}
-diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 6d5f426d..3d0005e9 100644
---- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-+++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -91,6 +91,7 @@ import net.md_5.bungee.query.RemoteQuery;
- import net.md_5.bungee.scheduler.BungeeScheduler;
- import net.md_5.bungee.util.CaseInsensitiveMap;
- 
-+import com.github.mrivanplays.ivancord.listeners.ServerKickListener;
- import com.github.mrivanplays.ivancord.modules.CommandAlert;
- import com.github.mrivanplays.ivancord.modules.CommandAlertRaw;
- import com.github.mrivanplays.ivancord.modules.CommandFind;
-@@ -241,6 +242,13 @@ public class BungeeCord extends ProxyServer
-         getPluginManager().registerCommand( null, new CommandServer() );
-         // IvanCord end
- 
-+        // IvanCord start - check if its kick to lobby
-+        if ( getConfig().isKickToLobby() )
-+        {
-+            getPluginManager().registerListener( null, new ServerKickListener() );
-+        }
-+        // IvanCord end
-+
-         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 1f8a2439..3a5ae3ee 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -506,14 +506,37 @@ public class DownstreamBridge extends PacketHandler
          {
-             if ( EncryptionUtil.nativeFactory.load() )
+             def = null;
+         }
+-        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER ) ); // Waterfall
+-        if ( event.isCancelled() && event.getCancelServer() != null )
++        // IvanCord start - kick to lobby
++        boolean kickToLobby = bungee.getConfig().isKickToLobby();
++        ServerInfo defaultServer = bungee.getServerInfo( bungee.getConfig().getListeners().stream().findFirst().get().getDefaultServer() );
++        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(),
++                ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER ) );
++        if ( kickToLobby )
+         {
+-            con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
++            if ( defaultServer != null )
++            {
++                con.connectNow( defaultServer, ServerConnectEvent.Reason.KICK_REDIRECT );
++            } else
++            {
++                if ( event.isCancelled() && event.getCancelServer() != null )
++                {
++                    con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
++                } else
++                {
++                    con.disconnect0( event.getKickReasonComponent() ); // TODO: Prefix our own stuff
++                }
++            }
+         } else
+         {
+-            con.disconnect0( event.getKickReasonComponent() ); // TODO: Prefix our own stuff.
++            if ( event.isCancelled() && event.getCancelServer() != null )
++            {
++                con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
++            } else
++            {
++                con.disconnect0( event.getKickReasonComponent() ); // TODO: Prefix our own stuff
++            }
+         }
++        // IvanCord end
+         server.setObsolete( true );
+         throw CancelSendSignal.INSTANCE;
+     }
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
 index dfb58c12..d917c74a 100644
 --- a/proxy/src/main/resources/messages.properties

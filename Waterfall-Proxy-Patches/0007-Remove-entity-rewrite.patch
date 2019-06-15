@@ -1,4 +1,4 @@
-From 36227248c43b5f1f29b67dc8ff758893a2afe239 Mon Sep 17 00:00:00 2001
+From dfb05079d986777f0a6a0c7376295759b2d130c9 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 28 Apr 2019 09:53:09 +0300
 Subject: [PATCH] Remove entity rewrite
@@ -364,7 +364,7 @@ index 77db6392..167861ea 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1f8a2439..a2bc2bb5 100644
+index 3a5ae3ee..799ba13e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -37,11 +37,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
@@ -423,7 +423,7 @@ index 1f8a2439..a2bc2bb5 100644
  
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
-@@ -591,7 +603,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -614,7 +626,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
      {
@@ -432,7 +432,7 @@ index 1f8a2439..a2bc2bb5 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -603,7 +615,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -626,7 +638,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityRemoveEffect removeEffect) throws Exception
      {
