@@ -1,4 +1,4 @@
-From 6fc32c6975985682866ed665c190b01c63a5f628 Mon Sep 17 00:00:00 2001
+From 7eec796a8793184d0a3bd12e013077f58b613141 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Fri, 14 Jun 2019 16:38:20 +0300
 Subject: [PATCH] Add support for json configuration files
@@ -79,10 +79,10 @@ index eece8870..24ed163f 100644
  
 diff --git a/config/src/main/java/net/md_5/bungee/config/JsonConfiguration.java b/config/src/main/java/net/md_5/bungee/config/JsonConfiguration.java
 new file mode 100644
-index 00000000..a86f7209
+index 00000000..cef497f9
 --- /dev/null
 +++ b/config/src/main/java/net/md_5/bungee/config/JsonConfiguration.java
-@@ -0,0 +1,140 @@
+@@ -0,0 +1,116 @@
 +package net.md_5.bungee.config;
 +// IvanCord start
 +
@@ -95,28 +95,30 @@ index 00000000..a86f7209
 +import java.io.OutputStreamWriter;
 +import java.io.Reader;
 +import java.io.Writer;
++import java.lang.reflect.Type;
 +import java.util.LinkedHashMap;
 +import java.util.Map;
 +
 +import com.google.common.base.Charsets;
 +import com.google.gson.Gson;
 +import com.google.gson.GsonBuilder;
-+import com.google.gson.JsonObject;
 +import com.google.gson.reflect.TypeToken;
 +
 +public class JsonConfiguration extends ConfigurationProvider
 +{
 +
 +    private Gson gson;
++    private Type mapType;
 +
 +    public JsonConfiguration(boolean prettyPrinting)
 +    {
++        this.mapType = new TypeToken<Map<String, Object>>(){}.getType();
 +        if ( prettyPrinting )
 +        {
-+            gson = new GsonBuilder().setPrettyPrinting().create();
++            gson = new GsonBuilder().registerTypeAdapter( mapType, new MapSerializer() ).setPrettyPrinting().create();
 +        } else
 +        {
-+            gson = new Gson();
++            gson = new GsonBuilder().registerTypeAdapter( mapType, new MapSerializer() ).create();
 +        }
 +    }
 +
@@ -132,33 +134,7 @@ index 00000000..a86f7209
 +    @Override
 +    public void save(Configuration config, Writer writer)
 +    {
-+        gson.toJson( intoObject( config.self ), writer );
-+    }
-+
-+    private JsonObject intoObject(Map<String, Object> map)
-+    {
-+        JsonObject object = new JsonObject();
-+        for ( Map.Entry<String, Object> entry : map.entrySet() )
-+        {
-+            Object value = entry.getValue();
-+            if ( value instanceof Boolean )
-+            {
-+                object.addProperty( entry.getKey(), (Boolean) value );
-+            }
-+            if ( value instanceof String )
-+            {
-+                object.addProperty( entry.getKey(), (String) value );
-+            }
-+            if ( value instanceof Number )
-+            {
-+                object.addProperty( entry.getKey(), (Number) value );
-+            }
-+            if ( value instanceof Configuration )
-+            {
-+                object.add( entry.getKey(), intoObject( ( (Configuration) value ).self ) );
-+            }
-+        }
-+        return object;
++        gson.toJson( config.self, mapType, writer );
 +    }
 +
 +    @Override
@@ -185,7 +161,7 @@ index 00000000..a86f7209
 +    @Override
 +    public Configuration load(Reader reader, Configuration defaults)
 +    {
-+        Map<String, Object> map = gson.fromJson( reader, new TypeToken<Map<String, Object>>(){}.getType() );
++        Map<String, Object> map = gson.fromJson( reader, mapType );
 +        if ( map == null )
 +        {
 +            map = new LinkedHashMap<>();
@@ -214,12 +190,104 @@ index 00000000..a86f7209
 +    @Override
 +    public Configuration load(String string, Configuration defaults)
 +    {
-+        Map<String, Object> map = gson.fromJson( string, new TypeToken<Map<String, Object>>(){}.getType() );
++        Map<String, Object> map = gson.fromJson( string, mapType );
 +        if ( map == null )
 +        {
 +            map = new LinkedHashMap<>();
 +        }
 +        return new Configuration( map, defaults );
++    }
++}
++// IvanCord end
+\ No newline at end of file
+diff --git a/config/src/main/java/net/md_5/bungee/config/MapSerializer.java b/config/src/main/java/net/md_5/bungee/config/MapSerializer.java
+new file mode 100644
+index 00000000..8a9e32d5
+--- /dev/null
++++ b/config/src/main/java/net/md_5/bungee/config/MapSerializer.java
+@@ -0,0 +1,85 @@
++package net.md_5.bungee.config;
++// IvanCord start
++
++import java.lang.reflect.Type;
++import java.util.LinkedHashMap;
++import java.util.List;
++import java.util.Map;
++import java.util.stream.Collectors;
++
++import com.google.gson.JsonDeserializationContext;
++import com.google.gson.JsonDeserializer;
++import com.google.gson.JsonElement;
++import com.google.gson.JsonObject;
++import com.google.gson.JsonParseException;
++import com.google.gson.JsonPrimitive;
++import com.google.gson.JsonSerializationContext;
++import com.google.gson.JsonSerializer;
++import com.google.gson.reflect.TypeToken;
++
++public class MapSerializer implements JsonSerializer<Map<String, Object>>, JsonDeserializer<Map<String, Object>>
++{
++
++    @Override
++    public Map<String, Object> deserialize(JsonElement element, Type typeOfT, JsonDeserializationContext context) throws JsonParseException
++    {
++        Map<String, Object> map = new LinkedHashMap<>();
++        List<Map.Entry<String, JsonElement>> primitives = element.getAsJsonObject().entrySet()
++                .stream()
++                .filter( entry -> entry.getValue().isJsonPrimitive() )
++                .collect( Collectors.toList() );
++        primitives.forEach( entry ->
++        {
++            String key = entry.getKey();
++            JsonPrimitive value = entry.getValue().getAsJsonPrimitive();
++            if ( value.isBoolean() )
++            {
++                map.put( key, value.getAsBoolean() );
++            }
++            if ( value.isNumber() )
++            {
++                map.put( key, value.getAsNumber() );
++            }
++            if ( value.isString() )
++            {
++                map.put( key, value.getAsString() );
++            }
++            if ( value.isJsonObject() )
++            {
++                Map<String, Object> map2 = context.deserialize( value.getAsJsonObject(), new TypeToken<Map<String, Object>>(){}.getType() );
++                map.put( key, map2 );
++            }
++        } );
++        return map;
++    }
++
++    @Override
++    public JsonElement serialize(Map<String, Object> src, Type typeOfSrc, JsonSerializationContext context)
++    {
++        JsonObject object = new JsonObject();
++        for ( Map.Entry<String, Object> entry : src.entrySet() )
++        {
++            String key = entry.getKey();
++            Object value = entry.getValue();
++            if ( value instanceof Boolean )
++            {
++                object.addProperty( key, (Boolean) value );
++            }
++            if ( value instanceof String )
++            {
++                object.addProperty( key, String.valueOf( value ) );
++            }
++            if ( value instanceof Number )
++            {
++                object.addProperty( key, (Number) value );
++            }
++            if ( value instanceof Map )
++            {
++                Map map = (Map) value;
++                object.add( key, context.serialize( map, JsonObject.class ) );
++            }
++        }
++        return object;
 +    }
 +}
 +// IvanCord end
