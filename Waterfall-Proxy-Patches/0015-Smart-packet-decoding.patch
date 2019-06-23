@@ -1,0 +1,262 @@
+From feb96253ebceded9c2d5f741f563efad71137309 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Sun, 23 Jun 2019 20:46:39 +0300
+Subject: [PATCH] Smart packet decoding
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index a46bbc78..37885a71 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -7,20 +7,28 @@ import io.netty.handler.codec.DecoderException;
+ import io.netty.handler.codec.MessageToMessageDecoder;
+ import java.util.List;
+ import lombok.AllArgsConstructor;
++import lombok.Getter;
+ import lombok.Setter;
+ 
+ @AllArgsConstructor
+ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+ {
+ 
++    @Getter // IvanCord
+     @Setter
+     private Protocol protocol;
++    @Getter // IvanCord
+     private final boolean server;
++    @Getter // IvanCord
+     @Setter
+     private int protocolVersion;
+     @Setter
+     private boolean supportsForge = false;
+     private final boolean allowEmptyPackets; // Waterfall
++    // IvanCord start
++    @Setter
++    private boolean[] handledPackets;
++    // IvanCord end
+ 
+     public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
+         // Waterfall start
+@@ -53,20 +61,23 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             int packetId = DefinedPacket.readVarInt( in );
+             packetTypeInfo = packetId;
+ 
+-            DefinedPacket packet = prot.createPacket( packetId, protocolVersion, supportsForge );
+-            if ( packet != null )
++            // IvanCord start - recode
++            DefinedPacket packet = null;
++            if ( handledPackets == null || ( packetId >= 0 && packetId < handledPackets.length && handledPackets[packetId] ) )
+             {
++                packet = prot.createPacket( packetId, protocolVersion, supportsForge );
+                 packetTypeInfo = packet.getClass();
+                 packet.read( in, prot.getDirection(), protocolVersion );
+ 
+                 if ( in.isReadable() )
+                 {
+                     throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot.getDirection() );
++                } else
++                {
++                    in.skipBytes( in.readableBytes() );
+                 }
+-            } else
+-            {
+-                in.skipBytes( in.readableBytes() );
+             }
++            // IvanCord end
+ 
+             out.add( new PacketWrapper( packet, slice ) );
+             slice = null;
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 175553fb..8bb51773 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -396,8 +396,10 @@ public enum Protocol
+     /*========================================================================*/
+     public static final int MAX_PACKET_ID = 0xFF;
+     /*========================================================================*/
+-    final DirectionData TO_SERVER = new DirectionData( this, ProtocolConstants.Direction.TO_SERVER );
+-    final DirectionData TO_CLIENT = new DirectionData( this, ProtocolConstants.Direction.TO_CLIENT );
++    // IvanCord start
++    public final DirectionData TO_SERVER = new DirectionData( this, ProtocolConstants.Direction.TO_SERVER );
++    public final DirectionData TO_CLIENT = new DirectionData( this, ProtocolConstants.Direction.TO_CLIENT );
++    // IvanCord end
+ 
+     public static void main(String[] args)
+     {
+@@ -433,13 +435,22 @@ public enum Protocol
+         }
+     }
+ 
++    // IvanCord start
+     @Data
+-    private static class ProtocolData
++    public static class ProtocolData
+     {
+ 
+         private final int protocolVersion;
+         private final TObjectIntMap<Class<? extends DefinedPacket>> packetMap = new TObjectIntHashMap<>( MAX_PACKET_ID );
+         private final Supplier<? extends DefinedPacket>[] packetConstructors = new Supplier[ MAX_PACKET_ID ]; // IvanCord - speed up packet construction
++
++        public Class<? extends DefinedPacket> getPacketClass(int packetId)
++        {
++           Supplier<? extends DefinedPacket> supplier =
++                   packetId >= 0 && packetId < packetConstructors.length ? packetConstructors[packetId] : null;
++           return supplier != null ? supplier.get().getClass() : null;
++        }
++        // IvanCord end
+     }
+ 
+     @Data
+@@ -456,7 +467,7 @@ public enum Protocol
+         return new ProtocolMapping( protocol, id );
+     }
+ 
+-    static final class DirectionData
++    public static final class DirectionData // IvanCord
+     {
+ 
+         private final TIntObjectMap<ProtocolData> protocols = new TIntObjectHashMap<>();
+@@ -476,7 +487,7 @@ public enum Protocol
+             }
+         }
+ 
+-        private ProtocolData getProtocolData(int version)
++        public ProtocolData getProtocolData(int version) // IvanCord
+         {
+             ProtocolData protocol = protocols.get( version );
+             if ( protocol == null && ( protocolPhase != Protocol.GAME ) )
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+index 4882b8ed..7fb9ef4b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+@@ -5,12 +5,17 @@ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelFutureListener;
+ import io.netty.channel.ChannelHandler;
+ import io.netty.channel.ChannelHandlerContext;
++
++import java.lang.reflect.Method;
+ import java.net.InetSocketAddress;
++import java.util.Map;
++import java.util.concurrent.ConcurrentHashMap;
+ import java.util.concurrent.TimeUnit;
+ import lombok.Getter;
+ import lombok.Setter;
+ import net.md_5.bungee.compress.PacketCompressor;
+ import net.md_5.bungee.compress.PacketDecompressor;
++import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.MinecraftDecoder;
+ import net.md_5.bungee.protocol.MinecraftEncoder;
+ import net.md_5.bungee.protocol.PacketWrapper;
+@@ -20,7 +25,12 @@ import net.md_5.bungee.protocol.packet.Kick;
+ public class ChannelWrapper
+ {
+ 
++    // IvanCord start
++    private static final Map<Protocol.ProtocolData, boolean[]> HANDLED_PACKETS_CACHE = new ConcurrentHashMap<>();
++
+     private final Channel ch;
++    private PacketHandler packetHandler;
++    // IvanCord end
+     @Getter
+     @Setter
+     private InetSocketAddress remoteAddress;
+@@ -35,17 +45,71 @@ public class ChannelWrapper
+         this.remoteAddress = (InetSocketAddress) this.ch.remoteAddress();
+     }
+ 
++    // IvanCord start
++    public void setHandler(PacketHandler handler)
++    {
++        this.packetHandler = handler;
++        updateHandledPackets();
++    }
++
+     public void setProtocol(Protocol protocol)
+     {
+         ch.pipeline().get( MinecraftDecoder.class ).setProtocol( protocol );
+         ch.pipeline().get( MinecraftEncoder.class ).setProtocol( protocol );
++        updateHandledPackets();
+     }
+ 
+     public void setVersion(int protocol)
+     {
+         ch.pipeline().get( MinecraftDecoder.class ).setProtocolVersion( protocol );
+         ch.pipeline().get( MinecraftEncoder.class ).setProtocolVersion( protocol );
++        updateHandledPackets();
++    }
++
++    private void updateHandledPackets()
++    {
++        MinecraftDecoder decoder = ch.pipeline().get( MinecraftDecoder.class );
++        if ( packetHandler == null )
++        {
++            decoder.setHandledPackets( null );
++        } else
++        {
++            decoder.setHandledPackets( computeHandledPackets( packetHandler.getClass(), decoder.getProtocol(),
++                    decoder.isServer(), decoder.getProtocolVersion() ) );
++        }
++    }
++
++    private static boolean[] computeHandledPackets(Class<? extends PacketHandler> handlerClass, Protocol protocol, boolean server, int protocolVersion)
++    {
++        Protocol.DirectionData protDir = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
++        Protocol.ProtocolData protData = protDir.getProtocolData( protocolVersion );
++        boolean[] handledPackets = HANDLED_PACKETS_CACHE.get( protData );
++        if ( handledPackets == null )
++        {
++            handledPackets = new boolean[ Protocol.MAX_PACKET_ID ];
++            for ( int i = 0; i < Protocol.MAX_PACKET_ID; i++ )
++            {
++                Class<? extends DefinedPacket> packetClass = protData.getPacketClass( i );
++                if ( packetClass != null )
++                {
++                    try
++                    {
++                        Method defaultMethod = PacketHandler.class.getMethod( "handle", packetClass );
++                        Method handlerMethod = handlerClass.getMethod( "handle", packetClass );
++                        if ( !defaultMethod.equals( handlerMethod ) )
++                        {
++                            handledPackets[i] = true;
++                        }
++                    } catch ( NoSuchMethodException ignored )
++                    {
++                    }
++                }
++            }
++            HANDLED_PACKETS_CACHE.put( protData, handledPackets );
++        }
++        return handledPackets;
+     }
++    // IvanCord end
+ 
+     public void write(Object packet)
+     {
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+index a66099fc..d329b35b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+@@ -33,6 +33,11 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+     {
+         Preconditions.checkArgument( handler != null, "handler" );
+         this.handler = handler;
++        // IvanCord start
++        if ( channel != null )
++        {
++            channel.setHandler( handler );
++        }
+     }
+ 
+     @Override
+@@ -41,6 +46,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+         if ( handler != null )
+         {
+             channel = new ChannelWrapper( ctx );
++            channel.setHandler( handler );
++            // IvanCord end
+             handler.connected( channel );
+ 
+             if ( !( handler instanceof InitialHandler || handler instanceof PingHandler ) )
+-- 
+2.21.0.windows.1
+
