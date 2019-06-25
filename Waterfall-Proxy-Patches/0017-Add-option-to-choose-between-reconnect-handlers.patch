@@ -1,12 +1,15 @@
-From dc25ddc41e7771c52927a6180c9bef9284f8e2bf Mon Sep 17 00:00:00 2001
+From 3209b62454361b18d743d3837841c0e5b62bdf54 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 20:20:49 +0300
 Subject: [PATCH] Add option to choose between reconnect handlers
 
-This patch adds json reconnect handler and a option to choose between yaml and json reconnect handlers.
+This patch adds json reconnect handler and
+a option to choose between yaml and json
+reconnect handlers. Also simplifies the way
+of how yaml reconnect handler is working.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 0643d08f..0135019f 100644
+index 0643d08fb..0135019f2 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -271,5 +271,12 @@ public interface ProxyConfig
@@ -24,10 +27,10 @@ index 0643d08f..0135019f 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/JsonReconnectHandler.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/JsonReconnectHandler.java
 new file mode 100644
-index 00000000..db078765
+index 000000000..007d1cca5
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/JsonReconnectHandler.java
-@@ -0,0 +1,115 @@
+@@ -0,0 +1,102 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -51,7 +54,6 @@ index 00000000..db078765
 +
 +import java.io.File;
 +import java.io.IOException;
-+import java.net.InetSocketAddress;
 +import java.util.Map;
 +import java.util.UUID;
 +import java.util.concurrent.ConcurrentHashMap;
@@ -64,25 +66,20 @@ index 00000000..db078765
 +import net.md_5.bungee.config.Configuration;
 +import net.md_5.bungee.config.ConfigurationProvider;
 +
-+import com.github.mrivanplays.ivancord.util.Pair;
-+
 +public class JsonReconnectHandler extends AbstractReconnectHandler
 +{
 +
 +    private Configuration configuration;
-+    private File file = new File( "locations.json" );
++    private File file;
 +    private ConfigurationProvider provider;
-+    private Map<UUID, Pair<String, InetSocketAddress>> data;
++    private Map<UUID, String> data;
 +
 +    public JsonReconnectHandler()
 +    {
++        this.file =  new File( "locations.json" );
 +        this.provider = ConfigurationProvider.getJsonConfigurationProvider( true );
 +        if ( !file.exists() )
 +        {
-+            if ( !file.getParentFile().exists() )
-+            {
-+                file.getParentFile().mkdirs();
-+            }
 +            try
 +            {
 +                file.createNewFile();
@@ -101,29 +98,22 @@ index 00000000..db078765
 +        data = new ConcurrentHashMap<>();
 +        for ( String key : configuration.getKeys() )
 +        {
-+            String value = configuration.getString( key );
-+            String[] split = value.split( ";" );
-+            String serverName = split[0];
-+            String host = split[1];
-+            String[] hostSplit = host.split( ":" );
-+            String hostName = hostSplit[0];
-+            int port = Integer.parseInt( hostSplit[1] );
-+            data.put( UUID.fromString( key ), new Pair<>( serverName, InetSocketAddress.createUnresolved( hostName, port ) ) );
++            String server = configuration.getString( key );
++            data.put( UUID.fromString( key ), server );
 +        }
 +    }
 +
 +    @Override
 +    protected ServerInfo getStoredServer(ProxiedPlayer player)
 +    {
-+        return ProxyServer.getInstance().getServerInfo( data.get( player.getUniqueId() ).getKey() );
++        return ProxyServer.getInstance().getServerInfo( data.get( player.getUniqueId() ) );
 +    }
 +
 +    @Override
 +    public void setServer(ProxiedPlayer player)
 +    {
 +        String server = player.getReconnectServer() != null ? player.getReconnectServer().getName() : player.getServer().getInfo().getName();
-+        InetSocketAddress address = player.getPendingConnection().getVirtualHost();
-+        configuration.set( player.getUniqueId().toString(), server + ";" + address.getHostString() + ":" + address.getPort() );
++        configuration.set( player.getUniqueId().toString(), server );
 +    }
 +
 +    @Override
@@ -145,7 +135,7 @@ index 00000000..db078765
 +}
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/ReconnectHandlerType.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/ReconnectHandlerType.java
 new file mode 100644
-index 00000000..a8fa08cc
+index 000000000..a8fa08cc1
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/ReconnectHandlerType.java
 @@ -0,0 +1,26 @@
@@ -176,7 +166,7 @@ index 00000000..a8fa08cc
 +    JSON
 +}
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 0cc44338..67b40f5e 100644
+index 0cc443389..67b40f5e9 100644
 --- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -28,6 +28,7 @@ import lombok.experimental.Accessors;
@@ -220,46 +210,81 @@ index 0cc44338..67b40f5e 100644
 +        return ReconnectHandlerType.YAML.name();
 +    }
  }
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/util/Pair.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/util/Pair.java
-new file mode 100644
-index 00000000..c9c43c97
---- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/util/Pair.java
-@@ -0,0 +1,32 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
-+package com.github.mrivanplays.ivancord.util;
-+
-+import lombok.AllArgsConstructor;
-+import lombok.Getter;
-+
-+@Getter
-+@AllArgsConstructor
-+public class Pair<K, V>
-+{
-+
-+    private K key;
-+    private V value;
-+}
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
+index 40fe249b2..262030889 100644
+--- a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
+@@ -5,9 +5,10 @@ import java.io.File;
+ import java.io.FileReader;
+ import java.io.FileWriter;
+ import java.io.IOException;
+-import java.net.InetSocketAddress;
+ import java.util.HashMap;
+ import java.util.Map;
++import java.util.UUID;
++import java.util.concurrent.ConcurrentHashMap;
+ import java.util.concurrent.locks.ReadWriteLock;
+ import java.util.concurrent.locks.ReentrantReadWriteLock;
+ import java.util.logging.Level;
+@@ -24,7 +25,7 @@ public class YamlReconnectHandler extends AbstractReconnectHandler
+     private final File file = new File( "locations.yml" );
+     private final ReadWriteLock lock = new ReentrantReadWriteLock();
+     /*========================================================================*/
+-    private CaseInsensitiveMap< String> data;
++    private Map<UUID, String> data;
+ 
+     @SuppressWarnings("unchecked")
+     public YamlReconnectHandler()
+@@ -48,18 +49,18 @@ public class YamlReconnectHandler extends AbstractReconnectHandler
+ 
+         if ( data == null )
+         {
+-            data = new CaseInsensitiveMap<>();
++            data = new ConcurrentHashMap<>();
+         }
+     }
+ 
+     @Override
+     protected ServerInfo getStoredServer(ProxiedPlayer player)
+     {
+-        ServerInfo server = null;
++        ServerInfo server;
+         lock.readLock().lock();
+         try
+         {
+-            server = ProxyServer.getInstance().getServerInfo( data.get( key( player ) ) );
++            server = ProxyServer.getInstance().getServerInfo( data.get( player.getUniqueId() ) );
+         } finally
+         {
+             lock.readLock().unlock();
+@@ -73,23 +74,17 @@ public class YamlReconnectHandler extends AbstractReconnectHandler
+         lock.writeLock().lock();
+         try
+         {
+-            data.put( key( player ), ( player.getReconnectServer() != null ) ? player.getReconnectServer().getName() : player.getServer().getInfo().getName() );
++            data.put( player.getUniqueId(), ( player.getReconnectServer() != null ) ? player.getReconnectServer().getName() : player.getServer().getInfo().getName() );
+         } finally
+         {
+             lock.writeLock().unlock();
+         }
+     }
+ 
+-    private String key(ProxiedPlayer player)
+-    {
+-        InetSocketAddress host = player.getPendingConnection().getVirtualHost();
+-        return player.getName() + ";" + host.getHostString() + ":" + host.getPort();
+-    }
+-
+     @Override
+     public void save()
+     {
+-        Map<String, String> copy = new HashMap<>();
++        Map<UUID, String> copy = new HashMap<>();
+         lock.readLock().lock();
+         try
+         {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c2ac2da5..0eefe68e 100644
+index c2ac2da58..0eefe68e3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -91,6 +91,8 @@ import net.md_5.bungee.query.RemoteQuery;
