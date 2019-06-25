@@ -1,4 +1,4 @@
-From 5d1f0e1b8fcd6b3c66c074430e1e25b1f960b309 Mon Sep 17 00:00:00 2001
+From 5c44b3f343c18efd23eaaa8d2e66f55b5ff3b9c6 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 19:20:09 +0300
 Subject: [PATCH] Add TCP fast open
@@ -129,7 +129,7 @@ index 00000000..da2abd82
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 051430ce..0e1c2fc8 100644
+index 051430ce..6281351a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -9,6 +9,7 @@ import io.netty.channel.EventLoopGroup;
@@ -140,10 +140,10 @@ index 051430ce..0e1c2fc8 100644
  import io.netty.channel.epoll.EpollDatagramChannel;
  import io.netty.channel.epoll.EpollEventLoopGroup;
  import io.netty.channel.epoll.EpollServerSocketChannel;
-@@ -144,6 +145,13 @@ public class PipelineUtils
-             ch.config().setOption( ChannelOption.TCP_NODELAY, true );
-             ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
-             ch.config().setWriteBufferWaterMark( MARK );
+@@ -60,6 +61,13 @@ public class PipelineUtils
+             ListenerInfo listener = ch.attr( LISTENER ).get();
+ 
+             BASE.initChannel( ch );
 +            // IvanCord start - TCP fast open
 +            int configValue = ProxyServer.getInstance().getConfig().getTCPFastOpenMode();
 +            if ( epoll && ProxyServer.getInstance().getConfig().isTCPFastOpenEnabled() )
@@ -151,9 +151,9 @@ index 051430ce..0e1c2fc8 100644
 +                ch.config().setOption( EpollChannelOption.TCP_FASTOPEN, configValue );
 +            }
 +            // IvanCord end
- 
-             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
-             ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder( BungeeCord.getInstance().getConfig().isAllowEmptyPackets()) ); // Waterfall
+             ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
+             ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
+             ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
 -- 
-2.21.0.windows.1
+2.22.0.windows.1
 
