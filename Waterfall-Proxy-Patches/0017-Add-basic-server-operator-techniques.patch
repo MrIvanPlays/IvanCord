@@ -1,4 +1,4 @@
-From cd9d8f8ebf24a5aec1f69d12f3a9050c6f264c65 Mon Sep 17 00:00:00 2001
+From 3614305194dd47b78c190075dbadc0b6330c2c7b Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 17:21:37 +0300
 Subject: [PATCH] Add basic server operator techniques
@@ -33,7 +33,7 @@ index 82e8b9be..c9892ffb 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandDeop.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandDeop.java
 new file mode 100644
-index 00000000..b063b48c
+index 00000000..90fd7ef6
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandDeop.java
 @@ -0,0 +1,84 @@
@@ -98,7 +98,7 @@ index 00000000..b063b48c
 +            sender.sendMessage( new TextComponent( "Nothing has changed, " + player.getName() + " was not a global server operator." ) );
 +            return;
 +        }
-+        player.setGlobalOp( true );
++        player.setGlobalOp( false );
 +        sender.sendMessage( new TextComponent( "Made " + player.getName() + " not a global server operator." ) );
 +    }
 +
