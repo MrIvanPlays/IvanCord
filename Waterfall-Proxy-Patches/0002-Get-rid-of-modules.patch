@@ -1,4 +1,4 @@
-From 65175d2093a3987f7ce6de17f6743a776fd86b92 Mon Sep 17 00:00:00 2001
+From f577e8ffb623adf09eb22877afddec68d0d1d3e1 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:04:14 +0300
 Subject: [PATCH] Get rid of modules
@@ -600,7 +600,7 @@ index 00000000..40fe249b
 +}
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8acdc22d..761329bb 100644
+index 8acdc22d..c355e626 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -91,6 +91,14 @@ import net.md_5.bungee.query.RemoteQuery;
@@ -656,24 +656,6 @@ index 8acdc22d..761329bb 100644
  
          pluginsFolder.mkdir();
          pluginManager.detectPlugins( pluginsFolder );
-@@ -278,6 +299,17 @@ public class BungeeCord extends ProxyServer
- 
-         isRunning = true;
- 
-+        // IvanCord start - set reconnect handler from modules
-+        for ( ListenerInfo info : getConfig().getListeners() )
-+        {
-+            if ( !info.isForceDefault() && getReconnectHandler() == null )
-+            {
-+                setReconnectHandler( new YamlReconnectHandler() );
-+                break;
-+            }
-+        }
-+        // IvanCord end
-+
-         pluginManager.enablePlugins();
- 
-         if ( config.getThrottle() > 0 )
 -- 
-2.21.0.windows.1
+2.22.0.windows.1
 

@@ -1,4 +1,4 @@
-From 1be4f9897f7ea0d7c0949dd58107636e29f9c76f Mon Sep 17 00:00:00 2001
+From f4a75acac97d453dad5137d1275730600ec4bafc Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -114,10 +114,10 @@ index 3b3525f0..1462f89a 100644
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a25000b4..d2701b5f 100644
+index c3a266c0..2bc94aa4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -483,8 +483,10 @@ public class BungeeCord extends ProxyServer
+@@ -472,8 +472,10 @@ public class BungeeCord extends ProxyServer
                  }
  
                  getLogger().info( "Closing IO threads" );
@@ -217,5 +217,5 @@ index 610825ca..d47518e4 100644
  
      @Override
 -- 
-2.21.0.windows.1
+2.22.0.windows.1
 

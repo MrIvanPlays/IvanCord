@@ -1,4 +1,4 @@
-From fcf1aa83a434387f83d784a932ba621a299e75f6 Mon Sep 17 00:00:00 2001
+From e8cb3085fc21bf377d64adbe4f43f4c4a668bcbc Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:09:46 +0300
 Subject: [PATCH] Get rid of startup delay rename occurences
@@ -31,7 +31,7 @@ index d703d6d2..e877d9ef 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 761329bb..a25000b4 100644
+index c355e626..c3a266c0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -190,7 +190,7 @@ public class BungeeCord extends ProxyServer
@@ -43,7 +43,7 @@ index 761329bb..a25000b4 100644
  
          try
          {
-@@ -527,7 +527,7 @@ public class BungeeCord extends ProxyServer
+@@ -516,7 +516,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {
@@ -117,5 +117,5 @@ index 44011a96..9c187f73 100644
              InetSocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 -- 
-2.21.0.windows.1
+2.22.0.windows.1
 
