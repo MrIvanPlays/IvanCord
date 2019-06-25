@@ -1,0 +1,307 @@
+From cd9d8f8ebf24a5aec1f69d12f3a9050c6f264c65 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Tue, 25 Jun 2019 17:21:37 +0300
+Subject: [PATCH] Add basic server operator techniques
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+index 82e8b9be..c9892ffb 100644
+--- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
++++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+@@ -412,4 +412,22 @@ public interface ProxiedPlayer extends Connection, CommandSender
+     void playSound(Position position, String sound, int category, float volume, float pitch);
+ 
+     // IvanCord end
++
++    // IvanCord start - add global op system
++
++    /**
++     * Returns whenever this player is a server operator on
++     * proxy level.
++     *
++     * @return <code>true</code> if op on proxy level, otherwise <code>false</code>
++     */
++    boolean isGlobalOp();
++
++    /**
++     * Sets the player's global/proxy level server operator
++     *
++     * @param globalOp value
++     */
++    void setGlobalOp(boolean globalOp);
++    // IvanCord end
+ }
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandDeop.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandDeop.java
+new file mode 100644
+index 00000000..b063b48c
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandDeop.java
+@@ -0,0 +1,84 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.commands.op;
++
++import java.util.Collections;
++import java.util.stream.Collectors;
++
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.TabExecutor;
++
++public class CommandDeop extends Command implements TabExecutor
++{
++
++    public CommandDeop()
++    {
++        super( "gdeop", "ivancord.command.deop" );
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args)
++    {
++        if ( args.length == 0 )
++        {
++            sender.sendMessage( errorMessage( "Usage: /gdeop <player>" ) );
++            return;
++        }
++        ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
++        if ( player == null )
++        {
++            sender.sendMessage( errorMessage( "Player not found" ) );
++            return;
++        }
++        if ( !player.isGlobalOp() )
++        {
++            sender.sendMessage( new TextComponent( "Nothing has changed, " + player.getName() + " was not a global server operator." ) );
++            return;
++        }
++        player.setGlobalOp( true );
++        sender.sendMessage( new TextComponent( "Made " + player.getName() + " not a global server operator." ) );
++    }
++
++    @Override
++    public Iterable<String> onTabComplete(CommandSender sender, String[] args)
++    {
++        if ( args.length == 1 )
++        {
++            return ProxyServer.getInstance().getPlayers()
++                    .stream()
++                    .filter( player -> player.getName().toLowerCase().startsWith( args[0].toLowerCase() ) )
++                    .map( CommandSender::getName )
++                    .collect( Collectors.toList() );
++        }
++        return Collections.emptyList();
++    }
++
++    private BaseComponent[] errorMessage(String message)
++    {
++        return new ComponentBuilder( message ).color( ChatColor.RED ).create();
++    }
++}
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandOp.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandOp.java
+new file mode 100644
+index 00000000..8a71cf64
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandOp.java
+@@ -0,0 +1,83 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.commands.op;
++
++import java.util.Collections;
++import java.util.stream.Collectors;
++
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.TabExecutor;
++
++public class CommandOp extends Command implements TabExecutor
++{
++
++    public CommandOp()
++    {
++        super( "gop", "ivancord.command.op" );
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args)
++    {
++        if ( args.length == 0 )
++        {
++            sender.sendMessage( errorMessage( "Usage: /gop <player>" ) );
++            return;
++        }
++        ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
++        if ( player == null )
++        {
++            sender.sendMessage( errorMessage( "Player not found" ) );
++            return;
++        }
++        if ( player.isGlobalOp() )
++        {
++            sender.sendMessage( new TextComponent( "Nothing has changed, " + player.getName() + " was already a global server operator." ) );
++            return;
++        }
++        player.setGlobalOp( true );
++        sender.sendMessage( new TextComponent( "Made " + player.getName() + " a global server operator." ) );
++    }
++
++    @Override
++    public Iterable<String> onTabComplete(CommandSender sender, String[] args)
++    {
++        if ( args.length == 1 )
++        {
++            return ProxyServer.getInstance().getPlayers().stream()
++                    .filter( player -> player.getName().toLowerCase().startsWith( args[0].toLowerCase() ) )
++                    .map( CommandSender::getName )
++                    .collect( Collectors.toList() );
++        }
++        return Collections.emptyList();
++    }
++
++    private BaseComponent[] errorMessage(String message)
++    {
++        return new ComponentBuilder( message ).color( ChatColor.RED ).create();
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index f2fdbf54..24f6c113 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -92,6 +92,8 @@ import net.md_5.bungee.scheduler.BungeeScheduler;
+ import net.md_5.bungee.util.CaseInsensitiveMap;
+ 
+ import com.github.mrivanplays.ivancord.commands.CommandPlugins;
++import com.github.mrivanplays.ivancord.commands.op.CommandDeop;
++import com.github.mrivanplays.ivancord.commands.op.CommandOp;
+ import com.github.mrivanplays.ivancord.modules.CommandAlert;
+ import com.github.mrivanplays.ivancord.modules.CommandAlertRaw;
+ import com.github.mrivanplays.ivancord.modules.CommandFind;
+@@ -244,6 +246,8 @@ public class BungeeCord extends ProxyServer
+ 
+         // IvanCord start - specific commands to IvanCord
+         getPluginManager().registerCommand( null, new CommandPlugins() );
++        getPluginManager().registerCommand( null, new CommandOp() );
++        getPluginManager().registerCommand( null, new CommandDeop() );
+         // IvanCord end
+ 
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index af30d3f6..d72a2088 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -117,6 +117,10 @@ public final class UserConnection implements ProxiedPlayer
+     @Getter
+     private Position position;
+     // IvanCord end
++    // IvanCord start
++    @Getter
++    private boolean globalOp;
++    // IvanCord end
+     @Getter
+     private int compressionThreshold = -1;
+     // Used for trying multiple servers in order
+@@ -204,6 +208,9 @@ public final class UserConnection implements ProxiedPlayer
+         {
+             forgeClientHandler.setFmlTokenInHandshake( true );
+         }
++        // IvanCord start
++        globalOp = permissions.contains( "*" );
++        // IvanCord end
+     }
+ 
+     public void sendPacket(PacketWrapper packet)
+@@ -577,7 +584,7 @@ public final class UserConnection implements ProxiedPlayer
+     @Override
+     public boolean hasPermission(String permission)
+     {
+-        return bungee.getPluginManager().callEvent( new PermissionCheckEvent( this, permission, permissions.contains( permission ) ) ).hasPermission();
++        return bungee.getPluginManager().callEvent( new PermissionCheckEvent( this, permission, globalOp || permissions.contains( permission ) ) ).hasPermission(); // IvanCord
+     }
+ 
+     @Override
+@@ -798,6 +805,22 @@ public final class UserConnection implements ProxiedPlayer
+         }
+         bungee.getPluginManager().callEvent( new SoundPlayedEvent( this, position, sound, volume, pitch, category ) );
+     }
++
++    @Override
++    public void setGlobalOp(boolean globalOp)
++    {
++        boolean previous = this.globalOp;
++        if ( previous && !globalOp )
++        {
++            // the player is being set non server-operator
++            permissions.remove( "*" );
++        } else if ( !previous && globalOp )
++        {
++            // the layer is being set server-operator
++            permissions.add( "*" );
++        }
++        this.globalOp = globalOp;
++    }
+     // IvanCord end
+ 
+     // IvanCord start - comment this. Not used anywhere, so...
+diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+index 5021af15..f9bc1817 100644
+--- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
++++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
+@@ -104,7 +104,7 @@ public class YamlConfig implements ConfigurationAdapter
+             set( "permissions.admin", Arrays.asList( new String[]
+             {
+                 "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload",
+-                    "ivancord.command.plugins" // IvanCord - plugins command
++                    "ivancord.command.plugins", "ivancord.command.op", "ivancord.command.deop" // IvanCord - specific commands
+             } ) );
+         }
+ 
+-- 
+2.22.0.windows.1
+
