@@ -1,0 +1,95 @@
+From ef42bcc1e8e134d2c5004ff47ea5355fa045e62f Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Tue, 25 Jun 2019 16:03:22 +0300
+Subject: [PATCH] Add LoginCancelledEvent
+
+
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/LoginCancelledEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/LoginCancelledEvent.java
+new file mode 100644
+index 00000000..3177025b
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/LoginCancelledEvent.java
+@@ -0,0 +1,45 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.event;
++
++import lombok.AllArgsConstructor;
++import lombok.Getter;
++import net.md_5.bungee.api.connection.PendingConnection;
++import net.md_5.bungee.api.plugin.Event;
++
++/**
++ * Represents a event, called when login process is cancelled by the
++ * logging in player. In most of the times, this is clicking the
++ * "Cancel" button on the client.
++ *
++ * This event isn't called when {@link net.md_5.bungee.api.event.PreLoginEvent}
++ * or {@link net.md_5.bungee.api.event.LoginEvent}
++ * are cancelled by {@link net.md_5.bungee.api.plugin.Cancellable#setCancelled(boolean)}
++ */
++@Getter
++@AllArgsConstructor
++public class LoginCancelledEvent extends Event
++{
++
++    /**
++     * The pending connection, which aborted their login process
++     */
++    private PendingConnection connection;
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 3a9dab68..d02ce41d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -65,6 +65,8 @@ import net.md_5.bungee.util.BoundedArrayList;
+ import net.md_5.bungee.util.BufUtil;
+ import net.md_5.bungee.util.QuietException;
+ 
++import com.github.mrivanplays.ivancord.api.event.LoginCancelledEvent;
++
+ @RequiredArgsConstructor
+ public class InitialHandler extends PacketHandler implements PendingConnection
+ {
+@@ -505,6 +507,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 }
+                 if ( ch.isClosed() )
+                 {
++                    // IvanCord start - implement LoginCancelledEvent
++                    bungee.getPluginManager().callEvent( new LoginCancelledEvent( InitialHandler.this ) );
++                    // IvanCord end
+                     return;
+                 }
+ 
+@@ -540,7 +545,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                             userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
+ 
+                             thisState = State.FINISHED;
++                        } else // IvanCord start - implement LoginCancelledEvent
++                        {
++                            bungee.getPluginManager().callEvent( new LoginCancelledEvent( InitialHandler.this ) );
+                         }
++                        // IvanCord end
+                     }
+                 } );
+             }
+-- 
+2.22.0.windows.1
+
