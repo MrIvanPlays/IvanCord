@@ -1,4 +1,4 @@
-From 3209b62454361b18d743d3837841c0e5b62bdf54 Mon Sep 17 00:00:00 2001
+From d743c4989893e7c293397562b201eca0aeac433b Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 20:20:49 +0300
 Subject: [PATCH] Add option to choose between reconnect handlers
@@ -27,10 +27,10 @@ index 0643d08fb..0135019f2 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/JsonReconnectHandler.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/JsonReconnectHandler.java
 new file mode 100644
-index 000000000..007d1cca5
+index 000000000..5c85ffc70
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/JsonReconnectHandler.java
-@@ -0,0 +1,102 @@
+@@ -0,0 +1,112 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -113,12 +113,22 @@ index 000000000..007d1cca5
 +    public void setServer(ProxiedPlayer player)
 +    {
 +        String server = player.getReconnectServer() != null ? player.getReconnectServer().getName() : player.getServer().getInfo().getName();
-+        configuration.set( player.getUniqueId().toString(), server );
++        if ( !data.containsKey( player.getUniqueId() ) )
++        {
++            data.put( player.getUniqueId(), server );
++        } else
++        {
++            data.replace( player.getUniqueId(), server );
++        }
 +    }
 +
 +    @Override
 +    public void save()
 +    {
++        for ( Map.Entry<UUID, String> entry : data.entrySet() )
++        {
++            configuration.set( entry.getKey().toString(), entry.getValue() );
++        }
 +        try
 +        {
 +            provider.save( configuration, file );
