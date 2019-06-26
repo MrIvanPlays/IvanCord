@@ -1,4 +1,4 @@
-From d743c4989893e7c293397562b201eca0aeac433b Mon Sep 17 00:00:00 2001
+From ad26f54aad9f2a88f2bc7f93bd22f73387e66a7b Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 20:20:49 +0300
 Subject: [PATCH] Add option to choose between reconnect handlers
@@ -220,79 +220,6 @@ index 0cc443389..67b40f5e9 100644
 +        return ReconnectHandlerType.YAML.name();
 +    }
  }
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
-index 40fe249b2..262030889 100644
---- a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
-@@ -5,9 +5,10 @@ import java.io.File;
- import java.io.FileReader;
- import java.io.FileWriter;
- import java.io.IOException;
--import java.net.InetSocketAddress;
- import java.util.HashMap;
- import java.util.Map;
-+import java.util.UUID;
-+import java.util.concurrent.ConcurrentHashMap;
- import java.util.concurrent.locks.ReadWriteLock;
- import java.util.concurrent.locks.ReentrantReadWriteLock;
- import java.util.logging.Level;
-@@ -24,7 +25,7 @@ public class YamlReconnectHandler extends AbstractReconnectHandler
-     private final File file = new File( "locations.yml" );
-     private final ReadWriteLock lock = new ReentrantReadWriteLock();
-     /*========================================================================*/
--    private CaseInsensitiveMap< String> data;
-+    private Map<UUID, String> data;
- 
-     @SuppressWarnings("unchecked")
-     public YamlReconnectHandler()
-@@ -48,18 +49,18 @@ public class YamlReconnectHandler extends AbstractReconnectHandler
- 
-         if ( data == null )
-         {
--            data = new CaseInsensitiveMap<>();
-+            data = new ConcurrentHashMap<>();
-         }
-     }
- 
-     @Override
-     protected ServerInfo getStoredServer(ProxiedPlayer player)
-     {
--        ServerInfo server = null;
-+        ServerInfo server;
-         lock.readLock().lock();
-         try
-         {
--            server = ProxyServer.getInstance().getServerInfo( data.get( key( player ) ) );
-+            server = ProxyServer.getInstance().getServerInfo( data.get( player.getUniqueId() ) );
-         } finally
-         {
-             lock.readLock().unlock();
-@@ -73,23 +74,17 @@ public class YamlReconnectHandler extends AbstractReconnectHandler
-         lock.writeLock().lock();
-         try
-         {
--            data.put( key( player ), ( player.getReconnectServer() != null ) ? player.getReconnectServer().getName() : player.getServer().getInfo().getName() );
-+            data.put( player.getUniqueId(), ( player.getReconnectServer() != null ) ? player.getReconnectServer().getName() : player.getServer().getInfo().getName() );
-         } finally
-         {
-             lock.writeLock().unlock();
-         }
-     }
- 
--    private String key(ProxiedPlayer player)
--    {
--        InetSocketAddress host = player.getPendingConnection().getVirtualHost();
--        return player.getName() + ";" + host.getHostString() + ":" + host.getPort();
--    }
--
-     @Override
-     public void save()
-     {
--        Map<String, String> copy = new HashMap<>();
-+        Map<UUID, String> copy = new HashMap<>();
-         lock.readLock().lock();
-         try
-         {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index c2ac2da58..0eefe68e3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java

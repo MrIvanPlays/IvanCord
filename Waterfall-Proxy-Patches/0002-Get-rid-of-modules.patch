@@ -1,11 +1,11 @@
-From f577e8ffb623adf09eb22877afddec68d0d1d3e1 Mon Sep 17 00:00:00 2001
+From ab1c8ac04c955bd40a068d97d17b29c5a50a9cc4 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:04:14 +0300
 Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index 7129d0e3..11a5f7b9 100644
+index 7129d0e38..11a5f7b99 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -38,7 +38,9 @@
@@ -20,7 +20,7 @@ index 7129d0e3..11a5f7b9 100644
          <module>query</module>
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlert.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlert.java
 new file mode 100644
-index 00000000..6a8c0bc5
+index 000000000..6a8c0bc5c
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlert.java
 @@ -0,0 +1,46 @@
@@ -72,7 +72,7 @@ index 00000000..6a8c0bc5
 +}
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlertRaw.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlertRaw.java
 new file mode 100644
-index 00000000..7e6274d8
+index 000000000..7e6274d8e
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlertRaw.java
 @@ -0,0 +1,56 @@
@@ -134,7 +134,7 @@ index 00000000..7e6274d8
 +}
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandFind.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandFind.java
 new file mode 100644
-index 00000000..7b2863f4
+index 000000000..7b2863f42
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandFind.java
 @@ -0,0 +1,36 @@
@@ -177,7 +177,7 @@ index 00000000..7b2863f4
 \ No newline at end of file
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandList.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandList.java
 new file mode 100644
-index 00000000..971bf257
+index 000000000..971bf2573
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandList.java
 @@ -0,0 +1,47 @@
@@ -230,7 +230,7 @@ index 00000000..971bf257
 +}
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandSend.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandSend.java
 new file mode 100644
-index 00000000..9636fed8
+index 000000000..9636fed89
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandSend.java
 @@ -0,0 +1,130 @@
@@ -367,7 +367,7 @@ index 00000000..9636fed8
 \ No newline at end of file
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandServer.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandServer.java
 new file mode 100644
-index 00000000..90517a4d
+index 000000000..90517a4d9
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandServer.java
 @@ -0,0 +1,105 @@
@@ -479,13 +479,12 @@ index 00000000..90517a4d
 \ No newline at end of file
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
 new file mode 100644
-index 00000000..40fe249b
+index 000000000..6d3263e19
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
-@@ -0,0 +1,115 @@
+@@ -0,0 +1,111 @@
 +package com.github.mrivanplays.ivancord.modules;
 +
-+import net.md_5.bungee.api.AbstractReconnectHandler;
 +import java.io.File;
 +import java.io.FileReader;
 +import java.io.FileWriter;
@@ -493,9 +492,12 @@ index 00000000..40fe249b
 +import java.net.InetSocketAddress;
 +import java.util.HashMap;
 +import java.util.Map;
++import java.util.UUID;
++import java.util.concurrent.ConcurrentHashMap;
 +import java.util.concurrent.locks.ReadWriteLock;
 +import java.util.concurrent.locks.ReentrantReadWriteLock;
 +import java.util.logging.Level;
++import net.md_5.bungee.api.AbstractReconnectHandler;
 +import net.md_5.bungee.api.ProxyServer;
 +import net.md_5.bungee.api.config.ServerInfo;
 +import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -509,7 +511,7 @@ index 00000000..40fe249b
 +    private final File file = new File( "locations.yml" );
 +    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 +    /*========================================================================*/
-+    private CaseInsensitiveMap< String> data;
++    private Map<UUID, String> data;
 +
 +    @SuppressWarnings("unchecked")
 +    public YamlReconnectHandler()
@@ -533,18 +535,18 @@ index 00000000..40fe249b
 +
 +        if ( data == null )
 +        {
-+            data = new CaseInsensitiveMap<>();
++            data = new ConcurrentHashMap<>();
 +        }
 +    }
 +
 +    @Override
 +    protected ServerInfo getStoredServer(ProxiedPlayer player)
 +    {
-+        ServerInfo server = null;
++        ServerInfo server;
 +        lock.readLock().lock();
 +        try
 +        {
-+            server = ProxyServer.getInstance().getServerInfo( data.get( key( player ) ) );
++            server = ProxyServer.getInstance().getServerInfo( data.get( player.getUniqueId() ) );
 +        } finally
 +        {
 +            lock.readLock().unlock();
@@ -558,23 +560,17 @@ index 00000000..40fe249b
 +        lock.writeLock().lock();
 +        try
 +        {
-+            data.put( key( player ), ( player.getReconnectServer() != null ) ? player.getReconnectServer().getName() : player.getServer().getInfo().getName() );
++            data.put( player.getUniqueId(), ( player.getReconnectServer() != null ) ? player.getReconnectServer().getName() : player.getServer().getInfo().getName() );
 +        } finally
 +        {
 +            lock.writeLock().unlock();
 +        }
 +    }
 +
-+    private String key(ProxiedPlayer player)
-+    {
-+        InetSocketAddress host = player.getPendingConnection().getVirtualHost();
-+        return player.getName() + ";" + host.getHostString() + ":" + host.getPort();
-+    }
-+
 +    @Override
 +    public void save()
 +    {
-+        Map<String, String> copy = new HashMap<>();
++        Map<UUID, String> copy = new HashMap<>();
 +        lock.readLock().lock();
 +        try
 +        {
@@ -600,7 +596,7 @@ index 00000000..40fe249b
 +}
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8acdc22d..c355e626 100644
+index 8acdc22de..c355e6260 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -91,6 +91,14 @@ import net.md_5.bungee.query.RemoteQuery;
