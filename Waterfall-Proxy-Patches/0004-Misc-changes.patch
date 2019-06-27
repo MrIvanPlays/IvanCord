@@ -1,4 +1,4 @@
-From d4de959366b5a56b4a19569d2c0627c6749048a9 Mon Sep 17 00:00:00 2001
+From 8d21208267db7b0322f96da73fcdc16ac2113d10 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -111,14 +111,14 @@ index d7ed3e114..209cb8598 100644
      private final Configuration defaults;
  
 diff --git a/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java b/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
-index eece88704..13231a529 100644
+index eece88704..5b6ff2ebe 100644
 --- a/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
 +++ b/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
 @@ -23,6 +23,22 @@ public abstract class ConfigurationProvider
          return providers.get( provider );
      }
  
-+    // IvanCord start - add option to register/unregister configuration providers
++    // IvanCord start
 +    public static <T extends ConfigurationProvider> void registerProvider(T provider)
 +    {
 +        providers.put( provider.getClass(), provider );
