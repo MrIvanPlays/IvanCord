@@ -1,4 +1,4 @@
-From f9deaf99499f6fc143171491f5346a8025a13a12 Mon Sep 17 00:00:00 2001
+From db5c189ca07864b0e12eff2b9cd685e75cf73f9e Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 27 Jun 2019 18:25:10 +0300
 Subject: [PATCH] Add plugin disable api
@@ -100,7 +100,7 @@ index 4312e5714..bdd4a5108 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0eefe68e3..4a6883b85 100644
+index 0eefe68e3..28d6bf6de 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -24,12 +24,14 @@ import java.io.FileReader;
@@ -118,7 +118,16 @@ index 0eefe68e3..4a6883b85 100644
  import java.util.Locale;
  import java.util.Map;
  import java.util.MissingResourceException;
-@@ -480,24 +482,15 @@ public class BungeeCord extends ProxyServer
+@@ -44,6 +46,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
+ import java.util.logging.Handler;
+ import java.util.logging.Level;
+ import java.util.logging.Logger;
++import java.util.stream.Collectors;
++
+ import lombok.Getter;
+ import lombok.Setter;
+ import lombok.Synchronized;
+@@ -480,24 +484,23 @@ public class BungeeCord extends ProxyServer
                  saveThread.cancel();
                  // metricsThread.cancel(); // Waterfall: Disable Metrics
  
@@ -126,8 +135,14 @@ index 0eefe68e3..4a6883b85 100644
                  getLogger().info( "Disabling plugins" );
 -                for ( Plugin plugin : Lists.reverse( new ArrayList<>( pluginManager.getPlugins() ) ) )
 +                // IvanCord start - fix this shit
-+                List<Plugin> pluginsCopy = new ArrayList<>( pluginManager.getPlugins() );
-+                pluginsCopy.sort( Collator.getInstance( Locale.getDefault() ) );
++                List<String> pluginsNamesCopy = new ArrayList<>( pluginManager.getPlugins() ).stream()
++                        .parallel()
++                        .map( plugin -> plugin.getDescription().getName() )
++                        .sorted( Collator.getInstance( Locale.getDefault() ) ).collect( Collectors.toList() );
++                List<Plugin> pluginsCopy = pluginsNamesCopy.stream()
++                        .parallel()
++                        .map( pluginManager::getPlugin )
++                        .collect( Collectors.toList() );
 +                for ( Plugin plugin : pluginsCopy )
                  {
 -                    try
@@ -145,6 +160,8 @@ index 0eefe68e3..4a6883b85 100644
 -                    plugin.getExecutorService().shutdownNow();
 +                    pluginManager.disablePlugin( plugin );
                  }
++                pluginsNamesCopy.clear();
++                pluginsCopy.clear();
 +                // IvanCord end
  
                  getLogger().info( "Closing IO threads" );
