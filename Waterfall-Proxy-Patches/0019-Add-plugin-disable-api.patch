@@ -1,0 +1,154 @@
+From f9deaf99499f6fc143171491f5346a8025a13a12 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Thu, 27 Jun 2019 18:25:10 +0300
+Subject: [PATCH] Add plugin disable api
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 4312e5714..bdd4a5108 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -23,6 +23,7 @@ import java.util.Set;
+ import java.util.Stack;
+ import java.util.jar.JarEntry;
+ import java.util.jar.JarFile;
++import java.util.logging.Handler;
+ import java.util.logging.Level;
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.api.ChatColor;
+@@ -53,6 +54,9 @@ public class PluginManager
+     private Map<String, PluginDescription> toLoad = new HashMap<>();
+     private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
+     private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
++    // IvanCord start
++    private Set<Plugin> DISABLED_PLUGINS = new HashSet<>();
++    // IvanCord end
+ 
+     @SuppressWarnings("unchecked")
+     public PluginManager(ProxyServer proxy)
+@@ -499,4 +503,72 @@ public class PluginManager
+     {
+         return Collections.unmodifiableCollection( commandMap.entrySet() );
+     }
++
++    // IvanCord start - plugin disable api
++
++    /**
++     * Disables plugin, specified by the plugin's name
++     *
++     * @param pluginName plugin name
++     * @throws IllegalArgumentException if plugin name is null/empty || found plugin is null
++     */
++    public void disablePlugin(String pluginName)
++    {
++        Preconditions.checkArgument( pluginName != null || !pluginName.isEmpty(), "Plugin name cannot be null/empty" );
++        disablePlugin( getPlugin( pluginName ) );
++    }
++
++    /**
++     * Disables plugin
++     *
++     * @param plugin plugin
++     * @throws IllegalArgumentException if the plugin is null
++     */
++    public void disablePlugin(Plugin plugin)
++    {
++        Preconditions.checkNotNull( plugin, "Disabling plugin cannot be null" );
++        try
++        {
++            plugin.onDisable();
++            for ( Handler handler : plugin.getLogger().getHandlers() )
++            {
++                handler.close();
++            }
++        } catch ( Throwable e )
++        {
++            proxy.getLogger().log( Level.SEVERE, "Exception disabling plugin " + plugin.getDescription().getName(), e );
++        }
++        unregisterListeners( plugin );
++        unregisterCommands( plugin );
++        proxy.getScheduler().cancel( plugin );
++        plugin.getExecutorService().shutdownNow();
++        DISABLED_PLUGINS.add( plugin );
++    }
++
++    /**
++     * Returns whenever a plugin, specified by its name, is enabled
++     *
++     * @param pluginName plugin name
++     * @return <code>true</code> if enabled, otherwise <code>false</code>
++     * @throws IllegalArgumentException if plugin name is null/empty || found plugin is null
++     */
++    public boolean isPluginEnabled(String pluginName)
++    {
++        Preconditions.checkArgument( pluginName != null || !pluginName.isEmpty(), "Plugin name cannot be null/empty" );
++        return isPluginEnabled( getPlugin( pluginName ) );
++    }
++
++    /**
++     * Returns whenever a plugin is enabled
++     *
++     * @param plugin plugin
++     * @return <code>true</code> if enabled, otherwise <code>false</code>
++     * @throws IllegalArgumentException if plugin is null
++     */
++    public boolean isPluginEnabled(Plugin plugin)
++    {
++        Preconditions.checkNotNull( plugin, "Checked plugin cannot be null" );
++        return !DISABLED_PLUGINS.contains( plugin );
++    }
++    // IvanCord end
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 0eefe68e3..4a6883b85 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -24,12 +24,14 @@ import java.io.FileReader;
+ import java.io.IOException;
+ import java.io.PrintStream;
+ import java.net.InetSocketAddress;
++import java.text.Collator;
+ import java.text.MessageFormat;
+ import java.util.ArrayList;
+ import java.util.Collection;
+ import java.util.Collections;
+ import java.util.HashMap;
+ import java.util.HashSet;
++import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.MissingResourceException;
+@@ -480,24 +482,15 @@ public class BungeeCord extends ProxyServer
+                 saveThread.cancel();
+                 // metricsThread.cancel(); // Waterfall: Disable Metrics
+ 
+-                // TODO: Fix this shit
+                 getLogger().info( "Disabling plugins" );
+-                for ( Plugin plugin : Lists.reverse( new ArrayList<>( pluginManager.getPlugins() ) ) )
++                // IvanCord start - fix this shit
++                List<Plugin> pluginsCopy = new ArrayList<>( pluginManager.getPlugins() );
++                pluginsCopy.sort( Collator.getInstance( Locale.getDefault() ) );
++                for ( Plugin plugin : pluginsCopy )
+                 {
+-                    try
+-                    {
+-                        plugin.onDisable();
+-                        for ( Handler handler : plugin.getLogger().getHandlers() )
+-                        {
+-                            handler.close();
+-                        }
+-                    } catch ( Throwable t )
+-                    {
+-                        getLogger().log( Level.SEVERE, "Exception disabling plugin " + plugin.getDescription().getName(), t );
+-                    }
+-                    getScheduler().cancel( plugin );
+-                    plugin.getExecutorService().shutdownNow();
++                    pluginManager.disablePlugin( plugin );
+                 }
++                // IvanCord end
+ 
+                 getLogger().info( "Closing IO threads" );
+                 // IvanCord start - speed up shutdown
+-- 
+2.22.0.windows.1
+

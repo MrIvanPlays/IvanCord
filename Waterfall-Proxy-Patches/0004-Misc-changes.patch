@@ -1,4 +1,4 @@
-From 8d21208267db7b0322f96da73fcdc16ac2113d10 Mon Sep 17 00:00:00 2001
+From 91331eb2d3eed8208fc9ddb3feab2e562899fec8 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -75,9 +75,21 @@ index e2e01ecb0..1ae37ef5c 100644
 +    // IvanCord end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 884f78c80..216ee68b7 100644
+index 884f78c80..4312e5714 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -387,9 +387,9 @@ public class PluginManager
+         Preconditions.checkNotNull( folder, "folder" );
+         Preconditions.checkArgument( folder.isDirectory(), "Must load from a directory" );
+ 
+-        for ( File file : folder.listFiles() )
++        for ( File file : folder.listFiles((dir, name) -> name.endsWith( ".jar" )) ) // IvanCord use filter
+         {
+-            if ( file.isFile() && file.getName().endsWith( ".jar" ) )
++            if ( file.isFile() ) // IvanCord - remove now reudant check if filename ends with .jar
+             {
+                 try ( JarFile jar = new JarFile( file ) )
+                 {
 @@ -454,11 +454,13 @@ public class PluginManager
       */
      public void registerListener(Plugin plugin, Listener listener)
