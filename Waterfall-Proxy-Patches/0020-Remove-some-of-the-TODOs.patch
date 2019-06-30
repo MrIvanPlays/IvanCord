@@ -1,4 +1,4 @@
-From dd938f41609b7243879d1f2dd3072179f731c139 Mon Sep 17 00:00:00 2001
+From 35f8e43f5830d9c6d062c30ce07919e8eed9b157 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 30 Jun 2019 21:13:31 +0300
 Subject: [PATCH] Remove some of the TODOs
@@ -97,10 +97,10 @@ index 241855f68..e0a99c16a 100644
          user.setServer( server );
          ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b7f73adc8..b008feba2 100644
+index 695965ece..d00666d5d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -297,7 +297,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -296,7 +296,12 @@ public final class UserConnection implements ProxiedPlayer
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
      {
          // Waterfall start
