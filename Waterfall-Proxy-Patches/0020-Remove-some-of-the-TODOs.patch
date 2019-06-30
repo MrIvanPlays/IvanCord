@@ -1,0 +1,176 @@
+From 3ef39054af3342643072f0ddb1c03d73764a1b2e Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Sun, 30 Jun 2019 21:13:31 +0300
+Subject: [PATCH] Remove some of the TODOs
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 0135019f2..f05118d1f 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -278,5 +278,12 @@ public interface ProxyConfig
+      */
+     String getReconnectHandlerType();
+ 
++    /**
++     * Gets the connect timeout milliseconds
++     *
++     * @return connect timeout, specified in milliseconds
++     */
++    int getConnectTimeoutMillis();
++
+     // IvanCord end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java b/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
+index ad2ebdea0..c4922a690 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
++++ b/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
+@@ -73,6 +73,11 @@ public class ServerConnectRequest
+     public static class Builder
+     {
+ 
+-        private int connectTimeout = 5000; // TODO: Configurable
++        // IvanCord start - remove to do "Configurable"
++        /*
++        private int connectTimeout = 5000;
++         */
++        private int connectTimeout = ProxyServer.getInstance().getConfig().getConnectTimeoutMillis();
++        // IvanCord end
+     }
+ }
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+index 67b40f5e9..5af573363 100644
+--- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+@@ -38,6 +38,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+     private boolean kickToLobby = true;
+     private boolean disableTabListRewrite = false;
+     private String reconnectHandlerType = ReconnectHandlerType.YAML.name();
++    private int connectTimeoutMillis = 5000;
+ 
+     @Accessors(fluent = true)
+     private boolean isTCPFastOpenEnabled = true;
+@@ -55,6 +56,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+         isTCPFastOpenEnabled = config.getBoolean( "tcp_fast_open_enabled", isTCPFastOpenEnabled );
+         getTCPFastOpenMode = setupTFO( config.getInt( "tcp_fast_open_mode", getTCPFastOpenMode ) );
+         reconnectHandlerType = setupReconnectHandlerType( config.getString( "reconnect_handler_type", reconnectHandlerType ) );
++        connectTimeoutMillis = config.getInt( "connect_timeout_millis", connectTimeoutMillis );
+     }
+ 
+     private int setupTFO(int incoming)
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
+index 4c0637b9a..b727f0429 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
+@@ -153,7 +153,12 @@ public class BungeeServerInfo implements ServerInfo
+                 .channel( PipelineUtils.getChannel() )
+                 .group( BungeeCord.getInstance().workerEventLoopGroup )
+                 .handler( PipelineUtils.BASE )
+-                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
++                // IvanCord - remove to do "Configurable"
++                /*
++                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 )
++                 */
++                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().config.getConnectTimeoutMillis() )
++                // IvanCord end
+                 .remoteAddress( getAddress() )
+                 .connect()
+                 .addListener( listener );
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 241855f68..e0a99c16a 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -346,11 +346,14 @@ public class ServerConnector extends PacketHandler
+         }
+ 
+         // Add to new server
+-        // TODO: Move this to the connected() method of DownstreamBridge
++        // IvanCord - remove the to do "Move this to the connected() method of DownstreamBridge"
++        /*
+         target.addPlayer( user );
+         user.getPendingConnects().remove( target );
+         user.setServerJoinQueue( null );
+         user.setDimensionChange( false );
++         */
++        // IvanCord end
+ 
+         user.setServer( server );
+         ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index d72a20887..b7fcd1799 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -296,7 +296,12 @@ public final class UserConnection implements ProxiedPlayer
+     public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
+     {
+         // Waterfall start
+-        connect(info, callback, retry, reason, 5000); // todo: configurable
++        // IvanCord start - remove to do "configurable"
++        /*
++        connect(info, callback, retry, reason, 5000);
++         */
++        connect( info, callback, retry, reason, bungee.getConfig().getConnectTimeoutMillis() );
++        // IvanCord end
+     }
+     public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, int timeout) {
+         connect(info, callback, retry, ServerConnectEvent.Reason.PLUGIN, timeout);
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 4f6442aa5..04ce51c41 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -28,6 +28,8 @@ import net.md_5.bungee.ServerConnection;
+ import net.md_5.bungee.UserConnection;
+ import net.md_5.bungee.Util;
+ import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.api.chat.ComponentBuilder;
+ import net.md_5.bungee.api.chat.TextComponent;
+ import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.connection.ProxiedPlayer;
+@@ -105,6 +107,17 @@ public class DownstreamBridge extends PacketHandler
+         // Waterfall end
+     }
+ 
++    // IvanCord start
++    @Override
++    public void connected(ChannelWrapper channel) throws Exception
++    {
++        server.getInfo().addPlayer( con );
++        con.getPendingConnects().remove( server.getInfo() );
++        con.setServerJoinQueue( null );
++        con.setDimensionChange( false );
++    }
++    // IvanCord end
++
+     @Override
+     public void disconnected(ChannelWrapper channel) throws Exception
+     {
+@@ -537,6 +550,7 @@ public class DownstreamBridge extends PacketHandler
+         ServerInfo defaultServer = bungee.getServerInfo( bungee.getConfig().getListeners().stream().findFirst().get().getDefaultServer() );
+         ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(),
+                 ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER ) );
++        BaseComponent[] kickReasonComponent = new ComponentBuilder( "[Proxy] " ).append( event.getKickReasonComponent() ).create();
+         if ( kickToLobby )
+         {
+             if ( defaultServer != null )
+@@ -549,7 +563,7 @@ public class DownstreamBridge extends PacketHandler
+                     con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
+                 } else
+                 {
+-                    con.disconnect0( event.getKickReasonComponent() ); // TODO: Prefix our own stuff
++                    con.disconnect0( kickReasonComponent );
+                 }
+             }
+         } else
+@@ -559,7 +573,7 @@ public class DownstreamBridge extends PacketHandler
+                 con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.KICK_REDIRECT );
+             } else
+             {
+-                con.disconnect0( event.getKickReasonComponent() ); // TODO: Prefix our own stuff
++                con.disconnect0( kickReasonComponent );
+             }
+         }
+         // IvanCord end
+-- 
+2.22.0.windows.1
+
