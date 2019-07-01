@@ -1,4 +1,4 @@
-From 33fbd1b6529330cd50ea2d31e109e8fbac374bdc Mon Sep 17 00:00:00 2001
+From 51bd72c45737be425c22322fe05aaf995e29fbfe Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 17:21:37 +0300
 Subject: [PATCH] Add basic server operator techniques
@@ -305,7 +305,7 @@ index c9324e3bc..a4cf4a71a 100644
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index af30d3f6f..695965ece 100644
+index bb548030d..f83f118bd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -117,6 +117,10 @@ public final class UserConnection implements ProxiedPlayer
@@ -338,9 +338,9 @@ index af30d3f6f..695965ece 100644
      }
  
      @Override
-@@ -798,6 +805,13 @@ public final class UserConnection implements ProxiedPlayer
-         }
-         bungee.getPluginManager().callEvent( new SoundPlayedEvent( this, position, sound, volume, pitch, category ) );
+@@ -799,6 +806,13 @@ public final class UserConnection implements ProxiedPlayer
+         bungee.getPluginManager().callEvent( new SoundPlayedEvent( this, position,
+                 PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category ) );
      }
 +
 +    @Override
