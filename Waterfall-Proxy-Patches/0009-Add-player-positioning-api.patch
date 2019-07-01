@@ -1,4 +1,4 @@
-From f58c9c061c6d14f17576d5711a194cce9567bd94 Mon Sep 17 00:00:00 2001
+From f5faf922d8b401bbcaad355cbaa8de926e891e00 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Wed, 12 Jun 2019 20:04:42 +0300
 Subject: [PATCH] Add player positioning api
@@ -6,7 +6,7 @@ Subject: [PATCH] Add player positioning api
 
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/Position.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/Position.java
 new file mode 100644
-index 00000000..0db9769d
+index 000000000..0db9769dd
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/Position.java
 @@ -0,0 +1,66 @@
@@ -78,7 +78,7 @@ index 00000000..0db9769d
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/PlayerChangePositionEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/PlayerChangePositionEvent.java
 new file mode 100644
-index 00000000..13cb3586
+index 000000000..13cb35860
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/PlayerChangePositionEvent.java
 @@ -0,0 +1,66 @@
@@ -149,7 +149,7 @@ index 00000000..13cb3586
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 5e7b51f8..2e96fc06 100644
+index 5e7b51f80..2e96fc066 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -13,6 +13,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
@@ -178,7 +178,7 @@ index 5e7b51f8..2e96fc06 100644
       * Gets this player's chat mode.
       *
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index e4f14974..e893a472 100644
+index e4f149748..e893a4727 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -23,6 +23,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
@@ -203,7 +203,7 @@ index e4f14974..e893a472 100644
      public void handle(EntityEffect entityEffect) throws Exception
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index e830aa15..3402862b 100644
+index e830aa158..3402862b9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -30,6 +30,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
@@ -235,7 +235,7 @@ index e830aa15..3402862b 100644
      // 1
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerPosition.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerPosition.java
 new file mode 100644
-index 00000000..f2f082c0
+index 000000000..f2f082c0a
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlayerPosition.java
 @@ -0,0 +1,71 @@
@@ -311,7 +311,7 @@ index 00000000..f2f082c0
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 167861ea..e0a18f49 100644
+index 167861ea3..e0a18f492 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -65,6 +65,7 @@ import net.md_5.bungee.tab.ServerUnique;
@@ -347,7 +347,7 @@ index 167861ea..e0a18f49 100644
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 799ba13e..503484b0 100644
+index 799ba13e5..52f2a6cc0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -58,6 +58,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
@@ -367,7 +367,7 @@ index 799ba13e..503484b0 100644
  
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
-@@ -698,6 +701,34 @@ public class DownstreamBridge extends PacketHandler
+@@ -698,6 +701,41 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -391,9 +391,16 @@ index 799ba13e..503484b0 100644
 +                throw CancelSendSignal.INSTANCE;
 +            } else
 +            {
-+                Position pn = event.getMovedTo();
-+                con.unsafe().sendPacket( new PlayerPosition( pn.getX(), pn.getY(), pn.getZ(), pn.getYaw(), pn.getPitch(), pn.isOnGround() ) );
-+                throw CancelSendSignal.INSTANCE;
++                if ( !event.getMovedTo().equals( packetPos ) )
++                {
++                    Position pn = event.getMovedTo();
++                    con.unsafe().sendPacket( new PlayerPosition( pn.getX(), pn.getY(), pn.getZ(), pn.getYaw(), pn.getPitch(), pn.isOnGround() ) );
++                    throw CancelSendSignal.INSTANCE;
++                } else
++                {
++                    con.unsafe().sendPacket( pac );
++                    throw CancelSendSignal.INSTANCE;
++                }
 +            }
 +        }
 +    }
@@ -403,10 +410,10 @@ index 799ba13e..503484b0 100644
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 22313d98..2df31dc3 100644
+index 22313d989..cec27cb7b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -28,9 +28,14 @@ import net.md_5.bungee.protocol.packet.Chat;
+@@ -28,9 +28,11 @@ import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -414,14 +421,11 @@ index 22313d98..2df31dc3 100644
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.TabCompleteRequest;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
-+// IvanCord start
-+import com.github.mrivanplays.ivancord.api.Position;
-+import com.github.mrivanplays.ivancord.api.event.PlayerChangePositionEvent;
-+// IvanCord end
++import com.github.mrivanplays.ivancord.api.Position; // IvanCord
  
  public class UpstreamBridge extends PacketHandler
  {
-@@ -268,6 +273,14 @@ public class UpstreamBridge extends PacketHandler
+@@ -268,6 +270,14 @@ public class UpstreamBridge extends PacketHandler
          }
      }
  
@@ -437,5 +441,5 @@ index 22313d98..2df31dc3 100644
      public String toString()
      {
 -- 
-2.21.0.windows.1
+2.22.0.windows.1
 
