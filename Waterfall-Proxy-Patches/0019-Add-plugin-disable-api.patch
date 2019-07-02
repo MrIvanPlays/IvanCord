@@ -1,11 +1,11 @@
-From f9bee8ad31a967a75e8b63697c9c5a3f73c00eba Mon Sep 17 00:00:00 2001
+From 0406e37804e34c5ecee02fce28ddd6d2b0e4ff5e Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 27 Jun 2019 18:25:10 +0300
 Subject: [PATCH] Add plugin disable api
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 4312e5714..bdd4a5108 100644
+index 4312e5714..b1ef354fa 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -23,6 +23,7 @@ import java.util.Set;
@@ -26,7 +26,7 @@ index 4312e5714..bdd4a5108 100644
  
      @SuppressWarnings("unchecked")
      public PluginManager(ProxyServer proxy)
-@@ -499,4 +503,72 @@ public class PluginManager
+@@ -499,4 +503,76 @@ public class PluginManager
      {
          return Collections.unmodifiableCollection( commandMap.entrySet() );
      }
@@ -54,6 +54,10 @@ index 4312e5714..bdd4a5108 100644
 +    public void disablePlugin(Plugin plugin)
 +    {
 +        Preconditions.checkNotNull( plugin, "Disabling plugin cannot be null" );
++        if ( !isPluginEnabled( plugin ) )
++        {
++            return;
++        }
 +        try
 +        {
 +            plugin.onDisable();
@@ -100,7 +104,7 @@ index 4312e5714..bdd4a5108 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 4d7383413..cbe7b6176 100644
+index 4d7383413..2d1379967 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -24,12 +24,14 @@ import java.io.FileReader;
@@ -127,23 +131,14 @@ index 4d7383413..cbe7b6176 100644
  import lombok.Getter;
  import lombok.Setter;
  import lombok.Synchronized;
-@@ -485,24 +489,23 @@ public class BungeeCord extends ProxyServer
+@@ -485,24 +489,13 @@ public class BungeeCord extends ProxyServer
                  saveThread.cancel();
                  // metricsThread.cancel(); // Waterfall: Disable Metrics
  
 -                // TODO: Fix this shit
                  getLogger().info( "Disabling plugins" );
--                for ( Plugin plugin : Lists.reverse( new ArrayList<>( pluginManager.getPlugins() ) ) )
 +                // IvanCord start - fix this shit
-+                List<String> pluginsNamesCopy = new ArrayList<>( pluginManager.getPlugins() ).stream()
-+                        .parallel()
-+                        .map( plugin -> plugin.getDescription().getName() )
-+                        .sorted( Collator.getInstance( Locale.getDefault() ) ).collect( Collectors.toList() );
-+                List<Plugin> pluginsCopy = pluginsNamesCopy.stream()
-+                        .parallel()
-+                        .map( pluginManager::getPlugin )
-+                        .collect( Collectors.toList() );
-+                for ( Plugin plugin : pluginsCopy )
+                 for ( Plugin plugin : Lists.reverse( new ArrayList<>( pluginManager.getPlugins() ) ) )
                  {
 -                    try
 -                    {
@@ -160,8 +155,6 @@ index 4d7383413..cbe7b6176 100644
 -                    plugin.getExecutorService().shutdownNow();
 +                    pluginManager.disablePlugin( plugin );
                  }
-+                pluginsNamesCopy.clear();
-+                pluginsCopy.clear();
 +                // IvanCord end
  
                  getLogger().info( "Closing IO threads" );
