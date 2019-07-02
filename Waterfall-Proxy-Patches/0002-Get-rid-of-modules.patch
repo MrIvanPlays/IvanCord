@@ -1,4 +1,4 @@
-From ab1c8ac04c955bd40a068d97d17b29c5a50a9cc4 Mon Sep 17 00:00:00 2001
+From c091e5b675c87e52e07736619882fa750b82926c Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:04:14 +0300
 Subject: [PATCH] Get rid of modules
@@ -596,10 +596,18 @@ index 000000000..6d3263e19
 +}
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8acdc22de..c355e6260 100644
+index 8acdc22de..1ce6c1f0b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -91,6 +91,14 @@ import net.md_5.bungee.query.RemoteQuery;
+@@ -81,7 +81,6 @@ import net.md_5.bungee.compress.CompressFactory;
+ import net.md_5.bungee.conf.Configuration;
+ import net.md_5.bungee.conf.YamlConfig;
+ import net.md_5.bungee.forge.ForgeConstants;
+-import net.md_5.bungee.module.ModuleManager;
+ import net.md_5.bungee.netty.PipelineUtils;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -91,6 +90,13 @@ import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
  
@@ -609,12 +617,11 @@ index 8acdc22de..c355e6260 100644
 +import com.github.mrivanplays.ivancord.modules.CommandList;
 +import com.github.mrivanplays.ivancord.modules.CommandSend;
 +import com.github.mrivanplays.ivancord.modules.CommandServer;
-+import com.github.mrivanplays.ivancord.modules.YamlReconnectHandler;
 +
  /**
   * Main BungeeCord proxy class.
   */
-@@ -164,7 +172,9 @@ public class BungeeCord extends ProxyServer
+@@ -164,7 +170,9 @@ public class BungeeCord extends ProxyServer
              .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
      @Getter
      private ConnectionThrottle connectionThrottle;
@@ -624,7 +631,7 @@ index 8acdc22de..c355e6260 100644
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -222,6 +232,15 @@ public class BungeeCord extends ProxyServer
+@@ -222,6 +230,15 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandBungee() );
          getPluginManager().registerCommand( null, new CommandPerms() );
  
@@ -640,7 +647,7 @@ index 8acdc22de..c355e6260 100644
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
              if ( EncryptionUtil.nativeFactory.load() )
-@@ -259,9 +278,11 @@ public class BungeeCord extends ProxyServer
+@@ -259,9 +276,11 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  

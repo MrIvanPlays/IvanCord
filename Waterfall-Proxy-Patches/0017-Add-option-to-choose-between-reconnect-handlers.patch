@@ -1,4 +1,4 @@
-From c8c9245cbd329e94a45a3cb75b176240b6e236d7 Mon Sep 17 00:00:00 2001
+From 591803001841e16912e43ff557c2b48a09ab8817 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 20:20:49 +0300
 Subject: [PATCH] Add option to choose between reconnect handlers
@@ -221,10 +221,10 @@ index 0cc443389..67b40f5e9 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a4cf4a71a..4d7383413 100644
+index e50ebd081..f0b3bb044 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -91,6 +91,8 @@ import net.md_5.bungee.query.RemoteQuery;
+@@ -89,6 +89,8 @@ import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
  
@@ -233,7 +233,7 @@ index a4cf4a71a..4d7383413 100644
  import com.github.mrivanplays.ivancord.commands.CommandPlugins;
  import com.github.mrivanplays.ivancord.commands.op.CommandDeop;
  import com.github.mrivanplays.ivancord.commands.op.CommandOp;
-@@ -313,6 +315,23 @@ public class BungeeCord extends ProxyServer
+@@ -310,6 +312,23 @@ public class BungeeCord extends ProxyServer
  
          isRunning = true;
  
