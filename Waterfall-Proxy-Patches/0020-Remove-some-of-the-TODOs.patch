@@ -1,4 +1,4 @@
-From 69ac35a0518e34afb2fd5a4a8cfe6b2ea1e997ce Mon Sep 17 00:00:00 2001
+From 1f1b2715975e3b8e04bad80f8265be97f14ecec3 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 30 Jun 2019 21:13:31 +0300
 Subject: [PATCH] Remove some of the TODOs
@@ -59,10 +59,61 @@ index 67b40f5e9..5af573363 100644
  
      private int setupTFO(int incoming)
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 4c0637b9a..b727f0429 100644
+index 4c0637b9a..592d5b16b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-@@ -153,7 +153,12 @@ public class BungeeServerInfo implements ServerInfo
+@@ -1,6 +1,7 @@
+ package net.md_5.bungee;
+ 
+ import com.google.common.base.Preconditions;
++import com.google.common.collect.Iterables;
+ import io.netty.bootstrap.Bootstrap;
+ import io.netty.channel.ChannelFuture;
+ import io.netty.channel.ChannelFutureListener;
+@@ -100,13 +101,16 @@ public class BungeeServerInfo implements ServerInfo
+         sendData( channel, data, true );
+     }
+ 
+-    // TODO: Don't like this method
++    // IvanCord start - remove to do "Don't like this method"
++    // We're rewriting it fully
+     @Override
+     public boolean sendData(String channel, byte[] data, boolean queue)
+     {
+         Preconditions.checkNotNull( channel, "channel" );
+         Preconditions.checkNotNull( data, "data" );
+ 
++        // old code
++        /*
+         Server server;
+ 
+         synchronized (players) {
+@@ -121,6 +125,24 @@ public class BungeeServerInfo implements ServerInfo
+                 packetQueue.add(new PluginMessage(channel, data, false));
+             }
+         }
++         */
++
++        // here's ours
++        if ( players.isEmpty() )
++        {
++            if ( queue )
++            {
++                synchronized ( packetQueue )
++                {
++                    packetQueue.add( new PluginMessage( channel, data, false ) );
++                }
++            }
++        } else
++        {
++            Server server = Iterables.getFirst( players, null ).getServer();
++            server.sendData( channel, data );
++            return true;
++        }
+ 
+         return false;
+     }
+@@ -153,7 +175,12 @@ public class BungeeServerInfo implements ServerInfo
                  .channel( PipelineUtils.getChannel() )
                  .group( BungeeCord.getInstance().workerEventLoopGroup )
                  .handler( PipelineUtils.BASE )
