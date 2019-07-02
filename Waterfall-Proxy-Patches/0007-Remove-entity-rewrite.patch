@@ -1,4 +1,4 @@
-From dfb05079d986777f0a6a0c7376295759b2d130c9 Mon Sep 17 00:00:00 2001
+From 51e2287ece8cdde7810887db6069d2c70cbd0b89 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 28 Apr 2019 09:53:09 +0300
 Subject: [PATCH] Remove entity rewrite
@@ -9,7 +9,7 @@ All score and team packets are not handled by the proxy in no way. They
 dont either register!
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index b7b89c42..5e7b51f8 100644
+index b7b89c421..5e7b51f80 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -382,6 +382,8 @@ public interface ProxiedPlayer extends Connection, CommandSender
@@ -22,7 +22,7 @@ index b7b89c42..5e7b51f8 100644
      Scoreboard getScoreboard();
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/score/Objective.java b/api/src/main/java/net/md_5/bungee/api/score/Objective.java
-index 0dd25646..1e77f861 100644
+index 0dd256467..1e77f861e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/score/Objective.java
 +++ b/api/src/main/java/net/md_5/bungee/api/score/Objective.java
 @@ -5,9 +5,12 @@ import lombok.Data;
@@ -39,7 +39,7 @@ index 0dd25646..1e77f861 100644
  {
  
 diff --git a/api/src/main/java/net/md_5/bungee/api/score/Position.java b/api/src/main/java/net/md_5/bungee/api/score/Position.java
-index c3da93b2..2f6505d9 100644
+index c3da93b22..2f6505d9c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/score/Position.java
 +++ b/api/src/main/java/net/md_5/bungee/api/score/Position.java
 @@ -2,7 +2,10 @@ package net.md_5.bungee.api.score;
@@ -54,7 +54,7 @@ index c3da93b2..2f6505d9 100644
  {
  
 diff --git a/api/src/main/java/net/md_5/bungee/api/score/Score.java b/api/src/main/java/net/md_5/bungee/api/score/Score.java
-index cb906ddd..3020fc74 100644
+index cb906ddd0..3020fc74a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/score/Score.java
 +++ b/api/src/main/java/net/md_5/bungee/api/score/Score.java
 @@ -4,8 +4,11 @@ import lombok.Data;
@@ -70,7 +70,7 @@ index cb906ddd..3020fc74 100644
  {
  
 diff --git a/api/src/main/java/net/md_5/bungee/api/score/Scoreboard.java b/api/src/main/java/net/md_5/bungee/api/score/Scoreboard.java
-index c10c7b11..eb1e8a88 100644
+index c10c7b11e..eb1e8a889 100644
 --- a/api/src/main/java/net/md_5/bungee/api/score/Scoreboard.java
 +++ b/api/src/main/java/net/md_5/bungee/api/score/Scoreboard.java
 @@ -8,8 +8,12 @@ import java.util.Map;
@@ -87,7 +87,7 @@ index c10c7b11..eb1e8a88 100644
  {
  
 diff --git a/api/src/main/java/net/md_5/bungee/api/score/Team.java b/api/src/main/java/net/md_5/bungee/api/score/Team.java
-index 25526320..bdff0641 100644
+index 255263208..bdff0641d 100644
 --- a/api/src/main/java/net/md_5/bungee/api/score/Team.java
 +++ b/api/src/main/java/net/md_5/bungee/api/score/Team.java
 @@ -8,7 +8,11 @@ import java.util.Set;
@@ -103,7 +103,7 @@ index 25526320..bdff0641 100644
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 87093807..652e4ca2 100644
+index 870938079..652e4ca2b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -31,15 +31,20 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
@@ -146,7 +146,7 @@ index 87093807..652e4ca2 100644
                      PluginMessage.class,
                      map( ProtocolConstants.MINECRAFT_1_8, 0x3F ),
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
-index b8f30276..578095d5 100644
+index b8f30276d..578095d50 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
 @@ -8,10 +8,14 @@ import lombok.NoArgsConstructor;
@@ -165,7 +165,7 @@ index b8f30276..578095d5 100644
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
-index 3c7905d5..6fa90c03 100644
+index 3c7905d54..6fa90c03f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardObjective.java
 @@ -10,10 +10,14 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
@@ -184,7 +184,7 @@ index 3c7905d5..6fa90c03 100644
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
-index 0b27fc86..2e0139ba 100644
+index 0b27fc86b..2e0139ba2 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardScore.java
 @@ -9,10 +9,14 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
@@ -203,7 +203,7 @@ index 0b27fc86..2e0139ba 100644
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index 85d386c0..2bfbcb3f 100644
+index 85d386c04..2bfbcb3f5 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 @@ -9,10 +9,14 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
@@ -222,7 +222,7 @@ index 85d386c0..2bfbcb3f 100644
  {
  
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index f316810b..a5ec787c 100644
+index f316810b1..a5ec787c7 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -53,7 +53,7 @@ public abstract class WaterfallConfiguration extends Configuration { // IvanCord
@@ -235,7 +235,7 @@ index f316810b..a5ec787c 100644
      @Override
      public void load() {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 925150d6..241855f6 100644
+index bd8d81907..531669e78 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -226,10 +226,12 @@ public class ServerConnector extends PacketHandler
@@ -289,7 +289,7 @@ index 925150d6..241855f6 100644
                  // Ensure that we maintain consistency
                  user.setClientEntityId( login.getEntityId() );
  
-@@ -313,7 +323,7 @@ public class ServerConnector extends PacketHandler
+@@ -318,7 +328,7 @@ public class ServerConnector extends PacketHandler
                  if (user.getDimension() == login.getDimension()) {
                      user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getDifficulty(), login.getGameMode(), login.getLevelType()));
                  }
@@ -299,7 +299,7 @@ index 925150d6..241855f6 100644
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 77db6392..167861ea 100644
+index 2b4b069b5..812a55c39 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -41,7 +41,9 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -364,7 +364,7 @@ index 77db6392..167861ea 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 3a5ae3ee..799ba13e 100644
+index 3a5ae3ee8..799ba13e5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -37,11 +37,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
@@ -442,7 +442,7 @@ index 3a5ae3ee..799ba13e 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 51d0c6cf..22313d98 100644
+index 51d0c6cfe..22313d989 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -116,7 +116,9 @@ public class UpstreamBridge extends PacketHandler
@@ -456,5 +456,5 @@ index 51d0c6cf..22313d98 100644
          }
      }
 -- 
-2.21.0.windows.1
+2.22.0.windows.1
 

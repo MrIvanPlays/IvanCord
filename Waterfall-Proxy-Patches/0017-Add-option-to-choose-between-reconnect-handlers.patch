@@ -1,4 +1,4 @@
-From 591803001841e16912e43ff557c2b48a09ab8817 Mon Sep 17 00:00:00 2001
+From 0564a4b18bd965716d54f4acecb5f18ee789e9f5 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 20:20:49 +0300
 Subject: [PATCH] Add option to choose between reconnect handlers
@@ -221,7 +221,7 @@ index 0cc443389..67b40f5e9 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e50ebd081..f0b3bb044 100644
+index e50ebd081..40137cb27 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -89,6 +89,8 @@ import net.md_5.bungee.query.RemoteQuery;
@@ -233,7 +233,15 @@ index e50ebd081..f0b3bb044 100644
  import com.github.mrivanplays.ivancord.commands.CommandPlugins;
  import com.github.mrivanplays.ivancord.commands.op.CommandDeop;
  import com.github.mrivanplays.ivancord.commands.op.CommandOp;
-@@ -310,6 +312,23 @@ public class BungeeCord extends ProxyServer
+@@ -99,6 +101,7 @@ import com.github.mrivanplays.ivancord.modules.CommandFind;
+ import com.github.mrivanplays.ivancord.modules.CommandList;
+ import com.github.mrivanplays.ivancord.modules.CommandSend;
+ import com.github.mrivanplays.ivancord.modules.CommandServer;
++import com.github.mrivanplays.ivancord.modules.YamlReconnectHandler;
+ 
+ /**
+  * Main BungeeCord proxy class.
+@@ -310,6 +313,23 @@ public class BungeeCord extends ProxyServer
  
          isRunning = true;
  

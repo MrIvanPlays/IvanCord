@@ -1,4 +1,4 @@
-From 62279417bf5bd74d6a2d3cf79013bb45c87cd01b Mon Sep 17 00:00:00 2001
+From 3a3e5ca2e4c2145514b1cabd536171ff77ad3e35 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 27 Jun 2019 18:25:10 +0300
 Subject: [PATCH] Add plugin disable api
@@ -104,7 +104,7 @@ index 4312e5714..b1ef354fa 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f0b3bb044..2e952bccd 100644
+index 40137cb27..cff407118 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -43,6 +43,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -115,7 +115,7 @@ index f0b3bb044..2e952bccd 100644
  import lombok.Getter;
  import lombok.Setter;
  import lombok.Synchronized;
-@@ -482,24 +483,13 @@ public class BungeeCord extends ProxyServer
+@@ -483,24 +484,13 @@ public class BungeeCord extends ProxyServer
                  saveThread.cancel();
                  // metricsThread.cancel(); // Waterfall: Disable Metrics
  
