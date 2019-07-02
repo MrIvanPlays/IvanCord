@@ -1,4 +1,4 @@
-From 51e2287ece8cdde7810887db6069d2c70cbd0b89 Mon Sep 17 00:00:00 2001
+From a441fecf17fa10810f33f024f7a3c333e0f8ddd6 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 28 Apr 2019 09:53:09 +0300
 Subject: [PATCH] Remove entity rewrite
@@ -364,10 +364,10 @@ index 2b4b069b5..812a55c39 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 3a5ae3ee8..799ba13e5 100644
+index 61900a059..8d7918329 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -37,11 +37,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
+@@ -39,11 +39,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
  import net.md_5.bungee.api.event.ServerKickEvent;
  import net.md_5.bungee.api.event.TabCompleteResponseEvent;
  import net.md_5.bungee.api.plugin.Command;
@@ -382,7 +382,7 @@ index 3a5ae3ee8..799ba13e5 100644
  import net.md_5.bungee.chat.ComponentSerializer;
  import net.md_5.bungee.netty.ChannelWrapper;
  import net.md_5.bungee.netty.PacketHandler;
-@@ -57,9 +60,12 @@ import net.md_5.bungee.protocol.packet.Kick;
+@@ -59,9 +62,12 @@ import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
@@ -395,7 +395,7 @@ index 3a5ae3ee8..799ba13e5 100644
  import net.md_5.bungee.protocol.packet.SetCompression;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
  import net.md_5.bungee.tab.TabList;
-@@ -136,7 +142,9 @@ public class DownstreamBridge extends PacketHandler
+@@ -138,7 +144,9 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PacketWrapper packet) throws Exception
      {
@@ -405,7 +405,7 @@ index 3a5ae3ee8..799ba13e5 100644
          con.sendPacket( packet );
      }
  
-@@ -154,6 +162,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -156,6 +164,8 @@ public class DownstreamBridge extends PacketHandler
          throw CancelSendSignal.INSTANCE; // Always throw because of profile rewriting
      }
  
@@ -414,7 +414,7 @@ index 3a5ae3ee8..799ba13e5 100644
      @Override
      public void handle(ScoreboardObjective objective) throws Exception
      {
-@@ -255,6 +265,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -257,6 +267,8 @@ public class DownstreamBridge extends PacketHandler
              }
          }
      }
@@ -423,7 +423,7 @@ index 3a5ae3ee8..799ba13e5 100644
  
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
-@@ -614,7 +626,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -625,7 +637,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
      {
@@ -432,7 +432,7 @@ index 3a5ae3ee8..799ba13e5 100644
          // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
          // condition on the client.
          if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -626,7 +638,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -637,7 +649,7 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(EntityRemoveEffect removeEffect) throws Exception
      {

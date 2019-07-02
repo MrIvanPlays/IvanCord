@@ -1,11 +1,11 @@
-From 1fe6ae36e48163c29e64c52869cfd8491492b142 Mon Sep 17 00:00:00 2001
+From 90f67f3fe63a00a9f85e99d7d9a06285cff3c86d Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 18:03:14 +0300
 Subject: [PATCH] Add option to disable tab list rewrite
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 4687e7c4..d13923fc 100644
+index 4687e7c47..d13923fc1 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -249,5 +249,13 @@ public interface ProxyConfig
@@ -23,7 +23,7 @@ index 4687e7c4..d13923fc 100644
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index dea499b2..912ead47 100644
+index dea499b20..912ead479 100644
 --- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -30,6 +30,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
@@ -42,10 +42,10 @@ index dea499b2..912ead47 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index c65b04f6..858b5b0a 100644
+index e0922c0ca..c2c9e66c1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -161,8 +161,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -163,8 +163,19 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PlayerListItem playerList) throws Exception
      {
@@ -66,5 +66,5 @@ index c65b04f6..858b5b0a 100644
  
      // IvanCord start - remove these from handling
 -- 
-2.21.0.windows.1
+2.22.0.windows.1
 
