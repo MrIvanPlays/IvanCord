@@ -1,0 +1,543 @@
+From c8a093b1f94055e90b9266be3a3a15b687f62835 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Tue, 2 Jul 2019 16:31:36 +0300
+Subject: [PATCH] Add services manager
+
+
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java
+new file mode 100644
+index 000000000..4a0868745
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java
+@@ -0,0 +1,41 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.event;
++
++import lombok.AllArgsConstructor;
++import lombok.Getter;
++import net.md_5.bungee.api.plugin.Event;
++
++import com.github.mrivanplays.ivancord.api.plugin.RegisteredServiceProvider;
++
++/**
++ * Event, called when a service have
++ * got registered
++ */
++@Getter
++@AllArgsConstructor
++public class ServiceRegisteredEvent extends Event
++{
++
++    /**
++     * The service provider registered
++     */
++    private RegisteredServiceProvider<?> serviceProvider;
++}
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java
+new file mode 100644
+index 000000000..c2578c960
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java
+@@ -0,0 +1,41 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.event;
++
++import lombok.AllArgsConstructor;
++import lombok.Getter;
++import net.md_5.bungee.api.plugin.Event;
++
++import com.github.mrivanplays.ivancord.api.plugin.RegisteredServiceProvider;
++
++/**
++ * Event, called when a service have
++ * got unregistered
++ */
++@Getter
++@AllArgsConstructor
++public class ServiceUnregisteredEvent extends Event
++{
++
++    /**
++     * The service provider unregistered
++     */
++    private RegisteredServiceProvider<?> serviceProvider;
++}
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/CallbackInfo.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/CallbackInfo.java
+new file mode 100644
+index 000000000..72fbf3b26
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/CallbackInfo.java
+@@ -0,0 +1,47 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.plugin;
++
++import java.util.Optional;
++
++import lombok.AllArgsConstructor;
++import lombok.Getter;
++
++/**
++ * Represents info for a provider.
++ *
++ * @param <T> type
++ */
++@Getter
++@AllArgsConstructor
++public class CallbackInfo<T>
++{
++
++    /**
++     * Returns whenever the specified service
++     * has registration
++     */
++    private boolean registered;
++
++    /**
++     * The registration optional
++     */
++    private Optional<RegisteredServiceProvider<T>> registration;
++ }
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
+new file mode 100644
+index 000000000..57cdfb081
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
+@@ -0,0 +1,54 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.plugin;
++
++import lombok.AllArgsConstructor;
++import lombok.EqualsAndHashCode;
++import lombok.Getter;
++import lombok.ToString;
++import net.md_5.bungee.api.plugin.Plugin;
++
++/**
++ * Represents a registered service provider
++ *
++ * @param <T> stored type
++ */
++@Getter
++@AllArgsConstructor
++@EqualsAndHashCode
++@ToString
++public class RegisteredServiceProvider<T>
++{
++
++    /**
++     * The plugin, who registered this provider
++     */
++    private Plugin plugin;
++
++    /**
++     * The service representing this provider
++     */
++    private Class<T> service;
++
++    /**
++     * The provider
++     */
++    private T provider;
++}
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java
+new file mode 100644
+index 000000000..f73ed2ef6
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java
+@@ -0,0 +1,88 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.plugin;
++
++import java.util.Collection;
++import java.util.Optional;
++
++import net.md_5.bungee.api.plugin.Plugin;
++
++/**
++ * Represents a manager of services, registered
++ * by plugins and probably used by other plugins
++ */
++public interface ServicesManager
++{
++
++    /**
++     * Registers a service
++     *
++     * @param plugin plugin registerer
++     * @param service service registered
++     * @param provider service instance
++     * @param <T> type
++     */
++    <T> void register(Plugin plugin, Class<T> service, T provider);
++
++    /**
++     * Unregisters a service
++     *
++     * @param plugin plugin registerer of this service
++     * @param service service class
++     * @param <T> type
++     */
++    <T> void unregister(Plugin plugin, Class<T> service);
++
++    /**
++     * Unregisters all services, registered by
++     * the specified plugin
++     *
++     * @param plugin the plugin you wish to unregister its services
++     */
++    void unregisterAll(Plugin plugin);
++
++    /**
++     * Gets registration for the specified service
++     *
++     * @param service service class
++     * @param <T> type
++     * @return service provider if registered, otherwise empty optional
++     */
++    <T> Optional<RegisteredServiceProvider<T>> getRegistration(Class<T> service);
++
++    /**
++     * Gets all registered services of the specified plugin
++     *
++     * @param plugin the plugin you wish to get the registrations of
++     * @param <T> type
++     * @return collection with the services, or empty collection if no services registered
++     */
++    <T> Collection<RegisteredServiceProvider<T>> getRegistrations(Plugin plugin);
++
++    /**
++     * Returns a {@link CallbackInfo} with the information
++     * about the checked service
++     *
++     * @param service the service you wish to check
++     * @param <T> type
++     * @return a callback info with information
++     */
++    <T> CallbackInfo<T> hasProvider(Class<T> service);
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index d44ac67ea..c797ec9e9 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -16,6 +16,8 @@ import net.md_5.bungee.api.plugin.Plugin;
+ import net.md_5.bungee.api.plugin.PluginManager;
+ import net.md_5.bungee.api.scheduler.TaskScheduler;
+ 
++import com.github.mrivanplays.ivancord.api.plugin.ServicesManager;
++
+ public abstract class ProxyServer
+ {
+ 
+@@ -315,4 +317,15 @@ public abstract class ProxyServer
+      */
+     public abstract Title createTitle();
+ 
++    // IvanCord start
++
++    /**
++     * Gets the services manager
++     *
++     * @return services manager
++     */
++    public abstract ServicesManager getServicesManager();
++
++    // IvanCord end
++
+ }
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
+new file mode 100644
+index 000000000..3a06d4932
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
+@@ -0,0 +1,162 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord;
++
++import java.util.ArrayList;
++import java.util.Collection;
++import java.util.Collections;
++import java.util.HashSet;
++import java.util.Iterator;
++import java.util.List;
++import java.util.Map;
++import java.util.Optional;
++
++import com.google.common.collect.HashMultimap;
++import com.google.common.collect.SetMultimap;
++import net.md_5.bungee.api.plugin.Plugin;
++
++import com.github.mrivanplays.ivancord.api.event.ServiceRegisteredEvent;
++import com.github.mrivanplays.ivancord.api.event.ServiceUnregisteredEvent;
++import com.github.mrivanplays.ivancord.api.plugin.CallbackInfo;
++import com.github.mrivanplays.ivancord.api.plugin.RegisteredServiceProvider;
++import com.github.mrivanplays.ivancord.api.plugin.ServicesManager;
++
++public class SimpleServicesManager implements ServicesManager
++{
++
++    private SetMultimap<Class<?>, RegisteredServiceProvider<?>> providers = HashMultimap.create();
++
++    @Override
++    public <T> void register(Plugin plugin, Class<T> service, T provider)
++    {
++        RegisteredServiceProvider<T> createdProvider = new RegisteredServiceProvider<>( plugin, service, provider );
++        if ( providers.containsKey( service ) )
++        {
++            Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
++            if ( !registered.contains( createdProvider ) )
++            {
++                registered.add( createdProvider );
++            }
++            providers.replaceValues( service, registered );
++        } else
++        {
++            providers.put( service, createdProvider );
++        }
++        new ServiceRegisteredEvent( createdProvider ).call();
++    }
++
++    @Override
++    public <T> void unregister(Plugin plugin, Class<T> service)
++    {
++        if ( !providers.containsKey( service ) )
++        {
++            // no providers found by this plugin, stopping code
++            return;
++        }
++        Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
++        Iterator<RegisteredServiceProvider<?>> iterator = registered.iterator();
++        Collection<RegisteredServiceProvider<?>> left = new HashSet<>();
++        RegisteredServiceProvider<?> unregistered = null;
++        while ( iterator.hasNext() )
++        {
++            RegisteredServiceProvider<?> provider = iterator.next();
++            if ( provider.getService().isAssignableFrom( service ) )
++            {
++                if ( provider.getPlugin().getDescription().equals( plugin.getDescription() ) )
++                {
++                    unregistered = provider;
++                    iterator.remove();
++                } else
++                {
++                    left.add( provider );
++                }
++            }
++        }
++        if ( left.size() == registered.size() )
++        {
++            // nothing was removed, stopping code
++            return;
++        }
++        providers.replaceValues( service, left );
++        left.clear();
++        registered.clear();
++        if ( unregistered != null )
++        {
++            new ServiceUnregisteredEvent( unregistered ).call();
++        }
++    }
++
++    @Override
++    public void unregisterAll(Plugin plugin)
++    {
++        List<Map.Entry<Class<?>, RegisteredServiceProvider<?>>> toRemove = new ArrayList<>();
++        for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entry : providers.entries() )
++        {
++            if ( entry.getValue().getPlugin().getDescription().equals( plugin.getDescription() ) )
++            {
++                toRemove.add( entry );
++            }
++        }
++        for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entryToRemove : toRemove )
++        {
++            Collection<RegisteredServiceProvider<?>> registered = providers.get( entryToRemove.getKey() );
++            registered.remove( entryToRemove.getValue() );
++            providers.replaceValues( entryToRemove.getKey(), registered );
++            new ServiceUnregisteredEvent( entryToRemove.getValue() ).call();
++        }
++        toRemove.clear();
++    }
++
++    @Override
++    @SuppressWarnings("unchecked")
++    public <T> Optional<RegisteredServiceProvider<T>> getRegistration(Class<T> service)
++    {
++        Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
++        if ( registered.isEmpty() )
++        {
++            return Optional.empty();
++        } else
++        {
++            return Optional.of( (RegisteredServiceProvider<T>) new ArrayList<>( registered ).get( 0 ) );
++        }
++    }
++
++    @Override
++    @SuppressWarnings("unchecked")
++    public <T> Collection<RegisteredServiceProvider<T>> getRegistrations(Plugin plugin)
++    {
++        Collection<RegisteredServiceProvider<T>> collection = new HashSet<>();
++        for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entry : providers.entries() )
++        {
++            if ( entry.getValue().getPlugin().getDescription().equals( plugin.getDescription() ) )
++            {
++                collection.add( (RegisteredServiceProvider<T>) entry.getValue() );
++            }
++        }
++        return Collections.unmodifiableCollection( collection );
++    }
++
++    @Override
++    public <T> CallbackInfo<T> hasProvider(Class<T> service)
++    {
++        Optional<RegisteredServiceProvider<T>> provider = getRegistration( service );
++        return new CallbackInfo<>( provider.isPresent(), provider );
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index cff407118..205cfa239 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -92,6 +92,8 @@ import net.md_5.bungee.util.CaseInsensitiveMap;
+ 
+ import com.github.mrivanplays.ivancord.JsonReconnectHandler;
+ import com.github.mrivanplays.ivancord.ReconnectHandlerType;
++import com.github.mrivanplays.ivancord.SimpleServicesManager;
++import com.github.mrivanplays.ivancord.api.plugin.ServicesManager;
+ import com.github.mrivanplays.ivancord.commands.CommandPlugins;
+ import com.github.mrivanplays.ivancord.commands.op.CommandDeop;
+ import com.github.mrivanplays.ivancord.commands.op.CommandOp;
+@@ -185,6 +187,11 @@ public class BungeeCord extends ProxyServer
+     private final ModuleManager moduleManager = new ModuleManager();
+      */
+ 
++    // IvanCord start
++    @Getter
++    private ServicesManager servicesManager;
++    // IvanCord end
++
+     {
+         // TODO: Proper fallback when we interface the manager
+         registerChannel( "BungeeCord" );
+@@ -339,6 +346,10 @@ public class BungeeCord extends ProxyServer
+         }
+         startListeners();
+ 
++        // IvanCord start
++        servicesManager = new SimpleServicesManager();
++        // IvanCord end
++
+         saveThread.scheduleAtFixedRate( new TimerTask()
+         {
+             @Override
+-- 
+2.22.0.windows.1
+
