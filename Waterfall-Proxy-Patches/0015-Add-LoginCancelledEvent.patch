@@ -1,4 +1,4 @@
-From ef42bcc1e8e134d2c5004ff47ea5355fa045e62f Mon Sep 17 00:00:00 2001
+From 2536cc4f4bc5f9e3851a93cf8d04c7b5f98cb338 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 16:03:22 +0300
 Subject: [PATCH] Add LoginCancelledEvent
@@ -6,10 +6,10 @@ Subject: [PATCH] Add LoginCancelledEvent
 
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/LoginCancelledEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/LoginCancelledEvent.java
 new file mode 100644
-index 00000000..3177025b
+index 000000000..3c7621c6d
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/LoginCancelledEvent.java
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,66 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -37,13 +37,10 @@ index 00000000..3177025b
 +import net.md_5.bungee.api.plugin.Event;
 +
 +/**
-+ * Represents a event, called when login process is cancelled by the
-+ * logging in player. In most of the times, this is clicking the
-+ * "Cancel" button on the client.
-+ *
-+ * This event isn't called when {@link net.md_5.bungee.api.event.PreLoginEvent}
-+ * or {@link net.md_5.bungee.api.event.LoginEvent}
-+ * are cancelled by {@link net.md_5.bungee.api.plugin.Cancellable#setCancelled(boolean)}
++ * Represents a event, called when login process is aborted/cancelled
++ * by the logging player or the proxy. In most of the times, the event
++ * is being triggered by the logging player pressing the "Cancel"
++ * button on the client.
 + */
 +@Getter
 +@AllArgsConstructor
@@ -54,9 +51,33 @@ index 00000000..3177025b
 +     * The pending connection, which aborted their login process
 +     */
 +    private PendingConnection connection;
++
++    /**
++     * The reason of which the event was being triggered
++     */
++    private CancelReason cancelReason;
++
++    /**
++     * Represents a cancel reason
++     */
++    public static enum CancelReason
++    {
++
++        /**
++         * The client aborted the login process by the user
++         * pressing the "Cancel" button
++         */
++        CLIENT,
++
++        /**
++         * {@link net.md_5.bungee.api.event.LoginEvent} or
++         * {@link net.md_5.bungee.api.event.PreLoginEvent} are getting cancelled
++         */
++        PROXY
++    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3a9dab68..d02ce41d 100644
+index 3a9dab682..703e2e6f7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -65,6 +65,8 @@ import net.md_5.bungee.util.BoundedArrayList;
@@ -68,24 +89,86 @@ index 3a9dab68..d02ce41d 100644
  @RequiredArgsConstructor
  public class InitialHandler extends PacketHandler implements PendingConnection
  {
-@@ -505,6 +507,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -379,11 +381,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             {
+                 if ( result.isCancelled() )
+                 {
++                    // IvanCord start - implement LoginCancelledEvent
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).call();
++                    // IvanCord end
+                     disconnect( result.getCancelReasonComponents() );
+                     return;
                  }
                  if ( ch.isClosed() )
                  {
 +                    // IvanCord start - implement LoginCancelledEvent
-+                    bungee.getPluginManager().callEvent( new LoginCancelledEvent( InitialHandler.this ) );
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).call();
++                    // IvanCord end
+                     return;
+                 }
+                 if ( onlineMode )
+@@ -500,11 +508,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             {
+                 if ( result.isCancelled() )
+                 {
++                    // IvanCord start - implement login cancelled event
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).call();
++                    // IvanCord end
+                     disconnect( result.getCancelReasonComponents() );
+                     return;
+                 }
+                 if ( ch.isClosed() )
+                 {
++                    // IvanCord start - implement LoginCancelledEvent
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).call();
 +                    // IvanCord end
                      return;
                  }
  
-@@ -540,7 +545,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                             userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
+@@ -513,6 +527,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                     @Override
+                     public void run()
+                     {
++                        // IvanCord start - recreate this in favour of LoginCancelledEvent
++                        /*
+                         if ( !ch.isClosing() )
+                         {
+                             UserConnection userCon = new UserConnection( bungee, ch, getName(), InitialHandler.this );
+@@ -541,6 +557,38 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
                              thisState = State.FINISHED;
-+                        } else // IvanCord start - implement LoginCancelledEvent
-+                        {
-+                            bungee.getPluginManager().callEvent( new LoginCancelledEvent( InitialHandler.this ) );
                          }
++                         */
++                        if ( ch.isClosing() )
++                        {
++                            new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).call();
++                            return;
++                        }
++                        UserConnection userCon = new UserConnection( bungee, ch, getName(), InitialHandler.this );
++                        userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
++                        userCon.init();
++
++                        unsafe.sendPacket( new LoginSuccess( getUniqueId().toString(), getName() ) ); // With dashes in between
++                        ch.setProtocol( Protocol.GAME );
++
++                        ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new UpstreamBridge( bungee, userCon ) );
++                        bungee.getPluginManager().callEvent( new PostLoginEvent( userCon ) );
++                        ServerInfo server;
++                        if ( bungee.getReconnectHandler() != null )
++                        {
++                            server = bungee.getReconnectHandler().getServer( userCon );
++                        } else
++                        {
++                            server = AbstractReconnectHandler.getForcedHost( InitialHandler.this );
++                        }
++                        if ( server == null )
++                        {
++                            server = bungee.getServerInfo( listener.getDefaultServer() );
++                        }
++
++                        userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
++
++                        thisState = State.FINISHED;
 +                        // IvanCord end
                      }
                  } );
