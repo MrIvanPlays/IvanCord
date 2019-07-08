@@ -1,4 +1,4 @@
-From 085eb0f6e61d7636ae10bee856eb97f670a618d0 Mon Sep 17 00:00:00 2001
+From d9d09610b85a043b1a4c95052daf3445a5b14291 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 2 Jul 2019 16:31:36 +0300
 Subject: [PATCH] Add services manager
@@ -160,10 +160,10 @@ index 000000000..57cdfb081
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java
 new file mode 100644
-index 000000000..2d4ab0dd8
+index 000000000..59c16c277
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java
-@@ -0,0 +1,89 @@
+@@ -0,0 +1,78 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -241,17 +241,6 @@ index 000000000..2d4ab0dd8
 +     * @return collection with the services, or empty collection if no services registered
 +     */
 +    <T> Collection<RegisteredServiceProvider<T>> getRegistrations(Plugin plugin);
-+
-+    /**
-+     * Checks if the specified service has a provider
-+     *
-+     * @param service the service you wish to check
-+     * @param <T> type
-+     * @return <code>true</code> if has, otherwise <code>false</code>
-+     * @deprecated {@link #getRegistration(Class)} and then {@link Optional#isPresent()}
-+     */
-+    @Deprecated
-+    <T> boolean hasProvider(Class<T> service);
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 index d44ac67ea..c797ec9e9 100644
@@ -284,10 +273,10 @@ index d44ac67ea..c797ec9e9 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
 new file mode 100644
-index 000000000..5aedc6873
+index 000000000..fee3cb957
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
-@@ -0,0 +1,161 @@
+@@ -0,0 +1,133 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -313,7 +302,6 @@ index 000000000..5aedc6873
 +import java.util.Collection;
 +import java.util.Collections;
 +import java.util.HashSet;
-+import java.util.Iterator;
 +import java.util.List;
 +import java.util.Map;
 +import java.util.Optional;
@@ -356,40 +344,20 @@ index 000000000..5aedc6873
 +    {
 +        if ( !providers.containsKey( service ) )
 +        {
-+            // no providers found by this plugin, stopping code
++            // no providers found for this service, stopping code
 +            return;
 +        }
 +        Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
-+        Iterator<RegisteredServiceProvider<?>> iterator = registered.iterator();
-+        Collection<RegisteredServiceProvider<?>> left = new HashSet<>();
-+        RegisteredServiceProvider<?> unregistered = null;
-+        while ( iterator.hasNext() )
++        Collection<RegisteredServiceProvider<?>> toRemove = new HashSet<>();
++        for ( RegisteredServiceProvider<?> provider : registered )
 +        {
-+            RegisteredServiceProvider<?> provider = iterator.next();
-+            if ( provider.getService().isAssignableFrom( service ) )
++            if ( provider.getPlugin().getDescription().equals( plugin.getDescription() ) )
 +            {
-+                if ( provider.getPlugin().getDescription().equals( plugin.getDescription() ) )
-+                {
-+                    unregistered = provider;
-+                    iterator.remove();
-+                } else
-+                {
-+                    left.add( provider );
-+                }
++                toRemove.add( provider );
 +            }
 +        }
-+        if ( left.size() == registered.size() )
-+        {
-+            // nothing was removed, stopping code
-+            return;
-+        }
-+        providers.replaceValues( service, left );
-+        left.clear();
-+        registered.clear();
-+        if ( unregistered != null )
-+        {
-+            new ServiceUnregisteredEvent( unregistered ).call();
-+        }
++        registered.removeAll( toRemove );
++        providers.replaceValues( service, registered );
 +    }
 +
 +    @Override
@@ -440,13 +408,6 @@ index 000000000..5aedc6873
 +            }
 +        }
 +        return Collections.unmodifiableCollection( collection );
-+    }
-+
-+    @Override
-+    @Deprecated
-+    public <T> boolean hasProvider(Class<T> service)
-+    {
-+        return getRegistration( service ).isPresent();
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
