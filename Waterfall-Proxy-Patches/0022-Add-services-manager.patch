@@ -1,4 +1,4 @@
-From d9d09610b85a043b1a4c95052daf3445a5b14291 Mon Sep 17 00:00:00 2001
+From 1ff1caf10098e270a2b5bca960f309ba47f1bb02 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 2 Jul 2019 16:31:36 +0300
 Subject: [PATCH] Add services manager
@@ -273,10 +273,10 @@ index d44ac67ea..c797ec9e9 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
 new file mode 100644
-index 000000000..fee3cb957
+index 000000000..def9b4818
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
-@@ -0,0 +1,133 @@
+@@ -0,0 +1,138 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -356,8 +356,13 @@ index 000000000..fee3cb957
 +                toRemove.add( provider );
 +            }
 +        }
-+        registered.removeAll( toRemove );
++        for ( RegisteredServiceProvider<?> providerRemoved : toRemove )
++        {
++            registered.remove( providerRemoved );
++            new ServiceUnregisteredEvent( providerRemoved ).call();
++        }
 +        providers.replaceValues( service, registered );
++        toRemove.clear();
 +    }
 +
 +    @Override
