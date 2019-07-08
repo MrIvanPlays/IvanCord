@@ -1,4 +1,4 @@
-From 582cdf05e0c67315f60215413b2f08729f04f8ce Mon Sep 17 00:00:00 2001
+From 155aa3c3748d32786d247856e1ed7bcfcbc532ac Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 17:21:37 +0300
 Subject: [PATCH] Add basic server operator techniques
@@ -271,7 +271,7 @@ index 000000000..9df43a562
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c12522e23..e50ebd081 100644
+index 19e18f9aa..92b715b7c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -90,6 +90,9 @@ import net.md_5.bungee.scheduler.BungeeScheduler;
@@ -353,7 +353,7 @@ index c4822dfbf..a8c9a6506 100644
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 5021af15f..f9bc18171 100644
+index 0ef56ad5c..5c885702d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -104,7 +104,7 @@ public class YamlConfig implements ConfigurationAdapter

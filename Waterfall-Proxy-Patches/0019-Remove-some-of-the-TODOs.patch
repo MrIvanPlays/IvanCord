@@ -1,4 +1,4 @@
-From 1f1b2715975e3b8e04bad80f8265be97f14ecec3 Mon Sep 17 00:00:00 2001
+From 90fc577fb7d11acf5f878fe0434ae1e1442f7b3a Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 30 Jun 2019 21:13:31 +0300
 Subject: [PATCH] Remove some of the TODOs
@@ -148,7 +148,7 @@ index 531669e78..740759061 100644
          user.setServer( server );
          ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index dfcaaa8d9..0f09706e8 100644
+index a8c9a6506..0787d821c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -296,7 +296,12 @@ public final class UserConnection implements ProxiedPlayer
@@ -166,7 +166,7 @@ index dfcaaa8d9..0f09706e8 100644
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, int timeout) {
          connect(info, callback, retry, ServerConnectEvent.Reason.PLUGIN, timeout);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index c2c9e66c1..d406d58f3 100644
+index 26fdc80d3..59543758c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -107,6 +107,17 @@ public class DownstreamBridge extends PacketHandler

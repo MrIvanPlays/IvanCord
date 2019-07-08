@@ -1,11 +1,11 @@
-From 11d05987e654c6f82187ae8b02202826ce4303b4 Mon Sep 17 00:00:00 2001
+From c09fd54af2183e8575fc10fcfb5b6367c952d674 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 27 May 2019 14:25:44 +0300
 Subject: [PATCH] Speed up packet construction
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 652e4ca2..e830aa15 100644
+index 652e4ca2b..e830aa158 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -7,6 +7,7 @@ import gnu.trove.map.TObjectIntMap;
@@ -362,5 +362,5 @@ index 652e4ca2..e830aa15 100644
          final int getId(Class<? extends DefinedPacket> packet, int version)
          {
 -- 
-2.21.0.windows.1
+2.22.0.windows.1
 

@@ -1,4 +1,4 @@
-From 0564a4b18bd965716d54f4acecb5f18ee789e9f5 Mon Sep 17 00:00:00 2001
+From 380459118661991651b0f2302d63fcec76c8fc40 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 20:20:49 +0300
 Subject: [PATCH] Add option to choose between reconnect handlers
@@ -221,7 +221,7 @@ index 0cc443389..67b40f5e9 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e50ebd081..40137cb27 100644
+index 92b715b7c..26633c9f5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -89,6 +89,8 @@ import net.md_5.bungee.query.RemoteQuery;

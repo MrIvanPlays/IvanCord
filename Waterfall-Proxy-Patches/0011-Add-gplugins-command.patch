@@ -1,4 +1,4 @@
-From d7a1239355906756910d6cbfc9ca79e549ff96b6 Mon Sep 17 00:00:00 2001
+From d25a060f37968bed5f704a2e615a5bf8f33981c1 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 18:48:03 +0300
 Subject: [PATCH] Add gplugins command
@@ -62,7 +62,7 @@ index 000000000..c1bbe82d3
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2fbe10b33..c12522e23 100644
+index 0935069d6..19e18f9aa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -89,6 +89,7 @@ import net.md_5.bungee.query.RemoteQuery;
@@ -85,7 +85,7 @@ index 2fbe10b33..c12522e23 100644
          {
              if ( EncryptionUtil.nativeFactory.load() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 9c187f736..5021af15f 100644
+index 0f650b0e4..0ef56ad5c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -103,7 +103,8 @@ public class YamlConfig implements ConfigurationAdapter

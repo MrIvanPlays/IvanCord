@@ -1,4 +1,4 @@
-From 1ff1caf10098e270a2b5bca960f309ba47f1bb02 Mon Sep 17 00:00:00 2001
+From a28a5aaeb2134742a710d1382e18eadf0280e5ad Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 2 Jul 2019 16:31:36 +0300
 Subject: [PATCH] Add services manager
@@ -416,7 +416,7 @@ index 000000000..def9b4818
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index cff407118..205cfa239 100644
+index 7d58aa355..676845d21 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -92,6 +92,8 @@ import net.md_5.bungee.util.CaseInsensitiveMap;

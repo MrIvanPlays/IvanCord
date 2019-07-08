@@ -1,11 +1,11 @@
-From 5c44b3f343c18efd23eaaa8d2e66f55b5ff3b9c6 Mon Sep 17 00:00:00 2001
+From aa1fa277801df50a3593ff719082b8a8fc2e54a1 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 19:20:09 +0300
 Subject: [PATCH] Add TCP fast open
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index d13923fc..0643d08f 100644
+index d13923fc1..0643d08fb 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -257,5 +257,19 @@ public interface ProxyConfig
@@ -29,7 +29,7 @@ index d13923fc..0643d08f 100644
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 912ead47..0cc44338 100644
+index 912ead479..0cc443389 100644
 --- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -20,11 +20,16 @@
@@ -78,7 +78,7 @@ index 912ead47..0cc44338 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java
 new file mode 100644
-index 00000000..da2abd82
+index 000000000..da2abd824
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java
 @@ -0,0 +1,46 @@
@@ -129,7 +129,7 @@ index 00000000..da2abd82
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 051430ce..6281351a 100644
+index 051430ce7..6281351a6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -9,6 +9,7 @@ import io.netty.channel.EventLoopGroup;

@@ -1,4 +1,4 @@
-From 90f67f3fe63a00a9f85e99d7d9a06285cff3c86d Mon Sep 17 00:00:00 2001
+From e72b91f8fd1b7806ec9664bf8951ef3a2b5cdbbc Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 18:03:14 +0300
 Subject: [PATCH] Add option to disable tab list rewrite
@@ -42,7 +42,7 @@ index dea499b20..912ead479 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index e0922c0ca..c2c9e66c1 100644
+index 191b0a5bb..26fdc80d3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -163,8 +163,19 @@ public class DownstreamBridge extends PacketHandler
