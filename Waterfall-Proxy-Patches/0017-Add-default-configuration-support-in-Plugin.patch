@@ -1,4 +1,4 @@
-From 449d5910e4efbe1b93b2fef9613874d0018337f9 Mon Sep 17 00:00:00 2001
+From 43d732586f9be4bf38485f1b94e626fc8f981a52 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 27 Jun 2019 17:02:00 +0300
 Subject: [PATCH] Add default configuration support in Plugin
@@ -7,7 +7,7 @@ Including loading, reloading and saving a
 default config.(json, yml)
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-index 2e5ae4fbe..b176a77ff 100644
+index 2e5ae4fbe..d9d2fe880 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 @@ -2,14 +2,19 @@ package net.md_5.bungee.api.plugin;
@@ -42,7 +42,7 @@ index 2e5ae4fbe..b176a77ff 100644
  
      // Waterfall start - Allow plugins to use SLF4J for logging
      public org.slf4j.Logger getSLF4JLogger() {
-@@ -56,6 +66,69 @@ public class Plugin
+@@ -56,6 +66,70 @@ public class Plugin
      {
      }
  
@@ -55,13 +55,14 @@ index 2e5ae4fbe..b176a77ff 100644
 +    public void loadConfig(Class<? extends ConfigurationProvider> configType)
 +    {
 +        this.configType = configType;
++        String fileExtension = configType.getSimpleName().toLowerCase().contains( "json" ) ? ".json" : ".yml";
++        this.configFile = new File( getDataFolder(), "config" + fileExtension );
 +        if ( getDataFolder().exists() )
 +        {
 +            getDataFolder().mkdirs();
 +        }
 +        if ( !configFile.exists() )
 +        {
-+            String fileExtension = configType.getSimpleName().contains( "Json" ) ? ".json" : ".yml";
 +            try ( InputStream inputStream = getResourceAsStream( "config" + fileExtension ) )
 +            {
 +                Files.copy( inputStream, configFile.toPath() );
@@ -112,16 +113,6 @@ index 2e5ae4fbe..b176a77ff 100644
      /**
       * Gets the data folder where this plugin may store arbitrary data. It will
       * be a child of {@link ProxyServer#getPluginsFolder()}.
-@@ -92,6 +165,9 @@ public class Plugin
-         this.description = description;
-         this.file = description.getFile();
-         this.logger = Logger.getLogger(description.getName()); // Waterfall - Handle plugin prefixes in implementation
-+        // IvanCord start
-+        this.configFile = new File( getDataFolder(), "config.yml" );
-+        // IvanCord end
-     }
- 
-     //
 -- 
 2.22.0.windows.1
 
