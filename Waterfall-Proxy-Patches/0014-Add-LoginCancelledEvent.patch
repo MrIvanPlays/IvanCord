@@ -1,4 +1,4 @@
-From 85558bbce15100c1e75f531a557eaf99679337b5 Mon Sep 17 00:00:00 2001
+From e4aa688bf3193a0ff7d5217297e61095e8257180 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 16:03:22 +0300
 Subject: [PATCH] Add LoginCancelledEvent
@@ -84,7 +84,7 @@ index 000000000..357b94c13
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3a9dab682..512dd1325 100644
+index 3a9dab682..b67fd1a67 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -65,6 +65,8 @@ import net.md_5.bungee.util.BoundedArrayList;
@@ -101,7 +101,7 @@ index 3a9dab682..512dd1325 100644
      public void exception(Throwable t) throws Exception
      {
 +        // IvanCord start - implement LoginCancelledEvent
-+        new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY_EXCEPTION );
++        new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY_EXCEPTION ).call();
 +        // IvanCord end
          disconnect( ChatColor.RED + Util.exception( t ) );
      }
