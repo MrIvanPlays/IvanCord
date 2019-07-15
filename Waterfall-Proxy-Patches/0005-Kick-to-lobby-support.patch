@@ -1,4 +1,4 @@
-From 7a793154edb7705e00c1f45c26344d203aab2d67 Mon Sep 17 00:00:00 2001
+From 57064dcd42187d1ff3045be1ef830b68212b9442 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 22 Apr 2019 10:45:15 +0300
 Subject: [PATCH] Kick to lobby support
@@ -51,7 +51,7 @@ index 96bb60f5e..dea499b20 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1f8a24395..61900a059 100644
+index 1f8a24395..c4f44e7f1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -28,6 +28,8 @@ import net.md_5.bungee.ServerConnection;
@@ -71,7 +71,7 @@ index 1f8a24395..61900a059 100644
 -        if ( event.isCancelled() && event.getCancelServer() != null )
 +        // IvanCord start - kick to lobby
 +        boolean kickToLobby = bungee.getConfig().isKickToLobby();
-+        ServerInfo defaultServer = bungee.getServerInfo( bungee.getConfig().getListeners().stream().findFirst().get().getDefaultServer() );
++        ServerInfo defaultServer = bungee.getServerInfo( bungee.getConfig().getListeners().parallelStream().findFirst().get().getDefaultServer() );
 +        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(),
 +                ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.SERVER ) );
 +        BaseComponent[] kickMessage = new ComponentBuilder( bungee.getTranslation( "server_kick" ) )

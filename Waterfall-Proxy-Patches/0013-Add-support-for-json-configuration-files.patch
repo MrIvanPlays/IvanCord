@@ -1,4 +1,4 @@
-From 6692b7bec456cf882bc6075c27a5913eea15892e Mon Sep 17 00:00:00 2001
+From ab3f91a72a64da4bdc97ddf7d6ac398004729089 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Fri, 14 Jun 2019 16:38:20 +0300
 Subject: [PATCH] Add support for json configuration files
@@ -199,7 +199,7 @@ index 000000000..cef497f92
 \ No newline at end of file
 diff --git a/config/src/main/java/net/md_5/bungee/config/MapSerializer.java b/config/src/main/java/net/md_5/bungee/config/MapSerializer.java
 new file mode 100644
-index 000000000..8a9e32d5a
+index 000000000..37e1e15dd
 --- /dev/null
 +++ b/config/src/main/java/net/md_5/bungee/config/MapSerializer.java
 @@ -0,0 +1,85 @@
@@ -230,7 +230,7 @@ index 000000000..8a9e32d5a
 +    {
 +        Map<String, Object> map = new LinkedHashMap<>();
 +        List<Map.Entry<String, JsonElement>> primitives = element.getAsJsonObject().entrySet()
-+                .stream()
++                .parallelStream()
 +                .filter( entry -> entry.getValue().isJsonPrimitive() )
 +                .collect( Collectors.toList() );
 +        primitives.forEach( entry ->
