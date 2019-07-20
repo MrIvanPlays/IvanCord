@@ -1,4 +1,4 @@
-From a28a5aaeb2134742a710d1382e18eadf0280e5ad Mon Sep 17 00:00:00 2001
+From df36205545eccc3bb854bd06e019c09b76954968 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 2 Jul 2019 16:31:36 +0300
 Subject: [PATCH] Add services manager
@@ -6,7 +6,7 @@ Subject: [PATCH] Add services manager
 
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java
 new file mode 100644
-index 000000000..4a0868745
+index 00000000..4a086874
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java
 @@ -0,0 +1,41 @@
@@ -53,7 +53,7 @@ index 000000000..4a0868745
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java
 new file mode 100644
-index 000000000..c2578c960
+index 00000000..c2578c96
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java
 @@ -0,0 +1,41 @@
@@ -100,7 +100,7 @@ index 000000000..c2578c960
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
 new file mode 100644
-index 000000000..57cdfb081
+index 00000000..57cdfb08
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
 @@ -0,0 +1,54 @@
@@ -160,7 +160,7 @@ index 000000000..57cdfb081
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java
 new file mode 100644
-index 000000000..59c16c277
+index 00000000..59c16c27
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java
 @@ -0,0 +1,78 @@
@@ -243,7 +243,7 @@ index 000000000..59c16c277
 +    <T> Collection<RegisteredServiceProvider<T>> getRegistrations(Plugin plugin);
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index d44ac67ea..c797ec9e9 100644
+index d44ac67e..c797ec9e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -16,6 +16,8 @@ import net.md_5.bungee.api.plugin.Plugin;
@@ -273,10 +273,10 @@ index d44ac67ea..c797ec9e9 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
 new file mode 100644
-index 000000000..def9b4818
+index 00000000..9b7c00b9
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
-@@ -0,0 +1,138 @@
+@@ -0,0 +1,176 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -305,6 +305,8 @@ index 000000000..def9b4818
 +import java.util.List;
 +import java.util.Map;
 +import java.util.Optional;
++import java.util.concurrent.locks.Lock;
++import java.util.concurrent.locks.ReentrantLock;
 +
 +import com.google.common.collect.HashMultimap;
 +import com.google.common.collect.SetMultimap;
@@ -318,23 +320,31 @@ index 000000000..def9b4818
 +public class SimpleServicesManager implements ServicesManager
 +{
 +
-+    private SetMultimap<Class<?>, RegisteredServiceProvider<?>> providers = HashMultimap.create();
++    private final SetMultimap<Class<?>, RegisteredServiceProvider<?>> providers = HashMultimap.create();
++    private final Lock providersLock = new ReentrantLock();
 +
 +    @Override
 +    public <T> void register(Plugin plugin, Class<T> service, T provider)
 +    {
 +        RegisteredServiceProvider<T> createdProvider = new RegisteredServiceProvider<>( plugin, service, provider );
-+        if ( providers.containsKey( service ) )
++        providersLock.lock();
++        try
 +        {
-+            Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
-+            if ( !registered.contains( createdProvider ) )
++            if ( providers.containsKey( service ) )
 +            {
-+                registered.add( createdProvider );
++                Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
++                if ( !registered.contains( createdProvider ) )
++                {
++                    registered.add( createdProvider );
++                }
++                providers.replaceValues( service, registered );
++            } else
++            {
++                providers.put( service, createdProvider );
 +            }
-+            providers.replaceValues( service, registered );
-+        } else
++        } finally
 +        {
-+            providers.put( service, createdProvider );
++            providersLock.unlock();
 +        }
 +        new ServiceRegisteredEvent( createdProvider ).call();
 +    }
@@ -342,61 +352,82 @@ index 000000000..def9b4818
 +    @Override
 +    public <T> void unregister(Plugin plugin, Class<T> service)
 +    {
-+        if ( !providers.containsKey( service ) )
++        providersLock.lock();
++        try
 +        {
-+            // no providers found for this service, stopping code
-+            return;
-+        }
-+        Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
-+        Collection<RegisteredServiceProvider<?>> toRemove = new HashSet<>();
-+        for ( RegisteredServiceProvider<?> provider : registered )
-+        {
-+            if ( provider.getPlugin().getDescription().equals( plugin.getDescription() ) )
++            if ( !providers.containsKey( service ) )
 +            {
-+                toRemove.add( provider );
++                // no providers found for this service, stopping code
++                return;
 +            }
-+        }
-+        for ( RegisteredServiceProvider<?> providerRemoved : toRemove )
++            Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
++            Collection<RegisteredServiceProvider<?>> toRemove = new HashSet<>();
++            for ( RegisteredServiceProvider<?> provider : registered )
++            {
++                if ( provider.getPlugin().getDescription().equals( plugin.getDescription() ) )
++                {
++                    toRemove.add( provider );
++                }
++            }
++            for ( RegisteredServiceProvider<?> providerRemoved : toRemove )
++            {
++                registered.remove( providerRemoved );
++                new ServiceUnregisteredEvent( providerRemoved ).call();
++            }
++            providers.replaceValues( service, registered );
++            toRemove.clear();
++        } finally
 +        {
-+            registered.remove( providerRemoved );
-+            new ServiceUnregisteredEvent( providerRemoved ).call();
++            providersLock.unlock();
 +        }
-+        providers.replaceValues( service, registered );
-+        toRemove.clear();
 +    }
 +
 +    @Override
 +    public void unregisterAll(Plugin plugin)
 +    {
-+        List<Map.Entry<Class<?>, RegisteredServiceProvider<?>>> toRemove = new ArrayList<>();
-+        for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entry : providers.entries() )
++        providersLock.lock();
++        try
 +        {
-+            if ( entry.getValue().getPlugin().getDescription().equals( plugin.getDescription() ) )
++            List<Map.Entry<Class<?>, RegisteredServiceProvider<?>>> toRemove = new ArrayList<>();
++            for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entry : providers.entries() )
 +            {
-+                toRemove.add( entry );
++                if ( entry.getValue().getPlugin().getDescription().equals( plugin.getDescription() ) )
++                {
++                    toRemove.add( entry );
++                }
 +            }
-+        }
-+        for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entryToRemove : toRemove )
++            for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entryToRemove : toRemove )
++            {
++                Collection<RegisteredServiceProvider<?>> registered = providers.get( entryToRemove.getKey() );
++                registered.remove( entryToRemove.getValue() );
++                providers.replaceValues( entryToRemove.getKey(), registered );
++                new ServiceUnregisteredEvent( entryToRemove.getValue() ).call();
++            }
++            toRemove.clear();
++        } finally
 +        {
-+            Collection<RegisteredServiceProvider<?>> registered = providers.get( entryToRemove.getKey() );
-+            registered.remove( entryToRemove.getValue() );
-+            providers.replaceValues( entryToRemove.getKey(), registered );
-+            new ServiceUnregisteredEvent( entryToRemove.getValue() ).call();
++            providersLock.unlock();
 +        }
-+        toRemove.clear();
 +    }
 +
 +    @Override
 +    @SuppressWarnings("unchecked")
 +    public <T> Optional<RegisteredServiceProvider<T>> getRegistration(Class<T> service)
 +    {
-+        Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
-+        if ( registered.isEmpty() )
++        providersLock.lock();
++        try
 +        {
-+            return Optional.empty();
-+        } else
++            Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
++            if ( registered.isEmpty() )
++            {
++                return Optional.empty();
++            } else
++            {
++                return Optional.of( (RegisteredServiceProvider<T>) new ArrayList<>( registered ).get( 0 ) );
++            }
++        } finally
 +        {
-+            return Optional.of( (RegisteredServiceProvider<T>) new ArrayList<>( registered ).get( 0 ) );
++            providersLock.unlock();
 +        }
 +    }
 +
@@ -405,18 +436,25 @@ index 000000000..def9b4818
 +    public <T> Collection<RegisteredServiceProvider<T>> getRegistrations(Plugin plugin)
 +    {
 +        Collection<RegisteredServiceProvider<T>> collection = new HashSet<>();
-+        for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entry : providers.entries() )
++        providersLock.lock();
++        try
 +        {
-+            if ( entry.getValue().getPlugin().getDescription().equals( plugin.getDescription() ) )
++            for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entry : providers.entries() )
 +            {
-+                collection.add( (RegisteredServiceProvider<T>) entry.getValue() );
++                if ( entry.getValue().getPlugin().getDescription().equals( plugin.getDescription() ) )
++                {
++                    collection.add( (RegisteredServiceProvider<T>) entry.getValue() );
++                }
 +            }
++        } finally
++        {
++            providersLock.unlock();
 +        }
 +        return Collections.unmodifiableCollection( collection );
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7d58aa355..676845d21 100644
+index 7d58aa35..11d09a50 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -92,6 +92,8 @@ import net.md_5.bungee.util.CaseInsensitiveMap;
@@ -440,17 +478,17 @@ index 7d58aa355..676845d21 100644
      {
          // TODO: Proper fallback when we interface the manager
          registerChannel( "BungeeCord" );
-@@ -339,6 +346,10 @@ public class BungeeCord extends ProxyServer
-         }
-         startListeners();
+@@ -302,6 +309,10 @@ public class BungeeCord extends ProxyServer
+         pluginsFolder.mkdir();
+         pluginManager.detectPlugins( pluginsFolder );
  
 +        // IvanCord start
 +        servicesManager = new SimpleServicesManager();
 +        // IvanCord end
 +
-         saveThread.scheduleAtFixedRate( new TimerTask()
-         {
-             @Override
+         pluginManager.loadPlugins();
+         config.load();
+ 
 -- 
 2.22.0.windows.1
 

@@ -1,0 +1,268 @@
+From 4d9c279aa477a0b0e4fe4e57de9e57e1f8b799b4 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Sat, 20 Jul 2019 11:23:03 +0300
+Subject: [PATCH] Command framework for multiple command handling
+
+Adds a command framework, which is lambda-friendly and multi-command
+handling friendly in one class.
+
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/command/ICommand.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/ICommand.java
+new file mode 100644
+index 00000000..3ecb7bb4
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/ICommand.java
+@@ -0,0 +1,54 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++ * Copyright 2019 contributors
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.command;
++
++import com.google.common.collect.ImmutableList;
++import net.md_5.bungee.api.CommandSender;
++
++/**
++ * Represents a command
++ */
++@FunctionalInterface
++public interface ICommand
++{
++
++    /**
++     * Executes the command specified.
++     *
++     * @param sender the sender of the command
++     * @param alias the alias of which the command was triggered
++     * @param args command arguments
++     */
++    void execute(CommandSender sender, String alias, String[] args);
++
++    /**
++     * Tab completes the command specified
++     *
++     * @param sender the sender of the tab completion
++     * @param alias the alias of which the tab completion was triggered
++     * @param args tab complete arguments
++     * @return a iterable of string matches for the given argument
++     */
++    default Iterable<String> tabComplete(CommandSender sender, String alias, String[] args)
++    {
++        return ImmutableList.of();
++    }
++}
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
+new file mode 100644
+index 00000000..84499077
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
+@@ -0,0 +1,98 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++ * Copyright 2019 contributors
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.command;
++
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.Plugin;
++import net.md_5.bungee.api.plugin.TabExecutor;
++
++/**
++ * Represents a command manager
++ */
++public class IvanCordCommandManager
++{
++
++    private ProxyServer proxy;
++
++    public IvanCordCommandManager(ProxyServer proxy)
++    {
++        this.proxy = proxy;
++    }
++
++    /**
++     * Registers a command
++     *
++     * @param plugin the plugin bind to
++     * @param command the command
++     * @param commandsExecutedNames all commands, executed in this command
++     */
++    public void registerCommand(Plugin plugin, ICommand command, String... commandsExecutedNames)
++    {
++        for ( String alias : commandsExecutedNames )
++        {
++            proxy.getPluginManager().registerCommand( plugin, new CommandWrapper( command, alias ) );
++        }
++    }
++
++    /**
++     * Unregisters a command
++     *
++     * @param commandName the command's name you wish to unregister
++     */
++    public void unregisterCommand(String commandName)
++    {
++        proxy.getPluginManager().getCommand( commandName )
++                .ifPresent( command -> proxy.getPluginManager().unregisterCommand( command ) );
++    }
++
++    /**
++     * Represents a command wrapper between our {@link ICommand} and BungeeCord's {@link Command}
++     */
++    public static class CommandWrapper extends Command implements TabExecutor
++    {
++
++        private String currentAlias;
++        private ICommand command;
++
++        public CommandWrapper(ICommand command, String currentAlias)
++        {
++            super( currentAlias );
++            this.command = command;
++            this.currentAlias = currentAlias;
++        }
++
++        @Override
++        public void execute(CommandSender sender, String[] args)
++        {
++            command.execute( sender, currentAlias, args );
++        }
++
++        @Override
++        public Iterable<String> onTabComplete(CommandSender sender, String[] args)
++        {
++            return command.tabComplete( sender, currentAlias, args );
++        }
++    }
++
++
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index c797ec9e..cc450ceb 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -16,6 +16,7 @@ import net.md_5.bungee.api.plugin.Plugin;
+ import net.md_5.bungee.api.plugin.PluginManager;
+ import net.md_5.bungee.api.scheduler.TaskScheduler;
+ 
++import com.github.mrivanplays.ivancord.api.command.IvanCordCommandManager;
+ import com.github.mrivanplays.ivancord.api.plugin.ServicesManager;
+ 
+ public abstract class ProxyServer
+@@ -326,6 +327,13 @@ public abstract class ProxyServer
+      */
+     public abstract ServicesManager getServicesManager();
+ 
++    /**
++     * Gets the IvanCord commands' manager
++     *
++     * @return command manager of the IvanCord commands
++     */
++    public abstract IvanCordCommandManager getIvanCordCommandManager();
++
+     // IvanCord end
+ 
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index b1ef354f..fc51a53a 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
++import java.util.Optional; // IvanCord
+ import java.util.Set;
+ import java.util.Stack;
+ import java.util.jar.JarEntry;
+@@ -128,6 +129,25 @@ public class PluginManager
+         return commandMap.get( commandLower );
+     }
+ 
++    // IvanCord start - getCommand
++
++    /**
++     * Gets command by its name or alias.
++     *
++     * @param alias command alias or command name
++     * @return command optional
++     */
++    public Optional<Command> getCommand(String alias)
++    {
++        if ( proxy.getDisabledCommands().contains( alias.toLowerCase() ) )
++        {
++            return Optional.empty();
++        }
++        return Optional.ofNullable( commandMap.get( alias.toLowerCase() ) );
++    }
++
++    // IvanCord end
++
+     /**
+      * Checks if the command is registered and can possibly be executed by the
+      * sender (without taking permissions into account).
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 11d09a50..333f474b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -93,6 +93,7 @@ import net.md_5.bungee.util.CaseInsensitiveMap;
+ import com.github.mrivanplays.ivancord.JsonReconnectHandler;
+ import com.github.mrivanplays.ivancord.ReconnectHandlerType;
+ import com.github.mrivanplays.ivancord.SimpleServicesManager;
++import com.github.mrivanplays.ivancord.api.command.IvanCordCommandManager;
+ import com.github.mrivanplays.ivancord.api.plugin.ServicesManager;
+ import com.github.mrivanplays.ivancord.commands.CommandPlugins;
+ import com.github.mrivanplays.ivancord.commands.op.CommandDeop;
+@@ -190,6 +191,8 @@ public class BungeeCord extends ProxyServer
+     // IvanCord start
+     @Getter
+     private ServicesManager servicesManager;
++    @Getter
++    private IvanCordCommandManager ivanCordCommandManager;
+     // IvanCord end
+ 
+     {
+@@ -310,6 +313,7 @@ public class BungeeCord extends ProxyServer
+         pluginManager.detectPlugins( pluginsFolder );
+ 
+         // IvanCord start
++        ivanCordCommandManager = new IvanCordCommandManager( this );
+         servicesManager = new SimpleServicesManager();
+         // IvanCord end
+ 
+-- 
+2.22.0.windows.1
+
