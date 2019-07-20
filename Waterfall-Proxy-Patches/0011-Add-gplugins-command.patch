@@ -1,4 +1,4 @@
-From f82385cff8509dc530db71a8075bb0bee0aa687a Mon Sep 17 00:00:00 2001
+From 9bd9d02647a2729f4b916d7ffcfd09485fba49e0 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 18:48:03 +0300
 Subject: [PATCH] Add gplugins command
@@ -6,10 +6,10 @@ Subject: [PATCH] Add gplugins command
 
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/CommandPlugins.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/CommandPlugins.java
 new file mode 100644
-index 000000000..f41a89250
+index 00000000..ab436346
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/CommandPlugins.java
-@@ -0,0 +1,58 @@
+@@ -0,0 +1,57 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -61,15 +61,14 @@ index 000000000..f41a89250
 +        {
 +            pluginsList.append( ChatColor.GREEN.toString() ).append( name ).append( ChatColor.WHITE.toString() ).append( ", " );
 +        }
-+        String pluginsRaw = pluginsList.toString();
-+        String plugins = pluginsRaw.substring( 0, pluginsRaw.lastIndexOf( ',' ) - 1 );
++        String plugins = pluginsList.substring( 0, pluginsList.lastIndexOf( "," ) - 1 );
 +        String message = proxy.getTranslation( "command_plugins_message", pluginNames.size(), plugins );
 +        sender.sendMessage( TextComponent.fromLegacyText( message ) );
 +        pluginNames.clear();
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0935069d6..19e18f9aa 100644
+index 0935069d..19e18f9a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -89,6 +89,7 @@ import net.md_5.bungee.query.RemoteQuery;
@@ -92,7 +91,7 @@ index 0935069d6..19e18f9aa 100644
          {
              if ( EncryptionUtil.nativeFactory.load() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 0f650b0e4..0ef56ad5c 100644
+index 0f650b0e..0ef56ad5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -103,7 +103,8 @@ public class YamlConfig implements ConfigurationAdapter
@@ -106,7 +105,7 @@ index 0f650b0e4..0ef56ad5c 100644
          }
  
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index c958f2357..7df2b43cd 100644
+index c958f235..7df2b43c 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
 @@ -25,3 +25,4 @@ name_invalid=Username contains invalid characters.
