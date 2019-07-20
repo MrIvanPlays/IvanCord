@@ -1,4 +1,4 @@
-From de0516568e84da7eb5e9f0ed0460a32ab46a1b89 Mon Sep 17 00:00:00 2001
+From 0722ab6e44738387d492b901e19b4fc17e228f07 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 20 Jul 2019 11:23:03 +0300
 Subject: [PATCH] Command framework for multiple command handling
@@ -68,10 +68,10 @@ index 00000000..3ecb7bb4
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
 new file mode 100644
-index 00000000..0a68a4c3
+index 00000000..ee482e14
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
-@@ -0,0 +1,111 @@
+@@ -0,0 +1,200 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 + * Copyright 2019 contributors
@@ -94,9 +94,15 @@ index 00000000..0a68a4c3
 + **/
 +package com.github.mrivanplays.ivancord.api.command;
 +
++import java.util.Collection;
++import java.util.Collections;
 +import java.util.HashSet;
-+import java.util.Set;
++import java.util.Map;
++import java.util.Optional;
 +
++import com.google.common.collect.HashMultimap;
++import com.google.common.collect.ImmutableList;
++import com.google.common.collect.Multimap;
 +import net.md_5.bungee.api.CommandSender;
 +import net.md_5.bungee.api.ProxyServer;
 +import net.md_5.bungee.api.plugin.Command;
@@ -110,7 +116,7 @@ index 00000000..0a68a4c3
 +{
 +
 +    private ProxyServer proxy;
-+    private Set<String> registeredCommandAliases = new HashSet<>();
++    private Multimap<Plugin, String> registeredCommandAliases = HashMultimap.create();
 +
 +    public IvanCordCommandManager(ProxyServer proxy)
 +    {
@@ -128,11 +134,14 @@ index 00000000..0a68a4c3
 +    {
 +        for ( String alias : commandsExecutedNames )
 +        {
-+            if ( registeredCommandAliases.contains( alias ) )
++            if ( registeredCommandAliases.containsKey( plugin ) )
 +            {
-+                continue;
++                if ( registeredCommandAliases.get( plugin ).contains( alias ) )
++                {
++                    continue;
++                }
 +            }
-+            registeredCommandAliases.add( alias );
++            registeredCommandAliases.put( plugin, alias );
 +            proxy.getPluginManager().registerCommand( plugin, new CommandWrapper( command, alias ) );
 +        }
 +    }
@@ -144,19 +153,94 @@ index 00000000..0a68a4c3
 +     */
 +    public void unregisterCommand(String commandName)
 +    {
-+        if ( !registeredCommandAliases.contains( commandName ) )
++        if ( !registeredCommandAliases.values().contains( commandName ) )
 +        {
 +            return;
 +        }
-+        registeredCommandAliases.remove( commandName );
++        Plugin plugin = getPlugin( commandName );
++        registeredCommandAliases.remove( plugin, commandName );
 +        proxy.getPluginManager().getCommand( commandName )
 +                .ifPresent( command -> proxy.getPluginManager().unregisterCommand( command ) );
 +    }
 +
 +    /**
++     * Unregisters all commands for the specified plugin, registered from here.
++     *
++     * @param plugin the plugin for which you want to unregister the commands
++     */
++    public void unregisterCommands(Plugin plugin)
++    {
++        Collection<String> commands = registeredCommandAliases.removeAll( plugin );
++        for ( String alias : commands )
++        {
++            proxy.getPluginManager().getCommand( alias )
++                    .ifPresent( command -> proxy.getPluginManager().unregisterCommand( command ) );
++        }
++    }
++
++    /**
++     * Gets the command aliases the specified plugin has registered.
++     *
++     * @param plugin the plugin of which you want to get the registered command aliases
++     * @return command aliases or empty list if none
++     */
++    public Collection<String> getCommandAliases(Plugin plugin)
++    {
++        if ( !registeredCommandAliases.containsKey( plugin ) )
++        {
++            return Collections.emptyList();
++        }
++        return ImmutableList.copyOf( registeredCommandAliases.get( plugin ) );
++    }
++
++    /**
++     * Gets the commands the specified plugin has registered from here.
++     *
++     * @param plugin the plugin of which you want to get the commands of
++     * @return commands
++     */
++    public Collection<ICommand> getCommands(Plugin plugin)
++    {
++        Collection<ICommand> commands = new HashSet<>();
++        Collection<String> commandAliases = getCommandAliases( plugin );
++        if ( commandAliases.isEmpty() )
++        {
++            return Collections.emptyList();
++        }
++        for ( String alias : commandAliases )
++        {
++            Optional<Command> bungeeCommand = proxy.getPluginManager().getCommand( alias );
++            if ( !bungeeCommand.isPresent() )
++            {
++                continue;
++            }
++            Command bungee = bungeeCommand.get();
++            if ( !( bungee instanceof CommandWrapper ) )
++            {
++                continue;
++            }
++
++            commands.add( ( (CommandWrapper) bungee ).getCommand() );
++        }
++        return commands;
++    }
++
++    private Plugin getPlugin(String alias)
++    {
++        for ( Map.Entry<Plugin, String> entry : registeredCommandAliases.entries() )
++        {
++            if ( entry.getValue().toLowerCase().equalsIgnoreCase( alias.toLowerCase() ) )
++            {
++                return entry.getKey();
++            }
++        }
++        return null;
++    }
++
++    /**
 +     * Represents a command wrapper between our {@link ICommand} and BungeeCord's {@link Command}
 +     */
-+    public final static class CommandWrapper extends Command implements TabExecutor
++    public static final class CommandWrapper extends Command implements TabExecutor
 +    {
 +
 +        private String currentAlias;
@@ -179,6 +263,11 @@ index 00000000..0a68a4c3
 +        public Iterable<String> onTabComplete(CommandSender sender, String[] args)
 +        {
 +            return command.tabComplete( sender, currentAlias, args );
++        }
++
++        public ICommand getCommand()
++        {
++            return command;
 +        }
 +    }
 +
