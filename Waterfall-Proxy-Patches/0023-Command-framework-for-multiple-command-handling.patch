@@ -1,4 +1,4 @@
-From cd00aa3888d1c0ce0235d4bf6820c56059131077 Mon Sep 17 00:00:00 2001
+From de0516568e84da7eb5e9f0ed0460a32ab46a1b89 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 20 Jul 2019 11:23:03 +0300
 Subject: [PATCH] Command framework for multiple command handling
@@ -68,10 +68,10 @@ index 00000000..3ecb7bb4
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
 new file mode 100644
-index 00000000..077308a9
+index 00000000..0a68a4c3
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
-@@ -0,0 +1,98 @@
+@@ -0,0 +1,111 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 + * Copyright 2019 contributors
@@ -94,6 +94,9 @@ index 00000000..077308a9
 + **/
 +package com.github.mrivanplays.ivancord.api.command;
 +
++import java.util.HashSet;
++import java.util.Set;
++
 +import net.md_5.bungee.api.CommandSender;
 +import net.md_5.bungee.api.ProxyServer;
 +import net.md_5.bungee.api.plugin.Command;
@@ -107,6 +110,7 @@ index 00000000..077308a9
 +{
 +
 +    private ProxyServer proxy;
++    private Set<String> registeredCommandAliases = new HashSet<>();
 +
 +    public IvanCordCommandManager(ProxyServer proxy)
 +    {
@@ -116,14 +120,19 @@ index 00000000..077308a9
 +    /**
 +     * Registers a command
 +     *
-+     * @param plugin the plugin bind to
-+     * @param command the command
++     * @param plugin                the plugin bind to
++     * @param command               the command
 +     * @param commandsExecutedNames all commands, executed in this command
 +     */
 +    public void registerCommand(Plugin plugin, ICommand command, String... commandsExecutedNames)
 +    {
 +        for ( String alias : commandsExecutedNames )
 +        {
++            if ( registeredCommandAliases.contains( alias ) )
++            {
++                continue;
++            }
++            registeredCommandAliases.add( alias );
 +            proxy.getPluginManager().registerCommand( plugin, new CommandWrapper( command, alias ) );
 +        }
 +    }
@@ -131,10 +140,15 @@ index 00000000..077308a9
 +    /**
 +     * Unregisters a command
 +     *
-+     * @param commandName the command's name you wish to unregister
++     * @param commandName the command's name or alias you wish to unregister
 +     */
 +    public void unregisterCommand(String commandName)
 +    {
++        if ( !registeredCommandAliases.contains( commandName ) )
++        {
++            return;
++        }
++        registeredCommandAliases.remove( commandName );
 +        proxy.getPluginManager().getCommand( commandName )
 +                .ifPresent( command -> proxy.getPluginManager().unregisterCommand( command ) );
 +    }
@@ -167,7 +181,6 @@ index 00000000..077308a9
 +            return command.tabComplete( sender, currentAlias, args );
 +        }
 +    }
-+
 +
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
