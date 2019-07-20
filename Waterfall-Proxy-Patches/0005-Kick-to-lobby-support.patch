@@ -1,11 +1,11 @@
-From 57064dcd42187d1ff3045be1ef830b68212b9442 Mon Sep 17 00:00:00 2001
+From 515f24c9262f4f5986745228cb30b8ad9a70bb82 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 22 Apr 2019 10:45:15 +0300
 Subject: [PATCH] Kick to lobby support
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index cbcf8a249..4687e7c47 100644
+index cbcf8a24..4687e7c4 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -239,4 +239,15 @@ public interface ProxyConfig
@@ -25,7 +25,7 @@ index cbcf8a249..4687e7c47 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 96bb60f5e..dea499b20 100644
+index 96bb60f5..dea499b2 100644
 --- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -22,16 +22,21 @@ package com.github.mrivanplays.ivancord.conf;
@@ -51,7 +51,7 @@ index 96bb60f5e..dea499b20 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1f8a24395..c4f44e7f1 100644
+index 7b3f9969..df6e8092 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -28,6 +28,8 @@ import net.md_5.bungee.ServerConnection;
@@ -63,7 +63,7 @@ index 1f8a24395..c4f44e7f1 100644
  import net.md_5.bungee.api.chat.TextComponent;
  import net.md_5.bungee.api.config.ServerInfo;
  import net.md_5.bungee.api.connection.ProxiedPlayer;
-@@ -506,14 +508,46 @@ public class DownstreamBridge extends PacketHandler
+@@ -516,14 +518,46 @@ public class DownstreamBridge extends PacketHandler
          {
              def = null;
          }
@@ -115,7 +115,7 @@ index 1f8a24395..c4f44e7f1 100644
          throw CancelSendSignal.INSTANCE;
      }
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index dfb58c121..c958f2357 100644
+index dfb58c12..c958f235 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
 @@ -24,3 +24,4 @@ name_too_long=Cannot have username longer than 16 characters
