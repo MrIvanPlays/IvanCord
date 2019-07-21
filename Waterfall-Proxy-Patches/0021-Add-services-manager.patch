@@ -1,4 +1,4 @@
-From fe3a272993a36a28c682249131f2ea782840d29a Mon Sep 17 00:00:00 2001
+From 847512c77dd89df4ebd668219947ea056a47a16b Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 2 Jul 2019 16:31:36 +0300
 Subject: [PATCH] Add services manager
@@ -389,10 +389,10 @@ index 00000000..9955b63c
 +}
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
 new file mode 100644
-index 00000000..ec462a9f
+index 00000000..82bf18bf
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
-@@ -0,0 +1,190 @@
+@@ -0,0 +1,188 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -418,7 +418,6 @@ index 00000000..ec462a9f
 +import java.util.Collection;
 +import java.util.Collections;
 +import java.util.Comparator;
-+import java.util.HashSet;
 +import java.util.List;
 +import java.util.Map;
 +import java.util.Optional;
@@ -560,7 +559,6 @@ index 00000000..ec462a9f
 +    }
 +
 +    @Override
-+    @SuppressWarnings("unchecked")
 +    public Collection<RegisteredServiceProvider<?>> getRegistrations(Plugin plugin)
 +    {
 +        Set<RegisteredServiceProvider<?>> collection = new TreeSet<>( COMPARATOR );
