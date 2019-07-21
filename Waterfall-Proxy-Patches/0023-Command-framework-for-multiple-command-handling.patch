@@ -1,4 +1,4 @@
-From 9d4cd2a2975518425f0d69548b7f24f0724e7d9f Mon Sep 17 00:00:00 2001
+From ddb01fb73ec733146bc51f14561d91fe46393828 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 20 Jul 2019 11:23:03 +0300
 Subject: [PATCH] Command framework for multiple command handling
@@ -68,10 +68,10 @@ index 00000000..3ecb7bb4
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
 new file mode 100644
-index 00000000..eb405b3c
+index 00000000..c949c4ae
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
-@@ -0,0 +1,213 @@
+@@ -0,0 +1,222 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 + * Copyright 2019 contributors
@@ -100,6 +100,7 @@ index 00000000..eb405b3c
 +import java.util.Map;
 +import java.util.Optional;
 +
++import com.google.common.base.Preconditions;
 +import com.google.common.collect.HashMultimap;
 +import com.google.common.collect.ImmutableList;
 +import com.google.common.collect.Multimap;
@@ -132,6 +133,9 @@ index 00000000..eb405b3c
 +     */
 +    public void registerCommand(Plugin plugin, ICommand command, String... commandsExecutedNames)
 +    {
++        Preconditions.checkNotNull( plugin, "plugin" );
++        Preconditions.checkNotNull( command, "command" );
++        Preconditions.checkNotNull( commandsExecutedNames, "Command names cannot be null" );
 +        for ( String alias : commandsExecutedNames )
 +        {
 +            if ( registeredCommandAliases.containsKey( plugin ) )
@@ -154,6 +158,8 @@ index 00000000..eb405b3c
 +     */
 +    public boolean unregisterCommand(String commandName)
 +    {
++        Preconditions.checkNotNull( commandName, "commandName" );
++        Preconditions.checkArgument( !commandName.isEmpty(), "Command name cannot be empty" );
 +        if ( !registeredCommandAliases.values().contains( commandName ) )
 +        {
 +            return false;
@@ -177,6 +183,7 @@ index 00000000..eb405b3c
 +     */
 +    public boolean unregisterCommands(Plugin plugin)
 +    {
++        Preconditions.checkNotNull( plugin, "plugin" );
 +        Collection<String> commands = registeredCommandAliases.get( plugin );
 +        registeredCommandAliases.removeAll( plugin );
 +        if ( commands.isEmpty() )
@@ -199,6 +206,7 @@ index 00000000..eb405b3c
 +     */
 +    public Collection<String> getCommandAliases(Plugin plugin)
 +    {
++        Preconditions.checkNotNull( plugin, "plugin" );
 +        if ( !registeredCommandAliases.containsKey( plugin ) )
 +        {
 +            return Collections.emptyList();
@@ -214,6 +222,7 @@ index 00000000..eb405b3c
 +     */
 +    public Collection<ICommand> getCommands(Plugin plugin)
 +    {
++        Preconditions.checkNotNull( plugin, "plugin" );
 +        Collection<ICommand> commands = new HashSet<>();
 +        Collection<String> commandAliases = getCommandAliases( plugin );
 +        if ( commandAliases.isEmpty() )
