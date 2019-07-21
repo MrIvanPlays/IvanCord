@@ -1,4 +1,4 @@
-From df0416ca9c1ee978e005c494bbf22bfea640608d Mon Sep 17 00:00:00 2001
+From 1920c6c0f7b5cf0fa405e227c6c60bcc530306b2 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 30 Jun 2019 21:13:31 +0300
 Subject: [PATCH] Remove some of the TODOs
@@ -39,12 +39,12 @@ index ad2ebdea..c4922a69 100644
      }
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 67b40f5e..5af57336 100644
+index 49f76f0a..c34e89b9 100644
 --- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -38,6 +38,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
      private boolean kickToLobby = true;
-     private boolean disableTabListRewrite = false;
+     private boolean disableTabListRewrite = isOnlineMode();
      private String reconnectHandlerType = ReconnectHandlerType.YAML.name();
 +    private int connectTimeoutMillis = 5000;
  

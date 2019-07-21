@@ -1,4 +1,4 @@
-From 380459118661991651b0f2302d63fcec76c8fc40 Mon Sep 17 00:00:00 2001
+From e0ca9d2ede609122aff54145ee7d1f52eded47d4 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 20:20:49 +0300
 Subject: [PATCH] Add option to choose between reconnect handlers
@@ -8,7 +8,7 @@ a option to choose between yaml and json
 reconnect handlers.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 0643d08fb..0135019f2 100644
+index 0643d08f..0135019f 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -271,5 +271,12 @@ public interface ProxyConfig
@@ -26,7 +26,7 @@ index 0643d08fb..0135019f2 100644
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/JsonReconnectHandler.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/JsonReconnectHandler.java
 new file mode 100644
-index 000000000..d4981a047
+index 00000000..d4981a04
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/JsonReconnectHandler.java
 @@ -0,0 +1,113 @@
@@ -145,7 +145,7 @@ index 000000000..d4981a047
 +}
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/ReconnectHandlerType.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/ReconnectHandlerType.java
 new file mode 100644
-index 000000000..a8fa08cc1
+index 00000000..a8fa08cc
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/ReconnectHandlerType.java
 @@ -0,0 +1,26 @@
@@ -176,7 +176,7 @@ index 000000000..a8fa08cc1
 +    JSON
 +}
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 0cc443389..67b40f5e9 100644
+index 37632bf9..49f76f0a 100644
 --- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -28,6 +28,7 @@ import lombok.experimental.Accessors;
@@ -190,7 +190,7 @@ index 0cc443389..67b40f5e9 100644
 @@ -36,6 +37,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
  
      private boolean kickToLobby = true;
-     private boolean disableTabListRewrite = false;
+     private boolean disableTabListRewrite = isOnlineMode();
 +    private String reconnectHandlerType = ReconnectHandlerType.YAML.name();
  
      @Accessors(fluent = true)
@@ -221,7 +221,7 @@ index 0cc443389..67b40f5e9 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 92b715b7c..26633c9f5 100644
+index 92b715b7..26633c9f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -89,6 +89,8 @@ import net.md_5.bungee.query.RemoteQuery;

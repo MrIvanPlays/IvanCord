@@ -1,11 +1,11 @@
-From e72b91f8fd1b7806ec9664bf8951ef3a2b5cdbbc Mon Sep 17 00:00:00 2001
+From 18df3caa648859eface987e918699d722d7fce03 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 18:03:14 +0300
 Subject: [PATCH] Add option to disable tab list rewrite
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 4687e7c47..d13923fc1 100644
+index 4687e7c4..d13923fc 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -249,5 +249,13 @@ public interface ProxyConfig
@@ -23,14 +23,14 @@ index 4687e7c47..d13923fc1 100644
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index dea499b20..912ead479 100644
+index dea499b2..26bd9f35 100644
 --- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -30,6 +30,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
  {
  
      private boolean kickToLobby = true;
-+    private boolean disableTabListRewrite = false;
++    private boolean disableTabListRewrite = isOnlineMode();
  
      @Override
      public void load()
@@ -42,7 +42,7 @@ index dea499b20..912ead479 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 191b0a5bb..26fdc80d3 100644
+index ee19436e..b8b67261 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -163,8 +163,19 @@ public class DownstreamBridge extends PacketHandler
