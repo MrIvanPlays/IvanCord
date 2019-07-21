@@ -1,4 +1,4 @@
-From df36205545eccc3bb854bd06e019c09b76954968 Mon Sep 17 00:00:00 2001
+From 8aba0703f46ec7211907145e30f96d1267626534 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 2 Jul 2019 16:31:36 +0300
 Subject: [PATCH] Add services manager
@@ -100,10 +100,10 @@ index 00000000..c2578c96
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
 new file mode 100644
-index 00000000..57cdfb08
+index 00000000..d19d0372
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
-@@ -0,0 +1,54 @@
+@@ -0,0 +1,59 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -157,13 +157,67 @@ index 00000000..57cdfb08
 +     * The provider
 +     */
 +    private T provider;
++
++    /**
++     * Priority of the provider
++     */
++    private int priority;
++}
+diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicePriority.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicePriority.java
+new file mode 100644
+index 00000000..cc2697f9
+--- /dev/null
++++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicePriority.java
+@@ -0,0 +1,43 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++ * Copyright 2019 contributors
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord.api.plugin;
++
++/**
++ * Represents a service priority
++ */
++public class ServicePriority
++{
++
++    /**
++     * The service is of high importance
++     */
++    public static final int HIGH = -10;
++
++    /**
++     * The service is of normal importance
++     */
++    public static final int NORMAL = 1;
++
++    /**
++     * The service is of low importance
++     */
++    public static final int LOW = 10;
 +}
 diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java
 new file mode 100644
-index 00000000..59c16c27
+index 00000000..ed2863a7
 --- /dev/null
 +++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java
-@@ -0,0 +1,78 @@
+@@ -0,0 +1,92 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -191,34 +245,48 @@ index 00000000..59c16c27
 +import net.md_5.bungee.api.plugin.Plugin;
 +
 +/**
-+ * Represents a manager of services, registered
-+ * by plugins and probably used by other plugins
++ * Represents a manager of services, registered by plugins and probably used by
++ * other plugins
 + */
 +public interface ServicesManager
 +{
 +
 +    /**
++     * Registers a service and sorts it by the specified priority.
++     *
++     * @param plugin   plugin registerer
++     * @param service  service registered
++     * @param provider service instance
++     * @param priority priority of the service. should be a number of which: -10, 1 or 10
++     * @param <T>      type
++     */
++    <T> void register(Plugin plugin, Class<T> service, T provider, int priority);
++
++    /**
 +     * Registers a service
 +     *
-+     * @param plugin plugin registerer
-+     * @param service service registered
++     * @param plugin   plugin registerer
++     * @param service  service registered
 +     * @param provider service instance
-+     * @param <T> type
++     * @param <T>      type
++     * @see #register(Plugin, Class, Object, int)
 +     */
-+    <T> void register(Plugin plugin, Class<T> service, T provider);
++    default <T> void register(Plugin plugin, Class<T> service, T provider)
++    {
++        register( plugin, service, provider, ServicePriority.NORMAL );
++    }
 +
 +    /**
 +     * Unregisters a service
 +     *
-+     * @param plugin plugin registerer of this service
++     * @param plugin  plugin registerer of this service
 +     * @param service service class
-+     * @param <T> type
++     * @param <T>     type
 +     */
 +    <T> void unregister(Plugin plugin, Class<T> service);
 +
 +    /**
-+     * Unregisters all services, registered by
-+     * the specified plugin
++     * Unregisters all services, registered by the specified plugin
 +     *
 +     * @param plugin the plugin you wish to unregister its services
 +     */
@@ -228,19 +296,19 @@ index 00000000..59c16c27
 +     * Gets registration for the specified service
 +     *
 +     * @param service service class
-+     * @param <T> type
++     * @param <T>     type
 +     * @return service provider if registered, otherwise empty optional
 +     */
 +    <T> Optional<RegisteredServiceProvider<T>> getRegistration(Class<T> service);
 +
 +    /**
-+     * Gets all registered services of the specified plugin
++     * Returns a sorted by priority collection of all registered services by the
++     * specified plugin.
 +     *
 +     * @param plugin the plugin you wish to get the registrations of
-+     * @param <T> type
 +     * @return collection with the services, or empty collection if no services registered
 +     */
-+    <T> Collection<RegisteredServiceProvider<T>> getRegistrations(Plugin plugin);
++    Collection<RegisteredServiceProvider<?>> getRegistrations(Plugin plugin);
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 index d44ac67e..c797ec9e 100644
@@ -271,12 +339,60 @@ index d44ac67e..c797ec9e 100644
 +    // IvanCord end
 +
  }
+diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/EntryImpl.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/EntryImpl.java
+new file mode 100644
+index 00000000..9955b63c
+--- /dev/null
++++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/EntryImpl.java
+@@ -0,0 +1,42 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++ * Copyright 2019 contributors
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.github.mrivanplays.ivancord;
++
++import java.util.Map;
++
++import lombok.AllArgsConstructor;
++import lombok.Getter;
++
++@Getter
++@AllArgsConstructor
++public class EntryImpl<K, V> implements Map.Entry<K, V>
++{
++
++    private K key;
++    private V value;
++
++    @Override
++    public V setValue(V value)
++    {
++        this.value = value;
++        return value;
++    }
++}
 diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
 new file mode 100644
-index 00000000..9b7c00b9
+index 00000000..f6ef586c
 --- /dev/null
 +++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
-@@ -0,0 +1,176 @@
+@@ -0,0 +1,197 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -301,15 +417,19 @@ index 00000000..9b7c00b9
 +import java.util.ArrayList;
 +import java.util.Collection;
 +import java.util.Collections;
++import java.util.Comparator;
 +import java.util.HashSet;
 +import java.util.List;
 +import java.util.Map;
 +import java.util.Optional;
++import java.util.Set;
++import java.util.TreeSet;
++import java.util.concurrent.ConcurrentHashMap;
 +import java.util.concurrent.locks.Lock;
 +import java.util.concurrent.locks.ReentrantLock;
++import java.util.stream.Collectors;
 +
-+import com.google.common.collect.HashMultimap;
-+import com.google.common.collect.SetMultimap;
++import com.google.common.base.Preconditions;
 +import net.md_5.bungee.api.plugin.Plugin;
 +
 +import com.github.mrivanplays.ivancord.api.event.ServiceRegisteredEvent;
@@ -320,27 +440,28 @@ index 00000000..9b7c00b9
 +public class SimpleServicesManager implements ServicesManager
 +{
 +
-+    private final SetMultimap<Class<?>, RegisteredServiceProvider<?>> providers = HashMultimap.create();
++    private final Map<Class<?>, Set<RegisteredServiceProvider<?>>> providers = new ConcurrentHashMap<>();
 +    private final Lock providersLock = new ReentrantLock();
++    private final Comparator<RegisteredServiceProvider<?>> COMPARATOR = Comparator.comparingInt( RegisteredServiceProvider::getPriority );
 +
 +    @Override
-+    public <T> void register(Plugin plugin, Class<T> service, T provider)
++    public <T> void register(Plugin plugin, Class<T> service, T provider, int priority)
 +    {
-+        RegisteredServiceProvider<T> createdProvider = new RegisteredServiceProvider<>( plugin, service, provider );
++        Preconditions.checkArgument( priority == -10 || priority == 1 || priority == 10, "Priority should be -10, 1 or 10" );
++        RegisteredServiceProvider<T> createdProvider = new RegisteredServiceProvider<>( plugin, service, provider, priority );
 +        providersLock.lock();
 +        try
 +        {
 +            if ( providers.containsKey( service ) )
 +            {
-+                Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
-+                if ( !registered.contains( createdProvider ) )
-+                {
-+                    registered.add( createdProvider );
-+                }
-+                providers.replaceValues( service, registered );
++                Set<RegisteredServiceProvider<?>> registered = providers.get( service );
++                registered.add( createdProvider );
++                providers.replace( service, registered );
 +            } else
 +            {
-+                providers.put( service, createdProvider );
++                Set<RegisteredServiceProvider<?>> registered = new TreeSet<>( COMPARATOR );
++                registered.add( createdProvider );
++                providers.put( service, registered );
 +            }
 +        } finally
 +        {
@@ -360,8 +481,8 @@ index 00000000..9b7c00b9
 +                // no providers found for this service, stopping code
 +                return;
 +            }
-+            Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
-+            Collection<RegisteredServiceProvider<?>> toRemove = new HashSet<>();
++            Set<RegisteredServiceProvider<?>> registered = providers.get( service );
++            Collection<RegisteredServiceProvider<?>> toRemove = new TreeSet<>();
 +            for ( RegisteredServiceProvider<?> provider : registered )
 +            {
 +                if ( provider.getPlugin().getDescription().equals( plugin.getDescription() ) )
@@ -374,7 +495,7 @@ index 00000000..9b7c00b9
 +                registered.remove( providerRemoved );
 +                new ServiceUnregisteredEvent( providerRemoved ).call();
 +            }
-+            providers.replaceValues( service, registered );
++            providers.replace( service, registered );
 +            toRemove.clear();
 +        } finally
 +        {
@@ -388,19 +509,31 @@ index 00000000..9b7c00b9
 +        providersLock.lock();
 +        try
 +        {
-+            List<Map.Entry<Class<?>, RegisteredServiceProvider<?>>> toRemove = new ArrayList<>();
-+            for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entry : providers.entries() )
++            Set<Map.Entry<Class<?>, RegisteredServiceProvider<?>>> toRemove = new TreeSet<>();
++            for ( Map.Entry<Class<?>, Set<RegisteredServiceProvider<?>>> entry : providers.entrySet() )
 +            {
-+                if ( entry.getValue().getPlugin().getDescription().equals( plugin.getDescription() ) )
++                if ( entry.getValue().parallelStream().anyMatch( provider -> provider.getPlugin().getDescription().equals( plugin.getDescription() ) ) )
 +                {
-+                    toRemove.add( entry );
++                    Set<RegisteredServiceProvider<?>> filtered = entry.getValue().parallelStream()
++                            .filter( provider -> provider.getPlugin().getDescription().equals( plugin.getDescription() ) )
++                            .collect( Collectors.toSet() );
++                    try
++                    {
++                        for ( RegisteredServiceProvider<?> provider : filtered )
++                        {
++                            toRemove.add( new EntryImpl<>( provider.getService(), provider ) );
++                        }
++                    } finally
++                    {
++                        filtered.clear();
++                    }
 +                }
 +            }
 +            for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entryToRemove : toRemove )
 +            {
-+                Collection<RegisteredServiceProvider<?>> registered = providers.get( entryToRemove.getKey() );
++                Set<RegisteredServiceProvider<?>> registered = providers.get( entryToRemove.getKey() );
 +                registered.remove( entryToRemove.getValue() );
-+                providers.replaceValues( entryToRemove.getKey(), registered );
++                providers.replace( entryToRemove.getKey(), registered );
 +                new ServiceUnregisteredEvent( entryToRemove.getValue() ).call();
 +            }
 +            toRemove.clear();
@@ -417,13 +550,14 @@ index 00000000..9b7c00b9
 +        providersLock.lock();
 +        try
 +        {
-+            Collection<RegisteredServiceProvider<?>> registered = providers.get( service );
++            List<RegisteredServiceProvider<?>> registered = new ArrayList<>( providers.get( service ) );
++            registered.sort( COMPARATOR );
 +            if ( registered.isEmpty() )
 +            {
 +                return Optional.empty();
 +            } else
 +            {
-+                return Optional.of( (RegisteredServiceProvider<T>) new ArrayList<>( registered ).get( 0 ) );
++                return Optional.of( (RegisteredServiceProvider<T>) registered.get( 0 ) );
 +            }
 +        } finally
 +        {
@@ -433,17 +567,20 @@ index 00000000..9b7c00b9
 +
 +    @Override
 +    @SuppressWarnings("unchecked")
-+    public <T> Collection<RegisteredServiceProvider<T>> getRegistrations(Plugin plugin)
++    public Collection<RegisteredServiceProvider<?>> getRegistrations(Plugin plugin)
 +    {
-+        Collection<RegisteredServiceProvider<T>> collection = new HashSet<>();
++        Set<RegisteredServiceProvider<?>> collection = new TreeSet<>( COMPARATOR );
 +        providersLock.lock();
 +        try
 +        {
-+            for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entry : providers.entries() )
++            for ( Map.Entry<Class<?>, Set<RegisteredServiceProvider<?>>> entry : providers.entrySet() )
 +            {
-+                if ( entry.getValue().getPlugin().getDescription().equals( plugin.getDescription() ) )
++                if ( entry.getValue().parallelStream().anyMatch( provider -> provider.getPlugin().getDescription().equals( plugin.getDescription() ) ) )
 +                {
-+                    collection.add( (RegisteredServiceProvider<T>) entry.getValue() );
++                    Set<RegisteredServiceProvider<?>> filtered = entry.getValue().parallelStream()
++                            .filter( provider -> provider.getPlugin().getDescription().equals( plugin.getDescription() ) )
++                            .collect( Collectors.toSet() );
++                    collection.addAll( filtered );
 +                }
 +            }
 +        } finally
