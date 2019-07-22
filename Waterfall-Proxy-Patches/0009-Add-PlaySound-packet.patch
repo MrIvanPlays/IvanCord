@@ -1,4 +1,4 @@
-From 5f2fa5aa83745579a4848b9161f1b539fed5ab15 Mon Sep 17 00:00:00 2001
+From bd253867d7625628f6c9f5a39079abb4c412e097 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 11 Jun 2019 19:17:33 +0300
 Subject: [PATCH] Add PlaySound packet
@@ -322,10 +322,10 @@ index 3402862b..175553fb 100644
      },
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
 new file mode 100644
-index 00000000..2f9d545d
+index 00000000..81b8a417
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/PlaySound.java
-@@ -0,0 +1,141 @@
+@@ -0,0 +1,145 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -387,32 +387,36 @@ index 00000000..2f9d545d
 +
 +    public static PlaySound create1_8(String name, int x, int y, int z, float volume, int legacyPitch)
 +    {
-+        return new PlaySound( name, x, y, z, volume, legacyPitch );
++        return new PlaySound( name, x * 8, y * 8, z * 8, volume, legacyPitch );
 +    }
 +
 +    public static PlaySound create1_9(String name, int category, int x, int y, int z, float volume, int legacyPitch)
 +    {
-+        return new PlaySound( name, category, x, y, z, volume, legacyPitch );
++        return new PlaySound( name, category, x * 8, y * 8, z * 8, volume, legacyPitch );
 +    }
 +
 +    public static PlaySound create(String name, int category, int x, int y, int z, float volume, float pitch)
 +    {
-+        return new PlaySound( name, category, x, y, z, volume, pitch );
++        return new PlaySound( name, category, x * 8, y * 8, z * 8, volume, pitch );
 +    }
++
++    // the down constructors are only if the packet is being invoked by the versions
++    // the constructors you should use while constructing the packet are the static
++    // create() methods.
 +
 +    public PlaySound(String name, int category, int x, int y, int z, float volume, float pitch)
 +    {
-+        this( name, x * 8, y * 8, z * 8, category, 0, volume, pitch );
++        this( name, x, y, z, category, 0, volume, pitch );
 +    }
 +
 +    public PlaySound(String name, int category, int x, int y, int z, float volume, int pitch)
 +    {
-+        this( name, x * 8, y * 8, z * 8, category, pitch, volume, 0 );
++        this( name, x, y, z, category, pitch, volume, 0 );
 +    }
 +
 +    public PlaySound(String name, int x, int y, int z, float volume, int pitch)
 +    {
-+        this( name, x * 8, y * 8, z * 8, 0, pitch, volume );
++        this( name, x, y, z, 0, pitch, volume, 0 );
 +    }
 +
 +    private String name;
