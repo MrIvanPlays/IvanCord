@@ -1,4 +1,4 @@
-From 2b059042db82686e9792daf92802588f697dcdb5 Mon Sep 17 00:00:00 2001
+From 67d2b41a377036f815507a081ba3c4b20b686681 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 30 Jun 2019 21:13:31 +0300
 Subject: [PATCH] Remove some of the TODOs
@@ -224,7 +224,7 @@ index cec27cb7..fe98de28 100644
          }
      }
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index ac99d02c..6df3bc64 100644
+index ed90d752..96a8a846 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 @@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
@@ -279,7 +279,7 @@ index ac99d02c..6df3bc64 100644
              // Waterfall start
              List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
  
-             ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(listener.getMotd(), "SMP", "Waterfall_Proxy",
+             ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(listener.getMotd(), "SMP", "IvanCord_Proxy", // IvanCord - rebranding
                      bungee.getOnlineCount(), listener.getMaxPlayers(), listener.getHost().getPort(),
                      listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
 +            event.getResult().getPlugins().addAll( plugins ); // IvanCord
