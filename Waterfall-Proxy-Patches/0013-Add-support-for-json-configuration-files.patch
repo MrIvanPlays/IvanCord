@@ -1,4 +1,4 @@
-From cba89154ac7905fe8aa29ee0b17046430a1cc711 Mon Sep 17 00:00:00 2001
+From b0a533ab04333374e0b53717376b91e22aa1544e Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Fri, 14 Jun 2019 16:38:20 +0300
 Subject: [PATCH] Add support for json configuration files
@@ -25,7 +25,7 @@ index 32a005ff..d4f495bf 100644
  </project>
 diff --git a/config/src/main/java/com/github/mrivanplays/config/ObjectToListSerializer.java b/config/src/main/java/com/github/mrivanplays/config/ObjectToListSerializer.java
 new file mode 100644
-index 00000000..e12a31fe
+index 00000000..4b20900f
 --- /dev/null
 +++ b/config/src/main/java/com/github/mrivanplays/config/ObjectToListSerializer.java
 @@ -0,0 +1,76 @@
@@ -64,7 +64,7 @@ index 00000000..e12a31fe
 +    public static JsonArray serialize(List<?> list)
 +    {
 +        JsonArray array = new JsonArray();
-+        for ( Object o : array )
++        for ( Object o : list )
 +        {
 +            if ( o instanceof String )
 +            {
