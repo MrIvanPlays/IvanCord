@@ -1,4 +1,4 @@
-From 18b1b0412e9f8ac6fc624c4ddd73103b4b4b1dc2 Mon Sep 17 00:00:00 2001
+From 5d23f77f0eee6f13c2bacae99b5ccacc65ecc136 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 28 Apr 2019 09:53:09 +0300
 Subject: [PATCH] Remove entity rewrite
@@ -87,12 +87,12 @@ index c10c7b11..eb1e8a88 100644
  {
  
 diff --git a/api/src/main/java/net/md_5/bungee/api/score/Team.java b/api/src/main/java/net/md_5/bungee/api/score/Team.java
-index 25526320..bdff0641 100644
+index 39f81fd1..949befdd 100644
 --- a/api/src/main/java/net/md_5/bungee/api/score/Team.java
 +++ b/api/src/main/java/net/md_5/bungee/api/score/Team.java
-@@ -8,7 +8,11 @@ import java.util.Set;
- 
- import io.github.waterfallmc.waterfall.utils.LowMemorySet;
+@@ -7,7 +7,11 @@ import java.util.Set;
+ import lombok.Data;
+ import lombok.NonNull;
  
 +/**
 + * @deprecated not handled anymore
