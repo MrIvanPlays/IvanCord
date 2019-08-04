@@ -1,40 +1,43 @@
-From e6b4406502ba09d52346cb8580bdc7f879d91f0f Mon Sep 17 00:00:00 2001
+From 812e71fb4becf4d3233d427bf1715db86502e26e Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 4 Aug 2019 11:36:40 +0300
 Subject: [PATCH] Add option to listen to packets
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index cc450ceb..6fa43f3c 100644
+index cc450ceb..723c16c4 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -7,6 +7,7 @@ import java.util.Collection;
+@@ -7,6 +7,10 @@ import java.util.Collection;
  import java.util.Map;
  import java.util.UUID;
  import java.util.logging.Logger;
-+import com.mrivanplays.ivancord.protocol.PacketListener; // IvanCord
++// IvanCord start
++import com.mrivanplays.ivancord.protocol.InboundPacketListener;
++import com.mrivanplays.ivancord.protocol.OutboundPacketListener;
++// IvanCord end
  import lombok.Getter;
  import net.md_5.bungee.api.chat.BaseComponent;
  import net.md_5.bungee.api.config.ConfigurationAdapter;
-@@ -334,6 +335,29 @@ public abstract class ProxyServer
+@@ -334,6 +338,29 @@ public abstract class ProxyServer
       */
      public abstract IvanCordCommandManager getIvanCordCommandManager();
  
 +    /**
-+     * Registers a packet listener to listen for packets.
++     * Registers a inbound packet listener.
 +     *
 +     * @param plugin the plugin assigned to
-+     * @param packetListener the packet listener
++     * @param packetListener the inbound packet listener
 +     */
-+    public abstract void registerPacketListener(Plugin plugin, PacketListener packetListener);
++    public abstract void registerInboundPacketListener(Plugin plugin, InboundPacketListener packetListener);
 +
 +    /**
-+     * Unregisters a packet listener
++     * Registers a outbound packet listener
 +     *
 +     * @param plugin the plugin assigned to
-+     * @param packetListener the packet listener
++     * @param packetListener the outbound packet listener
 +     */
-+    public abstract void unregisterPacketListener(Plugin plugin, PacketListener packetListener);
++    public abstract void registerOutboundPacketListener(Plugin plugin, OutboundPacketListener packetListener);
 +
 +    /**
 +     * Unregisters all packet listeners, registered by this plugin
@@ -58,6 +61,96 @@ index 53930cf4..bd839e1a 100644
          proxy.getScheduler().cancel( plugin );
          plugin.getExecutorService().shutdownNow();
          DISABLED_PLUGINS.add( plugin );
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/protocol/InboundPacketListener.java b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/InboundPacketListener.java
+new file mode 100644
+index 00000000..4171676a
+--- /dev/null
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/InboundPacketListener.java
+@@ -0,0 +1,39 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++ * Copyright 2019 contributors
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.mrivanplays.ivancord.protocol;
++
++import net.md_5.bungee.protocol.DefinedPacket;
++
++/**
++ * Represents a packet listener, which listens for received packets.
++ */
++public interface InboundPacketListener
++{
++
++    /**
++     * IvanCord calls this method when the proxy has read a packet successfully. The method cannot be used to
++     * manipulate read packets, it can be used as a packet logger or doing stuff right after the packet got read.
++     *
++     * @param packet the packet which was read
++     * @param packetDirection the direction from which the packet got received
++     */
++    void packetReceived(DefinedPacket packet, PacketDirection packetDirection);
++}
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/protocol/OutboundPacketListener.java b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/OutboundPacketListener.java
+new file mode 100644
+index 00000000..f15d5326
+--- /dev/null
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/OutboundPacketListener.java
+@@ -0,0 +1,39 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++ * Copyright 2019 contributors
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.mrivanplays.ivancord.protocol;
++
++import net.md_5.bungee.protocol.DefinedPacket;
++
++/**
++ * Represents a packet listeners, which listens for sent packets.
++ */
++public interface OutboundPacketListener
++{
++
++    /**
++     * IvanCord calls this method when the proxy have sent a packet successfully. The method cannot be used to
++     * manipulate sent packets, it can be used as a packet logger or doing stuff right after the packet got sent.
++     *
++     * @param packet the packet which was sent
++     * @param packetDirection the direction to which the packet got sent
++     */
++    void packetSent(DefinedPacket packet, PacketDirection packetDirection);
++}
 diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketDirection.java b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketDirection.java
 new file mode 100644
 index 00000000..a0677b19
@@ -101,244 +194,101 @@ index 00000000..a0677b19
 +     */
 +    TO_SERVER
 +}
-diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListener.java b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListener.java
-new file mode 100644
-index 00000000..46c4a396
---- /dev/null
-+++ b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListener.java
-@@ -0,0 +1,45 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+ * Copyright 2019 contributors
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
-+package com.mrivanplays.ivancord.protocol;
-+
-+import net.md_5.bungee.protocol.DefinedPacket;
-+
-+/**
-+ * Represents a packet listener for listening to sent or received packets.
-+ */
-+public interface PacketListener
-+{
-+
-+    /**
-+     * Handle packet when it sent successfully.
-+     *
-+     * @param packet packet sent
-+     * @param direction direction
-+     */
-+    void packetSent(DefinedPacket packet, PacketDirection direction);
-+
-+    /**
-+     * Handle packet when proxy received it successfully
-+     *
-+     * @param packet packet received
-+     */
-+    void packetReceived(DefinedPacket packet);
-+}
-diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListenerManager.java b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListenerManager.java
-new file mode 100644
-index 00000000..d5e8bdfd
---- /dev/null
-+++ b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListenerManager.java
-@@ -0,0 +1,108 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+ * Copyright 2019 contributors
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
-+package com.mrivanplays.ivancord.protocol;
-+
-+import java.util.HashSet;
-+import java.util.Set;
-+import java.util.concurrent.locks.ReadWriteLock;
-+import java.util.concurrent.locks.ReentrantReadWriteLock;
-+
-+import net.md_5.bungee.protocol.DefinedPacket;
-+
-+/**
-+ * Represents a packet listener manager
-+ */
-+public class PacketListenerManager
-+{
-+
-+    private Set<PacketListener> listeners = new HashSet<>();
-+    private ReadWriteLock lock = new ReentrantReadWriteLock();
-+
-+    /**
-+     * Adds a packet listener
-+     *
-+     * @param packetListener packet listener
-+     */
-+    public void addListener(PacketListener packetListener)
-+    {
-+        lock.readLock().lock();
-+        try
-+        {
-+            listeners.add( packetListener );
-+        } finally
-+        {
-+            lock.readLock().unlock();
-+        }
-+    }
-+
-+    /**
-+     * Removes a packet listener
-+     *
-+     * @param packetListener packet listener
-+     */
-+    public void removeListener(PacketListener packetListener)
-+    {
-+        lock.readLock().lock();
-+        try
-+        {
-+            listeners.remove( packetListener );
-+        } finally
-+        {
-+            lock.readLock().unlock();
-+        }
-+    }
-+
-+    public void handleOnPacketSent(DefinedPacket packet, PacketDirection direction)
-+    {
-+        lock.writeLock().lock();
-+        try
-+        {
-+            if ( !listeners.isEmpty() )
-+            {
-+                for ( PacketListener packetListener : listeners )
-+                {
-+                    packetListener.packetSent( packet, direction );
-+                }
-+            }
-+        } finally
-+        {
-+            lock.writeLock().unlock();
-+        }
-+    }
-+
-+    public void handleOnPacketReceived(DefinedPacket packet)
-+    {
-+        lock.writeLock().lock();
-+        try
-+        {
-+            if ( !listeners.isEmpty() )
-+            {
-+                for ( PacketListener packetListener : listeners )
-+                {
-+                    packetListener.packetReceived( packet );
-+                }
-+            }
-+        } finally
-+        {
-+            lock.writeLock().unlock();
-+        }
-+    }
-+}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index a46bbc78..eb08311a 100644
+index a46bbc78..5586a4ee 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-@@ -1,5 +1,6 @@
+@@ -1,10 +1,15 @@
  package net.md_5.bungee.protocol;
  
-+import com.mrivanplays.ivancord.protocol.PacketListenerManager; // IvanCord
++// IvanCord start
++import com.mrivanplays.ivancord.protocol.InboundPacketListener;
++import com.mrivanplays.ivancord.protocol.PacketDirection;
++// IvanCord end
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufUtil;
  import io.netty.channel.ChannelHandlerContext;
-@@ -21,17 +22,21 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+ import io.netty.handler.codec.DecoderException;
+ import io.netty.handler.codec.MessageToMessageDecoder;
++import java.util.Collection; // IvanCord
+ import java.util.List;
+ import lombok.AllArgsConstructor;
+ import lombok.Setter;
+@@ -21,17 +26,21 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
      @Setter
      private boolean supportsForge = false;
      private final boolean allowEmptyPackets; // Waterfall
-+    private PacketListenerManager packetListenerManager; // IvanCord
++    private Collection<InboundPacketListener> inboundPacketListeners; // IvanCord
  
 -    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
-+    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, PacketListenerManager packetListenerManager) { // IvanCord
++    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion,  Collection<InboundPacketListener> inboundPacketListeners) { // IvanCord
          // Waterfall start
 -        this(protocol, server, protocolVersion, false);
 +        // IvanCord start
-+        this(protocol, server, protocolVersion, false, packetListenerManager);
++        this(protocol, server, protocolVersion, false, inboundPacketListeners);
      }
 -    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, boolean allowEmptyPackets) {
-+    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, boolean allowEmptyPackets, PacketListenerManager packetListenerManager) {
++    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, boolean allowEmptyPackets, Collection<InboundPacketListener> inboundPacketListeners) {
          // Waterfall end
 +        // IvanCord end
          this.protocol = protocol;
          this.server = server;
          this.protocolVersion = protocolVersion;
          this.allowEmptyPackets = allowEmptyPackets; // Waterfall
-+        this.packetListenerManager = packetListenerManager; // IvanCord
++        this.inboundPacketListeners = inboundPacketListeners; // IvanCord
      }
  
      @Override
-@@ -58,6 +63,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -58,6 +67,12 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              {
                  packetTypeInfo = packet.getClass();
                  packet.read( in, prot.getDirection(), protocolVersion );
-+                packetListenerManager.handleOnPacketReceived( packet ); // IvanCord
++                // IvanCord start
++                for ( InboundPacketListener packetListener : inboundPacketListeners )
++                {
++                    packetListener.packetReceived( packet, PacketDirection.valueOf( prot.getDirection().name() ) );
++                }
++                // IvanCord end
  
                  if ( in.isReadable() )
                  {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
-index d4b03843..ff913775 100644
+index d4b03843..0167cf7a 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
-@@ -1,5 +1,7 @@
+@@ -1,5 +1,10 @@
  package net.md_5.bungee.protocol;
  
++// IvanCord start
++import java.util.Collection;
++import com.mrivanplays.ivancord.protocol.OutboundPacketListener;
 +import com.mrivanplays.ivancord.protocol.PacketDirection;
-+import com.mrivanplays.ivancord.protocol.PacketListenerManager; // IvanCord
++// IvanCord end
  import io.netty.buffer.ByteBuf;
  import io.netty.channel.ChannelHandlerContext;
  import io.netty.handler.codec.MessageToByteEncoder;
-@@ -15,6 +17,7 @@ public class MinecraftEncoder extends MessageToByteEncoder<DefinedPacket>
+@@ -15,6 +20,7 @@ public class MinecraftEncoder extends MessageToByteEncoder<DefinedPacket>
      private boolean server;
      @Setter
      private int protocolVersion;
-+    private PacketListenerManager packetListenerManager; // IvanCord
++    private Collection<OutboundPacketListener> outboundPacketListeners; // IvanCord
  
      @Override
      protected void encode(ChannelHandlerContext ctx, DefinedPacket msg, ByteBuf out) throws Exception
-@@ -22,5 +25,6 @@ public class MinecraftEncoder extends MessageToByteEncoder<DefinedPacket>
+@@ -22,5 +28,11 @@ public class MinecraftEncoder extends MessageToByteEncoder<DefinedPacket>
          Protocol.DirectionData prot = ( server ) ? protocol.TO_CLIENT : protocol.TO_SERVER;
          DefinedPacket.writeVarInt( prot.getId( msg.getClass(), protocolVersion ), out );
          msg.write( out, prot.getDirection(), protocolVersion );
-+        packetListenerManager.handleOnPacketSent( msg, server ? PacketDirection.TO_CLIENT : PacketDirection.TO_SERVER ); // IvanCord
++        // IvanCord start
++        for ( OutboundPacketListener packetListener : outboundPacketListeners )
++        {
++            packetListener.packetSent( msg, server ? PacketDirection.TO_CLIENT : PacketDirection.TO_SERVER );
++        }
++        // IvanCord end
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 6aaaa108..9ba8bad8 100644
+index 6aaaa108..cfafb414 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -3,12 +3,18 @@ package net.md_5.bungee;
@@ -354,70 +304,110 @@ index 6aaaa108..9ba8bad8 100644
  import com.google.gson.Gson;
  import com.google.gson.GsonBuilder;
 +// IvanCord start
-+import com.mrivanplays.ivancord.protocol.PacketListener;
-+import com.mrivanplays.ivancord.protocol.PacketListenerManager;
++import com.mrivanplays.ivancord.protocol.InboundPacketListener;
++import com.mrivanplays.ivancord.protocol.OutboundPacketListener;
 +// IvanCord end
  import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  import io.netty.bootstrap.ServerBootstrap;
  import io.netty.channel.Channel;
-@@ -193,6 +199,9 @@ public class BungeeCord extends ProxyServer
+@@ -193,6 +199,10 @@ public class BungeeCord extends ProxyServer
      private ServicesManager servicesManager;
      @Getter
      private IvanCordCommandManager ivanCordCommandManager;
-+    @Getter
-+    private PacketListenerManager packetListenerManager;
-+    private Multimap<Plugin, PacketListener> packetListenersByPlugin = HashMultimap.create();
++    private Multimap<Plugin, InboundPacketListener> inboundPacketListeners = HashMultimap.create();
++    private ReadWriteLock inboundLock = new ReentrantReadWriteLock();
++    private Multimap<Plugin, OutboundPacketListener> outboundPacketListeners = HashMultimap.create();
++    private ReadWriteLock outboundLock = new ReentrantReadWriteLock();
      // IvanCord end
  
      {
-@@ -313,6 +322,7 @@ public class BungeeCord extends ProxyServer
-         pluginManager.detectPlugins( pluginsFolder );
- 
-         // IvanCord start
-+        packetListenerManager = new PacketListenerManager();
-         ivanCordCommandManager = new IvanCordCommandManager( this );
-         servicesManager = new SimpleServicesManager();
-         // IvanCord end
-@@ -811,4 +821,37 @@ public class BungeeCord extends ProxyServer
+@@ -811,4 +821,84 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
 +
 +    // IvanCord start
-+    @Override
-+    public void registerPacketListener(Plugin plugin, PacketListener packetListener)
++    public Collection<InboundPacketListener> getInboundPacketListeners()
 +    {
-+        packetListenersByPlugin.put( plugin, packetListener );
-+        packetListenerManager.addListener( packetListener );
++        inboundLock.writeLock().lock();
++        try
++        {
++            return inboundPacketListeners.values();
++        } finally
++        {
++            inboundLock.writeLock().unlock();
++        }
++    }
++
++    public Collection<OutboundPacketListener> getOutboundPacketListeners()
++    {
++        outboundLock.writeLock().lock();
++        try
++        {
++            return outboundPacketListeners.values();
++        } finally
++        {
++            outboundLock.writeLock().unlock();
++        }
 +    }
 +
 +    @Override
-+    public void unregisterPacketListener(Plugin plugin, PacketListener packetListener)
++    public void registerInboundPacketListener(Plugin plugin, InboundPacketListener packetListener)
 +    {
-+        if ( packetListenersByPlugin.get( plugin ) != null )
++        inboundLock.readLock().lock();
++        try
 +        {
-+            if ( !packetListenersByPlugin.get( plugin ).contains( packetListener ) )
++            if ( !inboundPacketListeners.get( plugin ).contains( packetListener ) )
 +            {
-+                return;
++                inboundPacketListeners.put( plugin, packetListener );
 +            }
++        } finally
++        {
++            inboundLock.readLock().unlock();
 +        }
-+        packetListenersByPlugin.remove( plugin, packetListener );
-+        packetListenerManager.removeListener( packetListener );
++    }
++
++    @Override
++    public void registerOutboundPacketListener(Plugin plugin, OutboundPacketListener packetListener)
++    {
++        outboundLock.readLock().lock();
++        try
++        {
++            if ( !outboundPacketListeners.get( plugin ).contains( packetListener ) )
++            {
++                outboundPacketListeners.put( plugin, packetListener );
++            }
++        } finally
++        {
++            outboundLock.readLock().unlock();
++        }
 +    }
 +
 +    @Override
 +    public void unregisterPacketListeners(Plugin plugin)
 +    {
-+        Collection<PacketListener> listeners = packetListenersByPlugin.removeAll( plugin );
-+        for ( PacketListener packetListener : listeners )
++        inboundLock.readLock().lock();
++        try
 +        {
-+            packetListenerManager.removeListener( packetListener );
++            inboundPacketListeners.removeAll( plugin );
++        } finally
++        {
++            inboundLock.readLock().unlock();
++        }
++
++        outboundLock.readLock().lock();
++        try
++        {
++            outboundPacketListeners.removeAll( plugin );
++        } finally
++        {
++            outboundLock.readLock().unlock();
 +        }
 +    }
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e948bda0..3809a86e 100644
+index e948bda0..fe2b54b6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -388,8 +388,8 @@ public final class UserConnection implements ProxiedPlayer
@@ -426,13 +416,13 @@ index e948bda0..3809a86e 100644
                          PipelineUtils.BASE.initChannel( ch );
 -                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), bungee.getConfig().isAllowEmptyPackets() ) ); // Waterfall
 -                        ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
-+                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), bungee.getConfig().isAllowEmptyPackets(), BungeeCord.getInstance().getPacketListenerManager() ) ); // Waterfall // IvanCord
-+                        ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getPacketListenerManager() ) ); // IvanCord
++                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), bungee.getConfig().isAllowEmptyPackets(), BungeeCord.getInstance().getInboundPacketListeners() ) ); // Waterfall // IvanCord
++                        ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getOutboundPacketListeners() ) ); // IvanCord
                          ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
                      }
                  };
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 6bc14d67..7abc7cb9 100644
+index 6bc14d67..2db9f157 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 @@ -34,9 +34,9 @@ public class PingHandler extends PacketHandler
@@ -440,25 +430,25 @@ index 6bc14d67..7abc7cb9 100644
      {
          this.channel = channel;
 -        MinecraftEncoder encoder = new MinecraftEncoder( Protocol.HANDSHAKE, false, protocol );
-+        MinecraftEncoder encoder = new MinecraftEncoder( Protocol.HANDSHAKE, false, protocol, BungeeCord.getInstance().getPacketListenerManager() ); // IvanCord
++        MinecraftEncoder encoder = new MinecraftEncoder( Protocol.HANDSHAKE, false, protocol, BungeeCord.getInstance().getOutboundPacketListeners() ); // IvanCord
  
 -        channel.getHandle().pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.STATUS, false, ProxyServer.getInstance().getProtocolVersion() ) );
-+        channel.getHandle().pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.STATUS, false, ProxyServer.getInstance().getProtocolVersion(), BungeeCord.getInstance().getPacketListenerManager() ) ); // IvanCord
++        channel.getHandle().pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.STATUS, false, ProxyServer.getInstance().getProtocolVersion(), BungeeCord.getInstance().getInboundPacketListeners() ) ); // IvanCord
          channel.getHandle().pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, encoder );
  
          channel.write( new Handshake( protocol, target.getAddress().getHostString(), target.getAddress().getPort(), 1 ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 6281351a..dcabebea 100644
+index 6281351a..17a0ca15 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -69,8 +69,8 @@ public class PipelineUtils
              }
-             // IvanCord end
+             // IvanCord endO
              ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
 -            ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
 -            ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
-+            ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion(), BungeeCord.getInstance().getPacketListenerManager() ) ); // IvanCord
-+            ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion(), BungeeCord.getInstance().getPacketListenerManager() ) ); // IvanCord
++            ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion(), BungeeCord.getInstance().getInboundPacketListeners() ) ); // IvanCord
++            ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion(), BungeeCord.getInstance().getOutboundPacketListeners() ) ); // IvanCord
              ch.pipeline().addBefore( FRAME_PREPENDER, LEGACY_KICKER, legacyKicker );
              ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( BungeeCord.getInstance(), listener ) );
  
