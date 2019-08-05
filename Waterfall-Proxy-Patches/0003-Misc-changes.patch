@@ -1,4 +1,4 @@
-From b5a5a40c89738078a3a160bd92cde1dd875f0841 Mon Sep 17 00:00:00 2001
+From b46b7e119135958d3b679985a7a33c099dd5c4cf Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -213,19 +213,20 @@ index eece8870..5b6ff2eb 100644
      public abstract void save(Configuration config, File file) throws IOException;
  
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
-index 3b3525f0..1462f89a 100644
+index 3b3525f0..1df27add 100644
 --- a/log4j/src/main/resources/log4j2.xml
 +++ b/log4j/src/main/resources/log4j2.xml
-@@ -3,7 +3,7 @@
+@@ -3,15 +3,15 @@
      <Appenders>
          <TerminalConsole name="TerminalConsole">
              <PatternLayout>
 -                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level] [%logger]: %minecraftFormatting{%msg}%n%xEx}">
-+                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level]: [%logger] %minecraftFormatting{%msg}%n%xEx}"> <!-- IvanCord - changed -->
++                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level]: [%t] [%logger] %minecraftFormatting{%msg}%n%xEx}"> <!-- IvanCord - changed -->
                      <!-- Log root and BungeeCord loggers without prefix -->
-                     <PatternMatch key=",BungeeCord" pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx}" />
+-                    <PatternMatch key=",BungeeCord" pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx}" />
++                    <PatternMatch key=",BungeeCord" pattern="%highlightError{[%d{HH:mm:ss} %level]: [%t] %minecraftFormatting{%msg}%n%xEx}" /> <!-- IvanCord - changed -->
                  </LoggerNamePatternSelector>
-@@ -11,7 +11,7 @@
+             </PatternLayout>
          </TerminalConsole>
          <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz" immediateFlush="false">
              <PatternLayout>

@@ -1,11 +1,11 @@
-From 73f9d3be1d2c05a56091d0ca31d6aa442039c64a Mon Sep 17 00:00:00 2001
+From 0ea81507ddd9f7b99c462fa32fa300d7f582df6a Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 4 Aug 2019 11:36:40 +0300
 Subject: [PATCH] Add option to listen to packets
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 1eb8a79b..f6d3524c 100644
+index 1eb8a79b..611e234d 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
@@ -28,12 +28,13 @@ index 1eb8a79b..f6d3524c 100644
  
  public abstract class ProxyServer
  {
-@@ -334,6 +337,22 @@ public abstract class ProxyServer
+@@ -334,6 +337,24 @@ public abstract class ProxyServer
       */
      public abstract IvanCordCommandManager getIvanCordCommandManager();
  
 +    /**
-+     * Registers a inbound packet listener.
++     * Registers a inbound packet listener. "Inbound" stands for a packet listener, that is called
++     * whenever the proxy reads a packet.
 +     *
 +     * @param plugin the plugin assigned to
 +     * @param packetListener the inbound packet listener
@@ -41,7 +42,8 @@ index 1eb8a79b..f6d3524c 100644
 +    public abstract void registerInboundPacketListener(Plugin plugin, BiConsumer<DefinedPacket, PacketDirection> packetListener);
 +
 +    /**
-+     * Registers a outbound packet listener
++     * Registers a outbound packet listener. "Outbound" stands for a packet listener, that is called
++     * whenever the proxy sends a packet.
 +     *
 +     * @param plugin the plugin assigned to
 +     * @param packetListener the outbound packet listener
