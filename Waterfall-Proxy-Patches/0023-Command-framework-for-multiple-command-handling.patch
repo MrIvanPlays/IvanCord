@@ -1,4 +1,4 @@
-From e1094e47c7504f39d74a7b89ef36d7d1ae4c3d0b Mon Sep 17 00:00:00 2001
+From 9140d562f83c6f650748bb503105725c785851d3 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 20 Jul 2019 11:23:03 +0300
 Subject: [PATCH] Command framework for multiple command handling
@@ -6,11 +6,11 @@ Subject: [PATCH] Command framework for multiple command handling
 Adds a command framework, which is lambda-friendly and multi-command
 handling friendly in one class.
 
-diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/command/ICommand.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/ICommand.java
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/ICommand.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/ICommand.java
 new file mode 100644
-index 00000000..3ecb7bb4
+index 00000000..e05e1238
 --- /dev/null
-+++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/ICommand.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/ICommand.java
 @@ -0,0 +1,54 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -32,7 +32,7 @@ index 00000000..3ecb7bb4
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.api.command;
++package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.collect.ImmutableList;
 +import net.md_5.bungee.api.CommandSender;
@@ -66,11 +66,11 @@ index 00000000..3ecb7bb4
 +        return ImmutableList.of();
 +    }
 +}
-diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/IvanCordCommandManager.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
 new file mode 100644
-index 00000000..c949c4ae
+index 00000000..4ca7286d
 --- /dev/null
-+++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/IvanCordCommandManager.java
 @@ -0,0 +1,222 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -92,7 +92,7 @@ index 00000000..c949c4ae
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.api.command;
++package com.mrivanplays.ivancord.api.command;
 +
 +import java.util.Collection;
 +import java.util.Collections;
@@ -295,17 +295,17 @@ index 00000000..c949c4ae
 +
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index c797ec9e..cc450ceb 100644
+index 61e99410..1eb8a79b 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -16,6 +16,7 @@ import net.md_5.bungee.api.plugin.Plugin;
- import net.md_5.bungee.api.plugin.PluginManager;
+@@ -17,6 +17,7 @@ import net.md_5.bungee.api.plugin.PluginManager;
  import net.md_5.bungee.api.scheduler.TaskScheduler;
  
-+import com.github.mrivanplays.ivancord.api.command.IvanCordCommandManager;
- import com.github.mrivanplays.ivancord.api.plugin.ServicesManager;
+ import com.mrivanplays.ivancord.api.plugin.ServicesManager; // IvanCord
++import com.mrivanplays.ivancord.api.command.IvanCordCommandManager; // IvanCord
  
  public abstract class ProxyServer
+ {
 @@ -326,6 +327,13 @@ public abstract class ProxyServer
       */
      public abstract ServicesManager getServicesManager();
@@ -369,17 +369,17 @@ index b1ef354f..53930cf4 100644
       * Checks if the command is registered and can possibly be executed by the
       * sender (without taking permissions into account).
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f03faaca..6aaaa108 100644
+index 16875aef..63d9b326 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -93,6 +93,7 @@ import net.md_5.bungee.util.CaseInsensitiveMap;
- import com.github.mrivanplays.ivancord.JsonReconnectHandler;
- import com.github.mrivanplays.ivancord.ReconnectHandlerType;
- import com.github.mrivanplays.ivancord.SimpleServicesManager;
-+import com.github.mrivanplays.ivancord.api.command.IvanCordCommandManager;
- import com.github.mrivanplays.ivancord.api.plugin.ServicesManager;
- import com.github.mrivanplays.ivancord.commands.CommandPlugins;
- import com.github.mrivanplays.ivancord.commands.op.CommandDeop;
+@@ -105,6 +105,7 @@ import com.mrivanplays.ivancord.ReconnectHandlerType;
+ import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
+ import com.mrivanplays.ivancord.SimpleServicesManager;
+ import com.mrivanplays.ivancord.api.plugin.ServicesManager;
++import com.mrivanplays.ivancord.api.command.IvanCordCommandManager;
+ 
+ /**
+  * Main BungeeCord proxy class.
 @@ -190,6 +191,8 @@ public class BungeeCord extends ProxyServer
      // IvanCord start
      @Getter

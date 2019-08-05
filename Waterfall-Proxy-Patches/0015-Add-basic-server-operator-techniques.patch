@@ -1,11 +1,11 @@
-From 155aa3c3748d32786d247856e1ed7bcfcbc532ac Mon Sep 17 00:00:00 2001
+From 03c563871c9f3228965490ef6d90a873522de2bf Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 17:21:37 +0300
 Subject: [PATCH] Add basic server operator techniques
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 82e8b9be3..c9892ffbd 100644
+index 9c83abbb..2b4d97a3 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -412,4 +412,22 @@ public interface ProxiedPlayer extends Connection, CommandSender
@@ -31,11 +31,11 @@ index 82e8b9be3..c9892ffbd 100644
 +    void setGlobalOp(boolean globalOp);
 +    // IvanCord end
  }
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandDeop.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandDeop.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandDeop.java b/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandDeop.java
 new file mode 100644
-index 000000000..3e287db3a
+index 00000000..e1a2d854
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandDeop.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandDeop.java
 @@ -0,0 +1,66 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -56,7 +56,7 @@ index 000000000..3e287db3a
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.commands.op;
++package com.mrivanplays.ivancord.commands.op;
 +
 +import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.CommandSender;
@@ -103,11 +103,11 @@ index 000000000..3e287db3a
 +        return new ComponentBuilder( message ).color( ChatColor.RED ).create();
 +    }
 +}
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandOp.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandOp.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandOp.java b/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandOp.java
 new file mode 100644
-index 000000000..2dcd44779
+index 00000000..8871b546
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/op/CommandOp.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandOp.java
 @@ -0,0 +1,66 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -128,7 +128,7 @@ index 000000000..2dcd44779
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.commands.op;
++package com.mrivanplays.ivancord.commands.op;
 +
 +import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.CommandSender;
@@ -175,11 +175,11 @@ index 000000000..2dcd44779
 +        return new ComponentBuilder( message ).color( ChatColor.RED ).create();
 +    }
 +}
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/OpsConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/OpsConfiguration.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/OpsConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/OpsConfiguration.java
 new file mode 100644
-index 000000000..9df43a562
+index 00000000..001e399d
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/OpsConfiguration.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/OpsConfiguration.java
 @@ -0,0 +1,89 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -200,7 +200,7 @@ index 000000000..9df43a562
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.conf;
++package com.mrivanplays.ivancord.conf;
 +
 +import java.io.File;
 +import java.io.IOException;
@@ -271,23 +271,23 @@ index 000000000..9df43a562
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 19e18f9aa..92b715b7c 100644
+index 71916fa1..dfd2dff3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -90,6 +90,9 @@ import net.md_5.bungee.scheduler.BungeeScheduler;
- import net.md_5.bungee.util.CaseInsensitiveMap;
+@@ -96,6 +96,9 @@ import com.mrivanplays.ivancord.modules.CommandList;
+ import com.mrivanplays.ivancord.modules.CommandSend;
+ import com.mrivanplays.ivancord.modules.CommandServer;
+ import com.mrivanplays.ivancord.commands.CommandPlugins;
++import com.mrivanplays.ivancord.conf.OpsConfiguration;
++import com.mrivanplays.ivancord.commands.op.CommandDeop;
++import com.mrivanplays.ivancord.commands.op.CommandOp;
  
- import com.github.mrivanplays.ivancord.commands.CommandPlugins;
-+import com.github.mrivanplays.ivancord.commands.op.CommandDeop;
-+import com.github.mrivanplays.ivancord.commands.op.CommandOp;
-+import com.github.mrivanplays.ivancord.conf.OpsConfiguration;
- import com.github.mrivanplays.ivancord.modules.CommandAlert;
- import com.github.mrivanplays.ivancord.modules.CommandAlertRaw;
- import com.github.mrivanplays.ivancord.modules.CommandFind;
+ /**
+  * Main BungeeCord proxy class.
 @@ -112,6 +115,10 @@ public class BungeeCord extends ProxyServer
       */
      @Getter
-     public final Configuration config = new com.github.mrivanplays.ivancord.conf.IvanCordConfiguration(); // IvanCord - ivancord specific configuration
+     public final Configuration config = new com.mrivanplays.ivancord.conf.IvanCordConfiguration(); // IvanCord - ivancord specific configuration
 +    // IvanCord start
 +    @Getter
 +    private OpsConfiguration opsConfiguration = new OpsConfiguration();
@@ -305,10 +305,10 @@ index 19e18f9aa..92b715b7c 100644
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c4822dfbf..a8c9a6506 100644
+index d2ee764c..ffe4e78d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -117,6 +117,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -116,6 +116,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      private Position position;
      // IvanCord end
@@ -319,7 +319,7 @@ index c4822dfbf..a8c9a6506 100644
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -204,6 +208,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -203,6 +207,9 @@ public final class UserConnection implements ProxiedPlayer
          {
              forgeClientHandler.setFmlTokenInHandshake( true );
          }
@@ -329,7 +329,7 @@ index c4822dfbf..a8c9a6506 100644
      }
  
      public void sendPacket(PacketWrapper packet)
-@@ -577,7 +584,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -576,7 +583,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public boolean hasPermission(String permission)
      {
@@ -338,7 +338,7 @@ index c4822dfbf..a8c9a6506 100644
      }
  
      @Override
-@@ -799,6 +806,13 @@ public final class UserConnection implements ProxiedPlayer
+@@ -798,6 +805,13 @@ public final class UserConnection implements ProxiedPlayer
          new SoundPlayedEvent( this, position,
                  PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category ).call();
      }
@@ -353,7 +353,7 @@ index c4822dfbf..a8c9a6506 100644
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 0ef56ad5c..5c885702d 100644
+index 0ef56ad5..5c885702 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -104,7 +104,7 @@ public class YamlConfig implements ConfigurationAdapter

@@ -1,14 +1,14 @@
-From 9bd9d02647a2729f4b916d7ffcfd09485fba49e0 Mon Sep 17 00:00:00 2001
+From 5338668b91a94119165ce0bd961769bfffad76c8 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 18:48:03 +0300
 Subject: [PATCH] Add gplugins command
 
 
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/CommandPlugins.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/CommandPlugins.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java b/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java
 new file mode 100644
-index 00000000..ab436346
+index 00000000..94e3351a
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/commands/CommandPlugins.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java
 @@ -0,0 +1,57 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -29,7 +29,7 @@ index 00000000..ab436346
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.commands;
++package com.mrivanplays.ivancord.commands;
 +
 +import java.util.Set;
 +import java.util.stream.Collectors;
@@ -68,17 +68,17 @@ index 00000000..ab436346
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0935069d..19e18f9a 100644
+index a4263356..71916fa1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -89,6 +89,7 @@ import net.md_5.bungee.query.RemoteQuery;
- import net.md_5.bungee.scheduler.BungeeScheduler;
- import net.md_5.bungee.util.CaseInsensitiveMap;
+@@ -95,6 +95,7 @@ import com.mrivanplays.ivancord.modules.CommandFind;
+ import com.mrivanplays.ivancord.modules.CommandList;
+ import com.mrivanplays.ivancord.modules.CommandSend;
+ import com.mrivanplays.ivancord.modules.CommandServer;
++import com.mrivanplays.ivancord.commands.CommandPlugins;
  
-+import com.github.mrivanplays.ivancord.commands.CommandPlugins;
- import com.github.mrivanplays.ivancord.modules.CommandAlert;
- import com.github.mrivanplays.ivancord.modules.CommandAlertRaw;
- import com.github.mrivanplays.ivancord.modules.CommandFind;
+ /**
+  * Main BungeeCord proxy class.
 @@ -238,6 +239,10 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandServer() );
          // IvanCord end

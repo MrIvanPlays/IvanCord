@@ -1,11 +1,11 @@
-From a5b8869cbd62f98349ef6021bce89b7a9e4a8f31 Mon Sep 17 00:00:00 2001
+From 0381230fc363c4bfc9b7864e49a912dac73a9cb4 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:04:14 +0300
 Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index 7129d0e38..11a5f7b99 100644
+index 7129d0e3..11a5f7b9 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -38,7 +38,9 @@
@@ -18,13 +18,13 @@ index 7129d0e38..11a5f7b99 100644
          <module>protocol</module>
          <module>proxy</module>
          <module>query</module>
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlert.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlert.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlert.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlert.java
 new file mode 100644
-index 000000000..6a8c0bc5c
+index 00000000..99b614f7
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlert.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlert.java
 @@ -0,0 +1,46 @@
-+package com.github.mrivanplays.ivancord.modules;
++package com.mrivanplays.ivancord.modules;
 +
 +import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.CommandSender;
@@ -52,7 +52,7 @@ index 000000000..6a8c0bc5c
 +            if ( args[0].startsWith( "&h" ) )
 +            {
 +                // Remove &h
-+                args[0] = args[0].substring( 2, args[0].length() );
++                args[0] = args[0].substring( 2 );
 +            } else
 +            {
 +                builder.append( ProxyServer.getInstance().getTranslation( "alert" ) );
@@ -70,13 +70,13 @@ index 000000000..6a8c0bc5c
 +        }
 +    }
 +}
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlertRaw.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlertRaw.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlertRaw.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlertRaw.java
 new file mode 100644
-index 000000000..7e6274d8e
+index 00000000..0521a348
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandAlertRaw.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlertRaw.java
 @@ -0,0 +1,56 @@
-+package com.github.mrivanplays.ivancord.modules;
++package com.mrivanplays.ivancord.modules;
 +
 +import com.google.common.base.Joiner;
 +import net.md_5.bungee.api.ChatColor;
@@ -132,13 +132,13 @@ index 000000000..7e6274d8e
 +        }
 +    }
 +}
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandFind.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandFind.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandFind.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandFind.java
 new file mode 100644
-index 000000000..7b2863f42
+index 00000000..d999aed9
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandFind.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandFind.java
 @@ -0,0 +1,36 @@
-+package com.github.mrivanplays.ivancord.modules;
++package com.mrivanplays.ivancord.modules;
 +
 +import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.CommandSender;
@@ -175,13 +175,13 @@ index 000000000..7b2863f42
 +    }
 +}
 \ No newline at end of file
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandList.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandList.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java
 new file mode 100644
-index 000000000..971bf2573
+index 00000000..0f0f012f
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandList.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java
 @@ -0,0 +1,47 @@
-+package com.github.mrivanplays.ivancord.modules;
++package com.mrivanplays.ivancord.modules;
 +
 +import java.util.ArrayList;
 +import java.util.Collections;
@@ -208,7 +208,7 @@ index 000000000..971bf2573
 +    @Override
 +    public void execute(CommandSender sender, String[] args)
 +    {
-+        for ( ServerInfo server : ProxyServer.getInstance().getServers().values() )
++        for ( ServerInfo server : ProxyServer.getInstance().getServersCopy().values() )
 +        {
 +            if ( !server.canAccess( sender ) )
 +            {
@@ -228,13 +228,13 @@ index 000000000..971bf2573
 +        sender.sendMessage( ProxyServer.getInstance().getTranslation( "total_players", ProxyServer.getInstance().getOnlineCount() ) );
 +    }
 +}
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandSend.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandSend.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java
 new file mode 100644
-index 000000000..6e1a30771
+index 00000000..04746d87
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandSend.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java
 @@ -0,0 +1,126 @@
-+package com.github.mrivanplays.ivancord.modules;
++package com.mrivanplays.ivancord.modules;
 +
 +import java.util.Collections;
 +import java.util.HashSet;
@@ -361,13 +361,13 @@ index 000000000..6e1a30771
 +    }
 +}
 \ No newline at end of file
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandServer.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandServer.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java
 new file mode 100644
-index 000000000..275b29135
+index 00000000..e466a819
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/CommandServer.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java
 @@ -0,0 +1,95 @@
-+package com.github.mrivanplays.ivancord.modules;
++package com.mrivanplays.ivancord.modules;
 +
 +import java.util.Collections;
 +import java.util.Locale;
@@ -399,7 +399,7 @@ index 000000000..275b29135
 +    @Override
 +    public void execute(CommandSender sender, String[] args)
 +    {
-+        Map<String, ServerInfo> servers = ProxyServer.getInstance().getServers();
++        Map<String, ServerInfo> servers = ProxyServer.getInstance().getServersCopy();
 +        if ( args.length == 0 )
 +        {
 +            if ( sender instanceof ProxiedPlayer )
@@ -463,13 +463,13 @@ index 000000000..275b29135
 +    }
 +}
 \ No newline at end of file
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/YamlReconnectHandler.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/YamlReconnectHandler.java
 new file mode 100644
-index 000000000..a0ef29e25
+index 00000000..f659e308
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/modules/YamlReconnectHandler.java
-@@ -0,0 +1,112 @@
-+package com.github.mrivanplays.ivancord.modules;
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/YamlReconnectHandler.java
+@@ -0,0 +1,111 @@
++package com.mrivanplays.ivancord.modules;
 +
 +import java.io.File;
 +import java.io.FileReader;
@@ -497,7 +497,6 @@ index 000000000..a0ef29e25
 +    /*========================================================================*/
 +    private Map<UUID, String> data;
 +
-+    @SuppressWarnings("unchecked")
 +    public YamlReconnectHandler()
 +    {
 +        try
@@ -583,10 +582,18 @@ index 000000000..a0ef29e25
 +}
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f5cf2999d..df8c4c7ea 100644
+index efbf3164..8fc68a01 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -81,7 +81,6 @@ import net.md_5.bungee.compress.CompressFactory;
+@@ -22,7 +22,6 @@ import io.netty.util.ResourceLeakDetector;
+ import java.io.File;
+ import java.io.FileReader;
+ import java.io.IOException;
+-import java.io.PrintStream;
+ import java.net.InetSocketAddress;
+ import java.text.MessageFormat;
+ import java.util.ArrayList;
+@@ -81,7 +80,6 @@ import net.md_5.bungee.compress.CompressFactory;
  import net.md_5.bungee.conf.Configuration;
  import net.md_5.bungee.conf.YamlConfig;
  import net.md_5.bungee.forge.ForgeConstants;
@@ -594,21 +601,21 @@ index f5cf2999d..df8c4c7ea 100644
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
  import net.md_5.bungee.protocol.ProtocolConstants;
-@@ -91,6 +90,13 @@ import net.md_5.bungee.query.RemoteQuery;
+@@ -91,6 +89,13 @@ import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
  
-+import com.github.mrivanplays.ivancord.modules.CommandAlert;
-+import com.github.mrivanplays.ivancord.modules.CommandAlertRaw;
-+import com.github.mrivanplays.ivancord.modules.CommandFind;
-+import com.github.mrivanplays.ivancord.modules.CommandList;
-+import com.github.mrivanplays.ivancord.modules.CommandSend;
-+import com.github.mrivanplays.ivancord.modules.CommandServer;
++import com.mrivanplays.ivancord.modules.CommandAlert;
++import com.mrivanplays.ivancord.modules.CommandAlertRaw;
++import com.mrivanplays.ivancord.modules.CommandFind;
++import com.mrivanplays.ivancord.modules.CommandList;
++import com.mrivanplays.ivancord.modules.CommandSend;
++import com.mrivanplays.ivancord.modules.CommandServer;
 +
  /**
   * Main BungeeCord proxy class.
   */
-@@ -164,7 +170,9 @@ public class BungeeCord extends ProxyServer
+@@ -164,7 +169,9 @@ public class BungeeCord extends ProxyServer
              .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
      @Getter
      private ConnectionThrottle connectionThrottle;
@@ -618,7 +625,7 @@ index f5cf2999d..df8c4c7ea 100644
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -222,6 +230,15 @@ public class BungeeCord extends ProxyServer
+@@ -222,6 +229,15 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandBungee() );
          getPluginManager().registerCommand( null, new CommandPerms() );
  
@@ -634,7 +641,7 @@ index f5cf2999d..df8c4c7ea 100644
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
              if ( EncryptionUtil.nativeFactory.load() )
-@@ -259,9 +276,11 @@ public class BungeeCord extends ProxyServer
+@@ -259,9 +275,11 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  

@@ -1,14 +1,14 @@
-From db818c8a9d43ce123f52f10092367e4655a4cdeb Mon Sep 17 00:00:00 2001
+From 3af57359e1810f4270c46f9b78496e771f247785 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 16:03:22 +0300
 Subject: [PATCH] Add LoginCancelledEvent
 
 
-diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/LoginCancelledEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/LoginCancelledEvent.java
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/LoginCancelledEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/LoginCancelledEvent.java
 new file mode 100644
-index 00000000..357b94c1
+index 00000000..a5afa3b0
 --- /dev/null
-+++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/LoginCancelledEvent.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/LoginCancelledEvent.java
 @@ -0,0 +1,73 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -29,7 +29,7 @@ index 00000000..357b94c1
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.api.event;
++package com.mrivanplays.ivancord.api.event;
 +
 +import lombok.AllArgsConstructor;
 +import lombok.Getter;
@@ -84,19 +84,19 @@ index 00000000..357b94c1
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3a9dab68..b67fd1a6 100644
+index 3a9dab68..4ee749f7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -65,6 +65,8 @@ import net.md_5.bungee.util.BoundedArrayList;
+@@ -64,7 +64,7 @@ import net.md_5.bungee.protocol.packet.StatusResponse;
+ import net.md_5.bungee.util.BoundedArrayList;
  import net.md_5.bungee.util.BufUtil;
  import net.md_5.bungee.util.QuietException;
- 
-+import com.github.mrivanplays.ivancord.api.event.LoginCancelledEvent;
-+
+-
++import com.mrivanplays.ivancord.api.event.LoginCancelledEvent; // IvanCord
  @RequiredArgsConstructor
  public class InitialHandler extends PacketHandler implements PendingConnection
  {
-@@ -126,6 +128,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -126,6 +126,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void exception(Throwable t) throws Exception
      {
@@ -106,7 +106,7 @@ index 3a9dab68..b67fd1a6 100644
          disconnect( ChatColor.RED + Util.exception( t ) );
      }
  
-@@ -379,11 +384,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -379,11 +382,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
@@ -124,7 +124,7 @@ index 3a9dab68..b67fd1a6 100644
                      return;
                  }
                  if ( onlineMode )
-@@ -500,11 +511,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -500,11 +509,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
@@ -142,7 +142,7 @@ index 3a9dab68..b67fd1a6 100644
                      return;
                  }
  
-@@ -513,6 +530,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -513,6 +528,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void run()
                      {
@@ -151,7 +151,7 @@ index 3a9dab68..b67fd1a6 100644
                          if ( !ch.isClosing() )
                          {
                              UserConnection userCon = new UserConnection( bungee, ch, getName(), InitialHandler.this );
-@@ -541,6 +560,38 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -541,6 +558,38 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
                              thisState = State.FINISHED;
                          }

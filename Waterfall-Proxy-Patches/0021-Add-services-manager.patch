@@ -1,14 +1,14 @@
-From 62ad8e14d1672b805578718590fb1a82aba4484e Mon Sep 17 00:00:00 2001
+From dfae4c46a846a1a82c3d90df49eebf378a838e15 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 2 Jul 2019 16:31:36 +0300
 Subject: [PATCH] Add services manager
 
 
-diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java
 new file mode 100644
-index 00000000..4a086874
+index 00000000..310fab3c
 --- /dev/null
-+++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java
 @@ -0,0 +1,41 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -29,13 +29,13 @@ index 00000000..4a086874
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.api.event;
++package com.mrivanplays.ivancord.api.event;
 +
 +import lombok.AllArgsConstructor;
 +import lombok.Getter;
 +import net.md_5.bungee.api.plugin.Event;
 +
-+import com.github.mrivanplays.ivancord.api.plugin.RegisteredServiceProvider;
++import com.mrivanplays.ivancord.api.plugin.RegisteredServiceProvider;
 +
 +/**
 + * Event, called when a service have
@@ -51,11 +51,11 @@ index 00000000..4a086874
 +     */
 +    private RegisteredServiceProvider<?> serviceProvider;
 +}
-diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java
 new file mode 100644
-index 00000000..c2578c96
+index 00000000..169b02fa
 --- /dev/null
-+++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java
 @@ -0,0 +1,41 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -76,13 +76,13 @@ index 00000000..c2578c96
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.api.event;
++package com.mrivanplays.ivancord.api.event;
 +
 +import lombok.AllArgsConstructor;
 +import lombok.Getter;
 +import net.md_5.bungee.api.plugin.Event;
 +
-+import com.github.mrivanplays.ivancord.api.plugin.RegisteredServiceProvider;
++import com.mrivanplays.ivancord.api.plugin.RegisteredServiceProvider;
 +
 +/**
 + * Event, called when a service have
@@ -98,11 +98,11 @@ index 00000000..c2578c96
 +     */
 +    private RegisteredServiceProvider<?> serviceProvider;
 +}
-diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
 new file mode 100644
-index 00000000..d19d0372
+index 00000000..1fde6f94
 --- /dev/null
-+++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
 @@ -0,0 +1,59 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -123,7 +123,7 @@ index 00000000..d19d0372
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.api.plugin;
++package com.mrivanplays.ivancord.api.plugin;
 +
 +import lombok.AllArgsConstructor;
 +import lombok.EqualsAndHashCode;
@@ -163,11 +163,11 @@ index 00000000..d19d0372
 +     */
 +    private int priority;
 +}
-diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicePriority.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicePriority.java
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicePriority.java b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicePriority.java
 new file mode 100644
-index 00000000..cc2697f9
+index 00000000..2bd6ccdb
 --- /dev/null
-+++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicePriority.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicePriority.java
 @@ -0,0 +1,43 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -189,7 +189,7 @@ index 00000000..cc2697f9
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.api.plugin;
++package com.mrivanplays.ivancord.api.plugin;
 +
 +/**
 + * Represents a service priority
@@ -212,11 +212,11 @@ index 00000000..cc2697f9
 +     */
 +    public static final int LOW = 10;
 +}
-diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicesManager.java b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicesManager.java
 new file mode 100644
-index 00000000..6ac0de0e
+index 00000000..fd2030c4
 --- /dev/null
-+++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/plugin/ServicesManager.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicesManager.java
 @@ -0,0 +1,99 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -237,7 +237,7 @@ index 00000000..6ac0de0e
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.api.plugin;
++package com.mrivanplays.ivancord.api.plugin;
 +
 +import java.util.Collection;
 +import java.util.Optional;
@@ -318,14 +318,14 @@ index 00000000..6ac0de0e
 +    Collection<Class<?>> getKnownServices();
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index d44ac67e..c797ec9e 100644
+index d44ac67e..61e99410 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -16,6 +16,8 @@ import net.md_5.bungee.api.plugin.Plugin;
  import net.md_5.bungee.api.plugin.PluginManager;
  import net.md_5.bungee.api.scheduler.TaskScheduler;
  
-+import com.github.mrivanplays.ivancord.api.plugin.ServicesManager;
++import com.mrivanplays.ivancord.api.plugin.ServicesManager; // IvanCord
 +
  public abstract class ProxyServer
  {
@@ -346,11 +346,11 @@ index d44ac67e..c797ec9e 100644
 +    // IvanCord end
 +
  }
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/EntryImpl.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/EntryImpl.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/EntryImpl.java b/proxy/src/main/java/com/mrivanplays/ivancord/EntryImpl.java
 new file mode 100644
-index 00000000..9955b63c
+index 00000000..1d22ccd6
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/EntryImpl.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/EntryImpl.java
 @@ -0,0 +1,42 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -372,7 +372,7 @@ index 00000000..9955b63c
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord;
++package com.mrivanplays.ivancord;
 +
 +import java.util.Map;
 +
@@ -394,11 +394,11 @@ index 00000000..9955b63c
 +        return value;
 +    }
 +}
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java b/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java
 new file mode 100644
-index 00000000..d30fc8a8
+index 00000000..d856f37c
 --- /dev/null
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/SimpleServicesManager.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java
 @@ -0,0 +1,200 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -419,7 +419,7 @@ index 00000000..d30fc8a8
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord;
++package com.mrivanplays.ivancord;
 +
 +import java.util.ArrayList;
 +import java.util.Collection;
@@ -438,10 +438,10 @@ index 00000000..d30fc8a8
 +import com.google.common.base.Preconditions;
 +import net.md_5.bungee.api.plugin.Plugin;
 +
-+import com.github.mrivanplays.ivancord.api.event.ServiceRegisteredEvent;
-+import com.github.mrivanplays.ivancord.api.event.ServiceUnregisteredEvent;
-+import com.github.mrivanplays.ivancord.api.plugin.RegisteredServiceProvider;
-+import com.github.mrivanplays.ivancord.api.plugin.ServicesManager;
++import com.mrivanplays.ivancord.api.event.ServiceRegisteredEvent;
++import com.mrivanplays.ivancord.api.event.ServiceUnregisteredEvent;
++import com.mrivanplays.ivancord.api.plugin.RegisteredServiceProvider;
++import com.mrivanplays.ivancord.api.plugin.ServicesManager;
 +
 +public class SimpleServicesManager implements ServicesManager
 +{
@@ -601,18 +601,18 @@ index 00000000..d30fc8a8
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index ce0866f7..f03faaca 100644
+index 5305b9f2..16875aef 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -92,6 +92,8 @@ import net.md_5.bungee.util.CaseInsensitiveMap;
+@@ -103,6 +103,8 @@ import com.mrivanplays.ivancord.commands.op.CommandOp;
+ import com.mrivanplays.ivancord.JsonReconnectHandler;
+ import com.mrivanplays.ivancord.ReconnectHandlerType;
+ import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
++import com.mrivanplays.ivancord.SimpleServicesManager;
++import com.mrivanplays.ivancord.api.plugin.ServicesManager;
  
- import com.github.mrivanplays.ivancord.JsonReconnectHandler;
- import com.github.mrivanplays.ivancord.ReconnectHandlerType;
-+import com.github.mrivanplays.ivancord.SimpleServicesManager;
-+import com.github.mrivanplays.ivancord.api.plugin.ServicesManager;
- import com.github.mrivanplays.ivancord.commands.CommandPlugins;
- import com.github.mrivanplays.ivancord.commands.op.CommandDeop;
- import com.github.mrivanplays.ivancord.commands.op.CommandOp;
+ /**
+  * Main BungeeCord proxy class.
 @@ -185,6 +187,11 @@ public class BungeeCord extends ProxyServer
      private final ModuleManager moduleManager = new ModuleManager();
       */

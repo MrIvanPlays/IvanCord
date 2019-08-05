@@ -1,4 +1,4 @@
-From 67d2b41a377036f815507a081ba3c4b20b686681 Mon Sep 17 00:00:00 2001
+From 6064932635ba2b229e46f6e08369d7c9c59a488f Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 30 Jun 2019 21:13:31 +0300
 Subject: [PATCH] Remove some of the TODOs
@@ -66,11 +66,11 @@ index ad2ebdea..c4922a69 100644
 +        // IvanCord end
      }
  }
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 49f76f0a..c34e89b9 100644
---- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-@@ -38,6 +38,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+index 9cdd4ba3..21d024a0 100644
+--- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+@@ -36,6 +36,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
      private boolean kickToLobby = true;
      private boolean disableTabListRewrite = isOnlineMode();
      private String reconnectHandlerType = ReconnectHandlerType.YAML.name();
@@ -78,7 +78,7 @@ index 49f76f0a..c34e89b9 100644
  
      @Accessors(fluent = true)
      private boolean isTCPFastOpenEnabled = true;
-@@ -55,6 +56,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -53,6 +54,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
          isTCPFastOpenEnabled = config.getBoolean( "tcp_fast_open_enabled", isTCPFastOpenEnabled );
          getTCPFastOpenMode = setupTFO( config.getInt( "tcp_fast_open_mode", getTCPFastOpenMode ) );
          reconnectHandlerType = setupReconnectHandlerType( config.getString( "reconnect_handler_type", reconnectHandlerType ) );
@@ -172,10 +172,10 @@ index 8f587aa5..c7624629 100644
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a8c9a650..0787d821 100644
+index ffe4e78d..4442da50 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -296,7 +296,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -295,7 +295,12 @@ public final class UserConnection implements ProxiedPlayer
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
      {
          // Waterfall start
@@ -190,19 +190,18 @@ index a8c9a650..0787d821 100644
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, int timeout) {
          connect(info, callback, retry, ServerConnectEvent.Reason.PLUGIN, timeout);
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index cec27cb7..fe98de28 100644
+index c61d1764..bc052b1d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -32,6 +32,8 @@ import net.md_5.bungee.protocol.packet.PlayerPosition;
- import net.md_5.bungee.protocol.packet.PluginMessage;
+@@ -33,6 +33,7 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.TabCompleteRequest;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
-+import net.md_5.bungee.tab.ServerUnique;
-+
- import com.github.mrivanplays.ivancord.api.Position; // IvanCord
+ import com.mrivanplays.ivancord.api.Position; // IvanCord
++import net.md_5.bungee.tab.ServerUnique; // IvanCord
  
  public class UpstreamBridge extends PacketHandler
-@@ -72,9 +74,9 @@ public class UpstreamBridge extends PacketHandler
+ {
+@@ -72,9 +73,9 @@ public class UpstreamBridge extends PacketHandler
              // Manually remove from everyone's tab list
              // since the packet from the server arrives
              // too late
@@ -215,7 +214,7 @@ index cec27cb7..fe98de28 100644
              PlayerListItem packet = new PlayerListItem();
              packet.setAction( PlayerListItem.Action.REMOVE_PLAYER );
              PlayerListItem.Item item = new PlayerListItem.Item();
-@@ -87,6 +89,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -87,6 +88,7 @@ public class UpstreamBridge extends PacketHandler
              {
                  player.unsafe().sendPacket( packet );
              }

@@ -1,14 +1,14 @@
-From bd253867d7625628f6c9f5a39079abb4c412e097 Mon Sep 17 00:00:00 2001
+From efa396b6a94cfea60251172c09d8f34e834b900a Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 11 Jun 2019 19:17:33 +0300
 Subject: [PATCH] Add PlaySound packet
 
 
-diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/SoundCategory.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/SoundCategory.java
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/SoundCategory.java b/api/src/main/java/com/mrivanplays/ivancord/api/SoundCategory.java
 new file mode 100644
-index 00000000..ec2546b9
+index 00000000..3e0399df
 --- /dev/null
-+++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/SoundCategory.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/SoundCategory.java
 @@ -0,0 +1,140 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -29,7 +29,7 @@ index 00000000..ec2546b9
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.api;
++package com.mrivanplays.ivancord.api;
 +
 +/**
 + * Represents a sound category
@@ -150,11 +150,11 @@ index 00000000..ec2546b9
 +        return new int[] {MASTER, MUSIC, RECORDS, WEATHER, BLOCKS, HOSTILE, NEUTRAL, PLAYERS, AMBIENT, VOICE};
 +    }
 +}
-diff --git a/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/SoundPlayedEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
 new file mode 100644
-index 00000000..2f627af8
+index 00000000..d5e56e00
 --- /dev/null
-+++ b/api/src/main/java/com/github/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
 @@ -0,0 +1,89 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -175,7 +175,7 @@ index 00000000..2f627af8
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.github.mrivanplays.ivancord.api.event;
++package com.mrivanplays.ivancord.api.event;
 +
 +import lombok.EqualsAndHashCode;
 +import lombok.Getter;
@@ -183,7 +183,7 @@ index 00000000..2f627af8
 +import net.md_5.bungee.api.connection.ProxiedPlayer;
 +import net.md_5.bungee.api.plugin.Event;
 +
-+import com.github.mrivanplays.ivancord.api.Position;
++import com.mrivanplays.ivancord.api.Position;
 +
 +/**
 + * Event, called when a sound is played to player.
@@ -246,7 +246,7 @@ index 00000000..2f627af8
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 2e96fc06..82e8b9be 100644
+index 6a4973fe..9c83abbb 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -397,4 +397,19 @@ public interface ProxiedPlayer extends Connection, CommandSender
@@ -504,31 +504,30 @@ index 531669e7..8f587aa5 100644
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 1b6521c0..c4822dfb 100644
+index cd24c301..d2ee764c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -55,9 +55,11 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
  import net.md_5.bungee.protocol.MinecraftEncoder;
  import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.Protocol;
-+import net.md_5.bungee.protocol.ProtocolConstants;
++import net.md_5.bungee.protocol.ProtocolConstants; // IvanCord
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Kick;
-+import net.md_5.bungee.protocol.packet.PlaySound;
++import net.md_5.bungee.protocol.packet.PlaySound; // IvanCord
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.SetCompression;
-@@ -66,6 +68,8 @@ import net.md_5.bungee.tab.TabList;
+@@ -66,6 +68,7 @@ import net.md_5.bungee.tab.TabList;
  import net.md_5.bungee.util.CaseInsensitiveSet;
  import net.md_5.bungee.util.ChatComponentTransformer;
- import com.github.mrivanplays.ivancord.api.Position; // IvanCord
-+import com.github.mrivanplays.ivancord.api.event.SoundPlayedEvent; // IvanCord
-+
+ import com.mrivanplays.ivancord.api.Position; // IvanCord
++import com.mrivanplays.ivancord.api.event.SoundPlayedEvent; // IvanCord
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -772,6 +776,31 @@ public final class UserConnection implements ProxiedPlayer
+@@ -772,6 +775,31 @@ public final class UserConnection implements ProxiedPlayer
          return serverSentScoreboard;
      }
  

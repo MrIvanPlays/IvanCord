@@ -1,4 +1,4 @@
-From 18df3caa648859eface987e918699d722d7fce03 Mon Sep 17 00:00:00 2001
+From ae94db78b559383a7fda099639bbb2726330fe70 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 18:03:14 +0300
 Subject: [PATCH] Add option to disable tab list rewrite
@@ -22,10 +22,10 @@ index 4687e7c4..d13923fc 100644
 +
      // IvanCord end
  }
-diff --git a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index dea499b2..26bd9f35 100644
---- a/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-+++ b/proxy/src/main/java/com/github/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+index 78a75ae7..9671c237 100644
+--- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -30,6 +30,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
  {
  
@@ -42,10 +42,10 @@ index dea499b2..26bd9f35 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index ee19436e..b8b67261 100644
+index a4f34292..5cf2e3da 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -163,8 +163,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -165,8 +165,19 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PlayerListItem playerList) throws Exception
      {
