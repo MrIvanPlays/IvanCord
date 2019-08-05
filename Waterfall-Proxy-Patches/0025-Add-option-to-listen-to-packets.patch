@@ -1,23 +1,34 @@
-From 988510116cfc258121a55a00c6e7505e3203b253 Mon Sep 17 00:00:00 2001
+From 538350ee55d4dc2f9c35ceecce63f24147d85117 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 4 Aug 2019 11:36:40 +0300
 Subject: [PATCH] Add option to listen to packets
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 1eb8a79b..716ccdee 100644
+index 1eb8a79b..f6d3524c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -18,6 +18,8 @@ import net.md_5.bungee.api.scheduler.TaskScheduler;
+@@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
+ import java.util.Collection;
+ import java.util.Map;
+ import java.util.UUID;
++import java.util.function.BiConsumer; // IvanCord
+ import java.util.logging.Logger;
+ import lombok.Getter;
+ import net.md_5.bungee.api.chat.BaseComponent;
+@@ -15,9 +16,11 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
+ import net.md_5.bungee.api.plugin.Plugin;
+ import net.md_5.bungee.api.plugin.PluginManager;
+ import net.md_5.bungee.api.scheduler.TaskScheduler;
++import net.md_5.bungee.protocol.DefinedPacket; // IvanCord
  
  import com.mrivanplays.ivancord.api.plugin.ServicesManager; // IvanCord
  import com.mrivanplays.ivancord.api.command.IvanCordCommandManager; // IvanCord
-+import com.mrivanplays.ivancord.protocol.InboundPacketListener; // IvanCord
-+import com.mrivanplays.ivancord.protocol.OutboundPacketListener; // IvanCord
++import com.mrivanplays.ivancord.api.PacketDirection; // IvanCord
  
  public abstract class ProxyServer
  {
-@@ -334,6 +336,29 @@ public abstract class ProxyServer
+@@ -334,6 +337,22 @@ public abstract class ProxyServer
       */
      public abstract IvanCordCommandManager getIvanCordCommandManager();
  
@@ -27,7 +38,7 @@ index 1eb8a79b..716ccdee 100644
 +     * @param plugin the plugin assigned to
 +     * @param packetListener the inbound packet listener
 +     */
-+    public abstract void registerInboundPacketListener(Plugin plugin, InboundPacketListener packetListener);
++    public abstract void registerInboundPacketListener(Plugin plugin, BiConsumer<DefinedPacket, PacketDirection> packetListener);
 +
 +    /**
 +     * Registers a outbound packet listener
@@ -35,125 +46,16 @@ index 1eb8a79b..716ccdee 100644
 +     * @param plugin the plugin assigned to
 +     * @param packetListener the outbound packet listener
 +     */
-+    public abstract void registerOutboundPacketListener(Plugin plugin, OutboundPacketListener packetListener);
-+
-+    /**
-+     * Unregisters all packet listeners, registered by this plugin
-+     *
-+     * @param plugin the plugin assigned to
-+     */
-+    public abstract void unregisterPacketListeners(Plugin plugin);
++    public abstract void registerOutboundPacketListener(Plugin plugin, BiConsumer<DefinedPacket, PacketDirection> packetListener);
 +
      // IvanCord end
  
  }
-diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 4ca616d2..6339b853 100644
---- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-+++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -568,6 +568,7 @@ public class PluginManager
-         }
-         unregisterListeners( plugin );
-         unregisterCommands( plugin );
-+        proxy.unregisterPacketListeners( plugin );
-         proxy.getScheduler().cancel( plugin );
-         plugin.getExecutorService().shutdownNow();
-         plugins.remove( plugin.getDescription().getName(), plugin );
-diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/protocol/InboundPacketListener.java b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/InboundPacketListener.java
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/PacketDirection.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/PacketDirection.java
 new file mode 100644
-index 00000000..4171676a
+index 00000000..4fe19ff5
 --- /dev/null
-+++ b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/InboundPacketListener.java
-@@ -0,0 +1,39 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+ * Copyright 2019 contributors
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
-+package com.mrivanplays.ivancord.protocol;
-+
-+import net.md_5.bungee.protocol.DefinedPacket;
-+
-+/**
-+ * Represents a packet listener, which listens for received packets.
-+ */
-+public interface InboundPacketListener
-+{
-+
-+    /**
-+     * IvanCord calls this method when the proxy has read a packet successfully. The method cannot be used to
-+     * manipulate read packets, it can be used as a packet logger or doing stuff right after the packet got read.
-+     *
-+     * @param packet the packet which was read
-+     * @param packetDirection the direction from which the packet got received
-+     */
-+    void packetReceived(DefinedPacket packet, PacketDirection packetDirection);
-+}
-diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/protocol/OutboundPacketListener.java b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/OutboundPacketListener.java
-new file mode 100644
-index 00000000..f15d5326
---- /dev/null
-+++ b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/OutboundPacketListener.java
-@@ -0,0 +1,39 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+ * Copyright 2019 contributors
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
-+package com.mrivanplays.ivancord.protocol;
-+
-+import net.md_5.bungee.protocol.DefinedPacket;
-+
-+/**
-+ * Represents a packet listeners, which listens for sent packets.
-+ */
-+public interface OutboundPacketListener
-+{
-+
-+    /**
-+     * IvanCord calls this method when the proxy have sent a packet successfully. The method cannot be used to
-+     * manipulate sent packets, it can be used as a packet logger or doing stuff right after the packet got sent.
-+     *
-+     * @param packet the packet which was sent
-+     * @param packetDirection the direction to which the packet got sent
-+     */
-+    void packetSent(DefinedPacket packet, PacketDirection packetDirection);
-+}
-diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketDirection.java b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketDirection.java
-new file mode 100644
-index 00000000..a0677b19
---- /dev/null
-+++ b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketDirection.java
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/api/PacketDirection.java
 @@ -0,0 +1,37 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
@@ -175,7 +77,7 @@ index 00000000..a0677b19
 + * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 + * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 + **/
-+package com.mrivanplays.ivancord.protocol;
++package com.mrivanplays.ivancord.api;
 +
 +/**
 + * Represents a sent packet direction
@@ -192,16 +94,52 @@ index 00000000..a0677b19
 +     */
 +    TO_SERVER
 +}
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListener.java b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListener.java
+new file mode 100644
+index 00000000..b7a7fe89
+--- /dev/null
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListener.java
+@@ -0,0 +1,30 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++ * Copyright 2019 contributors
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.mrivanplays.ivancord.protocol;
++
++import com.mrivanplays.ivancord.api.PacketDirection;
++import net.md_5.bungee.protocol.DefinedPacket;
++
++public interface PacketListener
++{
++
++    void handle(DefinedPacket packet, PacketDirection direction);
++}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index a46bbc78..e723fde1 100644
+index a46bbc78..d819ee99 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,10 +1,15 @@
  package net.md_5.bungee.protocol;
  
 +// IvanCord start
-+import com.mrivanplays.ivancord.protocol.InboundPacketListener;
-+import com.mrivanplays.ivancord.protocol.PacketDirection;
++import com.mrivanplays.ivancord.protocol.PacketListener;
++import com.mrivanplays.ivancord.api.PacketDirection;
 +// IvanCord end
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufUtil;
@@ -216,17 +154,17 @@ index a46bbc78..e723fde1 100644
      @Setter
      private boolean supportsForge = false;
      private final boolean allowEmptyPackets; // Waterfall
-+    private Collection<InboundPacketListener> inboundPacketListeners; // IvanCord
++    private Collection<PacketListener> inboundPacketListeners; // IvanCord
  
 -    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
-+    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, Collection<InboundPacketListener> inboundPacketListeners) { // IvanCord
++    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, Collection<PacketListener> inboundPacketListeners) { // IvanCord
          // Waterfall start
 -        this(protocol, server, protocolVersion, false);
 +        // IvanCord start
 +        this(protocol, server, protocolVersion, false, inboundPacketListeners);
      }
 -    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, boolean allowEmptyPackets) {
-+    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, boolean allowEmptyPackets, Collection<InboundPacketListener> inboundPacketListeners) {
++    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, boolean allowEmptyPackets, Collection<PacketListener> inboundPacketListeners) {
          // Waterfall end
 +        // IvanCord end
          this.protocol = protocol;
@@ -242,16 +180,16 @@ index a46bbc78..e723fde1 100644
                  packetTypeInfo = packet.getClass();
                  packet.read( in, prot.getDirection(), protocolVersion );
 +                // IvanCord start
-+                for ( InboundPacketListener packetListener : inboundPacketListeners )
++                for ( PacketListener packetListener : inboundPacketListeners )
 +                {
-+                    packetListener.packetReceived( packet, PacketDirection.valueOf( prot.getDirection().name() ) );
++                    packetListener.handle( packet, PacketDirection.valueOf( prot.getDirection().name() ) );
 +                }
 +                // IvanCord end
  
                  if ( in.isReadable() )
                  {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
-index d4b03843..0167cf7a 100644
+index d4b03843..15a74ecb 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
 @@ -1,5 +1,10 @@
@@ -259,8 +197,8 @@ index d4b03843..0167cf7a 100644
  
 +// IvanCord start
 +import java.util.Collection;
-+import com.mrivanplays.ivancord.protocol.OutboundPacketListener;
-+import com.mrivanplays.ivancord.protocol.PacketDirection;
++import com.mrivanplays.ivancord.api.PacketDirection;
++import com.mrivanplays.ivancord.protocol.PacketListener;
 +// IvanCord end
  import io.netty.buffer.ByteBuf;
  import io.netty.channel.ChannelHandlerContext;
@@ -269,7 +207,7 @@ index d4b03843..0167cf7a 100644
      private boolean server;
      @Setter
      private int protocolVersion;
-+    private Collection<OutboundPacketListener> outboundPacketListeners; // IvanCord
++    private Collection<PacketListener> outboundPacketListeners; // IvanCord
  
      @Override
      protected void encode(ChannelHandlerContext ctx, DefinedPacket msg, ByteBuf out) throws Exception
@@ -278,34 +216,38 @@ index d4b03843..0167cf7a 100644
          DefinedPacket.writeVarInt( prot.getId( msg.getClass(), protocolVersion ), out );
          msg.write( out, prot.getDirection(), protocolVersion );
 +        // IvanCord start
-+        for ( OutboundPacketListener packetListener : outboundPacketListeners )
++        for ( PacketListener packetListener : outboundPacketListeners )
 +        {
-+            packetListener.packetSent( msg, server ? PacketDirection.TO_CLIENT : PacketDirection.TO_SERVER );
++            packetListener.handle( msg, server ? PacketDirection.TO_CLIENT : PacketDirection.TO_SERVER );
 +        }
 +        // IvanCord end
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 63d9b326..2edbd05e 100644
+index 63d9b326..88d277a2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -3,8 +3,10 @@ package net.md_5.bungee;
- import com.google.common.base.Charsets;
- import com.google.common.base.Preconditions;
- import com.google.common.base.Predicate;
-+import com.google.common.collect.HashMultimap; // IvanCord
- import com.google.common.collect.Iterables;
- import com.google.common.collect.Lists;
-+import com.google.common.collect.Multimap; // IvanCord
- import com.google.common.collect.Sets;
- import com.google.common.util.concurrent.ThreadFactoryBuilder;
- import com.google.gson.Gson;
+@@ -34,12 +34,14 @@ import java.util.Map;
+ import java.util.MissingResourceException;
+ import java.util.PropertyResourceBundle;
+ import java.util.ResourceBundle;
++import java.util.Set; // IvanCord
+ import java.util.Timer;
+ import java.util.TimerTask;
+ import java.util.UUID;
+ import java.util.concurrent.TimeUnit;
+ import java.util.concurrent.locks.ReadWriteLock;
+ import java.util.concurrent.locks.ReentrantReadWriteLock;
++import java.util.function.BiConsumer; // IvanCord
+ import java.util.logging.Handler;
+ import java.util.logging.Level;
+ import java.util.logging.Logger;
 @@ -106,6 +108,8 @@ import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
  import com.mrivanplays.ivancord.SimpleServicesManager;
  import com.mrivanplays.ivancord.api.plugin.ServicesManager;
  import com.mrivanplays.ivancord.api.command.IvanCordCommandManager;
-+import com.mrivanplays.ivancord.protocol.InboundPacketListener;
-+import com.mrivanplays.ivancord.protocol.OutboundPacketListener;
++import com.mrivanplays.ivancord.protocol.PacketListener;
++import com.mrivanplays.ivancord.api.PacketDirection;
  
  /**
   * Main BungeeCord proxy class.
@@ -313,37 +255,37 @@ index 63d9b326..2edbd05e 100644
      private ServicesManager servicesManager;
      @Getter
      private IvanCordCommandManager ivanCordCommandManager;
-+    private Multimap<Plugin, InboundPacketListener> inboundPacketListeners = HashMultimap.create();
++    private Set<PacketListener> inboundPacketListeners = new HashSet<>();
 +    private ReadWriteLock inboundLock = new ReentrantReadWriteLock();
-+    private Multimap<Plugin, OutboundPacketListener> outboundPacketListeners = HashMultimap.create();
++    private Set<PacketListener> outboundPacketListeners = new HashSet<>();
 +    private ReadWriteLock outboundLock = new ReentrantReadWriteLock();
      // IvanCord end
  
      {
-@@ -811,4 +819,84 @@ public class BungeeCord extends ProxyServer
+@@ -811,4 +819,70 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
 +
 +    // IvanCord start
-+    public Collection<InboundPacketListener> getInboundPacketListeners()
++    public Collection<PacketListener> getInboundPacketListeners()
 +    {
 +        inboundLock.writeLock().lock();
 +        try
 +        {
-+            return inboundPacketListeners.values();
++            return inboundPacketListeners;
 +        } finally
 +        {
 +            inboundLock.writeLock().unlock();
 +        }
 +    }
 +
-+    public Collection<OutboundPacketListener> getOutboundPacketListeners()
++    public Collection<PacketListener> getOutboundPacketListeners()
 +    {
 +        outboundLock.writeLock().lock();
 +        try
 +        {
-+            return outboundPacketListeners.values();
++            return outboundPacketListeners;
 +        } finally
 +        {
 +            outboundLock.writeLock().unlock();
@@ -351,15 +293,19 @@ index 63d9b326..2edbd05e 100644
 +    }
 +
 +    @Override
-+    public void registerInboundPacketListener(Plugin plugin, InboundPacketListener packetListener)
++    public void registerInboundPacketListener(Plugin plugin, BiConsumer<DefinedPacket, PacketDirection> packetListener)
 +    {
 +        inboundLock.readLock().lock();
 +        try
 +        {
-+            if ( !inboundPacketListeners.get( plugin ).contains( packetListener ) )
++            inboundPacketListeners.add( (packet, direction) ->
 +            {
-+                inboundPacketListeners.put( plugin, packetListener );
-+            }
++                if ( !plugin.isEnabled() )
++                {
++                    return;
++                }
++                packetListener.accept( packet, direction );
++            } );
 +        } finally
 +        {
 +            inboundLock.readLock().unlock();
@@ -367,37 +313,19 @@ index 63d9b326..2edbd05e 100644
 +    }
 +
 +    @Override
-+    public void registerOutboundPacketListener(Plugin plugin, OutboundPacketListener packetListener)
++    public void registerOutboundPacketListener(Plugin plugin, BiConsumer<DefinedPacket, PacketDirection> packetListener)
 +    {
 +        outboundLock.readLock().lock();
 +        try
 +        {
-+            if ( !outboundPacketListeners.get( plugin ).contains( packetListener ) )
++            outboundPacketListeners.add( (packet, direction) ->
 +            {
-+                outboundPacketListeners.put( plugin, packetListener );
-+            }
-+        } finally
-+        {
-+            outboundLock.readLock().unlock();
-+        }
-+    }
-+
-+    @Override
-+    public void unregisterPacketListeners(Plugin plugin)
-+    {
-+        inboundLock.readLock().lock();
-+        try
-+        {
-+            inboundPacketListeners.removeAll( plugin );
-+        } finally
-+        {
-+            inboundLock.readLock().unlock();
-+        }
-+
-+        outboundLock.readLock().lock();
-+        try
-+        {
-+            outboundPacketListeners.removeAll( plugin );
++                if ( !plugin.isEnabled() )
++                {
++                    return;
++                }
++                packetListener.accept( packet, direction );
++            } );
 +        } finally
 +        {
 +            outboundLock.readLock().unlock();
