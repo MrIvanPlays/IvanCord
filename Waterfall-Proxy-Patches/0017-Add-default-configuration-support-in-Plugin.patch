@@ -1,4 +1,4 @@
-From fe9fe9bcec96754b653efd2cf9b6a7d556059de5 Mon Sep 17 00:00:00 2001
+From 13727e3f83d7fefc5fa85c0d223db1b1d423a26c Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 27 Jun 2019 17:02:00 +0300
 Subject: [PATCH] Add default configuration support in Plugin
@@ -7,10 +7,10 @@ Including loading, reloading and saving a
 default config.(json, yml)
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-index 2e5ae4fb..a7f6afce 100644
+index 2e5ae4fb..35556d48 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-@@ -2,14 +2,19 @@ package net.md_5.bungee.api.plugin;
+@@ -2,14 +2,21 @@ package net.md_5.bungee.api.plugin;
  
  import com.google.common.util.concurrent.ThreadFactoryBuilder;
  import java.io.File;
@@ -23,14 +23,17 @@ index 2e5ae4fb..a7f6afce 100644
  import java.util.logging.Logger;
  import lombok.Getter;
  import net.md_5.bungee.api.ProxyServer;
- import net.md_5.bungee.api.config.ConfigurationAdapter;
+-import net.md_5.bungee.api.config.ConfigurationAdapter;
++import net.md_5.bungee.api.config.ConfigurationAdapter; // IvanCord
  import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
++// IvanCord start
 +import net.md_5.bungee.config.Configuration;
 +import net.md_5.bungee.config.ConfigurationProvider;
++// IvanCord end
  
  /**
   * Represents any Plugin that may be loaded at runtime to enhance existing
-@@ -26,6 +31,11 @@ public class Plugin
+@@ -26,6 +33,11 @@ public class Plugin
      private File file;
      @Getter
      private Logger logger;
@@ -42,7 +45,7 @@ index 2e5ae4fb..a7f6afce 100644
  
      // Waterfall start - Allow plugins to use SLF4J for logging
      public org.slf4j.Logger getSLF4JLogger() {
-@@ -56,6 +66,76 @@ public class Plugin
+@@ -56,6 +68,80 @@ public class Plugin
      {
      }
  
@@ -63,9 +66,13 @@ index 2e5ae4fb..a7f6afce 100644
 +        }
 +        if ( !configFile.exists() )
 +        {
++            if ( !configFile.getParentFile().exists() )
++            {
++                configFile.getParentFile().mkdirs();
++            }
 +            try ( InputStream inputStream = getResourceAsStream( "config" + fileExtension ) )
 +            {
-+                Files.copy( inputStream, configFile.toPath() );
++                Files.copy( inputStream, configFile.getAbsoluteFile().toPath() );
 +            } catch ( IOException e )
 +            {
 +                getLogger().log( Level.SEVERE, "Could not copy default config" + fileExtension, e );

@@ -1,11 +1,11 @@
-From 0ea81507ddd9f7b99c462fa32fa300d7f582df6a Mon Sep 17 00:00:00 2001
+From b2f7bbbaa46bf3c46f12afc0d4c9e1908b94a670 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 4 Aug 2019 11:36:40 +0300
 Subject: [PATCH] Add option to listen to packets
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 1eb8a79b..611e234d 100644
+index 1eb8a79b..25885939 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
@@ -28,13 +28,15 @@ index 1eb8a79b..611e234d 100644
  
  public abstract class ProxyServer
  {
-@@ -334,6 +337,24 @@ public abstract class ProxyServer
+@@ -334,6 +337,28 @@ public abstract class ProxyServer
       */
      public abstract IvanCordCommandManager getIvanCordCommandManager();
  
 +    /**
 +     * Registers a inbound packet listener. "Inbound" stands for a packet listener, that is called
 +     * whenever the proxy reads a packet.
++     *
++     * <p><i>NOTE: The listener is being called asynchronously</i>
 +     *
 +     * @param plugin the plugin assigned to
 +     * @param packetListener the inbound packet listener
@@ -44,6 +46,8 @@ index 1eb8a79b..611e234d 100644
 +    /**
 +     * Registers a outbound packet listener. "Outbound" stands for a packet listener, that is called
 +     * whenever the proxy sends a packet.
++     *
++     * <p><i>NOTE: The listener is being called asynchronously</i>
 +     *
 +     * @param plugin the plugin assigned to
 +     * @param packetListener the outbound packet listener
@@ -226,7 +230,7 @@ index d4b03843..15a74ecb 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 63d9b326..9592bd33 100644
+index 63d9b326..e5b49812 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee;
@@ -237,7 +241,7 @@ index 63d9b326..9592bd33 100644
  import com.google.common.collect.Iterables;
  import com.google.common.collect.Lists;
  import com.google.common.collect.Sets;
-@@ -34,12 +35,14 @@ import java.util.Map;
+@@ -34,12 +35,18 @@ import java.util.Map;
  import java.util.MissingResourceException;
  import java.util.PropertyResourceBundle;
  import java.util.ResourceBundle;
@@ -245,6 +249,10 @@ index 63d9b326..9592bd33 100644
  import java.util.Timer;
  import java.util.TimerTask;
  import java.util.UUID;
++// IvanCord start
++import java.util.concurrent.ExecutorService;
++import java.util.concurrent.Executors;
++// IvanCord end
  import java.util.concurrent.TimeUnit;
  import java.util.concurrent.locks.ReadWriteLock;
  import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -252,7 +260,7 @@ index 63d9b326..9592bd33 100644
  import java.util.logging.Handler;
  import java.util.logging.Level;
  import java.util.logging.Logger;
-@@ -106,6 +109,8 @@ import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
+@@ -106,6 +113,8 @@ import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
  import com.mrivanplays.ivancord.SimpleServicesManager;
  import com.mrivanplays.ivancord.api.plugin.ServicesManager;
  import com.mrivanplays.ivancord.api.command.IvanCordCommandManager;
@@ -261,18 +269,35 @@ index 63d9b326..9592bd33 100644
  
  /**
   * Main BungeeCord proxy class.
-@@ -193,6 +198,10 @@ public class BungeeCord extends ProxyServer
+@@ -193,6 +202,13 @@ public class BungeeCord extends ProxyServer
      private ServicesManager servicesManager;
      @Getter
      private IvanCordCommandManager ivanCordCommandManager;
 +    private Set<PacketListener> inboundPacketListeners = new HashSet<>();
-+    private ReadWriteLock inboundLock = new ReentrantReadWriteLock();
 +    private Set<PacketListener> outboundPacketListeners = new HashSet<>();
-+    private ReadWriteLock outboundLock = new ReentrantReadWriteLock();
++    private ExecutorService PACKET_LISTENER_EXECUTOR = Executors.newCachedThreadPool(
++            new ThreadFactoryBuilder()
++                    .setNameFormat( "PacketListener Executor/#%d" )
++                    .build()
++    );
      // IvanCord end
  
      {
-@@ -811,4 +820,70 @@ public class BungeeCord extends ProxyServer
+@@ -498,6 +514,13 @@ public class BungeeCord extends ProxyServer
+                 }
+                 saveThread.cancel();
+                 // metricsThread.cancel(); // Waterfall: Disable Metrics
++                // IvanCord start
++                PACKET_LISTENER_EXECUTOR.shutdown();
++                try
++                {
++                    PACKET_LISTENER_EXECUTOR.awaitTermination( Long.MAX_VALUE, TimeUnit.NANOSECONDS );
++                } catch (InterruptedException ignored) {}
++                // IvanCord end
+ 
+                 getLogger().info( "Disabling plugins" );
+                 // IvanCord start - fix this shit
+@@ -811,4 +834,40 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
@@ -280,66 +305,36 @@ index 63d9b326..9592bd33 100644
 +    // IvanCord start
 +    public Collection<PacketListener> getInboundPacketListeners()
 +    {
-+        inboundLock.writeLock().lock();
-+        try
-+        {
-+            return ImmutableList.copyOf( inboundPacketListeners );
-+        } finally
-+        {
-+            inboundLock.writeLock().unlock();
-+        }
++        return ImmutableList.copyOf( inboundPacketListeners );
 +    }
 +
 +    public Collection<PacketListener> getOutboundPacketListeners()
 +    {
-+        outboundLock.writeLock().lock();
-+        try
-+        {
-+            return ImmutableList.copyOf( outboundPacketListeners );
-+        } finally
-+        {
-+            outboundLock.writeLock().unlock();
-+        }
++        return ImmutableList.copyOf( outboundPacketListeners );
 +    }
 +
 +    @Override
 +    public void registerInboundPacketListener(Plugin plugin, BiConsumer<DefinedPacket, PacketDirection> packetListener)
 +    {
-+        inboundLock.readLock().lock();
-+        try
++        inboundPacketListeners.add( (packet, direction) ->
 +        {
-+            inboundPacketListeners.add( (packet, direction) ->
++            if ( plugin.isEnabled() )
 +            {
-+                if ( !plugin.isEnabled() )
-+                {
-+                    return;
-+                }
-+                packetListener.accept( packet, direction );
-+            } );
-+        } finally
-+        {
-+            inboundLock.readLock().unlock();
-+        }
++                PACKET_LISTENER_EXECUTOR.execute( () -> packetListener.accept( packet, direction ) );
++            }
++        } );
 +    }
 +
 +    @Override
 +    public void registerOutboundPacketListener(Plugin plugin, BiConsumer<DefinedPacket, PacketDirection> packetListener)
 +    {
-+        outboundLock.readLock().lock();
-+        try
++        outboundPacketListeners.add( (packet, direction) ->
 +        {
-+            outboundPacketListeners.add( (packet, direction) ->
++            if ( plugin.isEnabled() )
 +            {
-+                if ( !plugin.isEnabled() )
-+                {
-+                    return;
-+                }
-+                packetListener.accept( packet, direction );
-+            } );
-+        } finally
-+        {
-+            outboundLock.readLock().unlock();
-+        }
++                PACKET_LISTENER_EXECUTOR.execute( () -> packetListener.accept( packet, direction ) );
++            }
++        } );
 +    }
 +    // IvanCord end
  }
