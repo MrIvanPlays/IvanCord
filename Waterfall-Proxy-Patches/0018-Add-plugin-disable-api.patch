@@ -1,22 +1,94 @@
-From ffcf1e48c40d309ebb48b4858f1ac43c22ef00c7 Mon Sep 17 00:00:00 2001
+From 655536a79f2acae029965235e61e50e5abba0456 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 27 Jun 2019 18:25:10 +0300
 Subject: [PATCH] Add plugin disable api
 
 
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginDisabledEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginDisabledEvent.java
+new file mode 100644
+index 00000000..44df2750
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginDisabledEvent.java
+@@ -0,0 +1,40 @@
++/*
++ * Copyright 2019 Ivan Pekov (MrIvanPlays)
++ * Copyright 2019 contributors
++
++ * Permission is hereby granted, free of charge, to any person obtaining a copy of
++ * this software and associated documentation files (the "Software"), to deal in the
++ * Software without restriction, including without limitation the rights to use, copy,
++ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
++
++ * The above copyright notice and this permission notice shall be included in all copies
++ * or substantial portions of the Software.
++
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
++ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
++ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ **/
++package com.mrivanplays.ivancord.api.event;
++
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import net.md_5.bungee.api.plugin.Event;
++import net.md_5.bungee.api.plugin.Plugin;
++
++/**
++ * Represents a event, called when a plugin was disabled
++ */
++@Data
++@EqualsAndHashCode(callSuper = false)
++public class PluginDisabledEvent extends Event
++{
++
++    /**
++     * The plugin which was disabled
++     */
++    private final Plugin plugin;
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+index d9d2fe88..dc23f019 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+@@ -154,6 +154,19 @@ public class Plugin
+         return getClass().getClassLoader().getResourceAsStream( name );
+     }
+ 
++    // IvanCord start
++
++    /**
++     * Returns whenever this plugin is enabled.
++     *
++     * @return <code>true</code> if enabled
++     */
++    public boolean isEnabled()
++    {
++        return proxy.getPluginManager().isPluginEnabled( this );
++    }
++    // IvanCord end
++
+     /**
+      * Called by the loader to initialize the fields in this plugin.
+      *
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 4312e5714..b1ef354fa 100644
+index 4312e571..afb8cd1e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -23,6 +23,7 @@ import java.util.Set;
+@@ -23,7 +23,9 @@ import java.util.Set;
  import java.util.Stack;
  import java.util.jar.JarEntry;
  import java.util.jar.JarFile;
-+import java.util.logging.Handler;
++import java.util.logging.Handler; // IvanCord
  import java.util.logging.Level;
++import com.mrivanplays.ivancord.api.event.PluginDisabledEvent; // IvanCord
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.api.ChatColor;
-@@ -53,6 +54,9 @@ public class PluginManager
+ import net.md_5.bungee.api.CommandSender;
+@@ -53,6 +55,9 @@ public class PluginManager
      private Map<String, PluginDescription> toLoad = new HashMap<>();
      private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
      private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
@@ -26,7 +98,7 @@ index 4312e5714..b1ef354fa 100644
  
      @SuppressWarnings("unchecked")
      public PluginManager(ProxyServer proxy)
-@@ -499,4 +503,76 @@ public class PluginManager
+@@ -499,4 +504,78 @@ public class PluginManager
      {
          return Collections.unmodifiableCollection( commandMap.entrySet() );
      }
@@ -34,27 +106,27 @@ index 4312e5714..b1ef354fa 100644
 +    // IvanCord start - plugin disable api
 +
 +    /**
-+     * Disables plugin, specified by the plugin's name
-+     *
-+     * @param pluginName plugin name
++     * @param pluginName the plugin's name you want to disable
 +     * @throws IllegalArgumentException if plugin name is null/empty || found plugin is null
++     * @see #disablePlugin(Plugin) 
 +     */
 +    public void disablePlugin(String pluginName)
 +    {
 +        Preconditions.checkArgument( pluginName != null || !pluginName.isEmpty(), "Plugin name cannot be null/empty" );
++        Preconditions.checkArgument( getPlugin( pluginName ) != null, "Cannot find plugin for disable with name '" + pluginName + "'" );
 +        disablePlugin( getPlugin( pluginName ) );
 +    }
 +
 +    /**
-+     * Disables plugin
++     * Disables the specified plugin, if it is enabled.
 +     *
-+     * @param plugin plugin
++     * @param plugin the plugin you want to disable
 +     * @throws IllegalArgumentException if the plugin is null
 +     */
 +    public void disablePlugin(Plugin plugin)
 +    {
 +        Preconditions.checkNotNull( plugin, "Disabling plugin cannot be null" );
-+        if ( !isPluginEnabled( plugin ) )
++        if ( !plugin.isEnabled() )
 +        {
 +            return;
 +        }
@@ -73,19 +145,21 @@ index 4312e5714..b1ef354fa 100644
 +        unregisterCommands( plugin );
 +        proxy.getScheduler().cancel( plugin );
 +        plugin.getExecutorService().shutdownNow();
++        plugins.remove( plugin.getDescription().getName(), plugin );
 +        DISABLED_PLUGINS.add( plugin );
++        callEvent( new PluginDisabledEvent( plugin ) );
 +    }
 +
 +    /**
-+     * Returns whenever a plugin, specified by its name, is enabled
-+     *
-+     * @param pluginName plugin name
++     * @param pluginName the plugin's name you want to check
 +     * @return <code>true</code> if enabled, otherwise <code>false</code>
 +     * @throws IllegalArgumentException if plugin name is null/empty || found plugin is null
++     * @see #isPluginEnabled(Plugin)
 +     */
 +    public boolean isPluginEnabled(String pluginName)
 +    {
 +        Preconditions.checkArgument( pluginName != null || !pluginName.isEmpty(), "Plugin name cannot be null/empty" );
++        Preconditions.checkArgument( getPlugin( pluginName ) != null, "Cannot find plugin to check with name '" + pluginName + "'" );
 +        return isPluginEnabled( getPlugin( pluginName ) );
 +    }
 +
@@ -99,12 +173,12 @@ index 4312e5714..b1ef354fa 100644
 +    public boolean isPluginEnabled(Plugin plugin)
 +    {
 +        Preconditions.checkNotNull( plugin, "Checked plugin cannot be null" );
-+        return !DISABLED_PLUGINS.contains( plugin );
++        return !DISABLED_PLUGINS.contains( plugin ) && plugins.containsValue( plugin );
 +    }
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 26633c9f5..7d58aa355 100644
+index e20fa170..5305b9f2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -43,6 +43,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -143,6 +217,51 @@ index 26633c9f5..7d58aa355 100644
  
                  getLogger().info( "Closing IO threads" );
                  // IvanCord start - speed up shutdown
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+index 477c45ab..abd6e3ff 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
+@@ -1,10 +1,15 @@
+ package net.md_5.bungee.command;
+ 
++// IvanCord start
++import java.util.ArrayList;
++import com.google.common.collect.Lists;
++// IvanCord end
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ChatColor;
+ import net.md_5.bungee.api.CommandSender;
+ import net.md_5.bungee.api.event.ProxyReloadEvent;
+ import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.Plugin; // IvanCord
+ 
+ public class CommandReload extends Command
+ {
+@@ -17,11 +22,19 @@ public class CommandReload extends Command
+     @Override
+     public void execute(CommandSender sender, String[] args)
+     {
+-        BungeeCord.getInstance().config.load();
+-        BungeeCord.getInstance().reloadMessages();
+-        BungeeCord.getInstance().stopListeners();
+-        BungeeCord.getInstance().startListeners();
+-        BungeeCord.getInstance().getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
++        // IvanCord start
++        BungeeCord bungee = BungeeCord.getInstance();
++        bungee.config.load();
++        bungee.reloadMessages();
++        bungee.stopListeners();
++        bungee.startListeners();
++        for ( Plugin plugin : Lists.reverse( new ArrayList<>( bungee.getPluginManager().getPlugins() ) ) )
++        {
++            bungee.getPluginManager().disablePlugin( plugin );
++        }
++        bungee.getPluginManager().enablePlugins();
++        bungee.getPluginManager().callEvent( new ProxyReloadEvent( sender ) );
++        // IvanCord end
+ 
+         // IvanCord start - rebranding
+         sender.sendMessage( ChatColor.BOLD.toString() + ChatColor.RED.toString() + "IvanCord has been reloaded."
 -- 
 2.22.0.windows.1
 
