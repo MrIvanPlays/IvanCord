@@ -1,4 +1,4 @@
-From 655536a79f2acae029965235e61e50e5abba0456 Mon Sep 17 00:00:00 2001
+From a9303347ef434858ecb330487367e7cc714cf0ac Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 27 Jun 2019 18:25:10 +0300
 Subject: [PATCH] Add plugin disable api
@@ -51,10 +51,10 @@ index 00000000..44df2750
 +    private final Plugin plugin;
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-index d9d2fe88..dc23f019 100644
+index a7f6afce..f4f42b97 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-@@ -154,6 +154,19 @@ public class Plugin
+@@ -160,6 +160,19 @@ public class Plugin
          return getClass().getClassLoader().getResourceAsStream( name );
      }
  
