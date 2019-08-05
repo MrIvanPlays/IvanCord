@@ -1,4 +1,4 @@
-From 538350ee55d4dc2f9c35ceecce63f24147d85117 Mon Sep 17 00:00:00 2001
+From 73f9d3be1d2c05a56091d0ca31d6aa442039c64a Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 4 Aug 2019 11:36:40 +0300
 Subject: [PATCH] Add option to listen to packets
@@ -224,10 +224,18 @@ index d4b03843..15a74ecb 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 63d9b326..88d277a2 100644
+index 63d9b326..9592bd33 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -34,12 +34,14 @@ import java.util.Map;
+@@ -3,6 +3,7 @@ package net.md_5.bungee;
+ import com.google.common.base.Charsets;
+ import com.google.common.base.Preconditions;
+ import com.google.common.base.Predicate;
++import com.google.common.collect.ImmutableList; // IvanCord
+ import com.google.common.collect.Iterables;
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.Sets;
+@@ -34,12 +35,14 @@ import java.util.Map;
  import java.util.MissingResourceException;
  import java.util.PropertyResourceBundle;
  import java.util.ResourceBundle;
@@ -242,7 +250,7 @@ index 63d9b326..88d277a2 100644
  import java.util.logging.Handler;
  import java.util.logging.Level;
  import java.util.logging.Logger;
-@@ -106,6 +108,8 @@ import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
+@@ -106,6 +109,8 @@ import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
  import com.mrivanplays.ivancord.SimpleServicesManager;
  import com.mrivanplays.ivancord.api.plugin.ServicesManager;
  import com.mrivanplays.ivancord.api.command.IvanCordCommandManager;
@@ -251,7 +259,7 @@ index 63d9b326..88d277a2 100644
  
  /**
   * Main BungeeCord proxy class.
-@@ -193,6 +197,10 @@ public class BungeeCord extends ProxyServer
+@@ -193,6 +198,10 @@ public class BungeeCord extends ProxyServer
      private ServicesManager servicesManager;
      @Getter
      private IvanCordCommandManager ivanCordCommandManager;
@@ -262,7 +270,7 @@ index 63d9b326..88d277a2 100644
      // IvanCord end
  
      {
-@@ -811,4 +819,70 @@ public class BungeeCord extends ProxyServer
+@@ -811,4 +820,70 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
@@ -273,7 +281,7 @@ index 63d9b326..88d277a2 100644
 +        inboundLock.writeLock().lock();
 +        try
 +        {
-+            return inboundPacketListeners;
++            return ImmutableList.copyOf( inboundPacketListeners );
 +        } finally
 +        {
 +            inboundLock.writeLock().unlock();
@@ -285,7 +293,7 @@ index 63d9b326..88d277a2 100644
 +        outboundLock.writeLock().lock();
 +        try
 +        {
-+            return outboundPacketListeners;
++            return ImmutableList.copyOf( outboundPacketListeners );
 +        } finally
 +        {
 +            outboundLock.writeLock().unlock();
