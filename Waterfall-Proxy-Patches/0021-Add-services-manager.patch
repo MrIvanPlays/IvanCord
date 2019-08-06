@@ -1,4 +1,4 @@
-From d61a468c750726a99b9a8655b9e4c64ca0080aae Mon Sep 17 00:00:00 2001
+From ee12c47fa9612b8c8306c22021ba2c1d72b10258 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 2 Jul 2019 16:31:36 +0300
 Subject: [PATCH] Add services manager
@@ -214,10 +214,10 @@ index 00000000..2bd6ccdb
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicesManager.java b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicesManager.java
 new file mode 100644
-index 00000000..fd2030c4
+index 00000000..c0dc5dda
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicesManager.java
-@@ -0,0 +1,99 @@
+@@ -0,0 +1,128 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -286,11 +286,21 @@ index 00000000..fd2030c4
 +    <T> void unregister(Plugin plugin, Class<T> service);
 +
 +    /**
++     * Unregisters a service
++     *
++     * @param service  the service's class you want to unregister
++     * @param provider the provider you want to unregister
++     * @param <T>      type
++     */
++    <T> void unregister(Class<T> service, T provider);
++
++    /**
 +     * Unregisters all services, registered by the specified plugin
 +     *
 +     * @param plugin the plugin you wish to unregister its services
++     * @return the count of services unregistered
 +     */
-+    void unregisterAll(Plugin plugin);
++    int unregisterAll(Plugin plugin);
 +
 +    /**
 +     * Gets registration for the specified service
@@ -302,6 +312,17 @@ index 00000000..fd2030c4
 +    <T> Optional<RegisteredServiceProvider<T>> getRegistration(Class<T> service);
 +
 +    /**
++     * Checks if the specified service has a registration
++     *
++     * @param service the service's class you want to check
++     * @return <code>true</code> if has
++     */
++    default boolean hasRegistration(Class<?> service)
++    {
++        return getRegistrations( service ).size() != 0;
++    }
++
++    /**
 +     * Returns a sorted by priority collection of all registered services by the
 +     * specified plugin.
 +     *
@@ -309,6 +330,14 @@ index 00000000..fd2030c4
 +     * @return collection with the services, or empty collection if no services registered
 +     */
 +    Collection<RegisteredServiceProvider<?>> getRegistrations(Plugin plugin);
++
++    /**
++     * Returns an unmodifiable copy of all registrations for the specified service
++     *
++     * @param service the service of which you want to get the registrations
++     * @return registrations or empty collection if no found
++     */
++    Collection<RegisteredServiceProvider<?>> getRegistrations(Class<?> service);
 +
 +    /**
 +     * Returns a unmodifiable collection of the know services' classes.
@@ -358,60 +387,12 @@ index afb8cd1e..d767e41d 100644
          proxy.getScheduler().cancel( plugin );
          plugin.getExecutorService().shutdownNow();
          plugins.remove( plugin.getDescription().getName(), plugin );
-diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/EntryImpl.java b/proxy/src/main/java/com/mrivanplays/ivancord/EntryImpl.java
-new file mode 100644
-index 00000000..1d22ccd6
---- /dev/null
-+++ b/proxy/src/main/java/com/mrivanplays/ivancord/EntryImpl.java
-@@ -0,0 +1,42 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+ * Copyright 2019 contributors
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
-+package com.mrivanplays.ivancord;
-+
-+import java.util.Map;
-+
-+import lombok.AllArgsConstructor;
-+import lombok.Getter;
-+
-+@Getter
-+@AllArgsConstructor
-+public class EntryImpl<K, V> implements Map.Entry<K, V>
-+{
-+
-+    private K key;
-+    private V value;
-+
-+    @Override
-+    public V setValue(V value)
-+    {
-+        this.value = value;
-+        return value;
-+    }
-+}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java b/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java
 new file mode 100644
-index 00000000..d856f37c
+index 00000000..592662e4
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java
-@@ -0,0 +1,200 @@
+@@ -0,0 +1,257 @@
 +/*
 + * Copyright 2019 Ivan Pekov (MrIvanPlays)
 +
@@ -448,12 +429,12 @@ index 00000000..d856f37c
 +import java.util.stream.Collectors;
 +
 +import com.google.common.base.Preconditions;
-+import net.md_5.bungee.api.plugin.Plugin;
-+
++import com.google.common.collect.ImmutableList;
 +import com.mrivanplays.ivancord.api.event.ServiceRegisteredEvent;
 +import com.mrivanplays.ivancord.api.event.ServiceUnregisteredEvent;
 +import com.mrivanplays.ivancord.api.plugin.RegisteredServiceProvider;
 +import com.mrivanplays.ivancord.api.plugin.ServicesManager;
++import net.md_5.bungee.api.plugin.Plugin;
 +
 +public class SimpleServicesManager implements ServicesManager
 +{
@@ -521,37 +502,60 @@ index 00000000..d856f37c
 +    }
 +
 +    @Override
-+    public void unregisterAll(Plugin plugin)
++    public <T> void unregister(Class<T> service, T provider)
 +    {
 +        providersLock.lock();
 +        try
 +        {
-+            Set<Map.Entry<Class<?>, RegisteredServiceProvider<?>>> toRemove = new TreeSet<>();
-+            for ( Map.Entry<Class<?>, Set<RegisteredServiceProvider<?>>> entry : providers.entrySet() )
++            if ( !providers.containsKey( service ) )
 +            {
-+                if ( entry.getValue().parallelStream().anyMatch( provider -> provider.getPlugin().getDescription().equals( plugin.getDescription() ) ) )
++                return;
++            }
++            Set<RegisteredServiceProvider<?>> registered = providers.get( service );
++            RegisteredServiceProvider<?> toRemove = null;
++            for ( RegisteredServiceProvider<?> registryProvider : registered )
++            {
++                if ( registryProvider.getProvider().equals( provider ) )
 +                {
-+                    toRemove.addAll( entry.getValue().parallelStream()
-+                            .filter( provider -> provider.getPlugin().getDescription().equals( plugin.getDescription() ) )
-+                            .map( provider -> {
-+                                Map.Entry<Class<?>, RegisteredServiceProvider<?>> e = new EntryImpl<>( provider.getService(), provider );
-+                                return e;
-+                            })
-+                            .collect( Collectors.toSet() ) );
++                    toRemove = registryProvider;
++                    break;
 +                }
 +            }
-+            for ( Map.Entry<Class<?>, RegisteredServiceProvider<?>> entryToRemove : toRemove )
++            if ( toRemove != null )
 +            {
-+                Set<RegisteredServiceProvider<?>> registered = providers.get( entryToRemove.getKey() );
-+                registered.remove( entryToRemove.getValue() );
-+                providers.replace( entryToRemove.getKey(), registered );
-+                new ServiceUnregisteredEvent( entryToRemove.getValue() ).call();
++                registered.remove( toRemove );
++                new ServiceUnregisteredEvent( toRemove ).call();
++                providers.replace( service, registered );
 +            }
-+            toRemove.clear();
 +        } finally
 +        {
 +            providersLock.unlock();
 +        }
++    }
++
++    @Override
++    public int unregisterAll(Plugin plugin)
++    {
++        int count = 0;
++        for ( RegisteredServiceProvider<?> provider : getValues() )
++        {
++            if ( provider.getPlugin().getDescription().equals( plugin.getDescription() ) )
++            {
++                count++;
++                providersLock.lock();
++                try
++                {
++                    Set<RegisteredServiceProvider<?>> servicesForProvider = providers.get( provider.getService() );
++                    servicesForProvider.remove( provider );
++                    providers.replace( provider.getService(), servicesForProvider );
++                } finally
++                {
++                    providersLock.unlock();
++                }
++                new ServiceUnregisteredEvent( provider ).call();
++            }
++        }
++        return count;
 +    }
 +
 +    @Override
@@ -600,6 +604,23 @@ index 00000000..d856f37c
 +    }
 +
 +    @Override
++    public Collection<RegisteredServiceProvider<?>> getRegistrations(Class<?> service)
++    {
++        providersLock.lock();
++        try
++        {
++            if ( providers.get( service ) == null )
++            {
++                return Collections.emptyList();
++            }
++            return ImmutableList.copyOf( providers.get( service ) );
++        } finally
++        {
++            providersLock.unlock();
++        }
++    }
++
++    @Override
 +    public Collection<Class<?>> getKnownServices()
 +    {
 +        providersLock.lock();
@@ -610,6 +631,23 @@ index 00000000..d856f37c
 +        {
 +            providersLock.unlock();
 +        }
++    }
++
++    private Collection<RegisteredServiceProvider<?>> getValues()
++    {
++        Collection<RegisteredServiceProvider<?>> values = new TreeSet<>();
++        providersLock.lock();
++        try
++        {
++            for ( Set<RegisteredServiceProvider<?>> perClass : providers.values() )
++            {
++                values.addAll( perClass );
++            }
++        } finally
++        {
++            providersLock.unlock();
++        }
++        return values;
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
