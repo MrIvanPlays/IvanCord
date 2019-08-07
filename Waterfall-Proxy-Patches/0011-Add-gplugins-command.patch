@@ -1,4 +1,4 @@
-From 5338668b91a94119165ce0bd961769bfffad76c8 Mon Sep 17 00:00:00 2001
+From e5b67f056e469a3b57084a818ca85acfafcab0e8 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 18:48:03 +0300
 Subject: [PATCH] Add gplugins command
@@ -105,12 +105,12 @@ index 0f650b0e..0ef56ad5 100644
          }
  
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index c958f235..7df2b43c 100644
+index 64c3b6c2..227791c5 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -25,3 +25,4 @@ name_invalid=Username contains invalid characters.
- ping_cannot_connect=\u00a7c[Bungee] Can't connect to server.
- offline_mode_player=Not authenticated with Minecraft.net
+@@ -36,3 +36,4 @@ player_only=\u00a7cOnly in game players can use this command
+ successfully_summoned=\u00a7aSuccessfully summoned player(s)
+ you_got_summoned=\u00a76Summoned to {0} by {1}
  kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
 +command_plugins_message=Plugins ({0}): {1}
 -- 

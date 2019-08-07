@@ -1,4 +1,4 @@
-From 59f30eab4f7b8c9ebc7ddaeb283cd6df82f8e4de Mon Sep 17 00:00:00 2001
+From 1c16e43ac2947b1fe2a691b62c31ee203c6f96a3 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 22 Apr 2019 10:45:15 +0300
 Subject: [PATCH] Kick to lobby support
@@ -115,13 +115,13 @@ index 7b3f9969..df6e8092 100644
          throw CancelSendSignal.INSTANCE;
      }
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index dfb58c12..c958f235 100644
+index d1034c96..64c3b6c2 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -24,3 +24,4 @@ name_too_long=Cannot have username longer than 16 characters
- name_invalid=Username contains invalid characters.
- ping_cannot_connect=\u00a7c[Bungee] Can't connect to server.
- offline_mode_player=Not authenticated with Minecraft.net
+@@ -35,3 +35,4 @@ send_cmd_usage=\u00a7cNot enough arguments, usage: /send <server|player|all|curr
+ player_only=\u00a7cOnly in game players can use this command
+ successfully_summoned=\u00a7aSuccessfully summoned player(s)
+ you_got_summoned=\u00a76Summoned to {0} by {1}
 +kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
 -- 
 2.22.0.windows.1
