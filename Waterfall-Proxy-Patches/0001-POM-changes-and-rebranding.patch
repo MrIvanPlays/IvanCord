@@ -1,4 +1,4 @@
-From 27bd57cbacf5dcf0179dc77851b414922c80d448 Mon Sep 17 00:00:00 2001
+From a7847fa62250d5cac7c296b0bbcef608bee83b02 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 19:51:17 +0300
 Subject: [PATCH] POM changes and rebranding
@@ -250,7 +250,7 @@ index fd999b51..c3eee5f9 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index e03fe0d7..4eeb9046 100644
+index 75dab185..22e6587a 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -3,19 +3,18 @@
@@ -277,7 +277,7 @@ index e03fe0d7..4eeb9046 100644
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with IvanCord and Minecraft related applications.</description>
  
      <properties>
-         <log4j2.version>2.11.1</log4j2.version>
+         <log4j2.version>2.12.0</log4j2.version>
 diff --git a/native/pom.xml b/native/pom.xml
 index b5aeb99e..ca5f1845 100644
 --- a/native/pom.xml
@@ -547,7 +547,7 @@ index 2493fc17..65e4710f 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index f15927ec..933576f7 100644
+index 440e128f..8a35e47d 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
