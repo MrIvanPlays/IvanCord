@@ -1,4 +1,4 @@
-From e5b67f056e469a3b57084a818ca85acfafcab0e8 Mon Sep 17 00:00:00 2001
+From f592786182b51707b7c3d242d050821f1daed0d1 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 18:48:03 +0300
 Subject: [PATCH] Add gplugins command
@@ -6,29 +6,10 @@ Subject: [PATCH] Add gplugins command
 
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java b/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java
 new file mode 100644
-index 00000000..94e3351a
+index 00000000..b43ccc93
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java
-@@ -0,0 +1,57 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,38 @@
 +package com.mrivanplays.ivancord.commands;
 +
 +import java.util.Set;
@@ -68,18 +49,18 @@ index 00000000..94e3351a
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a4263356..71916fa1 100644
+index 2ffdc016..7046d9c5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -95,6 +95,7 @@ import com.mrivanplays.ivancord.modules.CommandFind;
+@@ -98,6 +98,7 @@ import com.mrivanplays.ivancord.modules.CommandFind;
  import com.mrivanplays.ivancord.modules.CommandList;
  import com.mrivanplays.ivancord.modules.CommandSend;
  import com.mrivanplays.ivancord.modules.CommandServer;
 +import com.mrivanplays.ivancord.commands.CommandPlugins;
+ // IvanCord end
  
  /**
-  * Main BungeeCord proxy class.
-@@ -238,6 +239,10 @@ public class BungeeCord extends ProxyServer
+@@ -242,6 +243,10 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandServer() );
          // IvanCord end
  

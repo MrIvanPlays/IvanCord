@@ -1,4 +1,4 @@
-From 59e9697f9412813de20d6efdf48da47cac515699 Mon Sep 17 00:00:00 2001
+From 81a74aa844bdc3102018665bb22a7a4a008d4891 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 27 Jun 2019 18:25:10 +0300
 Subject: [PATCH] Add plugin disable api
@@ -6,30 +6,10 @@ Subject: [PATCH] Add plugin disable api
 
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginDisabledEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginDisabledEvent.java
 new file mode 100644
-index 00000000..44df2750
+index 00000000..6e3335e0
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginDisabledEvent.java
-@@ -0,0 +1,40 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+ * Copyright 2019 contributors
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,20 @@
 +package com.mrivanplays.ivancord.api.event;
 +
 +import lombok.Data;
@@ -47,6 +27,32 @@ index 00000000..44df2750
 +
 +    /**
 +     * The plugin which was disabled
++     */
++    private final Plugin plugin;
++}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginEnabledEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginEnabledEvent.java
+new file mode 100644
+index 00000000..ab7c3978
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginEnabledEvent.java
+@@ -0,0 +1,20 @@
++package com.mrivanplays.ivancord.api.event;
++
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import net.md_5.bungee.api.plugin.Event;
++import net.md_5.bungee.api.plugin.Plugin;
++
++/**
++ * Represents a event, called when a plugin was enabled
++ */
++@Data
++@EqualsAndHashCode(callSuper = false)
++public class PluginEnabledEvent extends Event
++{
++
++    /**
++     * The plugin which was enabled.
 +     */
 +    private final Plugin plugin;
 +}
@@ -75,20 +81,33 @@ index 35556d48..ba1890d6 100644
       * Called by the loader to initialize the fields in this plugin.
       *
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 4312e571..3e0b5d06 100644
+index 4312e571..eea22ab1 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -23,7 +23,9 @@ import java.util.Set;
+@@ -23,7 +23,12 @@ import java.util.Set;
  import java.util.Stack;
  import java.util.jar.JarEntry;
  import java.util.jar.JarFile;
 +import java.util.logging.Handler; // IvanCord
  import java.util.logging.Level;
-+import com.mrivanplays.ivancord.api.event.PluginDisabledEvent; // IvanCord
++// IvanCord start
++import com.mrivanplays.ivancord.api.event.PluginDisabledEvent;
++import com.mrivanplays.ivancord.api.event.PluginEnabledEvent;
++// IvanCord end
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.api.ChatColor;
  import net.md_5.bungee.api.CommandSender;
-@@ -499,4 +501,78 @@ public class PluginManager
+@@ -285,6 +290,9 @@ public class PluginManager
+                 {
+                     plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
+                 } );
++                // IvanCord start
++                callEvent( new PluginEnabledEvent( plugin ) );
++                // IvanCord end
+             } catch ( Throwable t )
+             {
+                 ProxyServer.getInstance().getLogger().log( Level.WARNING, "Exception encountered when loading plugin: " + plugin.getDescription().getName(), t );
+@@ -499,4 +507,78 @@ public class PluginManager
      {
          return Collections.unmodifiableCollection( commandMap.entrySet() );
      }
@@ -168,10 +187,10 @@ index 4312e571..3e0b5d06 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e20fa170..5305b9f2 100644
+index 2e1ed41a..ff568fc1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -43,6 +43,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
+@@ -44,6 +44,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  import java.util.logging.Handler;
  import java.util.logging.Level;
  import java.util.logging.Logger;
@@ -179,7 +198,7 @@ index e20fa170..5305b9f2 100644
  import lombok.Getter;
  import lombok.Setter;
  import lombok.Synchronized;
-@@ -483,24 +484,13 @@ public class BungeeCord extends ProxyServer
+@@ -487,24 +488,13 @@ public class BungeeCord extends ProxyServer
                  saveThread.cancel();
                  // metricsThread.cancel(); // Waterfall: Disable Metrics
  

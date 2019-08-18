@@ -1,4 +1,4 @@
-From 1c16e43ac2947b1fe2a691b62c31ee203c6f96a3 Mon Sep 17 00:00:00 2001
+From 3eae468014fe9d42e511e7ed6c8adb936d537fe2 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Mon, 22 Apr 2019 10:45:15 +0300
 Subject: [PATCH] Kick to lobby support
@@ -25,10 +25,10 @@ index cbcf8a24..4687e7c4 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index c23d9dc9..78a75ae7 100644
+index 06d74844..238bc3c1 100644
 --- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-@@ -22,16 +22,21 @@ package com.mrivanplays.ivancord.conf;
+@@ -3,16 +3,21 @@ package com.mrivanplays.ivancord.conf;
  import java.io.File;
  
  import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;

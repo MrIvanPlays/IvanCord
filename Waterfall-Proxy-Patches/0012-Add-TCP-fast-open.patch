@@ -1,4 +1,4 @@
-From 1f545c40d0987338c4834755ba0f12be664430e7 Mon Sep 17 00:00:00 2001
+From 3c911953c5964d764d3a543981ecc4aeebaa6dd0 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 19:20:09 +0300
 Subject: [PATCH] Add TCP fast open
@@ -29,10 +29,10 @@ index d13923fc..0643d08f 100644
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 9671c237..70a827ae 100644
+index 996c02b8..58a8c3fd 100644
 --- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-@@ -20,10 +20,13 @@
+@@ -1,10 +1,13 @@
  package com.mrivanplays.ivancord.conf;
  
  import java.io.File;
@@ -47,7 +47,7 @@ index 9671c237..70a827ae 100644
  
  @Getter
  public class IvanCordConfiguration extends WaterfallConfiguration
-@@ -32,6 +35,11 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -13,6 +16,11 @@ public class IvanCordConfiguration extends WaterfallConfiguration
      private boolean kickToLobby = true;
      private boolean disableTabListRewrite = isOnlineMode();
  
@@ -59,7 +59,7 @@ index 9671c237..70a827ae 100644
      @Override
      public void load()
      {
-@@ -40,5 +48,14 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -21,5 +29,14 @@ public class IvanCordConfiguration extends WaterfallConfiguration
          config.load( false );
          kickToLobby = config.getBoolean( "kick_to_lobby", kickToLobby );
          disableTabListRewrite = config.getBoolean( "disable_tablist_rewrite", disableTabListRewrite );
@@ -76,29 +76,10 @@ index 9671c237..70a827ae 100644
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java b/proxy/src/main/java/com/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java
 new file mode 100644
-index 00000000..10bf8803
+index 00000000..ffa0e1f5
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java
-@@ -0,0 +1,46 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,27 @@
 +package com.mrivanplays.ivancord.tcpfastopen;
 +
 +import java.util.Arrays;

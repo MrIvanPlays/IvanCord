@@ -1,4 +1,4 @@
-From 6bedaeda1834548bbc669206687ee679dd247613 Mon Sep 17 00:00:00 2001
+From 825b343ff3ace187f8562328659ead3ba5ff8678 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 20:20:49 +0300
 Subject: [PATCH] Add option to choose between reconnect handlers
@@ -26,29 +26,10 @@ index 0643d08f..0135019f 100644
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/JsonReconnectHandler.java b/proxy/src/main/java/com/mrivanplays/ivancord/JsonReconnectHandler.java
 new file mode 100644
-index 00000000..a9777518
+index 00000000..2eb4531f
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/JsonReconnectHandler.java
-@@ -0,0 +1,113 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,94 @@
 +package com.mrivanplays.ivancord;
 +
 +import java.io.File;
@@ -145,29 +126,10 @@ index 00000000..a9777518
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/ReconnectHandlerType.java b/proxy/src/main/java/com/mrivanplays/ivancord/ReconnectHandlerType.java
 new file mode 100644
-index 00000000..832613ce
+index 00000000..c9723674
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/ReconnectHandlerType.java
-@@ -0,0 +1,26 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,7 @@
 +package com.mrivanplays.ivancord;
 +
 +public enum ReconnectHandlerType
@@ -176,10 +138,10 @@ index 00000000..832613ce
 +    JSON
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 70a827ae..9cdd4ba3 100644
+index 58a8c3fd..1111e912 100644
 --- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-@@ -21,6 +21,7 @@ package com.mrivanplays.ivancord.conf;
+@@ -2,6 +2,7 @@ package com.mrivanplays.ivancord.conf;
  
  import java.io.File;
  import java.util.logging.Level;
@@ -187,7 +149,7 @@ index 70a827ae..9cdd4ba3 100644
  import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
  import lombok.Getter;
  import lombok.experimental.Accessors;
-@@ -34,6 +35,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -15,6 +16,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
  
      private boolean kickToLobby = true;
      private boolean disableTabListRewrite = isOnlineMode();
@@ -195,7 +157,7 @@ index 70a827ae..9cdd4ba3 100644
  
      @Accessors(fluent = true)
      private boolean isTCPFastOpenEnabled = true;
-@@ -50,6 +52,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -31,6 +33,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
          disableTabListRewrite = config.getBoolean( "disable_tablist_rewrite", disableTabListRewrite );
          isTCPFastOpenEnabled = config.getBoolean( "tcp_fast_open_enabled", isTCPFastOpenEnabled );
          getTCPFastOpenMode = setupTFO( config.getInt( "tcp_fast_open_mode", getTCPFastOpenMode ) );
@@ -203,7 +165,7 @@ index 70a827ae..9cdd4ba3 100644
      }
  
      private int setupTFO(int incoming)
-@@ -58,4 +61,16 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -39,4 +42,16 @@ public class IvanCordConfiguration extends WaterfallConfiguration
          ProxyServer.getInstance().getLogger().log( Level.INFO, "TCP fast open mode is set to {0}", actual.name() );
          return actual.getValue();
      }
@@ -221,20 +183,20 @@ index 70a827ae..9cdd4ba3 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index dfd2dff3..e20fa170 100644
+index 3b5b537e..2e1ed41a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -99,6 +99,9 @@ import com.mrivanplays.ivancord.commands.CommandPlugins;
+@@ -102,6 +102,9 @@ import com.mrivanplays.ivancord.commands.CommandPlugins;
  import com.mrivanplays.ivancord.conf.OpsConfiguration;
  import com.mrivanplays.ivancord.commands.op.CommandDeop;
  import com.mrivanplays.ivancord.commands.op.CommandOp;
 +import com.mrivanplays.ivancord.JsonReconnectHandler;
 +import com.mrivanplays.ivancord.ReconnectHandlerType;
 +import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
+ // IvanCord end
  
  /**
-  * Main BungeeCord proxy class.
-@@ -310,6 +313,23 @@ public class BungeeCord extends ProxyServer
+@@ -314,6 +317,23 @@ public class BungeeCord extends ProxyServer
  
          isRunning = true;
  

@@ -1,4 +1,4 @@
-From 6064932635ba2b229e46f6e08369d7c9c59a488f Mon Sep 17 00:00:00 2001
+From b3972fb9c7cd2f8f6e5dc50b6ac4f239b5533ecc Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 30 Jun 2019 21:13:31 +0300
 Subject: [PATCH] Remove some of the TODOs
@@ -67,10 +67,10 @@ index ad2ebdea..c4922a69 100644
      }
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 9cdd4ba3..21d024a0 100644
+index 1111e912..284f574a 100644
 --- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-@@ -36,6 +36,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -17,6 +17,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
      private boolean kickToLobby = true;
      private boolean disableTabListRewrite = isOnlineMode();
      private String reconnectHandlerType = ReconnectHandlerType.YAML.name();
@@ -78,7 +78,7 @@ index 9cdd4ba3..21d024a0 100644
  
      @Accessors(fluent = true)
      private boolean isTCPFastOpenEnabled = true;
-@@ -53,6 +54,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -34,6 +35,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
          isTCPFastOpenEnabled = config.getBoolean( "tcp_fast_open_enabled", isTCPFastOpenEnabled );
          getTCPFastOpenMode = setupTFO( config.getInt( "tcp_fast_open_mode", getTCPFastOpenMode ) );
          reconnectHandlerType = setupReconnectHandlerType( config.getString( "reconnect_handler_type", reconnectHandlerType ) );

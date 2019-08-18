@@ -1,4 +1,4 @@
-From 9e1f88399ec83b3505602712f77fdae42ab89c60 Mon Sep 17 00:00:00 2001
+From 6f7e07b41e8b9556ed4fdff136e2fc4b06933224 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:04:14 +0300
 Subject: [PATCH] Get rid of modules
@@ -594,30 +594,10 @@ index 00000000..33dadd66
 \ No newline at end of file
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/util/ICUtil.java b/proxy/src/main/java/com/mrivanplays/ivancord/util/ICUtil.java
 new file mode 100644
-index 00000000..8d19899c
+index 00000000..4915d8d7
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/util/ICUtil.java
-@@ -0,0 +1,34 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+ * Copyright 2019 contributors
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,14 @@
 +package com.mrivanplays.ivancord.util;
 +
 +import net.md_5.bungee.api.ProxyServer;
@@ -633,40 +613,26 @@ index 00000000..8d19899c
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index efbf3164..8fc68a01 100644
+index efbf3164..a13e8ff0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -22,7 +22,6 @@ import io.netty.util.ResourceLeakDetector;
- import java.io.File;
- import java.io.FileReader;
- import java.io.IOException;
--import java.io.PrintStream;
- import java.net.InetSocketAddress;
- import java.text.MessageFormat;
- import java.util.ArrayList;
-@@ -81,7 +80,6 @@ import net.md_5.bungee.compress.CompressFactory;
- import net.md_5.bungee.conf.Configuration;
- import net.md_5.bungee.conf.YamlConfig;
- import net.md_5.bungee.forge.ForgeConstants;
--import net.md_5.bungee.module.ModuleManager;
- import net.md_5.bungee.netty.PipelineUtils;
- import net.md_5.bungee.protocol.DefinedPacket;
- import net.md_5.bungee.protocol.ProtocolConstants;
-@@ -91,6 +89,13 @@ import net.md_5.bungee.query.RemoteQuery;
+@@ -91,6 +91,15 @@ import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
  
++// IvanCord start
 +import com.mrivanplays.ivancord.modules.CommandAlert;
 +import com.mrivanplays.ivancord.modules.CommandAlertRaw;
 +import com.mrivanplays.ivancord.modules.CommandFind;
 +import com.mrivanplays.ivancord.modules.CommandList;
 +import com.mrivanplays.ivancord.modules.CommandSend;
 +import com.mrivanplays.ivancord.modules.CommandServer;
++// IvanCord end
 +
  /**
   * Main BungeeCord proxy class.
   */
-@@ -164,7 +169,9 @@ public class BungeeCord extends ProxyServer
+@@ -164,7 +173,9 @@ public class BungeeCord extends ProxyServer
              .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
      @Getter
      private ConnectionThrottle connectionThrottle;
@@ -676,7 +642,7 @@ index efbf3164..8fc68a01 100644
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -222,6 +229,15 @@ public class BungeeCord extends ProxyServer
+@@ -222,6 +233,15 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandBungee() );
          getPluginManager().registerCommand( null, new CommandPerms() );
  
@@ -692,7 +658,7 @@ index efbf3164..8fc68a01 100644
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
              if ( EncryptionUtil.nativeFactory.load() )
-@@ -259,9 +275,11 @@ public class BungeeCord extends ProxyServer
+@@ -259,9 +279,11 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  

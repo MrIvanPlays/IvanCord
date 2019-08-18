@@ -1,4 +1,4 @@
-From e3c1a5d63bd4ac752e0cbdf368a8abbdb47c0bf9 Mon Sep 17 00:00:00 2001
+From 59f0de14e8571fad4f96ffd423d5a52f75fb4b37 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 2 Jul 2019 16:31:36 +0300
 Subject: [PATCH] Add services manager
@@ -100,29 +100,10 @@ index 00000000..169b02fa
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
 new file mode 100644
-index 00000000..1fde6f94
+index 00000000..bff68b54
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/RegisteredServiceProvider.java
-@@ -0,0 +1,59 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,40 @@
 +package com.mrivanplays.ivancord.api.plugin;
 +
 +import lombok.AllArgsConstructor;
@@ -165,30 +146,10 @@ index 00000000..1fde6f94
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicePriority.java b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicePriority.java
 new file mode 100644
-index 00000000..2bd6ccdb
+index 00000000..fc174800
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicePriority.java
-@@ -0,0 +1,43 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+ * Copyright 2019 contributors
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,23 @@
 +package com.mrivanplays.ivancord.api.plugin;
 +
 +/**
@@ -214,29 +175,10 @@ index 00000000..2bd6ccdb
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicesManager.java b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicesManager.java
 new file mode 100644
-index 00000000..c0dc5dda
+index 00000000..68a64e45
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/plugin/ServicesManager.java
-@@ -0,0 +1,128 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,109 @@
 +package com.mrivanplays.ivancord.api.plugin;
 +
 +import java.util.Collection;
@@ -376,10 +318,10 @@ index d44ac67e..61e99410 100644
 +
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 3e0b5d06..0ca3696f 100644
+index eea22ab1..2b79cdae 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -542,6 +542,7 @@ public class PluginManager
+@@ -548,6 +548,7 @@ public class PluginManager
          }
          unregisterListeners( plugin );
          unregisterCommands( plugin );
@@ -389,29 +331,10 @@ index 3e0b5d06..0ca3696f 100644
          plugins.remove( plugin.getDescription().getName(), plugin );
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java b/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java
 new file mode 100644
-index 00000000..592662e4
+index 00000000..faa34e7a
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java
-@@ -0,0 +1,257 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,238 @@
 +package com.mrivanplays.ivancord;
 +
 +import java.util.ArrayList;
@@ -651,19 +574,19 @@ index 00000000..592662e4
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 5305b9f2..16875aef 100644
+index ff568fc1..8b5841b8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -103,6 +103,8 @@ import com.mrivanplays.ivancord.commands.op.CommandOp;
+@@ -106,6 +106,8 @@ import com.mrivanplays.ivancord.commands.op.CommandOp;
  import com.mrivanplays.ivancord.JsonReconnectHandler;
  import com.mrivanplays.ivancord.ReconnectHandlerType;
  import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
 +import com.mrivanplays.ivancord.SimpleServicesManager;
 +import com.mrivanplays.ivancord.api.plugin.ServicesManager;
+ // IvanCord end
  
  /**
-  * Main BungeeCord proxy class.
-@@ -185,6 +187,11 @@ public class BungeeCord extends ProxyServer
+@@ -189,6 +191,11 @@ public class BungeeCord extends ProxyServer
      private final ModuleManager moduleManager = new ModuleManager();
       */
  
@@ -675,7 +598,7 @@ index 5305b9f2..16875aef 100644
      {
          // TODO: Proper fallback when we interface the manager
          registerChannel( "BungeeCord" );
-@@ -302,6 +309,10 @@ public class BungeeCord extends ProxyServer
+@@ -306,6 +313,10 @@ public class BungeeCord extends ProxyServer
          pluginsFolder.mkdir();
          pluginManager.detectPlugins( pluginsFolder );
  
