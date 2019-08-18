@@ -1,4 +1,4 @@
-From 81a74aa844bdc3102018665bb22a7a4a008d4891 Mon Sep 17 00:00:00 2001
+From 0a56d4110da3c4b2708eae56e2927ea7cccbb979 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 27 Jun 2019 18:25:10 +0300
 Subject: [PATCH] Add plugin disable api

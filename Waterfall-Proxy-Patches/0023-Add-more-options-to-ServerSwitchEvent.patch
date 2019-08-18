@@ -1,4 +1,4 @@
-From c04628e00d92426b877c6e4130f413de8728cf02 Mon Sep 17 00:00:00 2001
+From 1c3413e2a2c3d657e83114498fee2ebf0add8dca Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 21 Jul 2019 10:17:29 +0300
 Subject: [PATCH] Add more options to ServerSwitchEvent

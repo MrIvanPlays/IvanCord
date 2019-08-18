@@ -1,4 +1,4 @@
-From 3f4678a0c7234582c9068caa00f71245223758c5 Mon Sep 17 00:00:00 2001
+From df854f10a3f3e4e40feb6ce230199188b5a59c38 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 11 Jun 2019 19:17:33 +0300
 Subject: [PATCH] Add PlaySound packet
@@ -255,10 +255,10 @@ index e893a472..3b8ee648 100644
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 3402862b..175553fb 100644
+index 405e34fc..6a36d148 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -28,6 +28,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
+@@ -27,6 +27,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
  import net.md_5.bungee.protocol.packet.LoginRequest;
  import net.md_5.bungee.protocol.packet.LoginSuccess;
  import net.md_5.bungee.protocol.packet.PingPacket;
@@ -266,7 +266,7 @@ index 3402862b..175553fb 100644
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PlayerPosition;
-@@ -304,6 +305,15 @@ public enum Protocol
+@@ -302,6 +303,15 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x11 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x12 )
              );

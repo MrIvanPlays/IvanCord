@@ -1,4 +1,4 @@
-From 825b343ff3ace187f8562328659ead3ba5ff8678 Mon Sep 17 00:00:00 2001
+From ad43eb7ac5be8b5bf2ac953125fb3e89cfe3e401 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 20:20:49 +0300
 Subject: [PATCH] Add option to choose between reconnect handlers

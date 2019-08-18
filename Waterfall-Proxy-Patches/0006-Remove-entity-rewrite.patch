@@ -1,4 +1,4 @@
-From 5d23f77f0eee6f13c2bacae99b5ccacc65ecc136 Mon Sep 17 00:00:00 2001
+From 70482a0e61ff59bacab6159fb9a0c66d1807522f Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 28 Apr 2019 09:53:09 +0300
 Subject: [PATCH] Remove entity rewrite
@@ -103,7 +103,7 @@ index 39f81fd1..949befdd 100644
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 87093807..652e4ca2 100644
+index c2b0e12c..293f2ea1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -31,15 +31,20 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
@@ -127,7 +127,7 @@ index 87093807..652e4ca2 100644
  import net.md_5.bungee.protocol.packet.Title;
  import net.md_5.bungee.protocol.packet.ViewDistance;
  
-@@ -129,6 +134,8 @@ public enum Protocol
+@@ -139,6 +144,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0E ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x10 )
              );
@@ -135,8 +135,8 @@ index 87093807..652e4ca2 100644
 +            /*
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
-                     map( ProtocolConstants.MINECRAFT_1_8, 0x3B ),
-@@ -165,6 +172,8 @@ public enum Protocol
+                     ScoreboardObjective::new, // Waterfall - speed up packet construction
+@@ -179,6 +186,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x47 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x4B )
              );
@@ -144,7 +144,7 @@ index 87093807..652e4ca2 100644
 +            // IvanCord end
              TO_CLIENT.registerPacket(
                      PluginMessage.class,
-                     map( ProtocolConstants.MINECRAFT_1_8, 0x3F ),
+                     PluginMessage::new, // Waterfall - speed up packet construction
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
 index b8f30276..578095d5 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
