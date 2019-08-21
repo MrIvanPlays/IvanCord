@@ -1,0 +1,238 @@
+From c522b62706aa926be6fce822b5f4ce4ebd72b4a1 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Wed, 21 Aug 2019 21:21:33 +0300
+Subject: [PATCH] Add OfflinePlayer concept
+
+
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java b/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java
+new file mode 100644
+index 00000000..4672d0fb
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java
+@@ -0,0 +1,51 @@
++package com.mrivanplays.ivancord.api.connection;
++
++import java.util.Optional;
++import java.util.UUID;
++
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++
++/**
++ * Represents a player, which is probably offline.
++ */
++public interface OfflinePlayer
++{
++
++    /**
++     * Returns the name of the player. This might be null or change in time
++     * as the name is not a key authentication for a player anymore.
++     *
++     * @return name of the offline player or null
++     */
++    String getName();
++
++    /**
++     * Returns the unique id of the player.
++     *
++     * @return unique id
++     */
++    UUID getUniqueId();
++
++    /**
++     * Returns whenever this player has played before.
++     *
++     * @return <code>true</code> if played, <code>false</code> otherwise
++     */
++    boolean hasPlayedBefore();
++
++    /**
++     * Gets the specified offline player as a online player. The optional
++     * will be empty if the player is not online.
++     *
++     * @return optional of player
++     */
++    Optional<ProxiedPlayer> getPlayer();
++
++    /**
++     * Returns the last known server where the player was.
++     *
++     * @return optional of the last known server of the player
++     */
++    Optional<ServerInfo> getLastServer();
++}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/BungeeOfflinePlayer.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/BungeeOfflinePlayer.java
+new file mode 100644
+index 00000000..4b91e441
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/BungeeOfflinePlayer.java
+@@ -0,0 +1,44 @@
++package com.mrivanplays.ivancord.connection;
++
++import java.util.Optional;
++import java.util.UUID;
++
++import com.mrivanplays.ivancord.api.connection.OfflinePlayer;
++import lombok.AllArgsConstructor;
++import lombok.EqualsAndHashCode;
++import lombok.Getter;
++import lombok.ToString;
++import lombok.experimental.Accessors;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++
++@Getter
++@ToString
++@EqualsAndHashCode
++@AllArgsConstructor
++public class BungeeOfflinePlayer implements OfflinePlayer
++{
++
++    private String name;
++    private UUID uniqueId;
++    @Accessors(fluent = true)
++    private boolean hasPlayedBefore;
++    private ServerInfo lastKnownServer;
++
++    @Override
++    public Optional<ProxiedPlayer> getPlayer()
++    {
++        return Optional.ofNullable( BungeeCord.getInstance().getPlayer( uniqueId ) );
++    }
++
++    @Override
++    public Optional<ServerInfo> getLastServer()
++    {
++        if ( getPlayer().isPresent() )
++        {
++            return Optional.of( getPlayer().get().getServer().getInfo() );
++        }
++        return Optional.ofNullable( lastKnownServer );
++    }
++}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
+new file mode 100644
+index 00000000..55214115
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
+@@ -0,0 +1,116 @@
++package com.mrivanplays.ivancord.connection;
++
++import java.io.File;
++import java.io.FileInputStream;
++import java.io.FileOutputStream;
++import java.io.IOException;
++import java.io.InputStreamReader;
++import java.io.OutputStreamWriter;
++import java.io.Reader;
++import java.io.Writer;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.UUID;
++
++import com.google.gson.Gson;
++import com.google.gson.GsonBuilder;
++import com.google.gson.JsonArray;
++import com.google.gson.JsonElement;
++import com.google.gson.JsonObject;
++import com.mrivanplays.ivancord.api.connection.OfflinePlayer;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.config.ServerInfo;
++
++public class Playerdata
++{
++
++    private File file;
++    private Gson gson;
++
++    public Playerdata()
++    {
++        this.file = new File( "playerdata.json" );
++        createFile();
++        gson = new GsonBuilder().setPrettyPrinting().create();
++    }
++
++    private void serialize(List<OfflinePlayer> players)
++    {
++        file.delete();
++        createFile();
++        try ( Writer writer = new OutputStreamWriter( new FileOutputStream( file ) ) )
++        {
++            JsonArray array = new JsonArray();
++            for ( OfflinePlayer player : players )
++            {
++                JsonObject object = new JsonObject();
++                if ( player.getName() != null )
++                {
++                    object.addProperty( "name", player.getName() );
++                }
++                object.addProperty( "uuid", player.getUniqueId().toString() );
++                if ( player.getLastServer().isPresent() )
++                {
++                    object.addProperty( "lastKnownServer", player.getLastServer().get().getName() );
++                }
++                array.add( object );
++            }
++            gson.toJson( array, writer );
++        } catch ( IOException ignored )
++        {
++        }
++    }
++
++    private List<OfflinePlayer> deserialize()
++    {
++        List<OfflinePlayer> list = new ArrayList<>();
++        try ( Reader reader = new InputStreamReader( new FileInputStream( file ) ) )
++        {
++            JsonArray array = gson.fromJson( reader, JsonArray.class );
++            if ( array == null || array.size() == 0 )
++            {
++                return list;
++            }
++            for ( JsonElement element : array )
++            {
++                if ( !element.isJsonObject() )
++                {
++                    continue;
++                }
++                JsonObject object = element.getAsJsonObject();
++                UUID uniqueId = UUID.fromString( object.get( "uuid" ).getAsString() );
++                String name = null;
++                if ( object.has( "name" ) )
++                {
++                    name = object.get( "name" ).getAsString();
++                }
++                ServerInfo lastKnownServer = null;
++                if ( object.has( "lastKnownServer" ) )
++                {
++                    lastKnownServer = BungeeCord.getInstance().getServerInfo( object.get( "lastKnownServer" ).getAsString() );
++                }
++                list.add( new BungeeOfflinePlayer( name, uniqueId, true, lastKnownServer ) );
++            }
++        } catch ( IOException ignored )
++        {
++        }
++        return list;
++    }
++
++    private void createFile()
++    {
++        if ( !file.exists() )
++        {
++            if ( !file.getParentFile().exists() )
++            {
++                file.getParentFile().mkdirs();
++            }
++            try
++            {
++                file.createNewFile();
++            } catch ( IOException ignored )
++            {
++            }
++        }
++    }
++}
+-- 
+2.23.0.windows.1
+
