@@ -14,3 +14,5 @@ update Waterfall
 
 # Update submodules
 git submodule update --recursive
+./scripts/applyPatches.sh
+./scripts/rebuildPatches.sh
