@@ -1,4 +1,4 @@
-From e2d4b9a4aa0dba6e538cd3f731eea28af108d1b3 Mon Sep 17 00:00:00 2001
+From 77bcd92f260ae28894366870389bc8258b574ebb Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -253,7 +253,7 @@ index a13e8ff0..aa96218d 100644
                      try {
                          bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 1e0dcb3f..1e159112 100644
+index c40f3e03..9b083546 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -40,6 +40,8 @@ public class BungeeCordLauncher
@@ -366,10 +366,10 @@ index d87d0b95..055b3bb6 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
-index 610825ca..d47518e4 100644
+index 18422669..66747e05 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
-@@ -13,7 +13,7 @@ public class CommandPerms extends Command
+@@ -12,7 +12,7 @@ public class CommandPerms extends Command
  
      public CommandPerms()
      {
@@ -744,5 +744,5 @@ index 4882b8ed..939211c3 100644
              if ( packet instanceof PacketWrapper )
              {
 -- 
-2.22.0.windows.1
+2.23.0.windows.1
 
