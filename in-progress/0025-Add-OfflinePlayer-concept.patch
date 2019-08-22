@@ -1,4 +1,4 @@
-From c522b62706aa926be6fce822b5f4ce4ebd72b4a1 Mon Sep 17 00:00:00 2001
+From d8fcd9d548e61277eaee9a35a4d5f147a11fb5c1 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Wed, 21 Aug 2019 21:21:33 +0300
 Subject: [PATCH] Add OfflinePlayer concept
@@ -6,10 +6,10 @@ Subject: [PATCH] Add OfflinePlayer concept
 
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java b/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java
 new file mode 100644
-index 00000000..4672d0fb
+index 00000000..926f74a6
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java
-@@ -0,0 +1,51 @@
+@@ -0,0 +1,52 @@
 +package com.mrivanplays.ivancord.api.connection;
 +
 +import java.util.Optional;
@@ -33,7 +33,8 @@ index 00000000..4672d0fb
 +    String getName();
 +
 +    /**
-+     * Returns the unique id of the player.
++     * Returns the unique id of the player. This might be null if the player was
++     * got from the name and the Mojang servers were down.
 +     *
 +     * @return unique id
 +     */
@@ -60,6 +61,169 @@ index 00000000..4672d0fb
 +     * @return optional of the last known server of the player
 +     */
 +    Optional<ServerInfo> getLastServer();
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index 25885939..4818cc16 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -8,6 +8,7 @@ import java.util.Map;
+ import java.util.UUID;
+ import java.util.function.BiConsumer; // IvanCord
+ import java.util.logging.Logger;
++import com.mrivanplays.ivancord.api.connection.OfflinePlayer; // IvanCord
+ import lombok.Getter;
+ import net.md_5.bungee.api.chat.BaseComponent;
+ import net.md_5.bungee.api.config.ConfigurationAdapter;
+@@ -359,6 +360,24 @@ public abstract class ProxyServer
+      */
+     public abstract void registerOutboundPacketListener(Plugin plugin, BiConsumer<DefinedPacket, PacketDirection> packetListener);
+ 
++    /**
++     * Returns a {@link OfflinePlayer}, specified by his name. This method
++     * will never return null
++     *
++     * @param name the name of the player you want to get
++     * @return offline player
++     */
++    public abstract OfflinePlayer getOfflinePlayer(String name);
++
++    /**
++     * Returns a {@link OfflinePlayer}, specified by his unique id. This
++     * will never return null
++     *
++     * @param uuid the unique id of the player you want to get
++     * @return offline player
++     */
++    public abstract OfflinePlayer getOfflinePlayer(UUID uuid);
++
+     // IvanCord end
+ 
+ }
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/UUIDFetcher.java b/proxy/src/main/java/com/mrivanplays/ivancord/UUIDFetcher.java
+new file mode 100644
+index 00000000..45af4fcd
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/UUIDFetcher.java
+@@ -0,0 +1,120 @@
++package com.mrivanplays.ivancord;
++
++import java.io.IOException;
++import java.io.InputStreamReader;
++import java.net.HttpURLConnection;
++import java.net.URL;
++import java.util.Map;
++import java.util.Optional;
++import java.util.UUID;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ConcurrentHashMap;
++
++import com.google.gson.JsonElement;
++import com.google.gson.JsonObject;
++import com.google.gson.JsonParser;
++import net.md_5.bungee.Util;
++
++public class UUIDFetcher
++{
++
++    private String playerName;
++    private Callback lastResult;
++
++    //
++
++    private static Map<String, UUIDFetcher> knownInstances = new ConcurrentHashMap<>();
++
++    public static UUIDFetcher createOrGet(String playerName)
++    {
++        if ( knownInstances.get( playerName ) != null )
++        {
++            return knownInstances.get( playerName );
++        } else
++        {
++            UUIDFetcher fetcher = new UUIDFetcher( playerName );
++            knownInstances.put( playerName, fetcher );
++            return fetcher;
++        }
++    }
++
++    //
++
++    private UUIDFetcher(String playerName)
++    {
++        this.playerName = playerName;
++    }
++
++    public CompletableFuture<Callback> retrieveUUID()
++    {
++        if ( lastResult != null )
++        {
++            return CompletableFuture.completedFuture( lastResult );
++        }
++        return CompletableFuture.supplyAsync( () ->
++        {
++            try
++            {
++                URL url = new URL( "https://api.mojang.com/users/profiles/minecraft/" + playerName );
++
++                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
++                connection.addRequestProperty( "User-Agent", "IvanCord-UUID-Fetcher" );
++
++                InputStreamReader inputStream = new InputStreamReader( connection.getInputStream() );
++
++                JsonElement element = new JsonParser().parse( inputStream );
++                inputStream.close();
++
++                if ( !element.isJsonObject() )
++                {
++                    return new Callback( null, State.ELEMENT_NOT_JSON_OBJECT );
++                }
++                JsonObject object = element.getAsJsonObject();
++                return new Callback( get( object.get( "id" ).getAsString() ), State.SUCCESS );
++            } catch ( IOException e )
++            {
++                return new Callback( null, State.COULD_NOT_CONNECT );
++            }
++        } );
++    }
++
++    private UUID get(String id)
++    {
++        return Util.getUUID( id );
++    }
++
++    public class Callback
++    {
++
++        {
++            lastResult = this;
++        }
++
++        private Optional<UUID> uuid;
++        private State state;
++
++        public Callback(UUID uuid, State state)
++        {
++            this.uuid = Optional.ofNullable( uuid );
++            this.state = state;
++        }
++
++        public Optional<UUID> getUUID()
++        {
++            return uuid;
++        }
++
++        public State getState()
++        {
++            return state;
++        }
++    }
++
++    public enum State
++    {
++        SUCCESS,
++        ELEMENT_NOT_JSON_OBJECT,
++        COULD_NOT_CONNECT
++    }
++
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/BungeeOfflinePlayer.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/BungeeOfflinePlayer.java
 new file mode 100644
@@ -113,10 +277,10 @@ index 00000000..4b91e441
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
 new file mode 100644
-index 00000000..55214115
+index 00000000..e724c64b
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
-@@ -0,0 +1,116 @@
+@@ -0,0 +1,165 @@
 +package com.mrivanplays.ivancord.connection;
 +
 +import java.io.File;
@@ -129,6 +293,7 @@ index 00000000..55214115
 +import java.io.Writer;
 +import java.util.ArrayList;
 +import java.util.List;
++import java.util.Optional;
 +import java.util.UUID;
 +
 +import com.google.gson.Gson;
@@ -136,6 +301,7 @@ index 00000000..55214115
 +import com.google.gson.JsonArray;
 +import com.google.gson.JsonElement;
 +import com.google.gson.JsonObject;
++import com.mrivanplays.ivancord.UUIDFetcher;
 +import com.mrivanplays.ivancord.api.connection.OfflinePlayer;
 +import net.md_5.bungee.BungeeCord;
 +import net.md_5.bungee.api.config.ServerInfo;
@@ -151,6 +317,53 @@ index 00000000..55214115
 +        this.file = new File( "playerdata.json" );
 +        createFile();
 +        gson = new GsonBuilder().setPrettyPrinting().create();
++    }
++
++    public OfflinePlayer getOfflinePlayer(String name)
++    {
++        Optional<OfflinePlayer> search = deserialize()
++                .parallelStream()
++                .filter( player -> player.getName() != null && player.getName().equalsIgnoreCase( name ) )
++                .findFirst();
++        if ( search.isPresent() )
++        {
++            return search.get();
++        } else
++        {
++            UUIDFetcher uuidFetcher = UUIDFetcher.createOrGet( name );
++            UUIDFetcher.Callback callback = uuidFetcher.retrieveUUID().join();
++            OfflinePlayer player;
++            if ( !callback.getUUID().isPresent() )
++            {
++                player =  new BungeeOfflinePlayer( name, null, false, null );
++            } else
++            {
++                player = new BungeeOfflinePlayer( name, callback.getUUID().get(), false, null );
++            }
++            List<OfflinePlayer> known = new ArrayList<>( deserialize() );
++            known.add( player );
++            serialize( known );
++            return player;
++        }
++    }
++
++    public OfflinePlayer getOfflinePlayer(UUID uuid)
++    {
++        Optional<OfflinePlayer> search = deserialize()
++                .parallelStream()
++                .filter( player -> player.getUniqueId().equals( uuid ) )
++                .findFirst();
++        if ( search.isPresent() )
++        {
++            return search.get();
++        } else
++        {
++            OfflinePlayer player = new BungeeOfflinePlayer( null, uuid, false, null );
++            List<OfflinePlayer> known = new ArrayList<>( deserialize() );
++            known.add( player );
++            serialize( known );
++            return player;
++        }
 +    }
 +
 +    private void serialize(List<OfflinePlayer> players)
@@ -233,6 +446,45 @@ index 00000000..55214115
 +        }
 +    }
 +}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 0ed98286..178d5de3 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -118,6 +118,8 @@ import com.mrivanplays.ivancord.api.plugin.ServicesManager;
+ import com.mrivanplays.ivancord.api.command.IvanCordCommandManager;
+ import com.mrivanplays.ivancord.protocol.PacketListener;
+ import com.mrivanplays.ivancord.api.PacketDirection;
++import com.mrivanplays.ivancord.api.connection.OfflinePlayer;
++import com.mrivanplays.ivancord.connection.Playerdata;
+ // IvanCord end
+ 
+ /**
+@@ -213,6 +215,7 @@ public class BungeeCord extends ProxyServer
+                     .setNameFormat( "PacketListener Executor/#%d" )
+                     .build()
+     );
++    private Playerdata playerdata = new Playerdata();
+     // IvanCord end
+ 
+     {
+@@ -873,5 +876,17 @@ public class BungeeCord extends ProxyServer
+             }
+         } );
+     }
++
++    @Override
++    public OfflinePlayer getOfflinePlayer(String name)
++    {
++        return playerdata.getOfflinePlayer( name );
++    }
++
++    @Override
++    public OfflinePlayer getOfflinePlayer(UUID uuid)
++    {
++        return playerdata.getOfflinePlayer( uuid );
++    }
+     // IvanCord end
+ }
 -- 
 2.23.0.windows.1
 
