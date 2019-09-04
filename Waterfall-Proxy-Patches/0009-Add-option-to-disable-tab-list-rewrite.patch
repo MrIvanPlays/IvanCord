@@ -1,11 +1,11 @@
-From 39d7e60273ca6ed4381cf08141168b48aac7d427 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 18:03:14 +0300
 Subject: [PATCH] Add option to disable tab list rewrite
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 4687e7c4..d13923fc 100644
+index 4687e7c473722a941424ff4e631a0b3b85fb43f8..d13923fc1f2b809ea8d661ac90630fd0a30d4836 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -249,5 +249,13 @@ public interface ProxyConfig
@@ -23,7 +23,7 @@ index 4687e7c4..d13923fc 100644
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 238bc3c1..996c02b8 100644
+index 238bc3c1f43aa5bd6de34f4355ede2dee818fef3..996c02b848c32e44abadb7ddeff9e59d57bc4449 100644
 --- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -11,6 +11,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
@@ -42,7 +42,7 @@ index 238bc3c1..996c02b8 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index a4f34292..5cf2e3da 100644
+index a4f342927c5a47007e52c6e590dd08947555b979..5cf2e3da071fe1e5de41e60ec38f5b8c155453c8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -165,8 +165,19 @@ public class DownstreamBridge extends PacketHandler
@@ -65,6 +65,3 @@ index a4f34292..5cf2e3da 100644
      }
  
      // IvanCord start - remove these from handling
--- 
-2.22.0.windows.1
-

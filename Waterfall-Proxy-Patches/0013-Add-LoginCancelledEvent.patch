@@ -1,4 +1,4 @@
-From 1e131dc3d10d39fd20b8f0ee6ec5d53d9879c075 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 16:03:22 +0300
 Subject: [PATCH] Add LoginCancelledEvent
@@ -6,7 +6,7 @@ Subject: [PATCH] Add LoginCancelledEvent
 
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/LoginCancelledEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/LoginCancelledEvent.java
 new file mode 100644
-index 00000000..f140b019
+index 0000000000000000000000000000000000000000..f140b0195e9661e364dafab7c3aba7ec654d8a52
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/LoginCancelledEvent.java
 @@ -0,0 +1,54 @@
@@ -65,7 +65,7 @@ index 00000000..f140b019
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3a9dab68..4ee749f7 100644
+index 3a9dab682487cceae7d2cb3b415f1e04e79d1ddc..4ee749f77f022394ea34bae4f3fdac066d5fece1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -64,7 +64,7 @@ import net.md_5.bungee.protocol.packet.StatusResponse;
@@ -171,6 +171,3 @@ index 3a9dab68..4ee749f7 100644
                      }
                  } );
              }
--- 
-2.22.0.windows.1
-

@@ -1,11 +1,11 @@
-From 47d9d44d84be96bb15fd8dc3c1fe111ad1bd5e3f Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Tue, 25 Jun 2019 17:21:37 +0300
 Subject: [PATCH] Add basic server operator techniques
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 9c83abbb..2b4d97a3 100644
+index 9c83abbb4bbef9f310075b863679e3cf01d65f68..2b4d97a39d9065fc7532f37b0cd7495ac15047ad 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -412,4 +412,22 @@ public interface ProxiedPlayer extends Connection, CommandSender
@@ -33,7 +33,7 @@ index 9c83abbb..2b4d97a3 100644
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandDeop.java b/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandDeop.java
 new file mode 100644
-index 00000000..c8cfde03
+index 0000000000000000000000000000000000000000..c8cfde033acab40305ff5e08b83159e18f0c53b8
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandDeop.java
 @@ -0,0 +1,47 @@
@@ -86,7 +86,7 @@ index 00000000..c8cfde03
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandOp.java b/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandOp.java
 new file mode 100644
-index 00000000..5255a62d
+index 0000000000000000000000000000000000000000..5255a62d303fd866c6f9c168b3e16243351c6515
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/commands/op/CommandOp.java
 @@ -0,0 +1,47 @@
@@ -139,7 +139,7 @@ index 00000000..5255a62d
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/OpsConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/OpsConfiguration.java
 new file mode 100644
-index 00000000..d376d12d
+index 0000000000000000000000000000000000000000..d376d12dd5c28844b2330dc6ed9591838d5af2a4
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/OpsConfiguration.java
 @@ -0,0 +1,70 @@
@@ -214,7 +214,7 @@ index 00000000..d376d12d
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7046d9c5..3b5b537e 100644
+index 7046d9c5a125c1710f0ed8913a4ea052f43c3f74..3b5b537e3b1b32b72f6447fbfec7d28ebc718b81 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -99,6 +99,9 @@ import com.mrivanplays.ivancord.modules.CommandList;
@@ -248,7 +248,7 @@ index 7046d9c5..3b5b537e 100644
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index d2ee764c..ffe4e78d 100644
+index d2ee764c65fa6fddc9996f2edc48504bb38d4fe8..ffe4e78dca2b212e4cbcbdb449b22800299f9c22 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -116,6 +116,10 @@ public final class UserConnection implements ProxiedPlayer
@@ -296,7 +296,7 @@ index d2ee764c..ffe4e78d 100644
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 0ef56ad5..5c885702 100644
+index 0ef56ad5c23ac7a0bb1706226bc843762a76d6fe..5c885702d09adef37c7b1db25a585c4d9265d357 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -104,7 +104,7 @@ public class YamlConfig implements ConfigurationAdapter
@@ -308,6 +308,3 @@ index 0ef56ad5..5c885702 100644
              } ) );
          }
  
--- 
-2.22.0.windows.1
-

@@ -1,4 +1,4 @@
-From fc3f869d85c618e556996e7d311b61ffa427d2e1 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 27 Jun 2019 17:02:00 +0300
 Subject: [PATCH] Add default configuration support in Plugin
@@ -7,7 +7,7 @@ Including loading, reloading and saving a
 default config.(json, yml)
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-index 2e5ae4fb..35556d48 100644
+index 2e5ae4fbee06cda39de45e6047b037d8506d3871..35556d48b70930252e545db0a890301b99a5421c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 @@ -2,14 +2,21 @@ package net.md_5.bungee.api.plugin;
@@ -126,6 +126,3 @@ index 2e5ae4fb..35556d48 100644
      /**
       * Gets the data folder where this plugin may store arbitrary data. It will
       * be a child of {@link ProxyServer#getPluginsFolder()}.
--- 
-2.22.0.windows.1
-

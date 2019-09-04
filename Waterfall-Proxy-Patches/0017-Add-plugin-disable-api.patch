@@ -1,4 +1,4 @@
-From 0a56d4110da3c4b2708eae56e2927ea7cccbb979 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 27 Jun 2019 18:25:10 +0300
 Subject: [PATCH] Add plugin disable api
@@ -6,7 +6,7 @@ Subject: [PATCH] Add plugin disable api
 
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginDisabledEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginDisabledEvent.java
 new file mode 100644
-index 00000000..6e3335e0
+index 0000000000000000000000000000000000000000..6e3335e07bd197ed17c52a8018c732a92748d2fd
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginDisabledEvent.java
 @@ -0,0 +1,20 @@
@@ -32,7 +32,7 @@ index 00000000..6e3335e0
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginEnabledEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginEnabledEvent.java
 new file mode 100644
-index 00000000..ab7c3978
+index 0000000000000000000000000000000000000000..ab7c3978a708ff47c48dc56804cbdd753d870852
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/PluginEnabledEvent.java
 @@ -0,0 +1,20 @@
@@ -57,7 +57,7 @@ index 00000000..ab7c3978
 +    private final Plugin plugin;
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-index 35556d48..ba1890d6 100644
+index 35556d48b70930252e545db0a890301b99a5421c..ba1890d63cdfa41e7db009e553698c33e4d98425 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 @@ -166,6 +166,19 @@ public class Plugin
@@ -81,7 +81,7 @@ index 35556d48..ba1890d6 100644
       * Called by the loader to initialize the fields in this plugin.
       *
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 4312e571..eea22ab1 100644
+index 4312e5714eb8f989e77c4e7447430c02eb392eaa..eea22ab19840860720abb36be76627242601cf58 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -23,7 +23,12 @@ import java.util.Set;
@@ -187,7 +187,7 @@ index 4312e571..eea22ab1 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2e1ed41a..ff568fc1 100644
+index 2e1ed41ab35994f954be90415c4c6c863368bb3e..ff568fc1cac5bc3520f1ffa5fd9e0cd646ed4cb2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -44,6 +44,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -226,6 +226,3 @@ index 2e1ed41a..ff568fc1 100644
  
                  getLogger().info( "Closing IO threads" );
                  // IvanCord start - speed up shutdown
--- 
-2.22.0.windows.1
-

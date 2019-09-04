@@ -1,4 +1,4 @@
-From 27ee6ddc828b7e6fc5edef791c226343f92654e1 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Wed, 21 Aug 2019 21:21:33 +0300
 Subject: [PATCH] Add OfflinePlayer concept
@@ -6,7 +6,7 @@ Subject: [PATCH] Add OfflinePlayer concept
 
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java b/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java
 new file mode 100644
-index 00000000..3a0afe13
+index 0000000000000000000000000000000000000000..3a0afe137062596b7a3d3903a5a2594d1f1253b9
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java
 @@ -0,0 +1,54 @@
@@ -65,7 +65,7 @@ index 00000000..3a0afe13
 +    Optional<ServerInfo> getLastServer();
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 25885939..53009491 100644
+index 2588593967bb4f0deba4f35225d7817860e6ee4a..530094916257f2fd46d6caee10ed80b339702ddd 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -8,6 +8,7 @@ import java.util.Map;
@@ -110,7 +110,7 @@ index 25885939..53009491 100644
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/DataFetcher.java b/proxy/src/main/java/com/mrivanplays/ivancord/DataFetcher.java
 new file mode 100644
-index 00000000..ffc705d8
+index 0000000000000000000000000000000000000000..ffc705d8642fcb2905573ed6b52a1047a91f6e8a
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/DataFetcher.java
 @@ -0,0 +1,109 @@
@@ -225,7 +225,7 @@ index 00000000..ffc705d8
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/BungeeOfflinePlayer.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/BungeeOfflinePlayer.java
 new file mode 100644
-index 00000000..4b91e441
+index 0000000000000000000000000000000000000000..4b91e441d89e36f05a6094304857745451c392b8
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/BungeeOfflinePlayer.java
 @@ -0,0 +1,44 @@
@@ -275,7 +275,7 @@ index 00000000..4b91e441
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
 new file mode 100644
-index 00000000..6326bed9
+index 0000000000000000000000000000000000000000..6326bed99c7f5578e79a0f89ba5ea535bb402a22
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
 @@ -0,0 +1,203 @@
@@ -483,7 +483,7 @@ index 00000000..6326bed9
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0ed98286..15e65992 100644
+index 0ed98286d93d7c459c4e7fec4b245cd33bf8a058..15e65992df55d350f30f4129ba4fa44b5125cefe 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -118,6 +118,8 @@ import com.mrivanplays.ivancord.api.plugin.ServicesManager;
@@ -529,7 +529,7 @@ index 0ed98286..15e65992 100644
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index bc052b1d..cbedfd97 100644
+index bc052b1dc3c98125050129b01d500fe745bb87c2..cbedfd970214ed58e307d265f7a93ba212c5a0e4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -67,6 +67,9 @@ public class UpstreamBridge extends PacketHandler
@@ -542,6 +542,3 @@ index bc052b1d..cbedfd97 100644
  
          if ( con.getServer() != null )
          {
--- 
-2.23.0.windows.1
-

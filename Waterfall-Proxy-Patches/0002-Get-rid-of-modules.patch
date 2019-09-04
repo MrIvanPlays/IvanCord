@@ -1,11 +1,11 @@
-From 88ddfbd0483bf8e3a2d1cc23051f819206af62b7 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:04:14 +0300
 Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index 7129d0e3..11a5f7b9 100644
+index 7129d0e38da23e3fc07f2afc9eaf197adf7d9ef8..11a5f7b995a2514749b0109d649d6f5e42634e3e 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -38,7 +38,9 @@
@@ -20,7 +20,7 @@ index 7129d0e3..11a5f7b9 100644
          <module>query</module>
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlert.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlert.java
 new file mode 100644
-index 00000000..39f8ea16
+index 0000000000000000000000000000000000000000..39f8ea16065200f62e391658d0e6c0c33cecf836
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlert.java
 @@ -0,0 +1,47 @@
@@ -73,7 +73,7 @@ index 00000000..39f8ea16
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlertRaw.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlertRaw.java
 new file mode 100644
-index 00000000..271ea4b5
+index 0000000000000000000000000000000000000000..271ea4b559d7fce7c09ab56a971bf2cd30552906
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlertRaw.java
 @@ -0,0 +1,57 @@
@@ -136,7 +136,7 @@ index 00000000..271ea4b5
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandFind.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandFind.java
 new file mode 100644
-index 00000000..f8cd0723
+index 0000000000000000000000000000000000000000..f8cd072326c78518f6b2dec796fc3eaa7afb405c
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandFind.java
 @@ -0,0 +1,38 @@
@@ -181,7 +181,7 @@ index 00000000..f8cd0723
 \ No newline at end of file
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java
 new file mode 100644
-index 00000000..46048204
+index 0000000000000000000000000000000000000000..460482042d0b6f38fdd75aa7b4e74b58c02cfb8d
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java
 @@ -0,0 +1,47 @@
@@ -234,7 +234,7 @@ index 00000000..46048204
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java
 new file mode 100644
-index 00000000..a51e7ecc
+index 0000000000000000000000000000000000000000..a51e7ecc32234d020a99dc6de676aa7fd1c19f73
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java
 @@ -0,0 +1,127 @@
@@ -368,7 +368,7 @@ index 00000000..a51e7ecc
 \ No newline at end of file
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java
 new file mode 100644
-index 00000000..6f186fca
+index 0000000000000000000000000000000000000000..6f186fca7a972f6bc6e204b2cef79719e56f61f4
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java
 @@ -0,0 +1,97 @@
@@ -472,7 +472,7 @@ index 00000000..6f186fca
 \ No newline at end of file
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/YamlReconnectHandler.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/YamlReconnectHandler.java
 new file mode 100644
-index 00000000..33dadd66
+index 0000000000000000000000000000000000000000..33dadd66ea70ade0aa6784481ce5099a9e8f8391
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/YamlReconnectHandler.java
 @@ -0,0 +1,115 @@
@@ -594,7 +594,7 @@ index 00000000..33dadd66
 \ No newline at end of file
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/util/ICUtil.java b/proxy/src/main/java/com/mrivanplays/ivancord/util/ICUtil.java
 new file mode 100644
-index 00000000..4915d8d7
+index 0000000000000000000000000000000000000000..4915d8d7b55c1f6d16ad55024ec807a2b18870eb
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/util/ICUtil.java
 @@ -0,0 +1,14 @@
@@ -613,7 +613,7 @@ index 00000000..4915d8d7
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index efbf3164..a13e8ff0 100644
+index efbf316486fb89e1da3a38e511bb7a9210d17f91..a13e8ff0ae39c961c54a19aa23ef485ffe55ef22 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -91,6 +91,15 @@ import net.md_5.bungee.query.RemoteQuery;
@@ -670,6 +670,3 @@ index efbf3164..a13e8ff0 100644
  
          pluginsFolder.mkdir();
          pluginManager.detectPlugins( pluginsFolder );
--- 
-2.23.0.windows.1
-

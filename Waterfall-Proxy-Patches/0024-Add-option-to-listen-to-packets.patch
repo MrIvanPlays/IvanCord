@@ -1,11 +1,11 @@
-From d55618d9f9e9492c84d6929dd7c3de2325a94e47 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 4 Aug 2019 11:36:40 +0300
 Subject: [PATCH] Add option to listen to packets
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 1eb8a79b..25885939 100644
+index 1eb8a79bb9f90916fc1b821d6bcb876a4e7a7e21..2588593967bb4f0deba4f35225d7817860e6ee4a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
@@ -59,7 +59,7 @@ index 1eb8a79b..25885939 100644
  }
 diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/PacketDirection.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/PacketDirection.java
 new file mode 100644
-index 00000000..c0700576
+index 0000000000000000000000000000000000000000..c0700576ee6fdc951242364303dd8e7aff87db20
 --- /dev/null
 +++ b/protocol/src/main/java/com/mrivanplays/ivancord/api/PacketDirection.java
 @@ -0,0 +1,17 @@
@@ -82,7 +82,7 @@ index 00000000..c0700576
 +}
 diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListener.java b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListener.java
 new file mode 100644
-index 00000000..1dcd9448
+index 0000000000000000000000000000000000000000..1dcd9448d2bc9a34a1ad2abb17102650e7bbad6c
 --- /dev/null
 +++ b/protocol/src/main/java/com/mrivanplays/ivancord/protocol/PacketListener.java
 @@ -0,0 +1,10 @@
@@ -97,7 +97,7 @@ index 00000000..1dcd9448
 +    void handle(DefinedPacket packet, PacketDirection direction);
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index a46bbc78..d819ee99 100644
+index a46bbc785ebf26e7756a888426da991ea34c08ac..d819ee99fb247a4f8705e0b23dd9cfda68c464e9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,10 +1,15 @@
@@ -155,7 +155,7 @@ index a46bbc78..d819ee99 100644
                  if ( in.isReadable() )
                  {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
-index d4b03843..15a74ecb 100644
+index d4b0384348c17de5c2350c8c5f928fcc0c1868db..15a74ecba539cca97fe01868a642659f91780984 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftEncoder.java
 @@ -1,5 +1,10 @@
@@ -190,7 +190,7 @@ index d4b03843..15a74ecb 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 12998fff..0ed98286 100644
+index 12998fff1fde448d8f4ad486a0a3a26d3123f001..0ed98286d93d7c459c4e7fec4b245cd33bf8a058 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee;
@@ -299,7 +299,7 @@ index 12998fff..0ed98286 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 5a0ef6b7..a18727d3 100644
+index 5a0ef6b7e7dbe612948d807d23c1518a274c9ac3..a18727d34389862e5ffb294a42b1d5f61fd58bfc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -387,8 +387,8 @@ public final class UserConnection implements ProxiedPlayer
@@ -314,7 +314,7 @@ index 5a0ef6b7..a18727d3 100644
                      }
                  };
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 6bc14d67..2db9f157 100644
+index 6bc14d675249cab64433db9f57cb60ca7ab9da90..2db9f157dc30d7a9189d9b849d3c7d028447a3bd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 @@ -34,9 +34,9 @@ public class PingHandler extends PacketHandler
@@ -330,7 +330,7 @@ index 6bc14d67..2db9f157 100644
  
          channel.write( new Handshake( protocol, target.getAddress().getHostString(), target.getAddress().getPort(), 1 ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 39ed623b..77a39bc3 100644
+index 39ed623b65f52bb21f1dc777852fa2319f062458..77a39bc3fc9b6385d94670e70eb4126a9f1da3bf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -69,8 +69,8 @@ public class PipelineUtils
@@ -344,6 +344,3 @@ index 39ed623b..77a39bc3 100644
              ch.pipeline().addBefore( FRAME_PREPENDER, LEGACY_KICKER, legacyKicker );
              ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( BungeeCord.getInstance(), listener ) );
  
--- 
-2.22.0.windows.1
-

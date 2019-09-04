@@ -1,4 +1,4 @@
-From 77bcd92f260ae28894366870389bc8258b574ebb Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 20:32:49 +0300
 Subject: [PATCH] Misc changes
@@ -6,7 +6,7 @@ Subject: [PATCH] Misc changes
 All small changes come here
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/AbstractReconnectHandler.java b/api/src/main/java/net/md_5/bungee/api/AbstractReconnectHandler.java
-index 2adcd573..b99fb0e0 100644
+index 2adcd5739b6af4e32389f69273386cb3cb861c66..b99fb0e074424ba128d468c0646a516dc2823628 100644
 --- a/api/src/main/java/net/md_5/bungee/api/AbstractReconnectHandler.java
 +++ b/api/src/main/java/net/md_5/bungee/api/AbstractReconnectHandler.java
 @@ -35,10 +35,22 @@ public abstract class AbstractReconnectHandler implements ReconnectHandler
@@ -33,7 +33,7 @@ index 2adcd573..b99fb0e0 100644
      }
  
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index f7459860..b7b89c42 100644
+index f7459860f9da503cdafceacb31ecd4dd0e9346d2..b7b89c421f4904c199a84282a8814200de1e1071 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -326,6 +326,18 @@ public interface ProxiedPlayer extends Connection, CommandSender
@@ -56,7 +56,7 @@ index f7459860..b7b89c42 100644
       * Gets whether this player is using a FML client.
       * <p>
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Event.java b/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
-index e2e01ecb..1ae37ef5 100644
+index e2e01ecb0265e599a375c0147dfc383301112c1c..1ae37ef5c99bc7fe5d537a5ef2ff2c88491e818e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
 @@ -1,5 +1,7 @@
@@ -90,7 +90,7 @@ index e2e01ecb..1ae37ef5 100644
 +    // IvanCord end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 884f78c8..4312e571 100644
+index 884f78c8037200122a0202dc336cfff6d68ca7fe..4312e5714eb8f989e77c4e7447430c02eb392eaa 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -387,9 +387,9 @@ public class PluginManager
@@ -120,7 +120,7 @@ index 884f78c8..4312e571 100644
          listenersByPlugin.put( plugin, listener );
      }
 diff --git a/api/src/main/java/net/md_5/bungee/command/PlayerCommand.java b/api/src/main/java/net/md_5/bungee/command/PlayerCommand.java
-index a92d30f9..3dade04f 100644
+index a92d30f98f46fd3480378daed325417ae38a4a8e..3dade04f451bbbd99e2ecc05c7a95ded5ae5a760 100644
 --- a/api/src/main/java/net/md_5/bungee/command/PlayerCommand.java
 +++ b/api/src/main/java/net/md_5/bungee/command/PlayerCommand.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Function;
@@ -155,7 +155,7 @@ index a92d30f9..3dade04f 100644
      }
  }
 diff --git a/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java b/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
-index 0d1f801a..98c187de 100644
+index 0d1f801a06b58dab20ad0e64484e45ee70d943ea..98c187dea04ce7f98e5ae51aac02e5867a70f9c6 100644
 --- a/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
 +++ b/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
 @@ -72,7 +72,7 @@ public class ServerConnectRequestTest
@@ -168,7 +168,7 @@ index 0d1f801a..98c187de 100644
      {
          ServerConnectRequest request = ServerConnectRequest.builder().target( DUMMY_INFO ).reason( ServerConnectEvent.Reason.JOIN_PROXY ).build();
 diff --git a/config/src/main/java/net/md_5/bungee/config/Configuration.java b/config/src/main/java/net/md_5/bungee/config/Configuration.java
-index d7ed3e11..209cb859 100644
+index d7ed3e1143745b91c6a98bf78f4be02b3bbf704b..209cb85988d005103ebc5529db43b16285baf667 100644
 --- a/config/src/main/java/net/md_5/bungee/config/Configuration.java
 +++ b/config/src/main/java/net/md_5/bungee/config/Configuration.java
 @@ -8,10 +8,13 @@ import java.util.LinkedHashSet;
@@ -186,7 +186,7 @@ index d7ed3e11..209cb859 100644
      private final Configuration defaults;
  
 diff --git a/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java b/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
-index eece8870..5b6ff2eb 100644
+index eece88704387e211fbab8e8c736b9d9fa81c2e63..5b6ff2ebebedc41622314267146b38e296ace0c2 100644
 --- a/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
 +++ b/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
 @@ -23,6 +23,22 @@ public abstract class ConfigurationProvider
@@ -213,7 +213,7 @@ index eece8870..5b6ff2eb 100644
      public abstract void save(Configuration config, File file) throws IOException;
  
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
-index 3b3525f0..1df27add 100644
+index 3b3525f08caec962b51d90ce6e42758dac64aa10..1df27add55bafc9112bd89917a251efc895e78fc 100644
 --- a/log4j/src/main/resources/log4j2.xml
 +++ b/log4j/src/main/resources/log4j2.xml
 @@ -3,15 +3,15 @@
@@ -236,7 +236,7 @@ index 3b3525f0..1df27add 100644
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a13e8ff0..aa96218d 100644
+index a13e8ff0ae39c961c54a19aa23ef485ffe55ef22..aa96218d474d5aff56282103caffadd3e35cbe8c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -473,8 +473,10 @@ public class BungeeCord extends ProxyServer
@@ -253,7 +253,7 @@ index a13e8ff0..aa96218d 100644
                      try {
                          bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index c40f3e03..9b083546 100644
+index c40f3e032faf34ec66ddaf4080c3d17c416a91ee..9b083546edb20f5fa5381dccd85ec2fe86988b05 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -40,6 +40,8 @@ public class BungeeCordLauncher
@@ -275,7 +275,7 @@ index c40f3e03..9b083546 100644
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 72f487dc..bd8d8190 100644
+index 72f487dc53e5f99685b263a819f17e23442ce237..bd8d8190716cb058d052fd18965447b75da902d4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -282,6 +282,13 @@ public class ServerConnector extends PacketHandler
@@ -293,7 +293,7 @@ index 72f487dc..bd8d8190 100644
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 15f7c5b5..2b4b069b 100644
+index 15f7c5b52822acc08850487c796dac4989dfbfae..2b4b069b597a4594dd01849b9ed6e76c2b4f2770 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -328,7 +328,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -340,7 +340,7 @@ index 15f7c5b5..2b4b069b 100644
      {
          return this.getPendingConnection().getExtraDataInHandshake();
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index 65b03ad6..d3262951 100644
+index 65b03ad62b9584e3a05fcc1362ee1adbd07bfdd1..d326295182fc5be3711f27befc919f96fcad3d40 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 @@ -10,7 +10,7 @@ public class CommandBungee extends Command
@@ -353,7 +353,7 @@ index 65b03ad6..d3262951 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
-index d87d0b95..055b3bb6 100644
+index d87d0b95f3e675fc7c8d7d18add037c7fe32eabc..055b3bb6ebabec81862071e254d57ca4d368cd4f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandEnd.java
 @@ -14,7 +14,7 @@ public class CommandEnd extends Command
@@ -366,7 +366,7 @@ index d87d0b95..055b3bb6 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
-index 18422669..66747e05 100644
+index 18422669106553a2e6555c47ef06a8eaf891a989..66747e0570c07e392c6133fe08b8f150d555ce9d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandPerms.java
 @@ -12,7 +12,7 @@ public class CommandPerms extends Command
@@ -379,7 +379,7 @@ index 18422669..66747e05 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1f8a2439..7b3f9969 100644
+index 1f8a243953aa4cbade07781024634dbcfd894ac0..7b3f996957a9ac34880f1da5564b53a8a19644ce 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -289,12 +289,37 @@ public class DownstreamBridge extends PacketHandler
@@ -731,7 +731,7 @@ index 1f8a2439..7b3f9969 100644
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 4882b8ed..939211c3 100644
+index 4882b8edfbf6c3a2e7151fd2f79133d633e8d1bb..939211c32e4c34658149500ff03008cc4c3fda82 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 @@ -49,7 +49,7 @@ public class ChannelWrapper
@@ -743,6 +743,3 @@ index 4882b8ed..939211c3 100644
          {
              if ( packet instanceof PacketWrapper )
              {
--- 
-2.23.0.windows.1
-

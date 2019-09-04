@@ -1,11 +1,11 @@
-From a7847fa62250d5cac7c296b0bbcef608bee83b02 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sat, 13 Apr 2019 19:51:17 +0300
 Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index b79d7ed6..665e724b 100644
+index b79d7ed6b3d1c1f36dea22d15d1d65b76b3c1804..665e724b8f9a17385ddb1c07d366bac1795ebd6a 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -64,7 +64,7 @@ index b79d7ed6..665e724b 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 487fb3bb..699c91c9 100644
+index 487fb3bb3e4a362fbe83505d4e43769bfc82ace8..699c91c9fc2849cba8fc90a0f5249aac63797e87 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,18 @@
@@ -112,7 +112,7 @@ index 487fb3bb..699c91c9 100644
              <plugin>
                  <groupId>org.apache.maven.plugins</groupId>
 diff --git a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
-index a4516ed9..37402b0e 100644
+index a4516ed96a91e257e7beab1479b812b185099168..37402b0ecce3076744034234f6ea638f8e1db1a9 100644
 --- a/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
 +++ b/bootstrap/src/main/java/net/md_5/bungee/Bootstrap.java
 @@ -7,7 +7,7 @@ public class Bootstrap
@@ -125,7 +125,7 @@ index a4516ed9..37402b0e 100644
              return;
          }
 diff --git a/chat/pom.xml b/chat/pom.xml
-index 7ad05abb..56f778fe 100644
+index 7ad05abb87641a721efbe917ad084d7de9c3beee..56f778fe776628193fa8f635d00ab9edfd62af73 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -4,19 +4,18 @@
@@ -154,7 +154,7 @@ index 7ad05abb..56f778fe 100644
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 9d0fe24b..32a005ff 100644
+index 9d0fe24b560bb272051c01d8ea90857c1081d567..32a005ff8e3789788e8afd53d6fb6eae21243629 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,18 @@
@@ -183,7 +183,7 @@ index 9d0fe24b..32a005ff 100644
      <dependencies>
          <dependency>
 diff --git a/event/pom.xml b/event/pom.xml
-index d6efe097..89ef2266 100644
+index d6efe0979835345807cc86177bd1247e071fe903..89ef2266f8ea6d357cd4f584a2cf23b54963f96b 100644
 --- a/event/pom.xml
 +++ b/event/pom.xml
 @@ -4,17 +4,16 @@
@@ -210,7 +210,7 @@ index d6efe097..89ef2266 100644
 +    <description>Generic java event dispatching API intended for use with IvanCord</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index fd999b51..c3eee5f9 100644
+index fd999b51fd6669c790b8314661c430281038b3ed..c3eee5f941243ea3f5f1b8894dd1e3e7d40175db 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
 @@ -4,19 +4,18 @@
@@ -250,7 +250,7 @@ index fd999b51..c3eee5f9 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index 75dab185..22e6587a 100644
+index 75dab185d67b11518013bbd8aedd794b9a367c82..22e6587af85cff69bf86f19915aed40363fe1f26 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -3,19 +3,18 @@
@@ -279,7 +279,7 @@ index 75dab185..22e6587a 100644
      <properties>
          <log4j2.version>2.12.0</log4j2.version>
 diff --git a/native/pom.xml b/native/pom.xml
-index b5aeb99e..ca5f1845 100644
+index b5aeb99eeadb03dd22e54e4550ed98db0fc13721..ca5f1845eb2c69057d681edd1ab9a14f98a574b9 100644
 --- a/native/pom.xml
 +++ b/native/pom.xml
 @@ -4,19 +4,18 @@
@@ -308,7 +308,7 @@ index b5aeb99e..ca5f1845 100644
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index eff0bf2e..7129d0e3 100644
+index eff0bf2e15a4256746475154d73e653e6ba3c490..7129d0e38da23e3fc07f2afc9eaf197adf7d9ef8 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -507,7 +507,7 @@ index eff0bf2e..7129d0e3 100644
 -    </profiles>
  </project>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index 2493fc17..65e4710f 100644
+index 2493fc17a19f4401bfde52b325b29723ab72ef8d..65e4710f8aed3cd1728b3836c31393cf55d760c7 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,18 @@
@@ -547,7 +547,7 @@ index 2493fc17..65e4710f 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 440e128f..8a35e47d 100644
+index 440e128fbdb3d2f9052f54d8c9e1c19505f7f3e8..8a35e47daa1841303c498892623edae0f522128b 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -617,7 +617,7 @@ index 440e128f..8a35e47d 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8acdc22d..efbf3164 100644
+index 8acdc22de46cdeef80393670d159b3294d684482..efbf316486fb89e1da3a38e511bb7a9210d17f91 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -180,7 +180,7 @@ public class BungeeCord extends ProxyServer
@@ -639,7 +639,7 @@ index 8acdc22d..efbf3164 100644
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 624eb5f0..1e0dcb3f 100644
+index dc2c584d19972bcf0690db15c49aa7d590a5eaa1..c40f3e032faf34ec66ddaf4080c3d17c416a91ee 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -58,8 +58,8 @@ public class BungeeCordLauncher
@@ -653,7 +653,7 @@ index 624eb5f0..1e0dcb3f 100644
          if ( !options.has( "noconsole" ) )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
-index b26035cf..65b03ad6 100644
+index b26035cf971c9a12af75582d9294cae090c8cdce..65b03ad62b9584e3a05fcc1362ee1adbd07bfdd1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandBungee.java
 @@ -16,6 +16,6 @@ public class CommandBungee extends Command
@@ -665,7 +665,7 @@ index b26035cf..65b03ad6 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
-index 720d0c3b..477c45ab 100644
+index 720d0c3b5ef7107690757142a5ded0268a84270a..477c45ab5442e53956aa95c402adf424686ac46d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandReload.java
 @@ -23,7 +23,9 @@ public class CommandReload extends Command
@@ -681,7 +681,7 @@ index 720d0c3b..477c45ab 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 44011a96..0f650b0e 100644
+index 44011a9655331056c0e29ee98612f446700a52c8..0f650b0e4284458c4e89509112a46c72fe5440e7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -224,7 +224,7 @@ public class YamlConfig implements ConfigurationAdapter
@@ -694,7 +694,7 @@ index 44011a96..0f650b0e 100644
              InetSocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 diff --git a/query/pom.xml b/query/pom.xml
-index 1fd54029..5a04212d 100644
+index 1fd54029c586c3dfc28d73c9405fd261cfda1007..5a04212d658bd9fd7d2a8edfc27fdb742ad9de15 100644
 --- a/query/pom.xml
 +++ b/query/pom.xml
 @@ -4,19 +4,18 @@
@@ -734,7 +734,7 @@ index 1fd54029..5a04212d 100644
              <scope>compile</scope>
          </dependency>
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index ac99d02c..ed90d752 100644
+index ac99d02cb7da0a79e57b982b7dc81f625c0e44c9..ed90d75204fdb0429b6a3ccc6a258afb2dffd93f 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 @@ -102,7 +102,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
@@ -746,6 +746,3 @@ index ac99d02c..ed90d752 100644
                      bungee.getOnlineCount(), listener.getMaxPlayers(), listener.getHost().getPort(),
                      listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
              QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
--- 
-2.22.0.windows.1
-

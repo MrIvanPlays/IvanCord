@@ -1,11 +1,11 @@
-From ef8e9de80b6a54e157ccbfe06808eb70442be6c5 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 19:20:09 +0300
 Subject: [PATCH] Add TCP fast open
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index d13923fc..0643d08f 100644
+index d13923fc1f2b809ea8d661ac90630fd0a30d4836..0643d08fb53def803d9c49b8306f4a0a724c79aa 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 @@ -257,5 +257,19 @@ public interface ProxyConfig
@@ -29,7 +29,7 @@ index d13923fc..0643d08f 100644
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 996c02b8..58a8c3fd 100644
+index 996c02b848c32e44abadb7ddeff9e59d57bc4449..58a8c3fda38a99e102e07255102d02c7656c2453 100644
 --- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -1,10 +1,13 @@
@@ -76,7 +76,7 @@ index 996c02b8..58a8c3fd 100644
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java b/proxy/src/main/java/com/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java
 new file mode 100644
-index 00000000..ffa0e1f5
+index 0000000000000000000000000000000000000000..ffa0e1f58e1750bbc3d2332a2c2ebaa781b7cd1a
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/tcpfastopen/TCPFastOpenMode.java
 @@ -0,0 +1,27 @@
@@ -108,7 +108,7 @@ index 00000000..ffa0e1f5
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 051430ce..39ed623b 100644
+index 051430ce7c118d1fc4ca498d1f30af1e8e291840..39ed623b65f52bb21f1dc777852fa2319f062458 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -9,6 +9,7 @@ import io.netty.channel.EventLoopGroup;
@@ -133,6 +133,3 @@ index 051430ce..39ed623b 100644
              ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
              ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
              ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
--- 
-2.22.0.windows.1
-

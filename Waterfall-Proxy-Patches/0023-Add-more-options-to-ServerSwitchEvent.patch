@@ -1,11 +1,11 @@
-From 1c3413e2a2c3d657e83114498fee2ebf0add8dca Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Sun, 21 Jul 2019 10:17:29 +0300
 Subject: [PATCH] Add more options to ServerSwitchEvent
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/ServerSwitchEvent.java b/api/src/main/java/net/md_5/bungee/api/event/ServerSwitchEvent.java
-index 4722517a..db9d219a 100644
+index 4722517aed4f34a214516ebbd3350e1adc1dc4b1..db9d219a655052d8a3197c87b980ab237fc9ec0f 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/ServerSwitchEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/ServerSwitchEvent.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee.api.event;
@@ -32,7 +32,7 @@ index 4722517a..db9d219a 100644
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index c7624629..b080a715 100644
+index c762462976f07466a1d1ceb6b5d9da70a74d9185..b080a715b1509fd5550308da8187725448b99cb3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -361,10 +361,12 @@ public class ServerConnector extends PacketHandler
@@ -49,6 +49,3 @@ index c7624629..b080a715 100644
  
          thisState = State.FINISHED;
  
--- 
-2.22.0.windows.1
-

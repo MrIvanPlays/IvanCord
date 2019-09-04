@@ -1,4 +1,4 @@
-From 6c00f3b38becf7170a3c7699738aedff5c212a1f Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Thu, 13 Jun 2019 18:48:03 +0300
 Subject: [PATCH] Add gplugins command
@@ -6,7 +6,7 @@ Subject: [PATCH] Add gplugins command
 
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java b/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java
 new file mode 100644
-index 00000000..b43ccc93
+index 0000000000000000000000000000000000000000..b43ccc930ded59fd95ab98d757e9a98dc23e8e6d
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java
 @@ -0,0 +1,38 @@
@@ -49,7 +49,7 @@ index 00000000..b43ccc93
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2ffdc016..7046d9c5 100644
+index 2ffdc0167820ce12eb3506e2b00863e6393c75de..7046d9c5a125c1710f0ed8913a4ea052f43c3f74 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -98,6 +98,7 @@ import com.mrivanplays.ivancord.modules.CommandFind;
@@ -72,7 +72,7 @@ index 2ffdc016..7046d9c5 100644
          {
              if ( EncryptionUtil.nativeFactory.load() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 0f650b0e..0ef56ad5 100644
+index 0f650b0e4284458c4e89509112a46c72fe5440e7..0ef56ad5c23ac7a0bb1706226bc843762a76d6fe 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -103,7 +103,8 @@ public class YamlConfig implements ConfigurationAdapter
@@ -86,7 +86,7 @@ index 0f650b0e..0ef56ad5 100644
          }
  
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index c6612b3f..423c7768 100644
+index c6612b3f90697e07c67fc6e15570c2990d84907a..423c7768705cbd0bf5435473f726de5f931465f7 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
 @@ -39,3 +39,4 @@ command_perms_groups=\u00a76You have the following groups: {0}
@@ -94,6 +94,3 @@ index c6612b3f..423c7768 100644
  command_ip=\u00a79IP of {0} is {1}
  kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
 +command_plugins_message=Plugins ({0}): {1}
--- 
-2.23.0.windows.1
-
