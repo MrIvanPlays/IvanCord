@@ -5,7 +5,7 @@ Subject: [PATCH] Add option to listen to packets
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 1eb8a79bb9f90916fc1b821d6bcb876a4e7a7e21..2588593967bb4f0deba4f35225d7817860e6ee4a 100644
+index 61e994109ca676815c3a4a63143051713550ebc3..9c258ade04f47216402455dde871d10350ad3277 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 @@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
@@ -16,21 +16,20 @@ index 1eb8a79bb9f90916fc1b821d6bcb876a4e7a7e21..2588593967bb4f0deba4f35225d78178
  import java.util.logging.Logger;
  import lombok.Getter;
  import net.md_5.bungee.api.chat.BaseComponent;
-@@ -15,9 +16,11 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
+@@ -15,8 +16,10 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  import net.md_5.bungee.api.plugin.Plugin;
  import net.md_5.bungee.api.plugin.PluginManager;
  import net.md_5.bungee.api.scheduler.TaskScheduler;
 +import net.md_5.bungee.protocol.DefinedPacket; // IvanCord
  
  import com.mrivanplays.ivancord.api.plugin.ServicesManager; // IvanCord
- import com.mrivanplays.ivancord.api.command.IvanCordCommandManager; // IvanCord
 +import com.mrivanplays.ivancord.api.PacketDirection; // IvanCord
  
  public abstract class ProxyServer
  {
-@@ -334,6 +337,28 @@ public abstract class ProxyServer
+@@ -326,6 +329,28 @@ public abstract class ProxyServer
       */
-     public abstract IvanCordCommandManager getIvanCordCommandManager();
+     public abstract ServicesManager getServicesManager();
  
 +    /**
 +     * Registers a inbound packet listener. "Inbound" stands for a packet listener, that is called
@@ -190,7 +189,7 @@ index d4b0384348c17de5c2350c8c5f928fcc0c1868db..15a74ecba539cca97fe01868a642659f
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 12998fff1fde448d8f4ad486a0a3a26d3123f001..0ed98286d93d7c459c4e7fec4b245cd33bf8a058 100644
+index 8b5841b84d92e98a5db8ddce5a94669d3999e853..0085c35f27f968330fb4180b430730dac72d571a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee;
@@ -220,19 +219,19 @@ index 12998fff1fde448d8f4ad486a0a3a26d3123f001..0ed98286d93d7c459c4e7fec4b245cd3
  import java.util.logging.Handler;
  import java.util.logging.Level;
  import java.util.logging.Logger;
-@@ -109,6 +116,8 @@ import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
+@@ -108,6 +115,8 @@ import com.mrivanplays.ivancord.ReconnectHandlerType;
+ import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
  import com.mrivanplays.ivancord.SimpleServicesManager;
  import com.mrivanplays.ivancord.api.plugin.ServicesManager;
- import com.mrivanplays.ivancord.api.command.IvanCordCommandManager;
 +import com.mrivanplays.ivancord.protocol.PacketListener;
 +import com.mrivanplays.ivancord.api.PacketDirection;
  // IvanCord end
  
  /**
-@@ -197,6 +206,13 @@ public class BungeeCord extends ProxyServer
-     private ServicesManager servicesManager;
+@@ -194,6 +203,13 @@ public class BungeeCord extends ProxyServer
+     // IvanCord start
      @Getter
-     private IvanCordCommandManager ivanCordCommandManager;
+     private ServicesManager servicesManager;
 +    private Set<PacketListener> inboundPacketListeners = new HashSet<>();
 +    private Set<PacketListener> outboundPacketListeners = new HashSet<>();
 +    private ExecutorService PACKET_LISTENER_EXECUTOR = Executors.newCachedThreadPool(
@@ -243,7 +242,7 @@ index 12998fff1fde448d8f4ad486a0a3a26d3123f001..0ed98286d93d7c459c4e7fec4b245cd3
      // IvanCord end
  
      {
-@@ -502,6 +518,13 @@ public class BungeeCord extends ProxyServer
+@@ -498,6 +514,13 @@ public class BungeeCord extends ProxyServer
                  }
                  saveThread.cancel();
                  // metricsThread.cancel(); // Waterfall: Disable Metrics
@@ -257,7 +256,7 @@ index 12998fff1fde448d8f4ad486a0a3a26d3123f001..0ed98286d93d7c459c4e7fec4b245cd3
  
                  getLogger().info( "Disabling plugins" );
                  // IvanCord start - fix this shit
-@@ -815,4 +838,40 @@ public class BungeeCord extends ProxyServer
+@@ -811,4 +834,40 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
