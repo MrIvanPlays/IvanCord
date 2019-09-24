@@ -148,194 +148,37 @@ index dd13f764a002fd050759552da7fee0d56ee99d1e..2060d867bc9c2e6cd0cede8d362d9451
          this.target = target;
          this.reason = reason;
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c5de9198a6e375408cb2b93c300a0da3d76d3a37..d95ff4409b06842c45b3ab5a6f0277cc460ceaf1 100644
+index c5de9198a6e375408cb2b93c300a0da3d76d3a37..5cd3e1abb56c280f26211b153fde4b802c8449e2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -335,100 +335,108 @@ public final class UserConnection implements ProxiedPlayer
+@@ -335,8 +335,11 @@ public final class UserConnection implements ProxiedPlayer
          Preconditions.checkNotNull( request, "request" );
  
          final Callback<ServerConnectRequest.Result> callback = request.getCallback();
--        ServerConnectEvent event = new ServerConnectEvent( this, request.getTarget(), request.getReason() );
++        /* // IvanCord
+         ServerConnectEvent event = new ServerConnectEvent( this, request.getTarget(), request.getReason() );
 -        if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
--        {
--            if ( callback != null )
--            {
--                callback.done( ServerConnectRequest.Result.EVENT_CANCEL, null );
--            }
--
--            if ( getServer() == null && !ch.isClosing() )
--            {
--                throw new IllegalStateException( "Cancelled ServerConnectEvent with no server or disconnect." );
--            }
--            return;
--        }
--
--        final BungeeServerInfo target = (BungeeServerInfo) event.getTarget(); // Update in case the event changed target
--
--        if ( getServer() != null && Objects.equals( getServer().getInfo(), target ) )
--        {
--            if ( callback != null )
--            {
--                callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
--            }
--            else // IvanCord - fix dumb connection message behaviour
--            sendMessage( bungee.getTranslation( "already_connected" ) );
--            return;
--        }
--        if ( pendingConnects.contains( target ) )
--        {
--            if ( callback != null )
--            {
--                callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
--            }
--            else // IvanCord - fix dumb connection message behaviour
--            sendMessage( bungee.getTranslation( "already_connecting" ) );
--            return;
--        }
--
--        pendingConnects.add( target );
--
--        ChannelInitializer initializer = new ChannelInitializer()
--        {
--            @Override
--            protected void initChannel(Channel ch) throws Exception
--            {
--                PipelineUtils.BASE.initChannel( ch );
--                ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
--                ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
--                ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
--            }
--        };
--        ChannelFutureListener listener = new ChannelFutureListener()
-+        // IvanCord start - move the code bellow inside the event callback
-+        Callback<ServerConnectEvent> sceCall = new Callback<ServerConnectEvent>()
++         */ // IvanCord
++        Callback<ServerConnectEvent> callCallback = (result, error) -> { // IvanCord
++        if ( result.isCancelled() ) // IvanCord
          {
-             @Override
--            @SuppressWarnings("ThrowableResultIgnored")
--            public void operationComplete(ChannelFuture future) throws Exception
-+            public void done(ServerConnectEvent result, Throwable error)
+             if ( callback != null )
              {
--                if ( callback != null )
-+                if ( result.isCancelled() )
-                 {
--                    callback.done( ( future.isSuccess() ) ? ServerConnectRequest.Result.SUCCESS : ServerConnectRequest.Result.FAIL, future.cause() );
-+                    if ( callback != null )
-+                    {
-+                        callback.done( ServerConnectRequest.Result.EVENT_CANCEL, null );
-+                    }
-+                    if ( getServer() == null && !ch.isClosing() )
-+                    {
-+                        throw new IllegalStateException( "Cancelled ServerConnectEvent with no server or disconnect." );
-+                    }
-+                    return;
-                 }
-+                final BungeeServerInfo target = (BungeeServerInfo) result.getTarget(); // Update in case the event changed target
+@@ -350,7 +353,7 @@ public final class UserConnection implements ProxiedPlayer
+             return;
+         }
  
--                if ( !future.isSuccess() )
-+                if ( getServer() != null && Objects.equals( getServer().getInfo(), target ) )
-                 {
--                    future.channel().close();
--                    pendingConnects.remove( target );
--
--                    ServerInfo def = updateAndGetNextServer( target );
--                    if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
-+                    if ( callback != null )
-                     {
--                        sendMessage( bungee.getTranslation( "fallback_lobby" ) );
--                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout() ); // Waterfall
--                    } else if ( dimensionChange )
-+                        callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
-+                    } else
-+                    {
-+                        sendMessage( bungee.getTranslation( "already_connected" ) );
-+                    }
-+                    return;
-+                }
-+                if ( pendingConnects.contains( target ) )
-+                {
-+                    if ( callback != null )
-                     {
--                        disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
-+                        callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
-                     } else
-                     {
--                        sendMessage( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
-+                        sendMessage( bungee.getTranslation( "already_connecting" ) );
-                     }
-+                    return;
-                 }
-+
-+                pendingConnects.add( target );
-+
-+                ChannelInitializer initializer = new ChannelInitializer()
-+                {
-+                    @Override
-+                    protected void initChannel(Channel ch) throws Exception
-+                    {
-+                        PipelineUtils.BASE.initChannel( ch );
-+                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
-+                        ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
-+                        ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
-+                    }
-+                };
-+                ChannelFutureListener listener = new ChannelFutureListener()
-+                {
-+                    @Override
-+                    @SuppressWarnings("ThrowableResultIgnored")
-+                    public void operationComplete(ChannelFuture future) throws Exception
-+                    {
-+                        if ( callback != null )
-+                        {
-+                            callback.done( ( future.isSuccess() ) ? ServerConnectRequest.Result.SUCCESS : ServerConnectRequest.Result.FAIL, future.cause() );
-+                        }
-+
-+                        if ( !future.isSuccess() )
-+                        {
-+                            future.channel().close();
-+                            pendingConnects.remove( target );
-+
-+                            ServerInfo def = updateAndGetNextServer( target );
-+                            if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
-+                            {
-+                                sendMessage( bungee.getTranslation( "fallback_lobby" ) );
-+                                connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout() ); // Waterfall
-+                            } else if ( dimensionChange )
-+                            {
-+                                disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
-+                            } else
-+                            {
-+                                sendMessage( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
-+                            }
-+                        }
-+                    }
-+                };
-+                Bootstrap b = new Bootstrap()
-+                        .channel( PipelineUtils.getChannel() )
-+                        .group( ch.getHandle().eventLoop() )
-+                        .handler( initializer )
-+                        .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
-+                        .remoteAddress( target.getAddress() );
-+                // Windows is bugged, multi homed users will just have to live with random connecting IPs
-+                if ( getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows() )
-+                {
-+                    b.localAddress( getPendingConnection().getListener().getHost().getHostString(), 0 );
-+                }
-+                b.connect().addListener( listener );
-             }
-         };
--        Bootstrap b = new Bootstrap()
--                .channel( PipelineUtils.getChannel() )
--                .group( ch.getHandle().eventLoop() )
--                .handler( initializer )
--                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
--                .remoteAddress( target.getAddress() );
--        // Windows is bugged, multi homed users will just have to live with random connecting IPs
--        if ( getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows() )
--        {
--            b.localAddress( getPendingConnection().getListener().getHost().getHostString(), 0 );
--        }
--        b.connect().addListener( listener );
-+        bungee.getPluginManager().callEvent( new ServerConnectEvent( this, request.getTarget(), request.getReason(), sceCall ) );
+-        final BungeeServerInfo target = (BungeeServerInfo) event.getTarget(); // Update in case the event changed target
++        final BungeeServerInfo target = (BungeeServerInfo) result.getTarget(); // Update in case the event changed target // IvanCord - changed
+ 
+         if ( getServer() != null && Objects.equals( getServer().getInfo(), target ) )
+         {
+@@ -429,6 +432,8 @@ public final class UserConnection implements ProxiedPlayer
+             b.localAddress( getPendingConnection().getListener().getHost().getHostString(), 0 );
+         }
+         b.connect().addListener( listener );
++        }; // IvanCord
++        bungee.getPluginManager().callEvent( new ServerConnectEvent( this, request.getTarget(), request.getReason(), callCallback ) ); // IvanCord
      }
  
      @Override

@@ -288,22 +288,20 @@ index 8b5841b84d92e98a5db8ddce5a94669d3999e853..0085c35f27f968330fb4180b430730da
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index d95ff4409b06842c45b3ab5a6f0277cc460ceaf1..cb79eb4d1eae5f37d2c617a6997ae8a4fa4e0a04 100644
+index 5cd3e1abb56c280f26211b153fde4b802c8449e2..d3cb7245c381ac054b66e03fcb5d44ba8d437417 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -386,8 +386,10 @@ public final class UserConnection implements ProxiedPlayer
-                     protected void initChannel(Channel ch) throws Exception
-                     {
-                         PipelineUtils.BASE.initChannel( ch );
--                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
--                        ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
-+                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getOutboundPacketListeners() ) ); // IvanCord
-+                        ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getOutboundPacketListeners() ) ); // IvanCord
-+                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getInboundPacketListeners() ) ); // IvanCord
-+                        ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getOutboundPacketListeners() ) ); // IvanCord
-                         ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
-                     }
-                 };
+@@ -384,8 +384,8 @@ public final class UserConnection implements ProxiedPlayer
+             protected void initChannel(Channel ch) throws Exception
+             {
+                 PipelineUtils.BASE.initChannel( ch );
+-                ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
+-                ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
++                ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getInboundPacketListeners() ) ); // IvanCord
++                ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getOutboundPacketListeners() ) ); // IvanCord
+                 ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
+             }
+         };
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 index 6bc14d675249cab64433db9f57cb60ca7ab9da90..2db9f157dc30d7a9189d9b849d3c7d028447a3bd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
