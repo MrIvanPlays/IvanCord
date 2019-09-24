@@ -5,10 +5,10 @@ Subject: [PATCH] Kick to lobby support
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index cbcf8a24987b6d69818d48983fcd185e33e1343c..4687e7c473722a941424ff4e631a0b3b85fb43f8 100644
+index fd422f36a5b3a0268c1cee29063873f780b6eb97..464018025984786e2d4ec322ea128314bd1a994e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -239,4 +239,15 @@ public interface ProxyConfig
+@@ -232,4 +232,15 @@ public interface ProxyConfig
       * @return Should we disable entity metadata rewriting?
       */
      boolean isDisableEntityMetadataRewrite();

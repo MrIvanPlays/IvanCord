@@ -29,7 +29,7 @@ index 0000000000000000000000000000000000000000..06d74844fe24fb7bdc33dc81c8ec2828
 +    }
 +}
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index 41a71f65272b032b4faa91c72f932e4525119af9..f316810b145fae5ef6d8120e0406f55a209e0565 100644
+index e860214f8d7bedcc98d5f4cc0c2108ea153b80be..c25f6500eb5eaf210fefdbe4efaf34d26439cb40 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -7,7 +7,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
