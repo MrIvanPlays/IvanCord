@@ -5,10 +5,10 @@ Subject: [PATCH] Add option to disable tab list rewrite
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 4687e7c473722a941424ff4e631a0b3b85fb43f8..d13923fc1f2b809ea8d661ac90630fd0a30d4836 100644
+index 464018025984786e2d4ec322ea128314bd1a994e..39279c144ce7353682fd9340c3a6589025e82277 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -249,5 +249,13 @@ public interface ProxyConfig
+@@ -242,5 +242,13 @@ public interface ProxyConfig
       * @return should the player kicked be transferred to lobby
       */
      boolean isKickToLobby();

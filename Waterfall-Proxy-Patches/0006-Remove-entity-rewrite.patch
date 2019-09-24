@@ -222,12 +222,12 @@ index 85d386c04c994b9f081aefd22f5c6f4aac5fdbc0..2bfbcb3f590634a2a5095e9e4c85bede
  {
  
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index f316810b145fae5ef6d8120e0406f55a209e0565..a5ec787c7f4672f478da04edb0d991b8fa66322b 100644
+index c25f6500eb5eaf210fefdbe4efaf34d26439cb40..794e79a27b1e19a5dd82781b01d3f6f4215ee10a 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-@@ -53,7 +53,7 @@ public abstract class WaterfallConfiguration extends Configuration { // IvanCord
-      */
-     private boolean allowEmptyPackets = false;
+@@ -42,7 +42,7 @@ public abstract class WaterfallConfiguration extends Configuration { // IvanCord
+     private int tabThrottle = 1000;
+     private boolean disableModernTabLimiter = true;
  
 -    private boolean disableEntityMetadataRewrite = false;
 +    private boolean disableEntityMetadataRewrite = true; // IvanCord - default to true
@@ -299,7 +299,7 @@ index bd8d8190716cb058d052fd18965447b75da902d4..531669e783d7a8961d9d74a017429f03
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 2b4b069b597a4594dd01849b9ed6e76c2b4f2770..812a55c39902e42fb8be2c2d2a3b12e93a947ae9 100644
+index 1c6c18dfe55428081d71423858c37cc73fca1ca8..1f85d237accdb72bbf346390336e3530e4f4a982 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -41,7 +41,9 @@ import net.md_5.bungee.api.event.ServerConnectEvent;

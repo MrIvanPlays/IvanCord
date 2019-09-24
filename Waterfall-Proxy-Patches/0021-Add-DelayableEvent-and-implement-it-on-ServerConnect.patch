@@ -148,18 +148,16 @@ index dd13f764a002fd050759552da7fee0d56ee99d1e..2060d867bc9c2e6cd0cede8d362d9451
          this.target = target;
          this.reason = reason;
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 4442da503a4a12ac93b37dd4d02fcd3f2bd6cc4c..5a0ef6b7e7dbe612948d807d23c1518a274c9ac3 100644
+index c5de9198a6e375408cb2b93c300a0da3d76d3a37..d95ff4409b06842c45b3ab5a6f0277cc460ceaf1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -335,100 +335,110 @@ public final class UserConnection implements ProxiedPlayer
+@@ -335,100 +335,108 @@ public final class UserConnection implements ProxiedPlayer
          Preconditions.checkNotNull( request, "request" );
  
          final Callback<ServerConnectRequest.Result> callback = request.getCallback();
 -        ServerConnectEvent event = new ServerConnectEvent( this, request.getTarget(), request.getReason() );
 -        if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
-+        // IvanCord start - move the code bellow inside the event callback
-+        Callback<ServerConnectEvent> sceCall = new Callback<ServerConnectEvent>()
-         {
+-        {
 -            if ( callback != null )
 -            {
 -                callback.done( ServerConnectRequest.Result.EVENT_CANCEL, null );
@@ -171,7 +169,7 @@ index 4442da503a4a12ac93b37dd4d02fcd3f2bd6cc4c..5a0ef6b7e7dbe612948d807d23c1518a
 -            }
 -            return;
 -        }
- 
+-
 -        final BungeeServerInfo target = (BungeeServerInfo) event.getTarget(); // Update in case the event changed target
 -
 -        if ( getServer() != null && Objects.equals( getServer().getInfo(), target ) )
@@ -203,13 +201,15 @@ index 4442da503a4a12ac93b37dd4d02fcd3f2bd6cc4c..5a0ef6b7e7dbe612948d807d23c1518a
 -            protected void initChannel(Channel ch) throws Exception
 -            {
 -                PipelineUtils.BASE.initChannel( ch );
--                ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), bungee.getConfig().isAllowEmptyPackets() ) ); // Waterfall
+-                ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
 -                ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
 -                ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
 -            }
 -        };
 -        ChannelFutureListener listener = new ChannelFutureListener()
--        {
++        // IvanCord start - move the code bellow inside the event callback
++        Callback<ServerConnectEvent> sceCall = new Callback<ServerConnectEvent>()
+         {
              @Override
 -            @SuppressWarnings("ThrowableResultIgnored")
 -            public void operationComplete(ChannelFuture future) throws Exception
@@ -240,13 +240,13 @@ index 4442da503a4a12ac93b37dd4d02fcd3f2bd6cc4c..5a0ef6b7e7dbe612948d807d23c1518a
 -                    ServerInfo def = updateAndGetNextServer( target );
 -                    if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
 +                    if ( callback != null )
-+                    {
-+                        callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
-+                    } else
                      {
 -                        sendMessage( bungee.getTranslation( "fallback_lobby" ) );
 -                        connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout() ); // Waterfall
 -                    } else if ( dimensionChange )
++                        callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
++                    } else
++                    {
 +                        sendMessage( bungee.getTranslation( "already_connected" ) );
 +                    }
 +                    return;
@@ -273,7 +273,7 @@ index 4442da503a4a12ac93b37dd4d02fcd3f2bd6cc4c..5a0ef6b7e7dbe612948d807d23c1518a
 +                    protected void initChannel(Channel ch) throws Exception
 +                    {
 +                        PipelineUtils.BASE.initChannel( ch );
-+                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), bungee.getConfig().isAllowEmptyPackets() ) ); // Waterfall
++                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
 +                        ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
 +                        ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
 +                    }
@@ -336,7 +336,6 @@ index 4442da503a4a12ac93b37dd4d02fcd3f2bd6cc4c..5a0ef6b7e7dbe612948d807d23c1518a
 -        }
 -        b.connect().addListener( listener );
 +        bungee.getPluginManager().callEvent( new ServerConnectEvent( this, request.getTarget(), request.getReason(), sceCall ) );
-+        // IvanCord end
      }
  
      @Override

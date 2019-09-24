@@ -96,7 +96,7 @@ index 0000000000000000000000000000000000000000..1dcd9448d2bc9a34a1ad2abb17102650
 +    void handle(DefinedPacket packet, PacketDirection direction);
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index a46bbc785ebf26e7756a888426da991ea34c08ac..d819ee99fb247a4f8705e0b23dd9cfda68c464e9 100644
+index 71ddf022ae310beff40ef4d0e64bcc5d71a613e6..63b0f8f15b2571f293ca2d39b6809d2605d890b0 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,10 +1,15 @@
@@ -115,32 +115,22 @@ index a46bbc785ebf26e7756a888426da991ea34c08ac..d819ee99fb247a4f8705e0b23dd9cfda
  import java.util.List;
  import lombok.AllArgsConstructor;
  import lombok.Setter;
-@@ -21,17 +26,21 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -20,11 +25,13 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+     private int protocolVersion;
      @Setter
      private boolean supportsForge = false;
-     private final boolean allowEmptyPackets; // Waterfall
 +    private Collection<PacketListener> inboundPacketListeners; // IvanCord
  
 -    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
 +    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, Collection<PacketListener> inboundPacketListeners) { // IvanCord
-         // Waterfall start
--        this(protocol, server, protocolVersion, false);
-+        // IvanCord start
-+        this(protocol, server, protocolVersion, false, inboundPacketListeners);
-     }
--    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, boolean allowEmptyPackets) {
-+    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion, boolean allowEmptyPackets, Collection<PacketListener> inboundPacketListeners) {
-         // Waterfall end
-+        // IvanCord end
          this.protocol = protocol;
          this.server = server;
          this.protocolVersion = protocolVersion;
-         this.allowEmptyPackets = allowEmptyPackets; // Waterfall
 +        this.inboundPacketListeners = inboundPacketListeners; // IvanCord
      }
  
      @Override
-@@ -58,6 +67,12 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -50,6 +57,12 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              {
                  packetTypeInfo = packet.getClass();
                  packet.read( in, prot.getDirection(), protocolVersion );
@@ -298,16 +288,18 @@ index 8b5841b84d92e98a5db8ddce5a94669d3999e853..0085c35f27f968330fb4180b430730da
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 5a0ef6b7e7dbe612948d807d23c1518a274c9ac3..a18727d34389862e5ffb294a42b1d5f61fd58bfc 100644
+index d95ff4409b06842c45b3ab5a6f0277cc460ceaf1..cb79eb4d1eae5f37d2c617a6997ae8a4fa4e0a04 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -387,8 +387,8 @@ public final class UserConnection implements ProxiedPlayer
+@@ -386,8 +386,10 @@ public final class UserConnection implements ProxiedPlayer
                      protected void initChannel(Channel ch) throws Exception
                      {
                          PipelineUtils.BASE.initChannel( ch );
--                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), bungee.getConfig().isAllowEmptyPackets() ) ); // Waterfall
+-                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
 -                        ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
-+                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), bungee.getConfig().isAllowEmptyPackets(), BungeeCord.getInstance().getInboundPacketListeners() ) ); // Waterfall // IvanCord
++                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getOutboundPacketListeners() ) ); // IvanCord
++                        ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getOutboundPacketListeners() ) ); // IvanCord
++                        ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getInboundPacketListeners() ) ); // IvanCord
 +                        ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion(), BungeeCord.getInstance().getOutboundPacketListeners() ) ); // IvanCord
                          ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
                      }
@@ -329,7 +321,7 @@ index 6bc14d675249cab64433db9f57cb60ca7ab9da90..2db9f157dc30d7a9189d9b849d3c7d02
  
          channel.write( new Handshake( protocol, target.getAddress().getHostString(), target.getAddress().getPort(), 1 ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 39ed623b65f52bb21f1dc777852fa2319f062458..77a39bc3fc9b6385d94670e70eb4126a9f1da3bf 100644
+index 134d88d4f8f17b24511dd2375ad204db96dcb1f9..bbe53b66ad6fe52483e8ddd26e4410d925541c22 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -69,8 +69,8 @@ public class PipelineUtils

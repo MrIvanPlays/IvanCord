@@ -8,10 +8,10 @@ a option to choose between yaml and json
 reconnect handlers.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 0643d08fb53def803d9c49b8306f4a0a724c79aa..0135019f203fb39a31b522940e038fbaad82473c 100644
+index 6ac60b382dc227bc81c70196e9754c4df938fc55..0ef6c6cd08c4c97fa0c77fcf21b8f537233437c5 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -271,5 +271,12 @@ public interface ProxyConfig
+@@ -264,5 +264,12 @@ public interface ProxyConfig
       */
      int getTCPFastOpenMode();
  

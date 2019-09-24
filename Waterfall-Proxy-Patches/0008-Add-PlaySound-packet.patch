@@ -449,7 +449,7 @@ index 531669e783d7a8961d9d74a017429f03c2679c71..8f587aa5980121c3c46c3583e74f79cf
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index cd24c30155067943e3bbb15308ea2e7d4c3b7031..d2ee764c65fa6fddc9996f2edc48504bb38d4fe8 100644
+index 8288472bd48fec6c34d7aed1d0de5cae172059ec..6757c632f1854044f610ad56d00fb736e48289d3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -55,9 +55,11 @@ import net.md_5.bungee.protocol.MinecraftDecoder;

@@ -33,10 +33,10 @@ index 9a262c8a11caeade95a084e5e5bc0be398917bbf..266a46e3abf3c4948477cb15c19a7e3b
 +    // IvanCord end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 0135019f203fb39a31b522940e038fbaad82473c..f05118d1f3c723f1ac2a6a2ca4ce9168b41fdb61 100644
+index 0ef6c6cd08c4c97fa0c77fcf21b8f537233437c5..294154f75448254a9ac86a401088736315afc86e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -278,5 +278,12 @@ public interface ProxyConfig
+@@ -271,5 +271,12 @@ public interface ProxyConfig
       */
      String getReconnectHandlerType();
  
@@ -172,7 +172,7 @@ index 8f587aa5980121c3c46c3583e74f79cf35bf45d1..c762462976f07466a1d1ceb6b5d9da70
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ffe4e78dca2b212e4cbcbdb449b22800299f9c22..4442da503a4a12ac93b37dd4d02fcd3f2bd6cc4c 100644
+index 58d8a41810ba403b7eb74d8ae67bf8267a1ca5b7..c5de9198a6e375408cb2b93c300a0da3d76d3a37 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -295,7 +295,12 @@ public final class UserConnection implements ProxiedPlayer
