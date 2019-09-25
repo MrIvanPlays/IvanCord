@@ -268,88 +268,35 @@ index 0000000000000000000000000000000000000000..b370df49eb5833f5d541ed31cb3d0d3f
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7b1143739e49c33a874de24ebb610164575c5173..0cd24a8236d4fe6a52531a4891f5259cb4692aaf 100644
+index 7b1143739e49c33a874de24ebb610164575c5173..2d4d1f08629d3c123405cda2b0b7fac5d15cc21b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -1,16 +1,5 @@
- package net.md_5.bungee;
- 
--import com.google.common.base.Preconditions;
--import com.google.common.collect.HashMultimap;
--import com.google.common.collect.ImmutableMap;
--import com.google.common.collect.Multimap;
--import io.netty.bootstrap.Bootstrap;
--import io.netty.channel.Channel;
--import io.netty.channel.ChannelFuture;
--import io.netty.channel.ChannelFutureListener;
--import io.netty.channel.ChannelInitializer;
--import io.netty.channel.ChannelOption;
--import io.netty.util.internal.PlatformDependent;
- import java.net.InetSocketAddress;
- import java.util.Collection;
- import java.util.Collections;
-@@ -22,6 +11,22 @@ import java.util.Objects;
+@@ -22,6 +22,7 @@ import java.util.Objects;
  import java.util.Queue;
  import java.util.UUID;
  import java.util.logging.Level;
 +
-+import com.google.common.base.Preconditions;
-+import com.google.common.collect.HashMultimap;
-+import com.google.common.collect.ImmutableMap;
-+import com.google.common.collect.Multimap;
-+import com.mrivanplays.ivancord.api.GameMode;
-+import com.mrivanplays.ivancord.api.Position;
-+import com.mrivanplays.ivancord.api.event.GameModeChangeEvent;
-+import com.mrivanplays.ivancord.api.event.SoundPlayedEvent;
-+import io.netty.bootstrap.Bootstrap;
-+import io.netty.channel.Channel;
-+import io.netty.channel.ChannelFuture;
-+import io.netty.channel.ChannelFutureListener;
-+import io.netty.channel.ChannelInitializer;
-+import io.netty.channel.ChannelOption;
-+import io.netty.util.internal.PlatformDependent;
  import lombok.Getter;
  import lombok.NonNull;
  import lombok.RequiredArgsConstructor;
-@@ -41,9 +46,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
- import net.md_5.bungee.api.score.Scoreboard;
- import net.md_5.bungee.chat.ComponentSerializer;
- import net.md_5.bungee.connection.InitialHandler;
--/* IvanCord - comment this
--import net.md_5.bungee.entitymap.EntityMap;
-- */
- import net.md_5.bungee.forge.ForgeClientHandler;
- import net.md_5.bungee.forge.ForgeConstants;
- import net.md_5.bungee.forge.ForgeServerHandler;
-@@ -55,11 +57,12 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
- import net.md_5.bungee.protocol.MinecraftEncoder;
+@@ -56,6 +57,7 @@ import net.md_5.bungee.protocol.MinecraftEncoder;
  import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.Protocol;
--import net.md_5.bungee.protocol.ProtocolConstants; // IvanCord
-+import net.md_5.bungee.protocol.ProtocolConstants;
-+import net.md_5.bungee.protocol.packet.ChangeGameMode;
+ import net.md_5.bungee.protocol.ProtocolConstants; // IvanCord
++import net.md_5.bungee.protocol.packet.ChangeGameMode; // IvanCord
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Kick;
--import net.md_5.bungee.protocol.packet.PlaySound; // IvanCord
-+import net.md_5.bungee.protocol.packet.PlaySound;
- import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
- import net.md_5.bungee.protocol.packet.PluginMessage;
- import net.md_5.bungee.protocol.packet.SetCompression;
-@@ -67,8 +70,10 @@ import net.md_5.bungee.tab.ServerUnique;
- import net.md_5.bungee.tab.TabList;
- import net.md_5.bungee.util.CaseInsensitiveSet;
+@@ -69,6 +71,8 @@ import net.md_5.bungee.util.CaseInsensitiveSet;
  import net.md_5.bungee.util.ChatComponentTransformer;
--import com.mrivanplays.ivancord.api.Position; // IvanCord
--import com.mrivanplays.ivancord.api.event.SoundPlayedEvent; // IvanCord
-+
-+/* IvanCord - comment this
-+import net.md_5.bungee.entitymap.EntityMap;
-+ */
+ import com.mrivanplays.ivancord.api.Position; // IvanCord
+ import com.mrivanplays.ivancord.api.event.SoundPlayedEvent; // IvanCord
++import com.mrivanplays.ivancord.api.GameMode; // IvanCord
++import com.mrivanplays.ivancord.api.event.GameModeChangeEvent; // IvanCord
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -109,9 +114,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -109,9 +113,9 @@ public final class UserConnection implements ProxiedPlayer
      private ServerInfo reconnectServer;
      @Getter
      private TabList tabListHandler;
@@ -361,7 +308,7 @@ index 7b1143739e49c33a874de24ebb610164575c5173..0cd24a8236d4fe6a52531a4891f5259c
      // IvanCord start
      @Getter
      private Position position;
-@@ -822,6 +827,23 @@ public final class UserConnection implements ProxiedPlayer
+@@ -822,6 +826,23 @@ public final class UserConnection implements ProxiedPlayer
          BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
          this.globalOp = globalOp;
      }
