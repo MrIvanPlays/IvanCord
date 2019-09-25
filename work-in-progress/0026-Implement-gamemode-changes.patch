@@ -1,0 +1,470 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Wed, 25 Sep 2019 19:59:07 +0300
+Subject: [PATCH] Implement gamemode changes
+
+
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/GameMode.java b/api/src/main/java/com/mrivanplays/ivancord/api/GameMode.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..b01e720677bfe14c60eb793acb87a1f1dc448db5
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/GameMode.java
+@@ -0,0 +1,52 @@
++/*
++    Copyright (c) 2019 Ivan Pekov
++    Copyright (c) 2019 Contributors
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++*/
++package com.mrivanplays.ivancord.api;
++
++/**
++ * Represents a {@link net.md_5.bungee.api.connection.ProxiedPlayer}'s game mode.
++ */
++public enum GameMode
++{
++    SURVIVAL,
++    CREATIVE,
++    ADVENTURE,
++    SPECTATOR;
++
++    /**
++     * Returns the specified number's game mode
++     *
++     * @param number the number of the game mode you want to get
++     * @return game mode or null
++     */
++    public static GameMode fromNumber(int number)
++    {
++        for ( GameMode gameMode : GameMode.values() )
++        {
++            if ( gameMode.ordinal() == number )
++            {
++                return gameMode;
++            }
++        }
++        return null;
++    }
++}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/GameModeChangeEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/GameModeChangeEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..9ca94fe6b3db662ae6079f2a03cd12c1adc0b6ed
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/GameModeChangeEvent.java
+@@ -0,0 +1,62 @@
++/*
++    Copyright (c) 2019 Ivan Pekov
++    Copyright (c) 2019 Contributors
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++*/
++package com.mrivanplays.ivancord.api.event;
++
++import com.mrivanplays.ivancord.api.GameMode;
++import lombok.EqualsAndHashCode;
++import lombok.Getter;
++import lombok.ToString;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Event;
++
++/**
++ * Represents a event, called when a game mode has been changed.
++ */
++@Getter
++@ToString
++@EqualsAndHashCode(callSuper = false)
++public class GameModeChangeEvent extends Event
++{
++
++    /**
++     * The game mode switched from
++     */
++    private GameMode from;
++
++    /**
++     * The game mode switched to
++     */
++    private GameMode to;
++
++    /**
++     * The player for which the game mode was changed
++     */
++    private ProxiedPlayer player;
++
++    public GameModeChangeEvent(GameMode from, ProxiedPlayer player)
++    {
++        this.from = from;
++        this.to = player.getGameMode();
++        this.player = player;
++    }
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+index 2b4d97a39d9065fc7532f37b0cd7495ac15047ad..bd3b57e0f20514b425da920f22e810607237f6b9 100644
+--- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
++++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+@@ -3,6 +3,8 @@ package net.md_5.bungee.api.connection;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.UUID;
++
++import com.mrivanplays.ivancord.api.GameMode;
+ import net.md_5.bungee.api.Callback;
+ import net.md_5.bungee.api.ChatMessageType;
+ import net.md_5.bungee.api.CommandSender;
+@@ -429,5 +431,19 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      * @param globalOp value
+      */
+     void setGlobalOp(boolean globalOp);
++
++    /**
++     * Gets the player's {@link GameMode}
++     *
++     * @return game mode
++     */
++    GameMode getGameMode();
++
++    /**
++     * Sets a new {@link GameMode} of the player.
++     *
++     * @param gameMode game mode to set
++     */
++    void setGameMode(GameMode gameMode);
+     // IvanCord end
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
+index 3b8ee648f0c3ac596b0cb7a00b2c04498a1bcd87..771ab7036e96fd87acb24b0f9087a6326034b097 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
+@@ -1,6 +1,7 @@
+ package net.md_5.bungee.protocol;
+ 
+ import net.md_5.bungee.protocol.packet.BossBar;
++import net.md_5.bungee.protocol.packet.ChangeGameMode; // IvanCord
+ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.ClientSettings;
+ import net.md_5.bungee.protocol.packet.ClientStatus;
+@@ -198,5 +199,9 @@ public abstract class AbstractPacketHandler
+     public void handle(PlaySound playSound) throws Exception
+     {
+     }
++
++    public void handle(ChangeGameMode changeGameMode) throws Exception
++    {
++    }
+     // IvanCord end
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 6a36d148d8097a67499f6c98709050a6991ff53b..770e634a6f518868e8fe560bc5d81bf8fa59a8b7 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -10,6 +10,7 @@ import java.lang.reflect.Constructor;
+ import lombok.Data;
+ import lombok.Getter;
+ import net.md_5.bungee.protocol.packet.BossBar;
++import net.md_5.bungee.protocol.packet.ChangeGameMode;
+ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.ClientSettings;
+ import net.md_5.bungee.protocol.packet.Commands;
+@@ -312,6 +313,16 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_13, 0x1A ),
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x19 )
+             );
++            // gamemode change
++            // (keep this in secret, that's the change game state packet !)
++            TO_CLIENT.registerPacket(
++                    ChangeGameMode.class,
++                    ChangeGameMode::new,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x2B ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x1E ),
++                    map( ProtocolConstants.MINECRAFT_1_13, 0x20 ),
++                    map( ProtocolConstants.MINECRAFT_1_14, 0x1E )
++            );
+             // IvanCord end
+         }
+     },
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ChangeGameMode.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ChangeGameMode.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..b370df49eb5833f5d541ed31cb3d0d3fe2431093
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ChangeGameMode.java
+@@ -0,0 +1,47 @@
++// IvanCord start
++package net.md_5.bungee.protocol.packet;
++
++import io.netty.buffer.ByteBuf;
++import lombok.AllArgsConstructor;
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.NoArgsConstructor;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++@EqualsAndHashCode(callSuper = false)
++public class ChangeGameMode extends DefinedPacket
++{
++
++    private int reason;
++    private float value;
++
++    public ChangeGameMode(int gameMode)
++    {
++        this( 3, gameMode );
++    }
++
++    @Override
++    public void read(ByteBuf buf)
++    {
++        this.reason = buf.readByte();
++        this.value = buf.readFloat();
++    }
++
++    @Override
++    public void write(ByteBuf buf)
++    {
++        buf.writeByte( reason );
++        buf.writeFloat( value );
++    }
++
++    @Override
++    public void handle(AbstractPacketHandler handler) throws Exception
++    {
++        handler.handle( this );
++    }
++}
++// IvanCord end
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 7b1143739e49c33a874de24ebb610164575c5173..0cd24a8236d4fe6a52531a4891f5259cb4692aaf 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -1,16 +1,5 @@
+ package net.md_5.bungee;
+ 
+-import com.google.common.base.Preconditions;
+-import com.google.common.collect.HashMultimap;
+-import com.google.common.collect.ImmutableMap;
+-import com.google.common.collect.Multimap;
+-import io.netty.bootstrap.Bootstrap;
+-import io.netty.channel.Channel;
+-import io.netty.channel.ChannelFuture;
+-import io.netty.channel.ChannelFutureListener;
+-import io.netty.channel.ChannelInitializer;
+-import io.netty.channel.ChannelOption;
+-import io.netty.util.internal.PlatformDependent;
+ import java.net.InetSocketAddress;
+ import java.util.Collection;
+ import java.util.Collections;
+@@ -22,6 +11,22 @@ import java.util.Objects;
+ import java.util.Queue;
+ import java.util.UUID;
+ import java.util.logging.Level;
++
++import com.google.common.base.Preconditions;
++import com.google.common.collect.HashMultimap;
++import com.google.common.collect.ImmutableMap;
++import com.google.common.collect.Multimap;
++import com.mrivanplays.ivancord.api.GameMode;
++import com.mrivanplays.ivancord.api.Position;
++import com.mrivanplays.ivancord.api.event.GameModeChangeEvent;
++import com.mrivanplays.ivancord.api.event.SoundPlayedEvent;
++import io.netty.bootstrap.Bootstrap;
++import io.netty.channel.Channel;
++import io.netty.channel.ChannelFuture;
++import io.netty.channel.ChannelFutureListener;
++import io.netty.channel.ChannelInitializer;
++import io.netty.channel.ChannelOption;
++import io.netty.util.internal.PlatformDependent;
+ import lombok.Getter;
+ import lombok.NonNull;
+ import lombok.RequiredArgsConstructor;
+@@ -41,9 +46,6 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
+ import net.md_5.bungee.api.score.Scoreboard;
+ import net.md_5.bungee.chat.ComponentSerializer;
+ import net.md_5.bungee.connection.InitialHandler;
+-/* IvanCord - comment this
+-import net.md_5.bungee.entitymap.EntityMap;
+- */
+ import net.md_5.bungee.forge.ForgeClientHandler;
+ import net.md_5.bungee.forge.ForgeConstants;
+ import net.md_5.bungee.forge.ForgeServerHandler;
+@@ -55,11 +57,12 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
+ import net.md_5.bungee.protocol.MinecraftEncoder;
+ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.Protocol;
+-import net.md_5.bungee.protocol.ProtocolConstants; // IvanCord
++import net.md_5.bungee.protocol.ProtocolConstants;
++import net.md_5.bungee.protocol.packet.ChangeGameMode;
+ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.ClientSettings;
+ import net.md_5.bungee.protocol.packet.Kick;
+-import net.md_5.bungee.protocol.packet.PlaySound; // IvanCord
++import net.md_5.bungee.protocol.packet.PlaySound;
+ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
+ import net.md_5.bungee.protocol.packet.PluginMessage;
+ import net.md_5.bungee.protocol.packet.SetCompression;
+@@ -67,8 +70,10 @@ import net.md_5.bungee.tab.ServerUnique;
+ import net.md_5.bungee.tab.TabList;
+ import net.md_5.bungee.util.CaseInsensitiveSet;
+ import net.md_5.bungee.util.ChatComponentTransformer;
+-import com.mrivanplays.ivancord.api.Position; // IvanCord
+-import com.mrivanplays.ivancord.api.event.SoundPlayedEvent; // IvanCord
++
++/* IvanCord - comment this
++import net.md_5.bungee.entitymap.EntityMap;
++ */
+ 
+ @RequiredArgsConstructor
+ public final class UserConnection implements ProxiedPlayer
+@@ -109,9 +114,9 @@ public final class UserConnection implements ProxiedPlayer
+     private ServerInfo reconnectServer;
+     @Getter
+     private TabList tabListHandler;
++    // IvanCord - replace the gamemode integer with a game mode object
+     @Getter
+-    @Setter
+-    private int gamemode;
++    private GameMode gameMode;
+     // IvanCord start
+     @Getter
+     private Position position;
+@@ -822,6 +827,23 @@ public final class UserConnection implements ProxiedPlayer
+         BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
+         this.globalOp = globalOp;
+     }
++
++    @Override
++    public void setGameMode(GameMode gameMode)
++    {
++        GameMode previous = this.gameMode;
++        if ( previous != gameMode )
++        {
++            setGameModeRaw( gameMode );
++            unsafe().sendPacket( new ChangeGameMode( gameMode.ordinal() ) );
++            bungee.getPluginManager().callEvent( new GameModeChangeEvent( previous, this ) );
++        }
++    }
++
++    public void setGameModeRaw(GameMode gameMode)
++    {
++        this.gameMode = gameMode;
++    }
+     // IvanCord end
+ 
+     // IvanCord start - comment this. Not used anywhere, so...
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 5cf2e3da071fe1e5de41e60ec38f5b8c155453c8..0a9e8d8a4d6414480e33a459b966b6fbacf95704 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -54,6 +54,7 @@ import net.md_5.bungee.protocol.DefinedPacket;
+ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ import net.md_5.bungee.protocol.packet.BossBar;
++import net.md_5.bungee.protocol.packet.ChangeGameMode; // IvanCord
+ import net.md_5.bungee.protocol.packet.Commands;
+ import net.md_5.bungee.protocol.packet.EntityEffect;
+ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
+@@ -75,6 +76,8 @@ import net.md_5.bungee.tab.TabList;
+ // IvanCord start
+ import com.mrivanplays.ivancord.api.Position;
+ import com.mrivanplays.ivancord.api.event.PlayerChangePositionEvent;
++import com.mrivanplays.ivancord.api.GameMode;
++import com.mrivanplays.ivancord.api.event.GameModeChangeEvent;
+ // IvanCord end
+ 
+ @RequiredArgsConstructor
+@@ -768,6 +771,25 @@ public class DownstreamBridge extends PacketHandler
+             }
+         }
+     }
++
++    @Override
++    public void handle(ChangeGameMode changeGameMode)
++    {
++        if ( changeGameMode.getReason() != 3 )
++        {
++            con.unsafe().sendPacket( changeGameMode );
++            throw CancelSendSignal.INSTANCE;
++        }
++        GameMode potentialNew = GameMode.fromNumber( (int) changeGameMode.getValue() );
++        GameMode old = con.getGameMode();
++        if ( old != potentialNew )
++        {
++            con.setGameModeRaw( potentialNew );
++            bungee.getPluginManager().callEvent( new GameModeChangeEvent( old, con ) );
++            con.unsafe().sendPacket( changeGameMode );
++            throw CancelSendSignal.INSTANCE;
++        }
++    }
+     // IvanCord end
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/tab/TabList.java b/proxy/src/main/java/net/md_5/bungee/tab/TabList.java
+index 7d79ef7bcc5e571301904dab88944585b656d108..cffe9550ea3f2f7f8d4dc0348550b6278444b7f7 100644
+--- a/proxy/src/main/java/net/md_5/bungee/tab/TabList.java
++++ b/proxy/src/main/java/net/md_5/bungee/tab/TabList.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.tab;
+ 
++import com.mrivanplays.ivancord.api.GameMode; // IvanCord
+ import lombok.RequiredArgsConstructor;
+ import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.UserConnection;
+@@ -55,7 +56,23 @@ public abstract class TabList
+                 }
+                 if ( playerListItem.getAction() == PlayerListItem.Action.ADD_PLAYER || playerListItem.getAction() == PlayerListItem.Action.UPDATE_GAMEMODE )
+                 {
+-                    player.setGamemode( item.getGamemode() );
++                    // IvanCord start
++                    GameMode gameMode = GameMode.fromNumber( item.getGamemode() );
++                    GameMode oldGamemode = player.getGameMode();
++                    if ( gameMode != null )
++                    {
++                        if ( oldGamemode == null )
++                        {
++                            player.setGameModeRaw( gameMode );
++                        } else
++                        {
++                            if ( oldGamemode != gameMode )
++                            {
++                                player.setGameMode( gameMode );
++                            }
++                        }
++                    }
++                    // IvanCord end
+                 }
+                 if ( playerListItem.getAction() == PlayerListItem.Action.ADD_PLAYER || playerListItem.getAction() == PlayerListItem.Action.UPDATE_LATENCY )
+                 {

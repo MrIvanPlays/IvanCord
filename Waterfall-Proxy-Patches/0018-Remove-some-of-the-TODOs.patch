@@ -172,7 +172,7 @@ index 8f587aa5980121c3c46c3583e74f79cf35bf45d1..c762462976f07466a1d1ceb6b5d9da70
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 58d8a41810ba403b7eb74d8ae67bf8267a1ca5b7..c5de9198a6e375408cb2b93c300a0da3d76d3a37 100644
+index 7168f367ea161991743439d59042445cf56eb580..1aa4714516a784a91f9126a7a8c07cb9252ec82b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -295,7 +295,12 @@ public final class UserConnection implements ProxiedPlayer

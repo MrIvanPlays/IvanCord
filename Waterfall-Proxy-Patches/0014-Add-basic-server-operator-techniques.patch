@@ -139,16 +139,17 @@ index 0000000000000000000000000000000000000000..5255a62d303fd866c6f9c168b3e16243
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/OpsConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/OpsConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d376d12dd5c28844b2330dc6ed9591838d5af2a4
+index 0000000000000000000000000000000000000000..8a99463de283645730f4578eb4c38ba3933c2edf
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/OpsConfiguration.java
-@@ -0,0 +1,70 @@
+@@ -0,0 +1,71 @@
 +package com.mrivanplays.ivancord.conf;
 +
 +import java.io.File;
 +import java.io.IOException;
 +import java.util.ArrayList;
 +import java.util.List;
++import java.util.UUID;
 +import java.util.logging.Level;
 +
 +import net.md_5.bungee.api.ProxyServer;
@@ -159,7 +160,7 @@ index 0000000000000000000000000000000000000000..d376d12dd5c28844b2330dc6ed959183
 +public class OpsConfiguration
 +{
 +
-+    private List<String> ops;
++    private List<UUID> ops;
 +    private File file;
 +    private Configuration config;
 +
@@ -192,19 +193,19 @@ index 0000000000000000000000000000000000000000..d376d12dd5c28844b2330dc6ed959183
 +        {
 +            if ( config.getBoolean( key ) )
 +            {
-+                ops.add( key );
++                ops.add( UUID.fromString( key ) );
 +            }
 +        }
 +    }
 +
-+    public boolean isOp(String name)
++    public boolean isOp(UUID uuid)
 +    {
-+        return ops.contains( name );
++        return ops.contains( uuid );
 +    }
 +
-+    public void setOp(String name, boolean value)
++    public void setOp(UUID uuid, boolean value)
 +    {
-+        config.set( name, value );
++        config.set( uuid.toString(), value );
 +        try
 +        {
 +            ConfigurationProvider.getProvider( JsonConfiguration.class ).save( config, file );
@@ -248,7 +249,7 @@ index 7046d9c5a125c1710f0ed8913a4ea052f43c3f74..3b5b537e3b1b32b72f6447fbfec7d28e
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 6757c632f1854044f610ad56d00fb736e48289d3..58d8a41810ba403b7eb74d8ae67bf8267a1ca5b7 100644
+index 6757c632f1854044f610ad56d00fb736e48289d3..7168f367ea161991743439d59042445cf56eb580 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -116,6 +116,10 @@ public final class UserConnection implements ProxiedPlayer
@@ -267,7 +268,7 @@ index 6757c632f1854044f610ad56d00fb736e48289d3..58d8a41810ba403b7eb74d8ae67bf826
              forgeClientHandler.setFmlTokenInHandshake( true );
          }
 +        // IvanCord start
-+        globalOp = BungeeCord.getInstance().getOpsConfiguration().isOp( getName() );
++        globalOp = BungeeCord.getInstance().getOpsConfiguration().isOp( getUniqueId() );
 +        // IvanCord end
      }
  
@@ -289,7 +290,7 @@ index 6757c632f1854044f610ad56d00fb736e48289d3..58d8a41810ba403b7eb74d8ae67bf826
 +    @Override
 +    public void setGlobalOp(boolean globalOp)
 +    {
-+        BungeeCord.getInstance().getOpsConfiguration().setOp( getName(), globalOp );
++        BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
 +        this.globalOp = globalOp;
 +    }
      // IvanCord end

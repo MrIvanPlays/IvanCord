@@ -148,7 +148,7 @@ index dd13f764a002fd050759552da7fee0d56ee99d1e..2060d867bc9c2e6cd0cede8d362d9451
          this.target = target;
          this.reason = reason;
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c5de9198a6e375408cb2b93c300a0da3d76d3a37..5cd3e1abb56c280f26211b153fde4b802c8449e2 100644
+index 1aa4714516a784a91f9126a7a8c07cb9252ec82b..5a06f3148f9e9a8c7552f555bacb86549fd27915 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -335,8 +335,11 @@ public final class UserConnection implements ProxiedPlayer
