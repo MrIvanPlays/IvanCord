@@ -1,8 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: MrIvanPlays <pekov.ivan@abv.bg>
 Date: Wed, 25 Sep 2019 19:59:07 +0300
-Subject: [PATCH] Implement gamemode changes
+Subject: [PATCH] Add ChangeGameState packet
 
+Basically the packet listen consists only for informative
+things. Nothing in the called events is mutable. It is all
+informative only.
+
+The reason behind why it is being informative only is that
+the server doesn't get notified for every change that you
+have made with this packet, meaning that changing gamemode
+or weather isn't possible for the whole server, but rather only
+for the client, which will lead to some other issues.
 
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/GameMode.java b/api/src/main/java/com/mrivanplays/ivancord/api/GameMode.java
 new file mode 100644
@@ -61,6 +70,68 @@ index 0000000000000000000000000000000000000000..b01e720677bfe14c60eb793acb87a1f1
 +        }
 +        return null;
 +    }
++}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/ChangeGameStateEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/ChangeGameStateEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..b94b6bc67f7369a556b0532448e2d0477fdfbf34
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/ChangeGameStateEvent.java
+@@ -0,0 +1,56 @@
++/*
++    Copyright (c) 2019 Ivan Pekov
++    Copyright (c) 2019 Contributors
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++*/
++package com.mrivanplays.ivancord.api.event;
++
++import lombok.AllArgsConstructor;
++import lombok.EqualsAndHashCode;
++import lombok.Getter;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Event;
++
++/**
++ * Called when the game state packet didn't
++ * output a reason about {@link WeatherChangeEvent}
++ * or {@link GameModeChangeEvent}.
++ */
++@Getter
++@AllArgsConstructor
++@EqualsAndHashCode(callSuper = false)
++public class ChangeGameStateEvent extends Event
++{
++
++    /**
++     * The reason why the packet (and this event) was triggered
++     */
++    private int reason;
++
++    /**
++     * The value
++     */
++    private float value;
++
++    /**
++     * The connection for which it was triggered
++     */
++    private ProxiedPlayer player;
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/GameModeChangeEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/GameModeChangeEvent.java
 new file mode 100644
@@ -130,8 +201,67 @@ index 0000000000000000000000000000000000000000..9ca94fe6b3db662ae6079f2a03cd12c1
 +        this.player = player;
 +    }
 +}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/WeatherChangeEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/WeatherChangeEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e0181fa50e52f7fb1df8fc3325b6f99b55324eb4
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/WeatherChangeEvent.java
+@@ -0,0 +1,53 @@
++/*
++    Copyright (c) 2019 Ivan Pekov
++    Copyright (c) 2019 Contributors
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++*/
++package com.mrivanplays.ivancord.api.event;
++
++import lombok.AllArgsConstructor;
++import lombok.EqualsAndHashCode;
++import lombok.Getter;
++import lombok.ToString;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Event;
++
++/**
++ * Called when a weather change is being made on the client.
++ * Modifying the "raining" boolean will lead to only the current
++ * client viewing the changes.
++ */
++@Getter
++@AllArgsConstructor
++@ToString
++@EqualsAndHashCode(callSuper = false)
++public class WeatherChangeEvent extends Event
++{
++
++    /**
++     * The player for which the weather has changed
++     */
++    private ProxiedPlayer player;
++
++    /**
++     * Is raining or not
++     */
++    private boolean raining;
++}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 2b4d97a39d9065fc7532f37b0cd7495ac15047ad..bd3b57e0f20514b425da920f22e810607237f6b9 100644
+index 2b4d97a39d9065fc7532f37b0cd7495ac15047ad..f6de0abb84871e92ea033520bddd56d5ee0aee3c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee.api.connection;
@@ -143,7 +273,7 @@ index 2b4d97a39d9065fc7532f37b0cd7495ac15047ad..bd3b57e0f20514b425da920f22e81060
  import net.md_5.bungee.api.Callback;
  import net.md_5.bungee.api.ChatMessageType;
  import net.md_5.bungee.api.CommandSender;
-@@ -429,5 +431,19 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -429,5 +431,12 @@ public interface ProxiedPlayer extends Connection, CommandSender
       * @param globalOp value
       */
      void setGlobalOp(boolean globalOp);
@@ -154,24 +284,17 @@ index 2b4d97a39d9065fc7532f37b0cd7495ac15047ad..bd3b57e0f20514b425da920f22e81060
 +     * @return game mode
 +     */
 +    GameMode getGameMode();
-+
-+    /**
-+     * Sets a new {@link GameMode} of the player.
-+     *
-+     * @param gameMode game mode to set
-+     */
-+    void setGameMode(GameMode gameMode);
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 3b8ee648f0c3ac596b0cb7a00b2c04498a1bcd87..771ab7036e96fd87acb24b0f9087a6326034b097 100644
+index 3b8ee648f0c3ac596b0cb7a00b2c04498a1bcd87..36b38b9f6e9a5cae07db1a6152ffec49a3d55d7e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -1,6 +1,7 @@
  package net.md_5.bungee.protocol;
  
  import net.md_5.bungee.protocol.packet.BossBar;
-+import net.md_5.bungee.protocol.packet.ChangeGameMode; // IvanCord
++import net.md_5.bungee.protocol.packet.ChangeGameState; // IvanCord
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.ClientStatus;
@@ -180,32 +303,30 @@ index 3b8ee648f0c3ac596b0cb7a00b2c04498a1bcd87..771ab7036e96fd87acb24b0f9087a632
      {
      }
 +
-+    public void handle(ChangeGameMode changeGameMode) throws Exception
++    public void handle(ChangeGameState changeGameState) throws Exception
 +    {
 +    }
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 6a36d148d8097a67499f6c98709050a6991ff53b..770e634a6f518868e8fe560bc5d81bf8fa59a8b7 100644
+index 6a36d148d8097a67499f6c98709050a6991ff53b..45c0e31c0c2f142ca6f235581434f26b50b239b8 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -10,6 +10,7 @@ import java.lang.reflect.Constructor;
  import lombok.Data;
  import lombok.Getter;
  import net.md_5.bungee.protocol.packet.BossBar;
-+import net.md_5.bungee.protocol.packet.ChangeGameMode;
++import net.md_5.bungee.protocol.packet.ChangeGameState;
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Commands;
-@@ -312,6 +313,16 @@ public enum Protocol
+@@ -312,6 +313,14 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x1A ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x19 )
              );
-+            // gamemode change
-+            // (keep this in secret, that's the change game state packet !)
 +            TO_CLIENT.registerPacket(
-+                    ChangeGameMode.class,
-+                    ChangeGameMode::new,
++                    ChangeGameState.class,
++                    ChangeGameState::new,
 +                    map( ProtocolConstants.MINECRAFT_1_8, 0x2B ),
 +                    map( ProtocolConstants.MINECRAFT_1_9, 0x1E ),
 +                    map( ProtocolConstants.MINECRAFT_1_13, 0x20 ),
@@ -214,12 +335,12 @@ index 6a36d148d8097a67499f6c98709050a6991ff53b..770e634a6f518868e8fe560bc5d81bf8
              // IvanCord end
          }
      },
-diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ChangeGameMode.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ChangeGameMode.java
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ChangeGameState.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ChangeGameState.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b370df49eb5833f5d541ed31cb3d0d3fe2431093
+index 0000000000000000000000000000000000000000..8a42859c8d26ede979e880c2a1d6704716b5cec0
 --- /dev/null
-+++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ChangeGameMode.java
-@@ -0,0 +1,47 @@
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ChangeGameState.java
+@@ -0,0 +1,42 @@
 +// IvanCord start
 +package net.md_5.bungee.protocol.packet;
 +
@@ -235,16 +356,11 @@ index 0000000000000000000000000000000000000000..b370df49eb5833f5d541ed31cb3d0d3f
 +@NoArgsConstructor
 +@AllArgsConstructor
 +@EqualsAndHashCode(callSuper = false)
-+public class ChangeGameMode extends DefinedPacket
++public class ChangeGameState extends DefinedPacket
 +{
 +
 +    private int reason;
 +    private float value;
-+
-+    public ChangeGameMode(int gameMode)
-+    {
-+        this( 3, gameMode );
-+    }
 +
 +    @Override
 +    public void read(ByteBuf buf)
@@ -268,7 +384,7 @@ index 0000000000000000000000000000000000000000..b370df49eb5833f5d541ed31cb3d0d3f
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7b1143739e49c33a874de24ebb610164575c5173..2d4d1f08629d3c123405cda2b0b7fac5d15cc21b 100644
+index 7b1143739e49c33a874de24ebb610164575c5173..dd7e677fc3fbfad099e720b79499d10e00ca96fc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -22,6 +22,7 @@ import java.util.Objects;
@@ -283,7 +399,7 @@ index 7b1143739e49c33a874de24ebb610164575c5173..2d4d1f08629d3c123405cda2b0b7fac5
  import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.Protocol;
  import net.md_5.bungee.protocol.ProtocolConstants; // IvanCord
-+import net.md_5.bungee.protocol.packet.ChangeGameMode; // IvanCord
++import net.md_5.bungee.protocol.packet.ChangeGameState; // IvanCord
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Kick;
@@ -308,22 +424,10 @@ index 7b1143739e49c33a874de24ebb610164575c5173..2d4d1f08629d3c123405cda2b0b7fac5
      // IvanCord start
      @Getter
      private Position position;
-@@ -822,6 +826,23 @@ public final class UserConnection implements ProxiedPlayer
+@@ -822,6 +826,11 @@ public final class UserConnection implements ProxiedPlayer
          BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
          this.globalOp = globalOp;
      }
-+
-+    @Override
-+    public void setGameMode(GameMode gameMode)
-+    {
-+        GameMode previous = this.gameMode;
-+        if ( previous != gameMode )
-+        {
-+            setGameModeRaw( gameMode );
-+            unsafe().sendPacket( new ChangeGameMode( gameMode.ordinal() ) );
-+            bungee.getPluginManager().callEvent( new GameModeChangeEvent( previous, this ) );
-+        }
-+    }
 +
 +    public void setGameModeRaw(GameMode gameMode)
 +    {
@@ -333,54 +437,69 @@ index 7b1143739e49c33a874de24ebb610164575c5173..2d4d1f08629d3c123405cda2b0b7fac5
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 5cf2e3da071fe1e5de41e60ec38f5b8c155453c8..0a9e8d8a4d6414480e33a459b966b6fbacf95704 100644
+index 5cf2e3da071fe1e5de41e60ec38f5b8c155453c8..ba460649ed7aecc4af0f9bceff4314963e4b68e9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -54,6 +54,7 @@ import net.md_5.bungee.protocol.DefinedPacket;
  import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.BossBar;
-+import net.md_5.bungee.protocol.packet.ChangeGameMode; // IvanCord
++import net.md_5.bungee.protocol.packet.ChangeGameState; // IvanCord
  import net.md_5.bungee.protocol.packet.Commands;
  import net.md_5.bungee.protocol.packet.EntityEffect;
  import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
-@@ -75,6 +76,8 @@ import net.md_5.bungee.tab.TabList;
+@@ -73,8 +74,12 @@ import net.md_5.bungee.protocol.packet.SetCompression;
+ import net.md_5.bungee.protocol.packet.TabCompleteResponse;
+ import net.md_5.bungee.tab.TabList;
  // IvanCord start
- import com.mrivanplays.ivancord.api.Position;
- import com.mrivanplays.ivancord.api.event.PlayerChangePositionEvent;
 +import com.mrivanplays.ivancord.api.GameMode;
+ import com.mrivanplays.ivancord.api.Position;
++import com.mrivanplays.ivancord.api.event.ChangeGameStateEvent;
 +import com.mrivanplays.ivancord.api.event.GameModeChangeEvent;
+ import com.mrivanplays.ivancord.api.event.PlayerChangePositionEvent;
++import com.mrivanplays.ivancord.api.event.WeatherChangeEvent;
  // IvanCord end
  
  @RequiredArgsConstructor
-@@ -768,6 +771,25 @@ public class DownstreamBridge extends PacketHandler
+@@ -768,6 +773,36 @@ public class DownstreamBridge extends PacketHandler
              }
          }
      }
 +
 +    @Override
-+    public void handle(ChangeGameMode changeGameMode)
++    public void handle(ChangeGameState changeGameState)
 +    {
-+        if ( changeGameMode.getReason() != 3 )
++        switch ( changeGameState.getReason() )
 +        {
-+            con.unsafe().sendPacket( changeGameMode );
-+            throw CancelSendSignal.INSTANCE;
-+        }
-+        GameMode potentialNew = GameMode.fromNumber( (int) changeGameMode.getValue() );
-+        GameMode old = con.getGameMode();
-+        if ( old != potentialNew )
-+        {
-+            con.setGameModeRaw( potentialNew );
-+            bungee.getPluginManager().callEvent( new GameModeChangeEvent( old, con ) );
-+            con.unsafe().sendPacket( changeGameMode );
-+            throw CancelSendSignal.INSTANCE;
++            case 1:
++                bungee.getPluginManager().callEvent( new WeatherChangeEvent( con, false ) );
++                con.unsafe().sendPacket( changeGameState );
++                throw CancelSendSignal.INSTANCE;
++            case 2:
++                bungee.getPluginManager().callEvent( new WeatherChangeEvent( con, true ) );
++                con.unsafe().sendPacket( changeGameState );
++                throw CancelSendSignal.INSTANCE;
++            case 3:
++                GameMode old = con.getGameMode();
++                GameMode potentialNew = GameMode.fromNumber( (int) changeGameState.getValue() );
++                if ( old != potentialNew )
++                {
++                    con.setGameModeRaw( potentialNew );
++                    bungee.getPluginManager().callEvent( new GameModeChangeEvent( old, con ) );
++                    con.unsafe().sendPacket( changeGameState );
++                    throw CancelSendSignal.INSTANCE;
++                }
++                break;
++            default:
++                bungee.getPluginManager().callEvent( new ChangeGameStateEvent( changeGameState.getReason(), changeGameState.getValue(), con ) );
++                con.unsafe().sendPacket( changeGameState );
 +        }
 +    }
      // IvanCord end
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/tab/TabList.java b/proxy/src/main/java/net/md_5/bungee/tab/TabList.java
-index 7d79ef7bcc5e571301904dab88944585b656d108..cffe9550ea3f2f7f8d4dc0348550b6278444b7f7 100644
+index 7d79ef7bcc5e571301904dab88944585b656d108..c6fc3341319dd5b853b0ebe29d64c48057d5bf34 100644
 --- a/proxy/src/main/java/net/md_5/bungee/tab/TabList.java
 +++ b/proxy/src/main/java/net/md_5/bungee/tab/TabList.java
 @@ -1,5 +1,6 @@
@@ -390,25 +509,22 @@ index 7d79ef7bcc5e571301904dab88944585b656d108..cffe9550ea3f2f7f8d4dc0348550b627
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.BungeeCord;
  import net.md_5.bungee.UserConnection;
-@@ -55,7 +56,23 @@ public abstract class TabList
+@@ -55,7 +56,20 @@ public abstract class TabList
                  }
                  if ( playerListItem.getAction() == PlayerListItem.Action.ADD_PLAYER || playerListItem.getAction() == PlayerListItem.Action.UPDATE_GAMEMODE )
                  {
 -                    player.setGamemode( item.getGamemode() );
 +                    // IvanCord start
 +                    GameMode gameMode = GameMode.fromNumber( item.getGamemode() );
-+                    GameMode oldGamemode = player.getGameMode();
-+                    if ( gameMode != null )
++                    GameMode oldGameMode = player.getGameMode();
++                    if ( oldGameMode == null )
 +                    {
-+                        if ( oldGamemode == null )
++                        player.setGameModeRaw( gameMode );
++                    } else
++                    {
++                        if ( gameMode != oldGameMode )
 +                        {
 +                            player.setGameModeRaw( gameMode );
-+                        } else
-+                        {
-+                            if ( oldGamemode != gameMode )
-+                            {
-+                                player.setGameMode( gameMode );
-+                            }
 +                        }
 +                    }
 +                    // IvanCord end
