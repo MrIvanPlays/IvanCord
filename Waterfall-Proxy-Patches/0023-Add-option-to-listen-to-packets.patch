@@ -179,7 +179,7 @@ index d4b0384348c17de5c2350c8c5f928fcc0c1868db..15a74ecba539cca97fe01868a642659f
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8b5841b84d92e98a5db8ddce5a94669d3999e853..0085c35f27f968330fb4180b430730dac72d571a 100644
+index 07176ad63be968f0dc07c0255c907f8b69779870..70ed5cc0a18241d714e892ff3561895383c546d1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee;

@@ -187,7 +187,7 @@ index 4312e5714eb8f989e77c4e7447430c02eb392eaa..eea22ab19840860720abb36be7662724
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2e1ed41ab35994f954be90415c4c6c863368bb3e..ff568fc1cac5bc3520f1ffa5fd9e0cd646ed4cb2 100644
+index 23462f63e46045b27f407050f84cc9e2e0cc1df2..a7d2da55225399d2c93053e1625240ec09e4a0a9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -44,6 +44,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;

@@ -236,7 +236,7 @@ index 3b3525f08caec962b51d90ce6e42758dac64aa10..1df27add55bafc9112bd89917a251efc
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a13e8ff0ae39c961c54a19aa23ef485ffe55ef22..aa96218d474d5aff56282103caffadd3e35cbe8c 100644
+index 06be2beae81380f309070309c9e11ff727990a2e..0de6faa127ca8fb29db8d3379ebb33f082da9479 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -473,8 +473,10 @@ public class BungeeCord extends ProxyServer

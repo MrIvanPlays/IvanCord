@@ -613,7 +613,7 @@ index 0000000000000000000000000000000000000000..4915d8d7b55c1f6d16ad55024ec807a2
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index efbf316486fb89e1da3a38e511bb7a9210d17f91..a13e8ff0ae39c961c54a19aa23ef485ffe55ef22 100644
+index de8cfb01010cc9fcc649e162bd3e7900735a6dfc..06be2beae81380f309070309c9e11ff727990a2e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -91,6 +91,15 @@ import net.md_5.bungee.query.RemoteQuery;
