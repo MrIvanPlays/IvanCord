@@ -6,129 +6,40 @@ Subject: [PATCH] Add PlaySound packet
 
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/SoundCategory.java b/api/src/main/java/com/mrivanplays/ivancord/api/SoundCategory.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..fc85393c135f1fd773023daff7256ea5a126cadf
+index 0000000000000000000000000000000000000000..e4785467cd6f47a4a37577fe44040283e31fb8c5
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/SoundCategory.java
-@@ -0,0 +1,121 @@
+@@ -0,0 +1,32 @@
 +package com.mrivanplays.ivancord.api;
++
++import java.util.Arrays;
 +
 +/**
 + * Represents a sound category
 + */
-+public class SoundCategory
++public enum SoundCategory
 +{
 +
-+    public static final int MASTER = 0;
-+    public static final int MUSIC = 1;
-+    public static final int RECORDS = 2;
-+    public static final int WEATHER = 3;
-+    public static final int BLOCKS = 4;
-+    public static final int HOSTILE = 5;
-+    public static final int NEUTRAL = 6;
-+    public static final int PLAYERS = 7;
-+    public static final int AMBIENT = 8;
-+    public static final int VOICE = 9;
++    MASTER,
++    MUSIC,
++    RECORDS,
++    WEATHER,
++    BLOCKS,
++    HOSTILE,
++    NEUTRAL,
++    PLAYERS,
++    AMBIENT,
++    VOICE;
 +
 +    /**
-+     * Gets the exact name of the sound category specified.
++     * Returns the sound category with the specified category integer
 +     *
-+     * @param soundCategory sound category
-+     * @return sound category name or empty string if the specified
-+     *         integer as category is not a category
++     * @param category the category you wish to get
++     * @return sound category
 +     */
-+    public static String getName(int soundCategory)
++    public static SoundCategory valueOf(int category)
 +    {
-+        String name;
-+        switch ( soundCategory )
-+        {
-+            case MASTER:
-+                name = "master";
-+                break;
-+            case MUSIC:
-+                name = "music";
-+                break;
-+            case RECORDS:
-+                name = "records";
-+                break;
-+            case WEATHER:
-+                name = "weather";
-+                break;
-+            case BLOCKS:
-+                name = "blocks";
-+                break;
-+            case HOSTILE:
-+                name = "hostile";
-+                break;
-+            case NEUTRAL:
-+                name = "neutral";
-+                break;
-+            case PLAYERS:
-+                name = "players";
-+                break;
-+            case AMBIENT:
-+                name = "ambient";
-+                break;
-+            case VOICE:
-+                name = "voice";
-+                break;
-+            default:
-+                name = "";
-+        }
-+        return name;
-+    }
-+
-+    /**
-+     * Gets the exact value of the sound category name specified.
-+     *
-+     * @param name name
-+     * @return the category matching the name or neutral
-+     */
-+    public static int valueOf(String name)
-+    {
-+        int value;
-+        switch ( name.toLowerCase() )
-+        {
-+            case "master":
-+                value = MASTER;
-+                break;
-+            case "music":
-+                value = MUSIC;
-+                break;
-+            case "records":
-+                value = RECORDS;
-+                break;
-+            case "weather":
-+                value = WEATHER;
-+                break;
-+            case "blocks":
-+                value = BLOCKS;
-+                break;
-+            case "hostile":
-+                value = HOSTILE;
-+                break;
-+            case "players":
-+                value = PLAYERS;
-+                break;
-+            case "ambient":
-+                value = AMBIENT;
-+                break;
-+            case "voice":
-+                value = VOICE;
-+                break;
-+            default:
-+                value = NEUTRAL;
-+        }
-+        return value;
-+    }
-+
-+    /**
-+     * Gets all the values
-+     *
-+     * @return values
-+     */
-+    public static int[] values()
-+    {
-+        return new int[] {MASTER, MUSIC, RECORDS, WEATHER, BLOCKS, HOSTILE, NEUTRAL, PLAYERS, AMBIENT, VOICE};
++        return Arrays.stream( values() ).filter( sc -> sc.ordinal() == category ).findFirst().orElse( SoundCategory.MASTER );
 +    }
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/SoundPlayedEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/SoundPlayedEvent.java
@@ -208,10 +119,18 @@ index 0000000000000000000000000000000000000000..5ef58ad8ee5a67f84918be06f6b448e4
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 6a4973fed3127bd4eb2a4207204b9df2d1a3af0b..9c83abbb4bbef9f310075b863679e3cf01d65f68 100644
+index 6a4973fed3127bd4eb2a4207204b9df2d1a3af0b..b4382724e5f0d892466aa068e5040016cc63423b 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -397,4 +397,19 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -14,6 +14,7 @@ import net.md_5.bungee.api.config.ServerInfo;
+ import net.md_5.bungee.api.event.ServerConnectEvent;
+ import net.md_5.bungee.api.score.Scoreboard;
+ import com.mrivanplays.ivancord.api.Position; // IvanCord
++import com.mrivanplays.ivancord.api.SoundCategory; // IvanCord
+ 
+ /**
+  * Represents a player who's connection is being connected to somewhere else,
+@@ -397,4 +398,19 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      @Deprecated // IvanCord
      Scoreboard getScoreboard();
@@ -227,7 +146,7 @@ index 6a4973fed3127bd4eb2a4207204b9df2d1a3af0b..9c83abbb4bbef9f310075b863679e3cf
 +     * @param volume volume of the sound. 100% is 1
 +     * @param pitch pitch of the sound. A number between 0.5 and 2
 +     */
-+    void playSound(Position position, String sound, int category, float volume, float pitch);
++    void playSound(Position position, String sound, SoundCategory category, float volume, float pitch);
 +
 +    // IvanCord end
  }
@@ -449,7 +368,7 @@ index 531669e783d7a8961d9d74a017429f03c2679c71..8f587aa5980121c3c46c3583e74f79cf
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 8288472bd48fec6c34d7aed1d0de5cae172059ec..6757c632f1854044f610ad56d00fb736e48289d3 100644
+index 8288472bd48fec6c34d7aed1d0de5cae172059ec..f48bc2f83e3743510d4c1e2e2650ee2e45dcd3df 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -55,9 +55,11 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
@@ -464,21 +383,22 @@ index 8288472bd48fec6c34d7aed1d0de5cae172059ec..6757c632f1854044f610ad56d00fb736
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.SetCompression;
-@@ -66,6 +68,7 @@ import net.md_5.bungee.tab.TabList;
+@@ -66,6 +68,8 @@ import net.md_5.bungee.tab.TabList;
  import net.md_5.bungee.util.CaseInsensitiveSet;
  import net.md_5.bungee.util.ChatComponentTransformer;
  import com.mrivanplays.ivancord.api.Position; // IvanCord
++import com.mrivanplays.ivancord.api.SoundCategory; // IvanCord
 +import com.mrivanplays.ivancord.api.event.SoundPlayedEvent; // IvanCord
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -772,6 +775,31 @@ public final class UserConnection implements ProxiedPlayer
+@@ -772,6 +776,31 @@ public final class UserConnection implements ProxiedPlayer
          return serverSentScoreboard;
      }
  
 +    // IvanCord start - implement playSound
 +    @Override
-+    public void playSound(Position position, String sound, int category, float volume, float pitch)
++    public void playSound(Position position, String sound, SoundCategory category, float volume, float pitch)
 +    {
 +        int protocolVersion = getPendingConnection().getVersion();
 +        int x = Math.round( Long.valueOf( Math.round( position.getX() ) ).intValue() );
@@ -491,13 +411,13 @@ index 8288472bd48fec6c34d7aed1d0de5cae172059ec..6757c632f1854044f610ad56d00fb736
 +        } else if ( !( protocolVersion > ProtocolConstants.MINECRAFT_1_9_4 ) )
 +        {
 +            int pitchInt = Math.round( pitch );
-+            unsafe().sendPacket( PlaySound.create1_9( sound, category, x, y, z, volume, pitchInt ) );
++            unsafe().sendPacket( PlaySound.create1_9( sound, category.ordinal(), x, y, z, volume, pitchInt ) );
 +        } else
 +        {
-+            unsafe().sendPacket( PlaySound.create( sound, category, x, y, z, volume, pitch ) );
++            unsafe().sendPacket( PlaySound.create( sound, category.ordinal(), x, y, z, volume, pitch ) );
 +        }
 +        new SoundPlayedEvent( this, position,
-+                PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category ).call();
++                PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category.ordinal() ).call();
 +    }
 +    // IvanCord end
 +

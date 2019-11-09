@@ -261,7 +261,7 @@ index 0000000000000000000000000000000000000000..e0181fa50e52f7fb1df8fc3325b6f99b
 +    private boolean raining;
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 2b4d97a39d9065fc7532f37b0cd7495ac15047ad..f6de0abb84871e92ea033520bddd56d5ee0aee3c 100644
+index 4c98df25ca5788b1edc7c6d93bf0b12ab861f42c..802c1616e9c9a22109186f295afc68ae2c1301a1 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -3,6 +3,8 @@ package net.md_5.bungee.api.connection;
@@ -273,7 +273,7 @@ index 2b4d97a39d9065fc7532f37b0cd7495ac15047ad..f6de0abb84871e92ea033520bddd56d5
  import net.md_5.bungee.api.Callback;
  import net.md_5.bungee.api.ChatMessageType;
  import net.md_5.bungee.api.CommandSender;
-@@ -429,5 +431,12 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -430,5 +432,12 @@ public interface ProxiedPlayer extends Connection, CommandSender
       * @param globalOp value
       */
      void setGlobalOp(boolean globalOp);
@@ -384,7 +384,7 @@ index 0000000000000000000000000000000000000000..8a42859c8d26ede979e880c2a1d67047
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7b1143739e49c33a874de24ebb610164575c5173..dd7e677fc3fbfad099e720b79499d10e00ca96fc 100644
+index b269be303a053dce23806841142037c84b05b445..57cab074c2270fb40ae7ec86af6978c8e9536e5a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -22,6 +22,7 @@ import java.util.Objects;
@@ -403,16 +403,16 @@ index 7b1143739e49c33a874de24ebb610164575c5173..dd7e677fc3fbfad099e720b79499d10e
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Kick;
-@@ -69,6 +71,8 @@ import net.md_5.bungee.util.CaseInsensitiveSet;
- import net.md_5.bungee.util.ChatComponentTransformer;
+@@ -70,6 +72,8 @@ import net.md_5.bungee.util.ChatComponentTransformer;
  import com.mrivanplays.ivancord.api.Position; // IvanCord
+ import com.mrivanplays.ivancord.api.SoundCategory; // IvanCord
  import com.mrivanplays.ivancord.api.event.SoundPlayedEvent; // IvanCord
 +import com.mrivanplays.ivancord.api.GameMode; // IvanCord
 +import com.mrivanplays.ivancord.api.event.GameModeChangeEvent; // IvanCord
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -109,9 +113,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -110,9 +114,9 @@ public final class UserConnection implements ProxiedPlayer
      private ServerInfo reconnectServer;
      @Getter
      private TabList tabListHandler;
@@ -424,7 +424,7 @@ index 7b1143739e49c33a874de24ebb610164575c5173..dd7e677fc3fbfad099e720b79499d10e
      // IvanCord start
      @Getter
      private Position position;
-@@ -822,6 +826,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -823,6 +827,11 @@ public final class UserConnection implements ProxiedPlayer
          BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
          this.globalOp = globalOp;
      }
