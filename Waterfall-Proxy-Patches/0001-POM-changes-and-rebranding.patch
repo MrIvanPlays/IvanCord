@@ -734,10 +734,10 @@ index 1fd54029c586c3dfc28d73c9405fd261cfda1007..5a04212d658bd9fd7d2a8edfc27fdb74
              <scope>compile</scope>
          </dependency>
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index ac99d02cb7da0a79e57b982b7dc81f625c0e44c9..ed90d75204fdb0429b6a3ccc6a258afb2dffd93f 100644
+index 0c1ecfb8e6016659fc308c2e16ec1ab1d257fe49..1b9f054bc4a7b87ac3531e4e49d5e93d15420d26 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-@@ -102,7 +102,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+@@ -103,7 +103,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
              // Waterfall start
              List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
  
