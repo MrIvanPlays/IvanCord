@@ -16,9 +16,6 @@ case "$1" in
     "e" | "edit")
         scripts/edit.sh
     ;;
-    "macu")
-        scripts/mergeAndCommitUpstream.sh
-    ;;
     *)
         echo "IvanCord build tool command. This provides a variety of commands to control the IvanCord"
         echo "build. View below for details of the available commands."
@@ -30,6 +27,5 @@ case "$1" in
         echo "  * b, build         | Builds the project"
         echo "                     | The bootstrap artifact can be found in IvanCord-Proxy/bootstrap/target/"
         echo "  * e, edit          | Runs git rebase -i for IvanCord, allowing patches to be easily modified"
-        echo "  * macu             | Merges upstream and runs commit"
     ;;
 esac
