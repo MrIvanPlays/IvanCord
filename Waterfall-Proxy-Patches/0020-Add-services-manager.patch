@@ -331,7 +331,7 @@ index eea22ab19840860720abb36be76627242601cf58..2b79cdae1fc103cedc29ae67adce9aa2
          plugins.remove( plugin.getDescription().getName(), plugin );
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java b/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..faa34e7ae5efecc3de2dea81574c464b70bfdade
+index 0000000000000000000000000000000000000000..96063a5982f7f403c3f26998542517e18971ffbe
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/SimpleServicesManager.java
 @@ -0,0 +1,238 @@
@@ -389,7 +389,7 @@ index 0000000000000000000000000000000000000000..faa34e7ae5efecc3de2dea81574c464b
 +        {
 +            providersLock.unlock();
 +        }
-+        new ServiceRegisteredEvent( createdProvider ).call();
++        new ServiceRegisteredEvent( createdProvider ).callEvent();
 +    }
 +
 +    @Override
@@ -415,7 +415,7 @@ index 0000000000000000000000000000000000000000..faa34e7ae5efecc3de2dea81574c464b
 +            for ( RegisteredServiceProvider<?> providerRemoved : toRemove )
 +            {
 +                registered.remove( providerRemoved );
-+                new ServiceUnregisteredEvent( providerRemoved ).call();
++                new ServiceUnregisteredEvent( providerRemoved ).callEvent();
 +            }
 +            providers.replace( service, registered );
 +        } finally
@@ -447,7 +447,7 @@ index 0000000000000000000000000000000000000000..faa34e7ae5efecc3de2dea81574c464b
 +            if ( toRemove != null )
 +            {
 +                registered.remove( toRemove );
-+                new ServiceUnregisteredEvent( toRemove ).call();
++                new ServiceUnregisteredEvent( toRemove ).callEvent();
 +                providers.replace( service, registered );
 +            }
 +        } finally
@@ -475,7 +475,7 @@ index 0000000000000000000000000000000000000000..faa34e7ae5efecc3de2dea81574c464b
 +                {
 +                    providersLock.unlock();
 +                }
-+                new ServiceUnregisteredEvent( provider ).call();
++                new ServiceUnregisteredEvent( provider ).callEvent();
 +            }
 +        }
 +        return count;

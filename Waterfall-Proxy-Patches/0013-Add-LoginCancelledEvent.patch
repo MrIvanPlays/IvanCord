@@ -65,7 +65,7 @@ index 0000000000000000000000000000000000000000..f140b0195e9661e364dafab7c3aba7ec
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3a9dab682487cceae7d2cb3b415f1e04e79d1ddc..4ee749f77f022394ea34bae4f3fdac066d5fece1 100644
+index 3a9dab682487cceae7d2cb3b415f1e04e79d1ddc..6214ffe5ed7b24308a7a4b0254482758470d300d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -64,7 +64,7 @@ import net.md_5.bungee.protocol.packet.StatusResponse;
@@ -82,7 +82,7 @@ index 3a9dab682487cceae7d2cb3b415f1e04e79d1ddc..4ee749f77f022394ea34bae4f3fdac06
      public void exception(Throwable t) throws Exception
      {
 +        // IvanCord start - implement LoginCancelledEvent
-+        new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY_EXCEPTION ).call();
++        new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY_EXCEPTION ).callEvent();
 +        // IvanCord end
          disconnect( ChatColor.RED + Util.exception( t ) );
      }
@@ -92,7 +92,7 @@ index 3a9dab682487cceae7d2cb3b415f1e04e79d1ddc..4ee749f77f022394ea34bae4f3fdac06
                  if ( result.isCancelled() )
                  {
 +                    // IvanCord start - implement LoginCancelledEvent
-+                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).call();
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent();
 +                    // IvanCord end
                      disconnect( result.getCancelReasonComponents() );
                      return;
@@ -100,7 +100,7 @@ index 3a9dab682487cceae7d2cb3b415f1e04e79d1ddc..4ee749f77f022394ea34bae4f3fdac06
                  if ( ch.isClosed() )
                  {
 +                    // IvanCord start - implement LoginCancelledEvent
-+                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).call();
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).callEvent();
 +                    // IvanCord end
                      return;
                  }
@@ -110,7 +110,7 @@ index 3a9dab682487cceae7d2cb3b415f1e04e79d1ddc..4ee749f77f022394ea34bae4f3fdac06
                  if ( result.isCancelled() )
                  {
 +                    // IvanCord start - implement login cancelled event
-+                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).call();
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent();
 +                    // IvanCord end
                      disconnect( result.getCancelReasonComponents() );
                      return;
@@ -118,7 +118,7 @@ index 3a9dab682487cceae7d2cb3b415f1e04e79d1ddc..4ee749f77f022394ea34bae4f3fdac06
                  if ( ch.isClosed() )
                  {
 +                    // IvanCord start - implement LoginCancelledEvent
-+                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).call();
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).callEvent();
 +                    // IvanCord end
                      return;
                  }
@@ -139,7 +139,7 @@ index 3a9dab682487cceae7d2cb3b415f1e04e79d1ddc..4ee749f77f022394ea34bae4f3fdac06
 +                         */
 +                        if ( ch.isClosing() )
 +                        {
-+                            new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).call();
++                            new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).callEvent();
 +                            return;
 +                        }
 +                        UserConnection userCon = new UserConnection( bungee, ch, getName(), InitialHandler.this );
