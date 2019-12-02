@@ -437,7 +437,7 @@ index 0da4abeacf8927febf2bb0889cf75e7d3416fc84..a056bb8417c3670e26bd2a68525a848d
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 5cf2e3da071fe1e5de41e60ec38f5b8c155453c8..ba460649ed7aecc4af0f9bceff4314963e4b68e9 100644
+index 1b9172932520c11371cbda259b519e46224a7431..5780f1b14b5759bf46568bb9ee2ac765c3c59a77 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -54,6 +54,7 @@ import net.md_5.bungee.protocol.DefinedPacket;

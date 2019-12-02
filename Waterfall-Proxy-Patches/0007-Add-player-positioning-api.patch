@@ -291,7 +291,7 @@ index eb5abaddb186d1b457c736395c31622de1ecef57..090b75c35fb77c5ad79b0172b5444252
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index a19822ca42c69fc3116c52603c46117038d9bd05..a4f342927c5a47007e52c6e590dd08947555b979 100644
+index a19822ca42c69fc3116c52603c46117038d9bd05..f7ec4d4f6fc9fb2c3a0cd3723b48faaedd1d9492 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -60,6 +60,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
@@ -331,7 +331,7 @@ index a19822ca42c69fc3116c52603c46117038d9bd05..a4f342927c5a47007e52c6e590dd0894
 +        if ( changed )
 +        {
 +            PlayerChangePositionEvent event = new PlayerChangePositionEvent( con, conPos, packetPos );
-+            if ( !event.call() )
++            if ( !event.callEvent() )
 +            {
 +                con.unsafe().sendPacket( pac );
 +                throw CancelSendSignal.INSTANCE;
