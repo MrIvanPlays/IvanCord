@@ -56,7 +56,7 @@ index f7459860f9da503cdafceacb31ecd4dd0e9346d2..b7b89c421f4904c199a84282a8814200
       * Gets whether this player is using a FML client.
       * <p>
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Event.java b/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
-index e2e01ecb0265e599a375c0147dfc383301112c1c..1ae37ef5c99bc7fe5d537a5ef2ff2c88491e818e 100644
+index 25ec1bd8f208859c8aba196150aae6b6c41e6105..052baf480002ea9f532bc623ba3cf9b959ed01b6 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Event.java
 @@ -1,5 +1,7 @@
@@ -67,28 +67,6 @@ index e2e01ecb0265e599a375c0147dfc383301112c1c..1ae37ef5c99bc7fe5d537a5ef2ff2c88
  /**
   * Dummy class which all callable events must extend.
   */
-@@ -12,4 +14,21 @@ public abstract class Event
-     public void postCall()
-     {
-     }
-+
-+    // IvanCord start - add shortcut to call the event
-+
-+    /**
-+     * Calls the representing event. If the event is a
-+     * {@link Cancellable}, it will return if the event
-+     * is being cancelled. Otherwise, it will return true.
-+     *
-+     * @return if cancellable the result of {@link Cancellable#isCancelled()},
-+     *         otherwise <code>true</code>
-+     */
-+    public final boolean call()
-+    {
-+        ProxyServer.getInstance().getPluginManager().callEvent( this );
-+        return !( this instanceof Cancellable ) || ( (Cancellable) this ).isCancelled();
-+    }
-+    // IvanCord end
- }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 index 884f78c8037200122a0202dc336cfff6d68ca7fe..4312e5714eb8f989e77c4e7447430c02eb392eaa 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
@@ -293,10 +271,10 @@ index 72f487dc53e5f99685b263a819f17e23442ce237..bd8d8190716cb058d052fd18965447b7
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7e9678d90bf036f097e063bb69ed15ff1490afd6..1c6c18dfe55428081d71423858c37cc73fca1ca8 100644
+index eeb7a51e1850676673320d36c19f068315f2165f..0c1ed7e9383bcc79e81a51a1acdfbeac1d400a2b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -328,7 +328,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -320,7 +320,7 @@ public final class UserConnection implements ProxiedPlayer
              {
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
              }
@@ -305,7 +283,7 @@ index 7e9678d90bf036f097e063bb69ed15ff1490afd6..1c6c18dfe55428081d71423858c37cc7
              sendMessage( bungee.getTranslation( "already_connected" ) );
              return;
          }
-@@ -338,7 +338,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -330,7 +330,7 @@ public final class UserConnection implements ProxiedPlayer
              {
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
              }
@@ -314,7 +292,7 @@ index 7e9678d90bf036f097e063bb69ed15ff1490afd6..1c6c18dfe55428081d71423858c37cc7
              sendMessage( bungee.getTranslation( "already_connecting" ) );
              return;
          }
-@@ -421,6 +421,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -413,6 +413,9 @@ public final class UserConnection implements ProxiedPlayer
  
      public void disconnect0(final BaseComponent... reason)
      {
@@ -324,7 +302,7 @@ index 7e9678d90bf036f097e063bb69ed15ff1490afd6..1c6c18dfe55428081d71423858c37cc7
          if ( !ch.isClosing() )
          {
              bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
-@@ -712,6 +715,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -704,6 +707,14 @@ public final class UserConnection implements ProxiedPlayer
          title.send( this );
      }
  

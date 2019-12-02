@@ -368,7 +368,7 @@ index 531669e783d7a8961d9d74a017429f03c2679c71..8f587aa5980121c3c46c3583e74f79cf
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 8288472bd48fec6c34d7aed1d0de5cae172059ec..f48bc2f83e3743510d4c1e2e2650ee2e45dcd3df 100644
+index 090b75c35fb77c5ad79b0172b54442529c29d713..b9ed1ca20b42e7320e6e301f5f22c20d7a6881c4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -55,9 +55,11 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
@@ -392,7 +392,7 @@ index 8288472bd48fec6c34d7aed1d0de5cae172059ec..f48bc2f83e3743510d4c1e2e2650ee2e
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -772,6 +776,31 @@ public final class UserConnection implements ProxiedPlayer
+@@ -764,6 +768,31 @@ public final class UserConnection implements ProxiedPlayer
          return serverSentScoreboard;
      }
  
@@ -417,7 +417,7 @@ index 8288472bd48fec6c34d7aed1d0de5cae172059ec..f48bc2f83e3743510d4c1e2e2650ee2e
 +            unsafe().sendPacket( PlaySound.create( sound, category.ordinal(), x, y, z, volume, pitch ) );
 +        }
 +        new SoundPlayedEvent( this, position,
-+                PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category.ordinal() ).call();
++                PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category.ordinal() ).callEvent();
 +    }
 +    // IvanCord end
 +

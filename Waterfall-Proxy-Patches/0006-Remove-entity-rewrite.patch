@@ -299,7 +299,7 @@ index bd8d8190716cb058d052fd18965447b75da902d4..531669e783d7a8961d9d74a017429f03
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 1c6c18dfe55428081d71423858c37cc73fca1ca8..1f85d237accdb72bbf346390336e3530e4f4a982 100644
+index 0c1ed7e9383bcc79e81a51a1acdfbeac1d400a2b..eb5abaddb186d1b457c736395c31622de1ecef57 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -41,7 +41,9 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -325,25 +325,19 @@ index 1c6c18dfe55428081d71423858c37cc73fca1ca8..1f85d237accdb72bbf346390336e3530
      private Locale locale;
      /*========================================================================*/
      @Getter
-@@ -157,6 +163,8 @@ public final class UserConnection implements ProxiedPlayer
+@@ -156,7 +162,11 @@ public final class UserConnection implements ProxiedPlayer
  
      public void init()
      {
 +        // IvanCord start - comment this
 +        /*
-         // Waterfall start
-         disableEntityMetadaRewrite = bungee.getConfig().isDisableEntityMetadataRewrite();
-         if ( disableEntityMetadaRewrite )
-@@ -165,6 +173,8 @@ public final class UserConnection implements ProxiedPlayer
-         } else
-         // Waterfall end
          this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
 +         */
 +        // IvanCord end
  
          this.displayName = name;
  
-@@ -745,14 +755,19 @@ public final class UserConnection implements ProxiedPlayer
+@@ -737,14 +747,19 @@ public final class UserConnection implements ProxiedPlayer
      }
  
      @Override
@@ -357,7 +351,7 @@ index 1c6c18dfe55428081d71423858c37cc73fca1ca8..1f85d237accdb72bbf346390336e3530
 +    /*
      // Waterfall start
      public boolean isDisableEntityMetadataRewrite() {
-         return disableEntityMetadaRewrite;
+         return entityRewrite == net.md_5.bungee.entitymap.EntityMap_Dummy.INSTANCE;
      }
      // Waterfall end
 +     */

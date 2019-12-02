@@ -384,7 +384,7 @@ index 0000000000000000000000000000000000000000..8a42859c8d26ede979e880c2a1d67047
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b269be303a053dce23806841142037c84b05b445..57cab074c2270fb40ae7ec86af6978c8e9536e5a 100644
+index 0da4abeacf8927febf2bb0889cf75e7d3416fc84..a056bb8417c3670e26bd2a68525a848dc68c6aa4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -22,6 +22,7 @@ import java.util.Objects;
@@ -424,7 +424,7 @@ index b269be303a053dce23806841142037c84b05b445..57cab074c2270fb40ae7ec86af6978c8
      // IvanCord start
      @Getter
      private Position position;
-@@ -823,6 +827,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -815,6 +819,11 @@ public final class UserConnection implements ProxiedPlayer
          BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
          this.globalOp = globalOp;
      }
