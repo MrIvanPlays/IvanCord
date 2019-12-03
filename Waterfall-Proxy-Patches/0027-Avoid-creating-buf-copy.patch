@@ -1,0 +1,58 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Tue, 3 Dec 2019 14:03:56 +0200
+Subject: [PATCH] Avoid creating buf copy
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 63b0f8f15b2571f293ca2d39b6809d2605d890b0..6d3d71ec677cd545053f56617b91e7cd27b5e81b 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -38,7 +38,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
+     {
+         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
++        /* IvanCord start - avoid creating buf copy
+         ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
++         */
++        int readIrx = in.readerIndex();
++        // IvanCord end
+ 
+         Object packetTypeInfo = null;
+         try
+@@ -68,13 +72,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                 {
+                     throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot.getDirection() );
+                 }
++                /* IvanCord start - avoid creating buf copy
+             } else
+             {
+                 in.skipBytes( in.readableBytes() );
++                 */ // IvanCord end
+             }
+ 
+-            out.add( new PacketWrapper( packet, slice ) );
+-            slice = null;
++            in.readerIndex( readIrx ); // IvanCord
++            out.add( new PacketWrapper( packet, /* slice */ in.retain() ) ); // IvanCord
++            //slice = null; // IvanCord
+         } catch (BadPacketException | IndexOutOfBoundsException e) {
+             final String packetTypeStr;
+             if (packetTypeInfo instanceof Integer) {
+@@ -84,13 +91,15 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             } else {
+                 packetTypeStr = "unknown";
+             }
+-            throw new DecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e);
++            throw new DecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(/*slice*/in), e); // IvanCord - avoid creating buf copy
++            /* IvanCord start - avoid creating buf copy
+         } finally
+         {
+             if ( slice != null )
+             {
+                 slice.release();
+             }
++             */ // IvanCord end
+         }
+     }
+ }

@@ -252,6 +252,22 @@ index c40f3e032faf34ec66ddaf4080c3d17c416a91ee..9b083546edb20f5fa5381dccd85ec2fe
  
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
+index d11d601ec6a6afdca731a2b0db1655993e3119ad..3b8cf634938776772bfd84b4f001aabb517f4b81 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
+@@ -54,7 +54,11 @@ public class ServerConnection implements Server
+     {
+         Preconditions.checkArgument( reason.length == 0, "Server cannot have disconnect reason" );
+ 
++        /* IvanCord start - don't use delayed close
+         ch.delayedClose( null );
++         */
++        ch.close();
++        // IvanCord end
+     }
+ 
+     @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 index 72f487dc53e5f99685b263a819f17e23442ce237..bd8d8190716cb058d052fd18965447b75da902d4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java

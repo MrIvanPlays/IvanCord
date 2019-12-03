@@ -1,0 +1,110 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Tue, 3 Dec 2019 14:22:22 +0200
+Subject: [PATCH] Proper KeepAlive cache
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
+index 3b8cf634938776772bfd84b4f001aabb517f4b81..aa7d74a9e388fc851ffb86701df250810a09de05 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
+@@ -24,9 +24,20 @@ public class ServerConnection implements Server
+     private boolean isObsolete;
+     @Getter
+     private final boolean forgeServer = false;
++    /* IvanCord start - proper keepalive cache
+     @Getter
+     @Setter
+     private long sentPingId = -1;
++     */
++    @Getter
++    private final java.util.Queue<KeepAliveData> keepAliveHistory = com.google.common.collect.EvictingQueue.create(512);
++
++    @lombok.Data
++    public static class KeepAliveData {
++        private final long id;
++        private final long time;
++    }
++    // IvanCord end
+ 
+     private final Unsafe unsafe = new Unsafe()
+     {
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 5780f1b14b5759bf46568bb9ee2ac765c3c59a77..f1a5fb80d2728a8d4ef6d09f01eff5ccbb693211 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -102,7 +102,7 @@ public class DownstreamBridge extends PacketHandler
+         // Waterfall start
+         ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
+         ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), TextComponent.fromLegacyText( bungee.getTranslation( "server_went_down" ) ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.EXCEPTION ) );
+-        if ( event.isCancelled() && event.getCancelServer() != null )
++        if ( event.isCancelled() && event.getCancelServer() != null && !(t instanceof KeepAliveTimeoutException) ) // IvanCord - proper keepalive cache
+         {
+             server.setObsolete( true );
+             con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
+@@ -163,8 +163,18 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public void handle(KeepAlive alive) throws Exception
+     {
++        /* IvanCord start - proper keepalive cache
+         server.setSentPingId( alive.getRandomId() );
+         con.setSentPingTime( System.currentTimeMillis() );
++         */
++        long millis = System.currentTimeMillis();
++        ServerConnection.KeepAliveData lastKeepAlive = server.getKeepAliveHistory().peek();
++        if ( lastKeepAlive != null && ( ( lastKeepAlive.getTime() + bungee.getConfig().getTimeout() ) < millis ) )
++        {
++            throw new KeepAliveTimeoutException( "Did not receive keepalive in time form " + con );
++        }
++        server.getKeepAliveHistory().add( new ServerConnection.KeepAliveData( alive.getRandomId(), millis ) );
++        // IvanCord end
+     }
+ 
+     @Override
+@@ -810,4 +820,15 @@ public class DownstreamBridge extends PacketHandler
+     {
+         return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
+     }
++
++    // IvanCord start - proper keepalive cache
++    public static class KeepAliveTimeoutException extends net.md_5.bungee.util.QuietException
++    {
++
++        public KeepAliveTimeoutException(String message)
++        {
++            super( message );
++        }
++    }
++    // IvanCord end
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index cbedfd970214ed58e307d265f7a93ba212c5a0e4..f0132dc2c73cf0751d9ecf076d1532b57187d5b5 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -10,6 +10,7 @@ import java.util.ArrayList;
+ import java.util.LinkedList;
+ import java.util.List;
+ import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.ServerConnection; // IvanCord
+ import net.md_5.bungee.UserConnection;
+ import net.md_5.bungee.Util;
+ import net.md_5.bungee.api.ProxyServer;
+@@ -133,9 +134,16 @@ public class UpstreamBridge extends PacketHandler
+     @Override
+     public void handle(KeepAlive alive) throws Exception
+     {
+-        if ( alive.getRandomId() == con.getServer().getSentPingId() )
++        // IvanCord start - proper keepalive cache
++        if ( con.getServer().getKeepAliveHistory().isEmpty() )
+         {
+-            int newPing = (int) ( System.currentTimeMillis() - con.getSentPingTime() );
++            throw CancelSendSignal.INSTANCE;
++        }
++        ServerConnection.KeepAliveData keepAliveData = con.getServer().getKeepAliveHistory().remove();
++        if ( alive.getRandomId() == keepAliveData.getId() )
++        {
++            int newPing = (int) ( System.currentTimeMillis() - keepAliveData.getTime() );
++            // IvanCord end
+             con.getTabListHandler().onPingChange( newPing );
+             con.setPing( newPing );
+         } else
