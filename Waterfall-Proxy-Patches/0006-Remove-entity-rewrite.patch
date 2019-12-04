@@ -103,7 +103,7 @@ index 39f81fd1a68fc8f2908aad2c79b832d90ba18fba..949befddaf74a313d2b39e2f1a42fbb5
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index c2b0e12c1bc861f8143685e5446d39de75e02df1..293f2ea159b7b6443419f23c683f266e5696db3a 100644
+index c2b0e12c1bc861f8143685e5446d39de75e02df1..f36daddeeb47b5ee04f9384dddb072d6d1b0b5ce 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -31,15 +31,20 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
@@ -127,7 +127,24 @@ index c2b0e12c1bc861f8143685e5446d39de75e02df1..293f2ea159b7b6443419f23c683f266e
  import net.md_5.bungee.protocol.packet.Title;
  import net.md_5.bungee.protocol.packet.ViewDistance;
  
-@@ -139,6 +144,8 @@ public enum Protocol
+@@ -100,6 +105,8 @@ public enum Protocol
+                     BossBar::new, // Waterfall - speed up packet construction
+                     map( ProtocolConstants.MINECRAFT_1_9, 0x0C )
+             );
++            // IvanCord start - stop this from registering
++            /*
+             // Waterfall start
+             TO_CLIENT.registerPacket(
+                     EntityEffect.class,
+@@ -123,6 +130,7 @@ public enum Protocol
+                     map(ProtocolConstants.MINECRAFT_1_14, 0x38)
+             );
+             // Waterfall end
++            */ // IvanCord end
+             TO_CLIENT.registerPacket(
+                     PlayerListItem.class, // PlayerInfo
+                     PlayerListItem::new, // Waterfall - speed up packet construction
+@@ -139,6 +147,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_9, 0x0E ),
                      map( ProtocolConstants.MINECRAFT_1_13, 0x10 )
              );
@@ -136,7 +153,7 @@ index c2b0e12c1bc861f8143685e5446d39de75e02df1..293f2ea159b7b6443419f23c683f266e
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
                      ScoreboardObjective::new, // Waterfall - speed up packet construction
-@@ -179,6 +186,8 @@ public enum Protocol
+@@ -179,6 +189,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x47 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x4B )
              );
@@ -145,6 +162,30 @@ index c2b0e12c1bc861f8143685e5446d39de75e02df1..293f2ea159b7b6443419f23c683f266e
              TO_CLIENT.registerPacket(
                      PluginMessage.class,
                      PluginMessage::new, // Waterfall - speed up packet construction
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
+index d11a9ea9d663993e3af2c6250565af4b019a2dda..3b0c6f3da323cd6b8af028f01798126f7304936a 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
+@@ -12,6 +12,7 @@ import net.md_5.bungee.protocol.DefinedPacket;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
++@Deprecated // IvanCord
+ public class EntityEffect extends DefinedPacket {
+ 
+     private int entityId;
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
+index 7ed2dc3abbc53d7cb4c893e2fdc4bc3a01017c05..255a91aa0aae42f2a1868f9a30b7f530659ee2a2 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityRemoveEffect.java
+@@ -12,6 +12,7 @@ import net.md_5.bungee.protocol.DefinedPacket;
+ @NoArgsConstructor
+ @AllArgsConstructor
+ @EqualsAndHashCode(callSuper = false)
++@Deprecated // IvanCord
+ public class EntityRemoveEffect extends DefinedPacket {
+ 
+     private int entityId;
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
 index b8f30276df6d3373f4ab0a4a31ff37634213d7d8..578095d50125fc804e163dc19f2222d0b085ca1a 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ScoreboardDisplay.java
@@ -299,7 +340,7 @@ index bd8d8190716cb058d052fd18965447b75da902d4..531669e783d7a8961d9d74a017429f03
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 0c1ed7e9383bcc79e81a51a1acdfbeac1d400a2b..eb5abaddb186d1b457c736395c31622de1ecef57 100644
+index 0c1ed7e9383bcc79e81a51a1acdfbeac1d400a2b..c3b5c68457be375a84297db5502cf2b6cf43377c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -41,7 +41,9 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -312,7 +353,17 @@ index 0c1ed7e9383bcc79e81a51a1acdfbeac1d400a2b..eb5abaddb186d1b457c736395c31622d
  import net.md_5.bungee.forge.ForgeClientHandler;
  import net.md_5.bungee.forge.ForgeConstants;
  import net.md_5.bungee.forge.ForgeServerHandler;
-@@ -134,8 +136,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -127,15 +129,22 @@ public final class UserConnection implements ProxiedPlayer
+     private final Scoreboard serverSentScoreboard = new Scoreboard();
+     @Getter
+     private final Collection<UUID> sentBossBars = new HashSet<>();
++    // IvanCord start - comment this out
++    /*
+     // Waterfall start
+     @Getter
+     private final Multimap<Integer, Integer> potions = HashMultimap.create();
+     // Waterfall end
++     */ // IvanCord end
      /*========================================================================*/
      @Getter
      private String displayName;
@@ -325,7 +376,7 @@ index 0c1ed7e9383bcc79e81a51a1acdfbeac1d400a2b..eb5abaddb186d1b457c736395c31622d
      private Locale locale;
      /*========================================================================*/
      @Getter
-@@ -156,7 +162,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -156,7 +165,11 @@ public final class UserConnection implements ProxiedPlayer
  
      public void init()
      {
@@ -337,7 +388,7 @@ index 0c1ed7e9383bcc79e81a51a1acdfbeac1d400a2b..eb5abaddb186d1b457c736395c31622d
  
          this.displayName = name;
  
-@@ -737,14 +747,19 @@ public final class UserConnection implements ProxiedPlayer
+@@ -737,14 +750,19 @@ public final class UserConnection implements ProxiedPlayer
      }
  
      @Override
@@ -358,7 +409,7 @@ index 0c1ed7e9383bcc79e81a51a1acdfbeac1d400a2b..eb5abaddb186d1b457c736395c31622d
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index df6e80927310accf46d1a80c71e5574adbe46d4c..a19822ca42c69fc3116c52603c46117038d9bd05 100644
+index df6e80927310accf46d1a80c71e5574adbe46d4c..77623c2fdf622578ec02c64ff537d8fbf0f1db16 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -39,11 +39,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
@@ -376,7 +427,17 @@ index df6e80927310accf46d1a80c71e5574adbe46d4c..a19822ca42c69fc3116c52603c461170
  import net.md_5.bungee.chat.ComponentSerializer;
  import net.md_5.bungee.netty.ChannelWrapper;
  import net.md_5.bungee.netty.PacketHandler;
-@@ -59,9 +62,12 @@ import net.md_5.bungee.protocol.packet.Kick;
+@@ -52,16 +55,22 @@ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ import net.md_5.bungee.protocol.packet.BossBar;
+ import net.md_5.bungee.protocol.packet.Commands;
++// IvanCord - comment not needed imports
++/*
+ import net.md_5.bungee.protocol.packet.EntityEffect;
+ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
++ */
+ import net.md_5.bungee.protocol.packet.KeepAlive;
+ import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
@@ -389,7 +450,7 @@ index df6e80927310accf46d1a80c71e5574adbe46d4c..a19822ca42c69fc3116c52603c461170
  import net.md_5.bungee.protocol.packet.SetCompression;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
  import net.md_5.bungee.tab.TabList;
-@@ -138,7 +144,9 @@ public class DownstreamBridge extends PacketHandler
+@@ -138,7 +147,9 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PacketWrapper packet) throws Exception
      {
@@ -399,7 +460,7 @@ index df6e80927310accf46d1a80c71e5574adbe46d4c..a19822ca42c69fc3116c52603c461170
          con.sendPacket( packet );
      }
  
-@@ -156,6 +164,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -156,6 +167,8 @@ public class DownstreamBridge extends PacketHandler
          throw CancelSendSignal.INSTANCE; // Always throw because of profile rewriting
      }
  
@@ -408,7 +469,7 @@ index df6e80927310accf46d1a80c71e5574adbe46d4c..a19822ca42c69fc3116c52603c461170
      @Override
      public void handle(ScoreboardObjective objective) throws Exception
      {
-@@ -257,6 +267,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -257,6 +270,8 @@ public class DownstreamBridge extends PacketHandler
              }
          }
      }
@@ -417,24 +478,23 @@ index df6e80927310accf46d1a80c71e5574adbe46d4c..a19822ca42c69fc3116c52603c461170
  
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
-@@ -635,7 +647,7 @@ public class DownstreamBridge extends PacketHandler
-     @Override
-     public void handle(EntityEffect entityEffect) throws Exception
-     {
--        if (con.isDisableEntityMetadataRewrite()) return; // Waterfall
-+        // if (con.isDisableEntityMetadataRewrite()) return; // Waterfall // IvanCord - comment this
-         // Don't send any potions when switching between servers (which involves a handshake), which can trigger a race
-         // condition on the client.
-         if (this.con.getForgeClientHandler().isForgeUser() && !this.con.getForgeClientHandler().isHandshakeComplete()) {
-@@ -647,7 +659,7 @@ public class DownstreamBridge extends PacketHandler
-     @Override
-     public void handle(EntityRemoveEffect removeEffect) throws Exception
-     {
--        if (con.isDisableEntityMetadataRewrite()) return; // Waterfall
-+        // if (con.isDisableEntityMetadataRewrite()) return; // Waterfall // IvanCord - comment this
-         con.getPotions().remove(rewriteEntityId(removeEffect.getEntityId()), removeEffect.getEffectId());
+@@ -631,6 +646,8 @@ public class DownstreamBridge extends PacketHandler
+         }
      }
  
++    // IvanCord start - comment this whole handling out
++    /*
+     // Waterfall start
+     @Override
+     public void handle(EntityEffect entityEffect) throws Exception
+@@ -658,6 +675,7 @@ public class DownstreamBridge extends PacketHandler
+         return entityId;
+     }
+     // Waterfall end
++     */ // IvanCord end
+ 
+     @Override
+     public void handle(Respawn respawn)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 index 51d0c6cfe58e9f59c1c897ecf13a27ca60830fb8..22313d989a14dd878a86eede89254a6073140b5f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
@@ -449,3 +509,35 @@ index 51d0c6cfe58e9f59c1c897ecf13a27ca60830fb8..22313d989a14dd878a86eede89254a60
              con.getServer().getCh().write( packet );
          }
      }
+diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
+index c1272da380bb8fa60a2c80d8d6ab7a074b8f1785..d3d2a64905fd8876d217388fba3da46ce3e572fd 100644
+--- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
+@@ -95,14 +95,19 @@ public class ForgeClientHandler
+     {
+         state = ForgeClientHandshakeState.HELLO;
+ 
++        // IvanCord start - comment this out
++        /*
+         // This issue only exists in Forge 1.8.9
+         if (this.con.getPendingConnection().getVersion() == ProtocolConstants.MINECRAFT_1_8) {
+             this.resetAllThePotions(con);
+         }
++         */ // IvanCord end
+ 
+         con.unsafe().sendPacket( ForgeConstants.FML_RESET_HANDSHAKE );
+     }
+ 
++    // IvanCord start - comment this out
++    /*
+     private void resetAllThePotions(UserConnection con) {
+         // Just to be sure
+         for (Map.Entry<Integer, Integer> entry: con.getPotions().entries()) {
+@@ -110,6 +115,7 @@ public class ForgeClientHandler
+         }
+         con.getPotions().clear();
+     }
++     */ // IvanCord end
+ 
+     /**
+      * Sends the server mod list to the client, or stores it for sending later.

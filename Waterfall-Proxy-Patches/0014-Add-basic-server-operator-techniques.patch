@@ -249,7 +249,7 @@ index cb900b36a7d1910c1b765bce4c7f8912b68a1e74..c2bf04f209668f9658896d4aea45ed28
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b9ed1ca20b42e7320e6e301f5f22c20d7a6881c4..27cf6dc30125bad9e211a528a9727700ad46669b 100644
+index f6ac9838d65758440c18d3a9aa091471a57f5518..063e5c88669466eaf442277cf2394394d52d3ee0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -117,6 +117,10 @@ public final class UserConnection implements ProxiedPlayer
@@ -263,7 +263,7 @@ index b9ed1ca20b42e7320e6e301f5f22c20d7a6881c4..27cf6dc30125bad9e211a528a9727700
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -196,6 +200,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -199,6 +203,9 @@ public final class UserConnection implements ProxiedPlayer
          {
              forgeClientHandler.setFmlTokenInHandshake( true );
          }
@@ -273,7 +273,7 @@ index b9ed1ca20b42e7320e6e301f5f22c20d7a6881c4..27cf6dc30125bad9e211a528a9727700
      }
  
      public void sendPacket(PacketWrapper packet)
-@@ -569,7 +576,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -572,7 +579,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public boolean hasPermission(String permission)
      {
@@ -282,7 +282,7 @@ index b9ed1ca20b42e7320e6e301f5f22c20d7a6881c4..27cf6dc30125bad9e211a528a9727700
      }
  
      @Override
-@@ -791,6 +798,13 @@ public final class UserConnection implements ProxiedPlayer
+@@ -794,6 +801,13 @@ public final class UserConnection implements ProxiedPlayer
          new SoundPlayedEvent( this, position,
                  PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category.ordinal() ).callEvent();
      }

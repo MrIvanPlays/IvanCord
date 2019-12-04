@@ -172,10 +172,10 @@ index 8f587aa5980121c3c46c3583e74f79cf35bf45d1..c762462976f07466a1d1ceb6b5d9da70
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 27cf6dc30125bad9e211a528a9727700ad46669b..22e58e0e44f6ba0a64e62d5f7b463c218af554b6 100644
+index 063e5c88669466eaf442277cf2394394d52d3ee0..53a0c3296621b105dbd06004b64c4fb91de8c511 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -288,7 +288,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -291,7 +291,12 @@ public final class UserConnection implements ProxiedPlayer
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
      {
          // Waterfall start

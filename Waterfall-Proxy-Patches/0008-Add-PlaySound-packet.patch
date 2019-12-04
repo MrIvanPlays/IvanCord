@@ -174,7 +174,7 @@ index e893a4727002f5ca84de11fc4f316ecd05455184..3b8ee648f0c3ac596b0cb7a00b2c0449
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 405e34fc20d71b8511b4596acfbdbd37c860373a..6a36d148d8097a67499f6c98709050a6991ff53b 100644
+index 8096e1918ed4b32232a09292a821c8a43eaccadb..48b3cf25511bc04df8962c91f745404ed6d9be45 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -27,6 +27,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
@@ -185,7 +185,7 @@ index 405e34fc20d71b8511b4596acfbdbd37c860373a..6a36d148d8097a67499f6c98709050a6
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PlayerPosition;
-@@ -302,6 +303,15 @@ public enum Protocol
+@@ -305,6 +306,15 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x11 ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x12 )
              );
@@ -368,7 +368,7 @@ index 531669e783d7a8961d9d74a017429f03c2679c71..8f587aa5980121c3c46c3583e74f79cf
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 090b75c35fb77c5ad79b0172b54442529c29d713..b9ed1ca20b42e7320e6e301f5f22c20d7a6881c4 100644
+index 7991a81c54c685bef80350f248d62396aa309471..f6ac9838d65758440c18d3a9aa091471a57f5518 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -55,9 +55,11 @@ import net.md_5.bungee.protocol.MinecraftDecoder;
@@ -392,7 +392,7 @@ index 090b75c35fb77c5ad79b0172b54442529c29d713..b9ed1ca20b42e7320e6e301f5f22c20d
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -764,6 +768,31 @@ public final class UserConnection implements ProxiedPlayer
+@@ -767,6 +771,31 @@ public final class UserConnection implements ProxiedPlayer
          return serverSentScoreboard;
      }
  
