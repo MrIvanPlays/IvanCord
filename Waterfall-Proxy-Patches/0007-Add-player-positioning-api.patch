@@ -255,7 +255,7 @@ index 0000000000000000000000000000000000000000..f23fe50e8c9a22ce934f5797f9e75fb2
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c3b5c68457be375a84297db5502cf2b6cf43377c..7991a81c54c685bef80350f248d62396aa309471 100644
+index 9227cf3bf733ded30c1b4f9e450f61365f892216..0369539292c5fbb88458017d7bfbff718a6d47fc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -65,6 +65,7 @@ import net.md_5.bungee.tab.ServerUnique;
