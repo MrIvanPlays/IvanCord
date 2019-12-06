@@ -7,11 +7,11 @@ This patch adds support for json
 configuration files using gson
 
 diff --git a/config/pom.xml b/config/pom.xml
-index 32a005ff8e3789788e8afd53d6fb6eae21243629..d4f495bfb74a8e9db1d6b354166db262383b5491 100644
+index 77e2bae26cea98e9284266c7e699fc2e7f547117..e7c975e274bf8f35d1927a9396d8345b78a21a50 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -24,5 +24,12 @@
-             <version>1.23</version>
+             <version>1.25</version>
              <scope>compile</scope>
          </dependency>
 +        <!-- IvanCord - add gson -->

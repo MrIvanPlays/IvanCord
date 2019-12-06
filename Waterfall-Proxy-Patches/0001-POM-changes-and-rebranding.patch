@@ -64,7 +64,7 @@ index b79d7ed6b3d1c1f36dea22d15d1d65b76b3c1804..665e724b8f9a17385ddb1c07d366bac1
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 487fb3bb3e4a362fbe83505d4e43769bfc82ace8..699c91c9fc2849cba8fc90a0f5249aac63797e87 100644
+index 2c1fcc8ba08df65aaceb2a03aa1bf573999265fd..8d852ede6d4febaa19f64cdc2c3e86289451cb65 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,18 @@
@@ -154,7 +154,7 @@ index 7ad05abb87641a721efbe917ad084d7de9c3beee..56f778fe776628193fa8f635d00ab9ed
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 9d0fe24b560bb272051c01d8ea90857c1081d567..32a005ff8e3789788e8afd53d6fb6eae21243629 100644
+index 0ffb071c68aac9dac3eee974915b4d73c3efd42a..77e2bae26cea98e9284266c7e699fc2e7f547117 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,18 @@
@@ -308,7 +308,7 @@ index b5aeb99eeadb03dd22e54e4550ed98db0fc13721..ca5f1845eb2c69057d681edd1ab9a14f
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index eff0bf2e15a4256746475154d73e653e6ba3c490..7129d0e38da23e3fc07f2afc9eaf197adf7d9ef8 100644
+index 6de9e6aec6eaa4a2727f76f1bf4cdd0eae128567..e7a7b2007ca4b1c73cf7bcb6ec9d06bc311475d7 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -547,7 +547,7 @@ index 2493fc17a19f4401bfde52b325b29723ab72ef8d..65e4710f8aed3cd1728b3836c31393cf
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 440e128fbdb3d2f9052f54d8c9e1c19505f7f3e8..8a35e47daa1841303c498892623edae0f522128b 100644
+index 11f75a3de3186aa744b292b5a9a90b1af820c19d..9ccfa1d82fd69fe0f52a66e21c9d896b88adb8f3 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
