@@ -7,7 +7,7 @@ This patch adds support for json
 configuration files using gson
 
 diff --git a/config/pom.xml b/config/pom.xml
-index 77e2bae26cea98e9284266c7e699fc2e7f547117..e7c975e274bf8f35d1927a9396d8345b78a21a50 100644
+index fe519aa092626dd6a38bc785d318ed134f24c5c1..95847990b776dd9e48c844469b3be1288f14d4eb 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -24,5 +24,12 @@

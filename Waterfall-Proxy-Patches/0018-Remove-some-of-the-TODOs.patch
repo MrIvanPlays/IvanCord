@@ -156,10 +156,10 @@ index 4c0637b9a945755a4a88cc51ad20f8418d25f06d..592d5b16bf1ea4aaf116b751bdd38672
                  .connect()
                  .addListener( listener );
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 8f587aa5980121c3c46c3583e74f79cf35bf45d1..c762462976f07466a1d1ceb6b5d9da70a74d9185 100644
+index da095d47a97816586e5f98cac0bc6151bd745584..cc97c41311e7d85bcfaed699110daf00d80d3f89 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -352,7 +352,10 @@ public class ServerConnector extends PacketHandler
+@@ -353,7 +353,10 @@ public class ServerConnector extends PacketHandler
          }
  
          // Add to new server
