@@ -30,10 +30,10 @@ index 3b8cf634938776772bfd84b4f001aabb517f4b81..aa7d74a9e388fc851ffb86701df25081
      private final Unsafe unsafe = new Unsafe()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 67c5df4f2b28a832bf00031510d0b2631671eb3d..c30fa4764c12c502444f3627873adbd88d731531 100644
+index e90a689297be4d0f8d9c0c7ec3a13ad4f09cd87b..d4f8c74d706b70d71b13989dcbdf92e2413b2345 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -105,7 +105,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -100,7 +100,7 @@ public class DownstreamBridge extends PacketHandler
          // Waterfall start
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
          ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), TextComponent.fromLegacyText( bungee.getTranslation( "server_went_down" ) ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.EXCEPTION ) );
@@ -42,7 +42,7 @@ index 67c5df4f2b28a832bf00031510d0b2631671eb3d..c30fa4764c12c502444f3627873adbd8
          {
              server.setObsolete( true );
              con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
-@@ -166,8 +166,18 @@ public class DownstreamBridge extends PacketHandler
+@@ -161,8 +161,18 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(KeepAlive alive) throws Exception
      {
@@ -61,7 +61,7 @@ index 67c5df4f2b28a832bf00031510d0b2631671eb3d..c30fa4764c12c502444f3627873adbd8
      }
  
      @Override
-@@ -816,4 +826,15 @@ public class DownstreamBridge extends PacketHandler
+@@ -781,4 +791,15 @@ public class DownstreamBridge extends PacketHandler
      {
          return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
      }

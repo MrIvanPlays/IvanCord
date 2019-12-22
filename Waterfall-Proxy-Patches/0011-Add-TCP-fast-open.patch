@@ -108,10 +108,10 @@ index 0000000000000000000000000000000000000000..ffa0e1f58e1750bbc3d2332a2c2ebaa7
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 23241d6816a5736da66e3d186130187b8a11b3dd..134d88d4f8f17b24511dd2375ad204db96dcb1f9 100644
+index 31de5a6fcdc7bf1e066ddfb8d9190e9fc6d1ef64..90ee21591ec6426d3fefe2eb2bf2f552540119e1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -9,6 +9,7 @@ import io.netty.channel.EventLoopGroup;
+@@ -10,6 +10,7 @@ import io.netty.channel.EventLoopGroup;
  import io.netty.channel.ServerChannel;
  import io.netty.channel.WriteBufferWaterMark;
  import io.netty.channel.epoll.Epoll;
@@ -119,10 +119,10 @@ index 23241d6816a5736da66e3d186130187b8a11b3dd..134d88d4f8f17b24511dd2375ad204db
  import io.netty.channel.epoll.EpollDatagramChannel;
  import io.netty.channel.epoll.EpollEventLoopGroup;
  import io.netty.channel.epoll.EpollServerSocketChannel;
-@@ -60,6 +61,13 @@ public class PipelineUtils
-             ListenerInfo listener = ch.attr( LISTENER ).get();
- 
-             BASE.initChannel( ch );
+@@ -75,6 +76,13 @@ public class PipelineUtils
+                 ch.close();
+                 return;
+             }
 +            // IvanCord start - TCP fast open
 +            int configValue = ProxyServer.getInstance().getConfig().getTCPFastOpenMode();
 +            if ( epoll && ProxyServer.getInstance().getConfig().isTCPFastOpenEnabled() )

@@ -308,7 +308,7 @@ index f8b549dcec76c113bb9fe87b28472ea83834235c..ee857ff54fb426564d96be7874d35506
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index a89472ebe21db6eef1bb61d450908bf18909091e..ce0b5b42eac5b024fa2fdb8f57aa89c4d25bdcb7 100644
+index 66610a0f2fafaff1cf27cff199aadebccf969fbd..7864d2449320a6b3ae7cc8c8851ba1bc4d0479f2 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@

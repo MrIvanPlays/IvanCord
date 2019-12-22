@@ -191,7 +191,7 @@ index eece88704387e211fbab8e8c736b9d9fa81c2e63..5b6ff2ebebedc41622314267146b38e2
      public abstract void save(Configuration config, File file) throws IOException;
  
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
-index 3b3525f08caec962b51d90ce6e42758dac64aa10..1df27add55bafc9112bd89917a251efc895e78fc 100644
+index 3b3525f08caec962b51d90ce6e42758dac64aa10..b83a144c1cd388034a02d1a59227ccaf81126314 100644
 --- a/log4j/src/main/resources/log4j2.xml
 +++ b/log4j/src/main/resources/log4j2.xml
 @@ -3,15 +3,15 @@
@@ -199,10 +199,10 @@ index 3b3525f08caec962b51d90ce6e42758dac64aa10..1df27add55bafc9112bd89917a251efc
          <TerminalConsole name="TerminalConsole">
              <PatternLayout>
 -                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level] [%logger]: %minecraftFormatting{%msg}%n%xEx}">
-+                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %level]: [%t] [%logger] %minecraftFormatting{%msg}%n%xEx}"> <!-- IvanCord - changed -->
++                <LoggerNamePatternSelector defaultPattern="%highlightError{[%d{HH:mm:ss} %t/%level]: [%logger] %minecraftFormatting{%msg}%n%xEx}"> <!-- IvanCord - changed -->
                      <!-- Log root and BungeeCord loggers without prefix -->
 -                    <PatternMatch key=",BungeeCord" pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx}" />
-+                    <PatternMatch key=",BungeeCord" pattern="%highlightError{[%d{HH:mm:ss} %level]: [%t] %minecraftFormatting{%msg}%n%xEx}" /> <!-- IvanCord - changed -->
++                    <PatternMatch key=",BungeeCord" pattern="%highlightError{[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx}" /> <!-- IvanCord - changed -->
                  </LoggerNamePatternSelector>
              </PatternLayout>
          </TerminalConsole>
