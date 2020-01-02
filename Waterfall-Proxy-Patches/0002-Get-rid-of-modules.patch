@@ -234,21 +234,30 @@ index 0000000000000000000000000000000000000000..460482042d0b6f38fdd75aa7b4e74b58
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a51e7ecc32234d020a99dc6de676aa7fd1c19f73
+index 0000000000000000000000000000000000000000..78ddb0ca1b14f567ba4583ef6e6a33f86ce829d4
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java
-@@ -0,0 +1,127 @@
+@@ -0,0 +1,192 @@
 +package com.mrivanplays.ivancord.modules;
 +
++import com.google.common.collect.HashMultimap;
++import com.google.common.collect.Multimap;
++import com.mrivanplays.ivancord.util.ICUtil;
++import java.util.ArrayList;
 +import java.util.Collections;
 +import java.util.HashSet;
++import java.util.List;
 +import java.util.Locale;
++import java.util.Map;
 +import java.util.Set;
 +import java.util.stream.Collectors;
-+import com.mrivanplays.ivancord.util.ICUtil;
++import net.md_5.bungee.api.Callback;
 +import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.CommandSender;
 +import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.ServerConnectRequest;
++import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.md_5.bungee.api.chat.HoverEvent;
 +import net.md_5.bungee.api.config.ServerInfo;
 +import net.md_5.bungee.api.connection.ProxiedPlayer;
 +import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -257,6 +266,65 @@ index 0000000000000000000000000000000000000000..a51e7ecc32234d020a99dc6de676aa7f
 +
 +public class CommandSend extends Command implements TabExecutor
 +{
++
++    protected static class SendCallback
++    {
++
++        private final Multimap<ServerConnectRequest.Result, String> results = HashMultimap.create();
++        private final CommandSender sender;
++        private int count = 0;
++
++        public SendCallback(CommandSender sender)
++        {
++            this.sender = sender;
++        }
++
++        public void lastEntryDone()
++        {
++            sender.sendMessage( new ComponentBuilder( "Send results: " ).color( ChatColor.GREEN ).bold( true ).create() );
++            for ( Map.Entry<ServerConnectRequest.Result, String> entry : results.entries() )
++            {
++                ComponentBuilder builder = new ComponentBuilder( "" );
++                if ( !entry.getValue().isEmpty() )
++                {
++                    builder.event( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder( entry.getValue() ).color( ChatColor.YELLOW ).create() ) );
++                }
++                builder.append( entry.getKey().name() + ": " ).color( ChatColor.GREEN ).append( String.valueOf( results.get( entry.getKey() ).size() ) );
++                sender.sendMessage( builder.create() );
++            }
++        }
++
++        public static class Entry implements Callback<ServerConnectRequest.Result>
++        {
++
++            private final SendCallback callback;
++            private final ProxiedPlayer player;
++            private final ServerInfo target;
++
++            public Entry(SendCallback callback, ProxiedPlayer player, ServerInfo target)
++            {
++                this.callback = callback;
++                this.player = player;
++                this.target = target;
++                this.callback.count++;
++            }
++
++            @Override
++            public void done(ServerConnectRequest.Result result, Throwable error)
++            {
++                callback.results.put( result, player.getName() );
++                if ( result == ServerConnectRequest.Result.SUCCESS )
++                {
++                    player.sendMessage( ICUtil.translation( "you_got_summoned", target.getName(), callback.sender.getName() ) );
++                }
++
++                if ( --callback.count == 0 )
++                {
++                    callback.lastEntryDone();
++                }
++            }
++        }
++    }
 +
 +    public CommandSend()
 +    {
@@ -278,12 +346,10 @@ index 0000000000000000000000000000000000000000..a51e7ecc32234d020a99dc6de676aa7f
 +            return;
 +        }
 +
++        List<ProxiedPlayer> targets;
 +        if ( args[0].equalsIgnoreCase( "all" ) )
 +        {
-+            for ( ProxiedPlayer p : ProxyServer.getInstance().getPlayers() )
-+            {
-+                summon( p, target, sender );
-+            }
++            targets = new ArrayList<>( ProxyServer.getInstance().getPlayers() );
 +        } else if ( args[0].equalsIgnoreCase( "current" ) )
 +        {
 +            if ( !( sender instanceof ProxiedPlayer ) )
@@ -292,20 +358,14 @@ index 0000000000000000000000000000000000000000..a51e7ecc32234d020a99dc6de676aa7f
 +                return;
 +            }
 +            ProxiedPlayer player = (ProxiedPlayer) sender;
-+            for ( ProxiedPlayer p : player.getServer().getInfo().getPlayers() )
-+            {
-+                summon( p, target, sender );
-+            }
++            targets = new ArrayList<>( player.getServer().getInfo().getPlayers() );
 +        } else
 +        {
 +            // If we use a server name, send the entire server. This takes priority over players.
 +            ServerInfo serverTarget = ProxyServer.getInstance().getServerInfo( args[0] );
 +            if ( serverTarget != null )
 +            {
-+                for ( ProxiedPlayer p : serverTarget.getPlayers() )
-+                {
-+                    summon( p, target, sender );
-+                }
++                targets = new ArrayList<>( serverTarget.getPlayers() );
 +            } else
 +            {
 +                ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
@@ -314,19 +374,24 @@ index 0000000000000000000000000000000000000000..a51e7ecc32234d020a99dc6de676aa7f
 +                    sender.sendMessage( ICUtil.translation( "user_not_online" ) );
 +                    return;
 +                }
-+                summon( player, target, sender );
++                targets = Collections.singletonList( player );
 +            }
 +        }
-+        sender.sendMessage( ICUtil.translation( "successfully_summoned" ) );
-+    }
-+
-+    private void summon(ProxiedPlayer player, ServerInfo target, CommandSender sender)
-+    {
-+        if ( player.getServer() != null && !player.getServer().getInfo().equals( target ) )
++        SendCallback callback = new SendCallback( sender );
++        for ( ProxiedPlayer player : targets )
 +        {
-+            player.connect( target, ServerConnectEvent.Reason.COMMAND );
-+            player.sendMessage( ICUtil.translation( "you_got_summoned", target.getName(), sender.getName() ) );
++            ServerConnectRequest request = ServerConnectRequest.builder()
++                    .target( target )
++                    .reason( ServerConnectEvent.Reason.COMMAND )
++                    .callback( new SendCallback.Entry( callback, player, target ) )
++                    .build();
++            player.connect( request );
 +        }
++
++        sender.sendMessage(
++                new ComponentBuilder( "Attempting to send " + targets.size() + " players to " + target.getName() )
++                        .color( ChatColor.DARK_GREEN )
++                        .create() );
 +    }
 +
 +    @Override
@@ -342,7 +407,7 @@ index 0000000000000000000000000000000000000000..a51e7ecc32234d020a99dc6de676aa7f
 +        {
 +            String search = args[0].toLowerCase( Locale.ROOT );
 +            matches.addAll( ProxyServer.getInstance().getPlayers()
-+                    .parallelStream()
++                    .stream()
 +                    .map( CommandSender::getName )
 +                    .filter( name -> name.toLowerCase( Locale.ROOT ).startsWith( search ) )
 +                    .collect( Collectors.toList() ) );
@@ -358,7 +423,7 @@ index 0000000000000000000000000000000000000000..a51e7ecc32234d020a99dc6de676aa7f
 +        {
 +            String search = args[1].toLowerCase( Locale.ROOT );
 +            matches.addAll( ProxyServer.getInstance().getServersCopy().keySet()
-+                    .parallelStream()
++                    .stream()
 +                    .filter( name -> name.toLowerCase( Locale.ROOT ).startsWith( search ) )
 +                    .collect( Collectors.toList() ) );
 +        }
@@ -368,7 +433,7 @@ index 0000000000000000000000000000000000000000..a51e7ecc32234d020a99dc6de676aa7f
 \ No newline at end of file
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..6f186fca7a972f6bc6e204b2cef79719e56f61f4
+index 0000000000000000000000000000000000000000..a52c612ebef5119363111bd3adc48dbc874cc84b
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java
 @@ -0,0 +1,97 @@
@@ -463,7 +528,7 @@ index 0000000000000000000000000000000000000000..6f186fca7a972f6bc6e204b2cef79719
 +        }
 +        String lower = args[0].toLowerCase( Locale.ROOT );
 +        return ProxyServer.getInstance().getServersCopy().values()
-+                .parallelStream()
++                .stream()
 +                .filter( info -> info.getName().toLowerCase( Locale.ROOT ).startsWith( lower ) && info.canAccess( sender ) )
 +                .map( info -> info.getName().toLowerCase() )
 +                .collect( Collectors.toList() );
