@@ -5,7 +5,7 @@ Subject: [PATCH] Avoid creating buf copy
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 4fd2f6b1cb69da64f1653177ab478d10d67b80a8..b87bb07038ea6cbc4e12d13e8f1d3c7382cc849f 100644
+index 4fd2f6b1cb69da64f1653177ab478d10d67b80a8..799eaaffec2f88a3a87bd902fd8d9df14849a220 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -38,7 +38,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -39,14 +39,13 @@ index 4fd2f6b1cb69da64f1653177ab478d10d67b80a8..b87bb07038ea6cbc4e12d13e8f1d3c73
          } catch (BadPacketException | IndexOutOfBoundsException e) {
              final String packetTypeStr;
              if (packetTypeInfo instanceof Integer) {
-@@ -84,13 +91,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -84,13 +91,15 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              } else {
                  packetTypeStr = "unknown";
              }
 -            throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(slice), e); // Waterfall
 +            throw new FastDecoderException("Error decoding packet " + packetTypeStr + " with contents:\n" + ByteBufUtil.prettyHexDump(/*slice*/in), e); // Waterfall // IvanCord - avoid creating buf copy
 +            /* IvanCord start - avoid creating buf copy
-+>>>>>>> Avoid creating buf copy
          } finally
          {
              if ( slice != null )
