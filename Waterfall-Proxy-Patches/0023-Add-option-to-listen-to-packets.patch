@@ -96,7 +96,7 @@ index 0000000000000000000000000000000000000000..1dcd9448d2bc9a34a1ad2abb17102650
 +    void handle(DefinedPacket packet, PacketDirection direction);
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 71ddf022ae310beff40ef4d0e64bcc5d71a613e6..63b0f8f15b2571f293ca2d39b6809d2605d890b0 100644
+index 6c3c7ab8d872c7acffa0b1897c10ccdd9b1aefd2..4fd2f6b1cb69da64f1653177ab478d10d67b80a8 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -1,10 +1,15 @@
