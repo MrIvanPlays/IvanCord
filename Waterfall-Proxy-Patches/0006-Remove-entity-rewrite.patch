@@ -244,7 +244,7 @@ index 0b27fc86bf79ebbdbaf03a90285f5fb266c8c632..2e0139ba2598e508e6b92e69072585f0
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
-index 85d386c04c994b9f081aefd22f5c6f4aac5fdbc0..2bfbcb3f590634a2a5095e9e4c85bede8812a1ac 100644
+index a5555f6aff10b821c1648b52fb4abc827fd690a9..aeddabe2ee30057af6859d2e32b5a3801322aabb 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Team.java
 @@ -9,10 +9,14 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
@@ -276,10 +276,10 @@ index c25f6500eb5eaf210fefdbe4efaf34d26439cb40..794e79a27b1e19a5dd82781b01d3f6f4
      @Override
      public void load() {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 9911176467173bc2a097867e55aea7ee644d1106..49e0372b482d8d47742abdafa4ad99f83e80b96a 100644
+index 5611a53a44f8681ff72e65faf72ff6c94340c3c7..a1e9ec90e4f52f19e0d2fe1d16aeaf5cd0d577fa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -226,10 +226,12 @@ public class ServerConnector extends PacketHandler
+@@ -227,10 +227,12 @@ public class ServerConnector extends PacketHandler
              ch.write( message );
          }
  
@@ -292,7 +292,7 @@ index 9911176467173bc2a097867e55aea7ee644d1106..49e0372b482d8d47742abdafa4ad99f8
  
          if ( user.getForgeClientHandler().getClientModList() == null && !user.getForgeClientHandler().isHandshakeComplete() ) // Vanilla
          {
-@@ -259,6 +261,8 @@ public class ServerConnector extends PacketHandler
+@@ -260,6 +262,8 @@ public class ServerConnector extends PacketHandler
              user.getServer().setObsolete( true );
              user.getTabListHandler().onServerChange();
  
@@ -301,7 +301,7 @@ index 9911176467173bc2a097867e55aea7ee644d1106..49e0372b482d8d47742abdafa4ad99f8
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
              if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
              for ( Objective objective : serverScoreboard.getObjectives() )
-@@ -275,6 +279,8 @@ public class ServerConnector extends PacketHandler
+@@ -276,6 +280,8 @@ public class ServerConnector extends PacketHandler
              }
              } // Waterfall
              serverScoreboard.clear();
@@ -310,7 +310,7 @@ index 9911176467173bc2a097867e55aea7ee644d1106..49e0372b482d8d47742abdafa4ad99f8
  
              for ( UUID bossbar : user.getSentBossBars() )
              {
-@@ -294,15 +300,19 @@ public class ServerConnector extends PacketHandler
+@@ -295,15 +301,19 @@ public class ServerConnector extends PacketHandler
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
  
              user.setDimensionChange( true );
@@ -331,7 +331,7 @@ index 9911176467173bc2a097867e55aea7ee644d1106..49e0372b482d8d47742abdafa4ad99f8
                  // Ensure that we maintain consistency
                  user.setClientEntityId( login.getEntityId() );
  
-@@ -319,7 +329,7 @@ public class ServerConnector extends PacketHandler
+@@ -320,7 +330,7 @@ public class ServerConnector extends PacketHandler
                  if (user.getDimension() == login.getDimension()) {
                      user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType()));
                  }
@@ -341,10 +341,10 @@ index 9911176467173bc2a097867e55aea7ee644d1106..49e0372b482d8d47742abdafa4ad99f8
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index bdf388e4ff543a7cdaa83accd340c8aa20c3a0c1..9227cf3bf733ded30c1b4f9e450f61365f892216 100644
+index 0cd58d8776b356b69e4035229a169d19b5046873..8050b969b8d303d514020797184c20a6b48e9d32 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -41,7 +41,9 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
+@@ -42,7 +42,9 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
  import net.md_5.bungee.api.score.Scoreboard;
  import net.md_5.bungee.chat.ComponentSerializer;
  import net.md_5.bungee.connection.InitialHandler;
@@ -354,7 +354,7 @@ index bdf388e4ff543a7cdaa83accd340c8aa20c3a0c1..9227cf3bf733ded30c1b4f9e450f6136
  import net.md_5.bungee.forge.ForgeClientHandler;
  import net.md_5.bungee.forge.ForgeConstants;
  import net.md_5.bungee.forge.ForgeServerHandler;
-@@ -127,15 +129,22 @@ public final class UserConnection implements ProxiedPlayer
+@@ -129,15 +131,22 @@ public final class UserConnection implements ProxiedPlayer
      private final Scoreboard serverSentScoreboard = new Scoreboard();
      @Getter
      private final Collection<UUID> sentBossBars = new HashSet<>();
@@ -377,7 +377,7 @@ index bdf388e4ff543a7cdaa83accd340c8aa20c3a0c1..9227cf3bf733ded30c1b4f9e450f6136
      private Locale locale;
      /*========================================================================*/
      @Getter
-@@ -156,7 +165,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -158,7 +167,11 @@ public final class UserConnection implements ProxiedPlayer
  
      public void init()
      {
@@ -389,7 +389,7 @@ index bdf388e4ff543a7cdaa83accd340c8aa20c3a0c1..9227cf3bf733ded30c1b4f9e450f6136
  
          this.displayName = name;
  
-@@ -737,14 +750,19 @@ public final class UserConnection implements ProxiedPlayer
+@@ -755,14 +768,19 @@ public final class UserConnection implements ProxiedPlayer
      }
  
      @Override
@@ -410,10 +410,10 @@ index bdf388e4ff543a7cdaa83accd340c8aa20c3a0c1..9227cf3bf733ded30c1b4f9e450f6136
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index df6e80927310accf46d1a80c71e5574adbe46d4c..77623c2fdf622578ec02c64ff537d8fbf0f1db16 100644
+index 4aaff89eda5a7fa3dc98716eea8d8dfb87677c78..be1be7905bd18aed3da6189edb4a848042e4f179 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -39,11 +39,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
+@@ -41,11 +41,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
  import net.md_5.bungee.api.event.ServerKickEvent;
  import net.md_5.bungee.api.event.TabCompleteResponseEvent;
  import net.md_5.bungee.api.plugin.Command;
@@ -428,7 +428,7 @@ index df6e80927310accf46d1a80c71e5574adbe46d4c..77623c2fdf622578ec02c64ff537d8fb
  import net.md_5.bungee.chat.ComponentSerializer;
  import net.md_5.bungee.netty.ChannelWrapper;
  import net.md_5.bungee.netty.PacketHandler;
-@@ -52,16 +55,22 @@ import net.md_5.bungee.protocol.PacketWrapper;
+@@ -54,16 +57,22 @@ import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.Commands;
@@ -451,7 +451,7 @@ index df6e80927310accf46d1a80c71e5574adbe46d4c..77623c2fdf622578ec02c64ff537d8fb
  import net.md_5.bungee.protocol.packet.SetCompression;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
  import net.md_5.bungee.tab.TabList;
-@@ -138,7 +147,9 @@ public class DownstreamBridge extends PacketHandler
+@@ -140,7 +149,9 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PacketWrapper packet) throws Exception
      {
@@ -461,7 +461,7 @@ index df6e80927310accf46d1a80c71e5574adbe46d4c..77623c2fdf622578ec02c64ff537d8fb
          con.sendPacket( packet );
      }
  
-@@ -156,6 +167,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -158,6 +169,8 @@ public class DownstreamBridge extends PacketHandler
          throw CancelSendSignal.INSTANCE; // Always throw because of profile rewriting
      }
  
@@ -470,7 +470,7 @@ index df6e80927310accf46d1a80c71e5574adbe46d4c..77623c2fdf622578ec02c64ff537d8fb
      @Override
      public void handle(ScoreboardObjective objective) throws Exception
      {
-@@ -257,6 +270,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -259,6 +272,8 @@ public class DownstreamBridge extends PacketHandler
              }
          }
      }
@@ -479,7 +479,7 @@ index df6e80927310accf46d1a80c71e5574adbe46d4c..77623c2fdf622578ec02c64ff537d8fb
  
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
-@@ -631,6 +646,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -630,6 +645,8 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -488,7 +488,7 @@ index df6e80927310accf46d1a80c71e5574adbe46d4c..77623c2fdf622578ec02c64ff537d8fb
      // Waterfall start
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
-@@ -658,6 +675,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -657,6 +674,7 @@ public class DownstreamBridge extends PacketHandler
          return entityId;
      }
      // Waterfall end
@@ -511,10 +511,10 @@ index 51d0c6cfe58e9f59c1c897ecf13a27ca60830fb8..22313d989a14dd878a86eede89254a60
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-index c1272da380bb8fa60a2c80d8d6ab7a074b8f1785..d3d2a64905fd8876d217388fba3da46ce3e572fd 100644
+index bea2bbff94e1c359ed7e9b6d932641390eccff84..cba7577b65c18d090102b4d4061223682b377bde 100644
 --- a/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/forge/ForgeClientHandler.java
-@@ -95,14 +95,19 @@ public class ForgeClientHandler
+@@ -97,14 +97,19 @@ public class ForgeClientHandler
      {
          state = ForgeClientHandshakeState.HELLO;
  
@@ -534,7 +534,7 @@ index c1272da380bb8fa60a2c80d8d6ab7a074b8f1785..d3d2a64905fd8876d217388fba3da46c
      private void resetAllThePotions(UserConnection con) {
          // Just to be sure
          for (Map.Entry<Integer, Integer> entry: con.getPotions().entries()) {
-@@ -110,6 +115,7 @@ public class ForgeClientHandler
+@@ -112,6 +117,7 @@ public class ForgeClientHandler
          }
          con.getPotions().clear();
      }

@@ -8,10 +8,10 @@ a option to choose between yaml and json
 reconnect handlers.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 6ac60b382dc227bc81c70196e9754c4df938fc55..0ef6c6cd08c4c97fa0c77fcf21b8f537233437c5 100644
+index e0664d72a0617e1543d08ca5bb77a0320525c62e..69b5ba6070b739bf0da3cfbafaf1640db4a4ab4b 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -264,5 +264,12 @@ public interface ProxyConfig
+@@ -263,5 +263,12 @@ public interface ProxyConfig
       */
      int getTCPFastOpenMode();
  
@@ -183,10 +183,10 @@ index 58a8c3fda38a99e102e07255102d02c7656c2453..1111e912f1668b5cb330c13fd27972d5
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c2bf04f209668f9658896d4aea45ed2889124e62..23462f63e46045b27f407050f84cc9e2e0cc1df2 100644
+index a68fa11ef34c58bd50119b0396cc594266990b04..132d480fb0d78115cd785e3021b2c25235815c95 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -102,6 +102,9 @@ import com.mrivanplays.ivancord.commands.CommandPlugins;
+@@ -103,6 +103,9 @@ import com.mrivanplays.ivancord.commands.CommandPlugins;
  import com.mrivanplays.ivancord.conf.OpsConfiguration;
  import com.mrivanplays.ivancord.commands.op.CommandDeop;
  import com.mrivanplays.ivancord.commands.op.CommandOp;
@@ -196,7 +196,7 @@ index c2bf04f209668f9658896d4aea45ed2889124e62..23462f63e46045b27f407050f84cc9e2
  // IvanCord end
  
  /**
-@@ -314,6 +317,23 @@ public class BungeeCord extends ProxyServer
+@@ -315,6 +318,23 @@ public class BungeeCord extends ProxyServer
  
          isRunning = true;
  

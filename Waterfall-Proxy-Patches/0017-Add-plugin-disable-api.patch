@@ -81,7 +81,7 @@ index 35556d48b70930252e545db0a890301b99a5421c..ba1890d63cdfa41e7db009e553698c33
       * Called by the loader to initialize the fields in this plugin.
       *
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 4312e5714eb8f989e77c4e7447430c02eb392eaa..eea22ab19840860720abb36be76627242601cf58 100644
+index 6b3a40b97464ce0e5e777eb6890ee7993e8d3f2b..63955cda57005d8000ee014c9beade5308f4b98d 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -23,7 +23,12 @@ import java.util.Set;
@@ -97,7 +97,7 @@ index 4312e5714eb8f989e77c4e7447430c02eb392eaa..eea22ab19840860720abb36be7662724
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.api.ChatColor;
  import net.md_5.bungee.api.CommandSender;
-@@ -285,6 +290,9 @@ public class PluginManager
+@@ -287,6 +292,9 @@ public class PluginManager
                  {
                      plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
                  } );
@@ -107,7 +107,7 @@ index 4312e5714eb8f989e77c4e7447430c02eb392eaa..eea22ab19840860720abb36be7662724
              } catch ( Throwable t )
              {
                  ProxyServer.getInstance().getLogger().log( Level.WARNING, "Exception encountered when loading plugin: " + plugin.getDescription().getName(), t );
-@@ -499,4 +507,78 @@ public class PluginManager
+@@ -501,4 +509,78 @@ public class PluginManager
      {
          return Collections.unmodifiableCollection( commandMap.entrySet() );
      }
@@ -187,10 +187,10 @@ index 4312e5714eb8f989e77c4e7447430c02eb392eaa..eea22ab19840860720abb36be7662724
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 23462f63e46045b27f407050f84cc9e2e0cc1df2..a7d2da55225399d2c93053e1625240ec09e4a0a9 100644
+index 132d480fb0d78115cd785e3021b2c25235815c95..289e2cd46125e36ceab626e2c992d97a4ff2cd98 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -44,6 +44,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
+@@ -45,6 +45,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  import java.util.logging.Handler;
  import java.util.logging.Level;
  import java.util.logging.Logger;
@@ -198,7 +198,7 @@ index 23462f63e46045b27f407050f84cc9e2e0cc1df2..a7d2da55225399d2c93053e1625240ec
  import lombok.Getter;
  import lombok.Setter;
  import lombok.Synchronized;
-@@ -487,24 +488,13 @@ public class BungeeCord extends ProxyServer
+@@ -490,24 +491,13 @@ public class BungeeCord extends ProxyServer
                  saveThread.cancel();
                  // metricsThread.cancel(); // Waterfall: Disable Metrics
  

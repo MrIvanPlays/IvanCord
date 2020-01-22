@@ -215,10 +215,10 @@ index 0000000000000000000000000000000000000000..8a99463de283645730f4578eb4c38ba3
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index cb900b36a7d1910c1b765bce4c7f8912b68a1e74..c2bf04f209668f9658896d4aea45ed2889124e62 100644
+index 9b6be3d5ef054879a81c7467ac630d4a812e7ac4..a68fa11ef34c58bd50119b0396cc594266990b04 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -99,6 +99,9 @@ import com.mrivanplays.ivancord.modules.CommandList;
+@@ -100,6 +100,9 @@ import com.mrivanplays.ivancord.modules.CommandList;
  import com.mrivanplays.ivancord.modules.CommandSend;
  import com.mrivanplays.ivancord.modules.CommandServer;
  import com.mrivanplays.ivancord.commands.CommandPlugins;
@@ -228,7 +228,7 @@ index cb900b36a7d1910c1b765bce4c7f8912b68a1e74..c2bf04f209668f9658896d4aea45ed28
  // IvanCord end
  
  /**
-@@ -116,6 +119,10 @@ public class BungeeCord extends ProxyServer
+@@ -117,6 +120,10 @@ public class BungeeCord extends ProxyServer
       */
      @Getter
      public final Configuration config = new com.mrivanplays.ivancord.conf.IvanCordConfiguration(); // IvanCord - ivancord specific configuration
@@ -239,7 +239,7 @@ index cb900b36a7d1910c1b765bce4c7f8912b68a1e74..c2bf04f209668f9658896d4aea45ed28
      /**
       * Localization bundle.
       */
-@@ -245,6 +252,8 @@ public class BungeeCord extends ProxyServer
+@@ -246,6 +253,8 @@ public class BungeeCord extends ProxyServer
  
          // IvanCord start - specific commands to IvanCord
          getPluginManager().registerCommand( null, new CommandPlugins() );
@@ -249,10 +249,10 @@ index cb900b36a7d1910c1b765bce4c7f8912b68a1e74..c2bf04f209668f9658896d4aea45ed28
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ab4f6171e28ce7e466aecd750e1c0ddb7cea8757..ec02d373c60e15d5720058363a2376c9b4f89413 100644
+index 0c295205d07ebe2bd3f2027f3580bb584e66c27d..afcd3aa6a2af29b46e573ab425e18bf7996096c7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -117,6 +117,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -118,6 +118,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      private Position position;
      // IvanCord end
@@ -263,7 +263,7 @@ index ab4f6171e28ce7e466aecd750e1c0ddb7cea8757..ec02d373c60e15d5720058363a2376c9
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -199,6 +203,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -200,6 +204,9 @@ public final class UserConnection implements ProxiedPlayer
          {
              forgeClientHandler.setFmlTokenInHandshake( true );
          }
@@ -273,7 +273,7 @@ index ab4f6171e28ce7e466aecd750e1c0ddb7cea8757..ec02d373c60e15d5720058363a2376c9
      }
  
      public void sendPacket(PacketWrapper packet)
-@@ -572,7 +579,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -589,7 +596,7 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public boolean hasPermission(String permission)
      {
@@ -282,7 +282,7 @@ index ab4f6171e28ce7e466aecd750e1c0ddb7cea8757..ec02d373c60e15d5720058363a2376c9
      }
  
      @Override
-@@ -794,6 +801,13 @@ public final class UserConnection implements ProxiedPlayer
+@@ -811,6 +818,13 @@ public final class UserConnection implements ProxiedPlayer
          new SoundPlayedEvent( this, position,
                  PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category.ordinal() ).callEvent();
      }
@@ -297,7 +297,7 @@ index ab4f6171e28ce7e466aecd750e1c0ddb7cea8757..ec02d373c60e15d5720058363a2376c9
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 0ef56ad5c23ac7a0bb1706226bc843762a76d6fe..5c885702d09adef37c7b1db25a585c4d9265d357 100644
+index afafe58d0dc9a92bb6278e60c99a6aab7fb6aca5..b2bc825de03c2f242dc086b2be656783c4c64566 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -104,7 +104,7 @@ public class YamlConfig implements ConfigurationAdapter

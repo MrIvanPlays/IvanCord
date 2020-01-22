@@ -5,10 +5,10 @@ Subject: [PATCH] Proper KeepAlive cache
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
-index 3b8cf634938776772bfd84b4f001aabb517f4b81..aa7d74a9e388fc851ffb86701df250810a09de05 100644
+index 1f3a863e50a058611920611ceaa5488cf2520ba5..70b320a587bd148ac42704f89c3a56595741a18e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
-@@ -24,9 +24,20 @@ public class ServerConnection implements Server
+@@ -25,9 +25,20 @@ public class ServerConnection implements Server
      private boolean isObsolete;
      @Getter
      private final boolean forgeServer = false;
@@ -30,10 +30,10 @@ index 3b8cf634938776772bfd84b4f001aabb517f4b81..aa7d74a9e388fc851ffb86701df25081
      private final Unsafe unsafe = new Unsafe()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index e90a689297be4d0f8d9c0c7ec3a13ad4f09cd87b..d4f8c74d706b70d71b13989dcbdf92e2413b2345 100644
+index 164691501297bf24f96690459b727825de093624..10a578f4c471663fd339206381f08a1d10cc16ef 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -100,7 +100,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -102,7 +102,7 @@ public class DownstreamBridge extends PacketHandler
          // Waterfall start
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
          ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), TextComponent.fromLegacyText( bungee.getTranslation( "server_went_down" ) ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.EXCEPTION ) );
@@ -42,7 +42,7 @@ index e90a689297be4d0f8d9c0c7ec3a13ad4f09cd87b..d4f8c74d706b70d71b13989dcbdf92e2
          {
              server.setObsolete( true );
              con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
-@@ -161,8 +161,18 @@ public class DownstreamBridge extends PacketHandler
+@@ -163,8 +163,18 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(KeepAlive alive) throws Exception
      {
@@ -61,7 +61,7 @@ index e90a689297be4d0f8d9c0c7ec3a13ad4f09cd87b..d4f8c74d706b70d71b13989dcbdf92e2
      }
  
      @Override
-@@ -781,4 +791,15 @@ public class DownstreamBridge extends PacketHandler
+@@ -780,4 +790,15 @@ public class DownstreamBridge extends PacketHandler
      {
          return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
      }

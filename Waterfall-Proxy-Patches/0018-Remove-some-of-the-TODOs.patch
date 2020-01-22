@@ -33,10 +33,10 @@ index 9a262c8a11caeade95a084e5e5bc0be398917bbf..266a46e3abf3c4948477cb15c19a7e3b
 +    // IvanCord end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 0ef6c6cd08c4c97fa0c77fcf21b8f537233437c5..294154f75448254a9ac86a401088736315afc86e 100644
+index 69b5ba6070b739bf0da3cfbafaf1640db4a4ab4b..7c0c6375e0e7ad8ee2c36e7e764856bbf6535d22 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -271,5 +271,12 @@ public interface ProxyConfig
+@@ -270,5 +270,12 @@ public interface ProxyConfig
       */
      String getReconnectHandlerType();
  
@@ -87,7 +87,7 @@ index 1111e912f1668b5cb330c13fd27972d5875b31b8..284f574ac0b75c5ba3ea250b27f0c41f
  
      private int setupTFO(int incoming)
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 4c0637b9a945755a4a88cc51ad20f8418d25f06d..592d5b16bf1ea4aaf116b751bdd3867280c33b65 100644
+index 8e86462cbbe298c62c319e18dbe8a225fcf5e063..8bdd9111fe4ecb86ec17cc9ce5e83a7ddf915af3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -1,6 +1,7 @@
@@ -98,7 +98,7 @@ index 4c0637b9a945755a4a88cc51ad20f8418d25f06d..592d5b16bf1ea4aaf116b751bdd38672
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.ChannelFuture;
  import io.netty.channel.ChannelFutureListener;
-@@ -100,13 +101,16 @@ public class BungeeServerInfo implements ServerInfo
+@@ -101,13 +102,16 @@ public class BungeeServerInfo implements ServerInfo
          sendData( channel, data, true );
      }
  
@@ -116,7 +116,7 @@ index 4c0637b9a945755a4a88cc51ad20f8418d25f06d..592d5b16bf1ea4aaf116b751bdd38672
          Server server;
  
          synchronized (players) {
-@@ -121,6 +125,24 @@ public class BungeeServerInfo implements ServerInfo
+@@ -122,6 +126,24 @@ public class BungeeServerInfo implements ServerInfo
                  packetQueue.add(new PluginMessage(channel, data, false));
              }
          }
@@ -141,25 +141,24 @@ index 4c0637b9a945755a4a88cc51ad20f8418d25f06d..592d5b16bf1ea4aaf116b751bdd38672
  
          return false;
      }
-@@ -153,7 +175,12 @@ public class BungeeServerInfo implements ServerInfo
-                 .channel( PipelineUtils.getChannel() )
+@@ -161,6 +183,12 @@ public class BungeeServerInfo implements ServerInfo
                  .group( BungeeCord.getInstance().workerEventLoopGroup )
                  .handler( PipelineUtils.BASE )
--                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
+                 .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
 +                // IvanCord - remove to do "Configurable"
 +                /*
 +                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 )
 +                 */
 +                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().config.getConnectTimeoutMillis() )
 +                // IvanCord end
-                 .remoteAddress( getAddress() )
+                 .remoteAddress( socketAddress )
                  .connect()
                  .addListener( listener );
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index da095d47a97816586e5f98cac0bc6151bd745584..cc97c41311e7d85bcfaed699110daf00d80d3f89 100644
+index ba0516139190f1a58a3a1b9c185d21457c892fc4..d446f1cf8260efa1ef3dca171760353aa39a7be2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -353,7 +353,10 @@ public class ServerConnector extends PacketHandler
+@@ -354,7 +354,10 @@ public class ServerConnector extends PacketHandler
          }
  
          // Add to new server
@@ -172,10 +171,10 @@ index da095d47a97816586e5f98cac0bc6151bd745584..cc97c41311e7d85bcfaed699110daf00
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index ec02d373c60e15d5720058363a2376c9b4f89413..544221ff52eee0f04e3e3b74faef85d774954444 100644
+index afcd3aa6a2af29b46e573ab425e18bf7996096c7..5f0b967fc5905a7682f2615094f9f1f2275740be 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -291,7 +291,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -292,7 +292,12 @@ public final class UserConnection implements ProxiedPlayer
      public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, ServerConnectEvent.Reason reason)
      {
          // Waterfall start

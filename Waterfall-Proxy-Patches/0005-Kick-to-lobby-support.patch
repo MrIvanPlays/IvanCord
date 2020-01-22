@@ -5,10 +5,10 @@ Subject: [PATCH] Kick to lobby support
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index fd422f36a5b3a0268c1cee29063873f780b6eb97..464018025984786e2d4ec322ea128314bd1a994e 100644
+index 9f8f474079b74ed3bb590799e16bd8ddec7cfe54..7b77bc61e494b13b1f570638211c38601556ed2c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -232,4 +232,15 @@ public interface ProxyConfig
+@@ -231,4 +231,15 @@ public interface ProxyConfig
       * @return Should we disable entity metadata rewriting?
       */
      boolean isDisableEntityMetadataRewrite();
@@ -51,10 +51,10 @@ index 06d74844fe24fb7bdc33dc81c8ec28280e7a1c12..238bc3c1f43aa5bd6de34f4355ede2de
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 7b3f996957a9ac34880f1da5564b53a8a19644ce..df6e80927310accf46d1a80c71e5574adbe46d4c 100644
+index 721333708845be1eb5417530becaae964a3188b7..4aaff89eda5a7fa3dc98716eea8d8dfb87677c78 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -28,6 +28,8 @@ import net.md_5.bungee.ServerConnection;
+@@ -30,6 +30,8 @@ import net.md_5.bungee.ServerConnection;
  import net.md_5.bungee.UserConnection;
  import net.md_5.bungee.Util;
  import net.md_5.bungee.api.ProxyServer;
@@ -63,7 +63,7 @@ index 7b3f996957a9ac34880f1da5564b53a8a19644ce..df6e80927310accf46d1a80c71e5574a
  import net.md_5.bungee.api.chat.TextComponent;
  import net.md_5.bungee.api.config.ServerInfo;
  import net.md_5.bungee.api.connection.ProxiedPlayer;
-@@ -516,14 +518,46 @@ public class DownstreamBridge extends PacketHandler
+@@ -515,14 +517,46 @@ public class DownstreamBridge extends PacketHandler
          {
              def = null;
          }

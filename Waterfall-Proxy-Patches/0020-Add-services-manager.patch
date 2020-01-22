@@ -289,10 +289,10 @@ index 0000000000000000000000000000000000000000..68a64e45319c32c7d5037c305b4eda03
 +    Collection<Class<?>> getKnownServices();
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index d44ac67ea1ba67867ababf695427eec0d8e8bbc1..61e994109ca676815c3a4a63143051713550ebc3 100644
+index a401133595c203de499483ced0d2dda09ab147c8..1a789e83a7e14bfbb4c2254a0be1018691ec2d2a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -16,6 +16,8 @@ import net.md_5.bungee.api.plugin.Plugin;
+@@ -17,6 +17,8 @@ import net.md_5.bungee.api.plugin.Plugin;
  import net.md_5.bungee.api.plugin.PluginManager;
  import net.md_5.bungee.api.scheduler.TaskScheduler;
  
@@ -301,7 +301,7 @@ index d44ac67ea1ba67867ababf695427eec0d8e8bbc1..61e994109ca676815c3a4a6314305171
  public abstract class ProxyServer
  {
  
-@@ -315,4 +317,15 @@ public abstract class ProxyServer
+@@ -327,4 +329,15 @@ public abstract class ProxyServer
       */
      public abstract Title createTitle();
  
@@ -318,10 +318,10 @@ index d44ac67ea1ba67867ababf695427eec0d8e8bbc1..61e994109ca676815c3a4a6314305171
 +
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index eea22ab19840860720abb36be76627242601cf58..2b79cdae1fc103cedc29ae67adce9aa27b12d014 100644
+index 63955cda57005d8000ee014c9beade5308f4b98d..b40179749f00787d08433c71943b9ffb891d1645 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -548,6 +548,7 @@ public class PluginManager
+@@ -550,6 +550,7 @@ public class PluginManager
          }
          unregisterListeners( plugin );
          unregisterCommands( plugin );
@@ -574,10 +574,10 @@ index 0000000000000000000000000000000000000000..96063a5982f7f403c3f26998542517e1
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a7d2da55225399d2c93053e1625240ec09e4a0a9..07176ad63be968f0dc07c0255c907f8b69779870 100644
+index 289e2cd46125e36ceab626e2c992d97a4ff2cd98..9f618938243c69bd3868f3816dce349c04fa7386 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -106,6 +106,8 @@ import com.mrivanplays.ivancord.commands.op.CommandOp;
+@@ -107,6 +107,8 @@ import com.mrivanplays.ivancord.commands.op.CommandOp;
  import com.mrivanplays.ivancord.JsonReconnectHandler;
  import com.mrivanplays.ivancord.ReconnectHandlerType;
  import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
@@ -586,7 +586,7 @@ index a7d2da55225399d2c93053e1625240ec09e4a0a9..07176ad63be968f0dc07c0255c907f8b
  // IvanCord end
  
  /**
-@@ -189,6 +191,11 @@ public class BungeeCord extends ProxyServer
+@@ -190,6 +192,11 @@ public class BungeeCord extends ProxyServer
      private final ModuleManager moduleManager = new ModuleManager();
       */
  
@@ -598,7 +598,7 @@ index a7d2da55225399d2c93053e1625240ec09e4a0a9..07176ad63be968f0dc07c0255c907f8b
      {
          // TODO: Proper fallback when we interface the manager
          registerChannel( "BungeeCord" );
-@@ -306,6 +313,10 @@ public class BungeeCord extends ProxyServer
+@@ -307,6 +314,10 @@ public class BungeeCord extends ProxyServer
          pluginsFolder.mkdir();
          pluginManager.detectPlugins( pluginsFolder );
  

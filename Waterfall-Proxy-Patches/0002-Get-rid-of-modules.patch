@@ -5,7 +5,7 @@ Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index 7864d2449320a6b3ae7cc8c8851ba1bc4d0479f2..be759def5833248fb31c2f5b434a0d651f3332fa 100644
+index 62e379dc87650edf0f52a1aee2f45dca4068dbe1..53604bd0a2c9db4a1489c091fbd145478912c3d7 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -38,7 +38,9 @@
@@ -678,10 +678,10 @@ index 0000000000000000000000000000000000000000..4915d8d7b55c1f6d16ad55024ec807a2
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index de8cfb01010cc9fcc649e162bd3e7900735a6dfc..06be2beae81380f309070309c9e11ff727990a2e 100644
+index 3f2912dfcd2fdaaae73490c0c95a75f40e273713..bcca8ff9f7ba97812bd60c8726fa21905800c99a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -91,6 +91,15 @@ import net.md_5.bungee.query.RemoteQuery;
+@@ -92,6 +92,15 @@ import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
  
@@ -697,7 +697,7 @@ index de8cfb01010cc9fcc649e162bd3e7900735a6dfc..06be2beae81380f309070309c9e11ff7
  /**
   * Main BungeeCord proxy class.
   */
-@@ -164,7 +173,9 @@ public class BungeeCord extends ProxyServer
+@@ -165,7 +174,9 @@ public class BungeeCord extends ProxyServer
              .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
      @Getter
      private ConnectionThrottle connectionThrottle;
@@ -707,7 +707,7 @@ index de8cfb01010cc9fcc649e162bd3e7900735a6dfc..06be2beae81380f309070309c9e11ff7
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -222,6 +233,15 @@ public class BungeeCord extends ProxyServer
+@@ -223,6 +234,15 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandBungee() );
          getPluginManager().registerCommand( null, new CommandPerms() );
  
@@ -723,7 +723,7 @@ index de8cfb01010cc9fcc649e162bd3e7900735a6dfc..06be2beae81380f309070309c9e11ff7
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
              if ( EncryptionUtil.nativeFactory.load() )
-@@ -259,9 +279,11 @@ public class BungeeCord extends ProxyServer
+@@ -260,9 +280,11 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  

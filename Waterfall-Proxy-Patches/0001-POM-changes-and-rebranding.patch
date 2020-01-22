@@ -5,7 +5,7 @@ Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 8a67d8a3d8ec619609d580e1e71f24b058c8babb..582977dfc7acb1933e4bc91759b8ca5b5cf4ec8a 100644
+index 2380a5fd5e52030ef03b5f6ec22e7125d3108f59..5145aee2ac89bfca9b29057555e9a3405036b82d 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -308,7 +308,7 @@ index f8b549dcec76c113bb9fe87b28472ea83834235c..ee857ff54fb426564d96be7874d35506
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 66610a0f2fafaff1cf27cff199aadebccf969fbd..7864d2449320a6b3ae7cc8c8851ba1bc4d0479f2 100644
+index 903fd182d4bdde906d17c9e4396209d6a610e3db..62e379dc87650edf0f52a1aee2f45dca4068dbe1 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -410,17 +410,17 @@ index 66610a0f2fafaff1cf27cff199aadebccf969fbd..7864d2449320a6b3ae7cc8c8851ba1bc
  
      <properties>
          <build.number>unknown</build.number>
-@@ -108,7 +70,7 @@
+@@ -107,7 +69,7 @@
          <dependency>
              <groupId>com.google.guava</groupId>
              <artifactId>guava</artifactId>
--            <version>20.0</version>
+-            <version>21.0</version>
 +            <version>25.0-jre</version> <!-- IvanCord - update guava version -->
              <scope>compile</scope>
          </dependency>
          <dependency>
-@@ -233,86 +195,4 @@
-         </pluginManagement>
+@@ -201,86 +163,4 @@
+         </plugins>
      </build>
  
 -    <profiles>
@@ -547,7 +547,7 @@ index 4592e2b39d81c8c27d30e1401549c922a793ad07..3360fd317aa3c399b0c2e157e0b61656
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 39d6e35ec3612978c7a588d5ff2db77a108888dc..f880b87aa8b385a41f796df5fbc43a6a899a1a1c 100644
+index 52e45fe1a083aade9219dc0066a991592c5d59fc..23bdbf1a9c52d476e4f3bbfdd40f95771564e15b 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -617,10 +617,10 @@ index 39d6e35ec3612978c7a588d5ff2db77a108888dc..f880b87aa8b385a41f796df5fbc43a6a
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 6ae18f2cd0ce1d5204af7398d51c59b56e3a7566..de8cfb01010cc9fcc649e162bd3e7900735a6dfc 100644
+index c7ac1735dda933cc58321f839e11ce457f445e9d..3f2912dfcd2fdaaae73490c0c95a75f40e273713 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -180,7 +180,7 @@ public class BungeeCord extends ProxyServer
+@@ -181,7 +181,7 @@ public class BungeeCord extends ProxyServer
      public BungeeCord() throws IOException
      {
          // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
@@ -629,7 +629,7 @@ index 6ae18f2cd0ce1d5204af7398d51c59b56e3a7566..de8cfb01010cc9fcc649e162bd3e7900
  
          try
          {
-@@ -495,7 +495,7 @@ public class BungeeCord extends ProxyServer
+@@ -498,7 +498,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {
@@ -681,7 +681,7 @@ index 720d0c3b5ef7107690757142a5ded0268a84270a..477c45ab5442e53956aa95c402adf424
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 44011a9655331056c0e29ee98612f446700a52c8..0f650b0e4284458c4e89509112a46c72fe5440e7 100644
+index 85c2a0b52f5035cbb52df009c54327aedbcbf0bd..1c2e7d69b2c0e6c3511392e0274dd587f5b86d6d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -224,7 +224,7 @@ public class YamlConfig implements ConfigurationAdapter
@@ -691,7 +691,7 @@ index 44011a9655331056c0e29ee98612f446700a52c8..0f650b0e4284458c4e89509112a46c72
 -            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another Waterfall - Forced Host", val ) );
 +            String motd = ChatColor.translateAlternateColorCodes( '&', get( "motd", "&1Just another IvanCord - Forced Host", val ) ); // IvanCord - rebranding
              boolean restricted = get( "restricted", false, val );
-             InetSocketAddress address = Util.getAddr( addr );
+             SocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 diff --git a/query/pom.xml b/query/pom.xml
 index c3a291226f142dc4244048f38b1e4bccb9284287..99cd6d66667b68afa7da9d039e684bcd9e94b3c2 100644

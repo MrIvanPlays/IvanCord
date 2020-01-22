@@ -32,10 +32,10 @@ index 4722517aed4f34a214516ebbd3350e1adc1dc4b1..db9d219a655052d8a3197c87b980ab23
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index cc97c41311e7d85bcfaed699110daf00d80d3f89..d3a6d8ffb0c506ef389f62f69daf47ddd25a2ab5 100644
+index d446f1cf8260efa1ef3dca171760353aa39a7be2..e32204e16d3b3ededd452a1e496df908e22d4ca1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -362,10 +362,12 @@ public class ServerConnector extends PacketHandler
+@@ -363,10 +363,12 @@ public class ServerConnector extends PacketHandler
          user.setServerJoinQueue( null );
          user.setDimensionChange( false );
  

@@ -49,10 +49,10 @@ index 0000000000000000000000000000000000000000..b43ccc930ded59fd95ab98d757e9a98d
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f795314e1337e84914a917471b6cc4af520f5958..cb900b36a7d1910c1b765bce4c7f8912b68a1e74 100644
+index e575054b3f06703973c07c5a6ee92b4bd26ece9d..9b6be3d5ef054879a81c7467ac630d4a812e7ac4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -98,6 +98,7 @@ import com.mrivanplays.ivancord.modules.CommandFind;
+@@ -99,6 +99,7 @@ import com.mrivanplays.ivancord.modules.CommandFind;
  import com.mrivanplays.ivancord.modules.CommandList;
  import com.mrivanplays.ivancord.modules.CommandSend;
  import com.mrivanplays.ivancord.modules.CommandServer;
@@ -60,7 +60,7 @@ index f795314e1337e84914a917471b6cc4af520f5958..cb900b36a7d1910c1b765bce4c7f8912
  // IvanCord end
  
  /**
-@@ -242,6 +243,10 @@ public class BungeeCord extends ProxyServer
+@@ -243,6 +244,10 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandServer() );
          // IvanCord end
  
@@ -72,7 +72,7 @@ index f795314e1337e84914a917471b6cc4af520f5958..cb900b36a7d1910c1b765bce4c7f8912
          {
              if ( EncryptionUtil.nativeFactory.load() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 0f650b0e4284458c4e89509112a46c72fe5440e7..0ef56ad5c23ac7a0bb1706226bc843762a76d6fe 100644
+index 1c2e7d69b2c0e6c3511392e0274dd587f5b86d6d..afafe58d0dc9a92bb6278e60c99a6aab7fb6aca5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -103,7 +103,8 @@ public class YamlConfig implements ConfigurationAdapter

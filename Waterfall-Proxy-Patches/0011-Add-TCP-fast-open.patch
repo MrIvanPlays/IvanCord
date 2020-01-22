@@ -5,10 +5,10 @@ Subject: [PATCH] Add TCP fast open
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 39279c144ce7353682fd9340c3a6589025e82277..6ac60b382dc227bc81c70196e9754c4df938fc55 100644
+index b6474d84e1df7d04c48685408e64125f01e01582..e0664d72a0617e1543d08ca5bb77a0320525c62e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -250,5 +250,19 @@ public interface ProxyConfig
+@@ -249,5 +249,19 @@ public interface ProxyConfig
       */
      boolean isDisableTabListRewrite();
  
@@ -108,18 +108,18 @@ index 0000000000000000000000000000000000000000..ffa0e1f58e1750bbc3d2332a2c2ebaa7
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 31de5a6fcdc7bf1e066ddfb8d9190e9fc6d1ef64..90ee21591ec6426d3fefe2eb2bf2f552540119e1 100644
+index e89f36691c1fe4716f7677decd8ea887a9e6dcf0..826c5f1e6a36b8aa1ca3f21a7f246a1c014e1cc6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -10,6 +10,7 @@ import io.netty.channel.EventLoopGroup;
+@@ -11,6 +11,7 @@ import io.netty.channel.EventLoopGroup;
  import io.netty.channel.ServerChannel;
  import io.netty.channel.WriteBufferWaterMark;
  import io.netty.channel.epoll.Epoll;
 +import io.netty.channel.epoll.EpollChannelOption; // IvanCord
  import io.netty.channel.epoll.EpollDatagramChannel;
+ import io.netty.channel.epoll.EpollDomainSocketChannel;
  import io.netty.channel.epoll.EpollEventLoopGroup;
- import io.netty.channel.epoll.EpollServerSocketChannel;
-@@ -75,6 +76,13 @@ public class PipelineUtils
+@@ -81,6 +82,13 @@ public class PipelineUtils
                  ch.close();
                  return;
              }
