@@ -288,10 +288,10 @@ index 9f618938243c69bd3868f3816dce349c04fa7386..6979712c099648b7361a814508c3a133
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 95fa9f00ff97ea6748e110d22c1460d2483ed9ff..647a18b4d82da4826e39224f73414856cd0e8c1b 100644
+index 13b28ef191d0165d0d9bc40847d1aacbdf45b76a..2a787fadb98fd7403419f42ad5178d4d1eb3a967 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -381,8 +381,8 @@ public final class UserConnection implements ProxiedPlayer
+@@ -378,8 +378,8 @@ public final class UserConnection implements ProxiedPlayer
              protected void initChannel(Channel ch) throws Exception
              {
                  PipelineUtils.BASE.initChannel( ch );
@@ -303,10 +303,10 @@ index 95fa9f00ff97ea6748e110d22c1460d2483ed9ff..647a18b4d82da4826e39224f73414856
              }
          };
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-index 6bc14d675249cab64433db9f57cb60ca7ab9da90..2db9f157dc30d7a9189d9b849d3c7d028447a3bd 100644
+index 6df3f3dd9f637e7b096c6c91e26ca819520b0bdb..4e4b6f2aabfad5e0c9bc3b2df1ca3a98590d57a3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/PingHandler.java
-@@ -34,9 +34,9 @@ public class PingHandler extends PacketHandler
+@@ -35,9 +35,9 @@ public class PingHandler extends PacketHandler
      public void connected(ChannelWrapper channel) throws Exception
      {
          this.channel = channel;

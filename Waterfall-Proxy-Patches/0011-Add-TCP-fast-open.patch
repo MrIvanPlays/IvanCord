@@ -5,10 +5,10 @@ Subject: [PATCH] Add TCP fast open
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index b6474d84e1df7d04c48685408e64125f01e01582..e0664d72a0617e1543d08ca5bb77a0320525c62e 100644
+index 809c5ab9ae228016e05809d236a0ed5fa69661ad..56009c83aa6269efac464eb922f37de3e8aa2846 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -249,5 +249,19 @@ public interface ProxyConfig
+@@ -257,5 +257,19 @@ public interface ProxyConfig
       */
      boolean isDisableTabListRewrite();
  

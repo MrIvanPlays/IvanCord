@@ -64,7 +64,7 @@ index 2380a5fd5e52030ef03b5f6ec22e7125d3108f59..5145aee2ac89bfca9b29057555e9a340
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 0a27c9f66554046375c43bb0ed98d8ed92220ba2..a63a407b193ff96ea86022f47a6b241414a33d6e 100644
+index e7b76d5b910ae6e27df1368e6d9272eea1aa01d5..875697e688b19e43ee868f2b7eff3894cbc0c626 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,18 @@
@@ -92,7 +92,7 @@ index 0a27c9f66554046375c43bb0ed98d8ed92220ba2..a63a407b193ff96ea86022f47a6b2414
  
      <properties>
          <maven.deploy.skip>true</maven.deploy.skip>
-@@ -27,15 +26,15 @@
+@@ -28,15 +27,15 @@
  
      <dependencies>
          <dependency>
