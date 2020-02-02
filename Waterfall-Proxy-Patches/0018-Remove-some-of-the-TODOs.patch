@@ -33,10 +33,10 @@ index 9a262c8a11caeade95a084e5e5bc0be398917bbf..266a46e3abf3c4948477cb15c19a7e3b
 +    // IvanCord end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 77661181ffe00f89b7c1028f2ea6850789675583..c37e526a88671fb9b8d96f0df7e4e87d3a708aa9 100644
+index 3546e3eb40e0a066d129a58cc1af607e9a265fcf..3c1e34753ef90f706af6a301eba12ef3a804d942 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -278,5 +278,12 @@ public interface ProxyConfig
+@@ -294,5 +294,12 @@ public interface ProxyConfig
       */
      String getReconnectHandlerType();
  
@@ -48,23 +48,6 @@ index 77661181ffe00f89b7c1028f2ea6850789675583..c37e526a88671fb9b8d96f0df7e4e87d
 +    int getConnectTimeoutMillis();
 +
      // IvanCord end
- }
-diff --git a/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java b/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
-index ad2ebdea0d73455aa12cdf4fda4ef7251d3c0ebc..c4922a690021857f19e4f546b61ce611eab0ef4c 100644
---- a/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
-+++ b/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
-@@ -73,6 +73,11 @@ public class ServerConnectRequest
-     public static class Builder
-     {
- 
--        private int connectTimeout = 5000; // TODO: Configurable
-+        // IvanCord start - remove to do "Configurable"
-+        /*
-+        private int connectTimeout = 5000;
-+         */
-+        private int connectTimeout = ProxyServer.getInstance().getConfig().getConnectTimeoutMillis();
-+        // IvanCord end
-     }
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 index 1111e912f1668b5cb330c13fd27972d5875b31b8..284f574ac0b75c5ba3ea250b27f0c41f6dbecbf4 100644
@@ -87,7 +70,7 @@ index 1111e912f1668b5cb330c13fd27972d5875b31b8..284f574ac0b75c5ba3ea250b27f0c41f
  
      private int setupTFO(int incoming)
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index fa4fff0e7563e36f3b8992b3a97348c4c7a53edf..cbfffb5423715c8116303990e2d5d94350b30b46 100644
+index 7b002089ef9dd9f365dc0f7db076976b8dc6260c..1ab5a0b3c175a39ad8ca6a39ce2568be1345fc83 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -1,6 +1,7 @@
@@ -141,19 +124,6 @@ index fa4fff0e7563e36f3b8992b3a97348c4c7a53edf..cbfffb5423715c8116303990e2d5d943
  
          return false;
      }
-@@ -187,6 +209,12 @@ public class BungeeServerInfo implements ServerInfo
-                 .group( BungeeCord.getInstance().workerEventLoopGroup )
-                 .handler( PipelineUtils.BASE )
-                 .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
-+                // IvanCord - remove to do "Configurable"
-+                /*
-+                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 )
-+                 */
-+                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().config.getConnectTimeoutMillis() )
-+                // IvanCord end
-                 .remoteAddress( socketAddress )
-                 .connect()
-                 .addListener( listener );
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 index ba0516139190f1a58a3a1b9c185d21457c892fc4..d446f1cf8260efa1ef3dca171760353aa39a7be2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java

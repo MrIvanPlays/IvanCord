@@ -68,7 +68,7 @@ index 25ec1bd8f208859c8aba196150aae6b6c41e6105..052baf480002ea9f532bc623ba3cf9b9
   * Dummy class which all callable events must extend.
   */
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 5b99c84a80e2ced14e1ed249392adbe99cecae33..6b3a40b97464ce0e5e777eb6890ee7993e8d3f2b 100644
+index 22f0c1d814da1f440a852207f3c877ebc46101d6..0026970afae1e3481ded54751ca6390c88e72c5e 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -389,9 +389,9 @@ public class PluginManager
@@ -132,19 +132,6 @@ index a92d30f98f46fd3480378daed325417ae38a4a8e..3dade04f451bbbd99e2ecc05c7a95ded
 +        // IvanCord end
      }
  }
-diff --git a/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java b/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
-index 3bae80640b9c11fd2a2212a4b648f24530de51c3..c5935940c91d93100e2baa90b85612fd1851c479 100644
---- a/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
-+++ b/api/src/test/java/net/md_5/bungee/api/ServerConnectRequestTest.java
-@@ -79,7 +79,7 @@ public class ServerConnectRequestTest
-         }
-     };
- 
--    @Test
-+    // @Test // IvanCord - remove this test
-     public void testDefaultConnectTimeout()
-     {
-         ServerConnectRequest request = ServerConnectRequest.builder().target( DUMMY_INFO ).reason( ServerConnectEvent.Reason.JOIN_PROXY ).build();
 diff --git a/config/src/main/java/net/md_5/bungee/config/Configuration.java b/config/src/main/java/net/md_5/bungee/config/Configuration.java
 index d7ed3e1143745b91c6a98bf78f4be02b3bbf704b..209cb85988d005103ebc5529db43b16285baf667 100644
 --- a/config/src/main/java/net/md_5/bungee/config/Configuration.java
@@ -253,7 +240,7 @@ index c40f3e032faf34ec66ddaf4080c3d17c416a91ee..9b083546edb20f5fa5381dccd85ec2fe
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
-index 864610433bd505cedf9e770f4b4161da1e9f23e5..f7e76a3b5c3b39eb4cb6f1b4baa3622b7a221030 100644
+index 95904de9fd0f1f34a397e714c569131a5981b145..069faddf8b3a68fc56d3f51b351b113433129be5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
 @@ -57,7 +57,11 @@ public class ServerConnection implements Server

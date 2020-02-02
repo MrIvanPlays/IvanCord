@@ -410,7 +410,7 @@ index efb9222d69d231d4e6c7abdad122ab49de8efbb5..599ff5dc95a5f660ff66bce7fce059af
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 8f229577bc9cabe1d03c0f401075ac29b4d87017..9145fd852b2622d0e9ac25ae7b49681c84a0cb1c 100644
+index 057ae13dad56134e0a1af2e3260d73110168ab90..d6ecd645391805e4cf43608f9a5f78942deb05eb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -42,11 +42,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
@@ -461,7 +461,7 @@ index 8f229577bc9cabe1d03c0f401075ac29b4d87017..9145fd852b2622d0e9ac25ae7b49681c
          con.sendPacket( packet );
      }
  
-@@ -161,6 +172,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -162,6 +173,8 @@ public class DownstreamBridge extends PacketHandler
          throw CancelSendSignal.INSTANCE; // Always throw because of profile rewriting
      }
  
@@ -470,7 +470,7 @@ index 8f229577bc9cabe1d03c0f401075ac29b4d87017..9145fd852b2622d0e9ac25ae7b49681c
      @Override
      public void handle(ScoreboardObjective objective) throws Exception
      {
-@@ -262,6 +275,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -263,6 +276,8 @@ public class DownstreamBridge extends PacketHandler
              }
          }
      }
@@ -479,7 +479,7 @@ index 8f229577bc9cabe1d03c0f401075ac29b4d87017..9145fd852b2622d0e9ac25ae7b49681c
  
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
-@@ -633,6 +648,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -634,6 +649,8 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -488,7 +488,7 @@ index 8f229577bc9cabe1d03c0f401075ac29b4d87017..9145fd852b2622d0e9ac25ae7b49681c
      // Waterfall start
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
-@@ -660,6 +677,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -661,6 +678,7 @@ public class DownstreamBridge extends PacketHandler
          return entityId;
      }
      // Waterfall end

@@ -318,7 +318,7 @@ index a401133595c203de499483ced0d2dda09ab147c8..1a789e83a7e14bfbb4c2254a0be10186
 +
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 63955cda57005d8000ee014c9beade5308f4b98d..b40179749f00787d08433c71943b9ffb891d1645 100644
+index 7c88605ce70bed2a6620a13f4c2825327da0b8b4..7745fed142e02d88779a0f2a1ff0be14baee5f21 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -550,6 +550,7 @@ public class PluginManager

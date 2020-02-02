@@ -5,10 +5,10 @@ Subject: [PATCH] Add option to disable tab list rewrite
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 41f72e0b23be328e5161679917ab9b82a0546e0d..809c5ab9ae228016e05809d236a0ed5fa69661ad 100644
+index 26467bd6c3519a80234a5c65e8208c073ac2f6ba..d6dd1125c33aff926dca2301c62ab6bb15156c2c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -249,5 +249,13 @@ public interface ProxyConfig
+@@ -265,5 +265,13 @@ public interface ProxyConfig
       * @return should the player kicked be transferred to lobby
       */
      boolean isKickToLobby();
@@ -42,10 +42,10 @@ index 238bc3c1f43aa5bd6de34f4355ede2dee818fef3..996c02b848c32e44abadb7ddeff9e59d
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index af202e5475b97e6672c7eda29567f40c895ef776..8fd0e2a5380a3e3f862eddc35d286c6c9e3afbca 100644
+index 73dbab919ba87a9a637e7f3a6c454266a6c5e3e2..4bf74775ad072cb759f280aeae993665850a5708 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -173,8 +173,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -174,8 +174,19 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PlayerListItem playerList) throws Exception
      {

@@ -291,7 +291,7 @@ index 599ff5dc95a5f660ff66bce7fce059afd8c3d845..23a603c704ed3d49f967a63b80377916
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 9145fd852b2622d0e9ac25ae7b49681c84a0cb1c..af202e5475b97e6672c7eda29567f40c895ef776 100644
+index d6ecd645391805e4cf43608f9a5f78942deb05eb..73dbab919ba87a9a637e7f3a6c454266a6c5e3e2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -66,6 +66,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
@@ -313,7 +313,7 @@ index 9145fd852b2622d0e9ac25ae7b49681c84a0cb1c..af202e5475b97e6672c7eda29567f40c
  
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
-@@ -727,6 +732,41 @@ public class DownstreamBridge extends PacketHandler
+@@ -728,6 +733,41 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
