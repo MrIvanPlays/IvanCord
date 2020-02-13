@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Thu, 13 Feb 2020 10:24:15 +0200
+Subject: [PATCH] Added flush before close (SpigotMC#2749)
+
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+index d45a6140780f592d9f8c67cf2f7cb83496a14681..e05b4bf0c50f39bb665cfc58591dad14654e3a7e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+@@ -98,6 +98,7 @@ public class ChannelWrapper
+             // Minecraft client can take some time to switch protocols.
+             // Sending the wrong disconnect packet whilst a protocol switch is in progress will crash it.
+             // Delay 250ms to ensure that the protocol switch (if any) has definitely taken place.
++            ch.flush(); // IvanCord - added flush before close (SpigotMC#2749)
+             ch.eventLoop().schedule( new Runnable()
+             {
+ 
