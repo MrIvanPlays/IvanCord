@@ -218,7 +218,7 @@ index bcca8ff9f7ba97812bd60c8726fa21905800c99a..98690b669ce8934ebbaf77ba0e1bce1c
                      try {
                          bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index c40f3e032faf34ec66ddaf4080c3d17c416a91ee..9b083546edb20f5fa5381dccd85ec2fe86988b05 100644
+index c40f3e032faf34ec66ddaf4080c3d17c416a91ee..77d712bddf100b4ac898c80686085921b29fe6b8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -40,6 +40,8 @@ public class BungeeCordLauncher
@@ -230,7 +230,7 @@ index c40f3e032faf34ec66ddaf4080c3d17c416a91ee..9b083546edb20f5fa5381dccd85ec2fe
          if ( BungeeCord.class.getPackage().getSpecificationVersion() != null && System.getProperty( "IReallyKnowWhatIAmDoingISwear" ) == null )
          {
              Date buildDate = new SimpleDateFormat( "yyyyMMdd" ).parse( BungeeCord.class.getPackage().getSpecificationVersion() );
-@@ -55,6 +57,8 @@ public class BungeeCordLauncher
+@@ -55,8 +57,23 @@ public class BungeeCordLauncher
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
              }
          }
@@ -238,7 +238,22 @@ index c40f3e032faf34ec66ddaf4080c3d17c416a91ee..9b083546edb20f5fa5381dccd85ec2fe
 +        // IvanCord end
  
          BungeeCord bungee = new BungeeCord();
++        // IvanCord start - output JVM and OS information on startup
++        // Credits: PaperMC
++        java.lang.management.RuntimeMXBean runtimeMX = java.lang.management.ManagementFactory.getRuntimeMXBean();
++        java.lang.management.OperatingSystemMXBean osMX = java.lang.management.ManagementFactory.getOperatingSystemMXBean();
++        if ( runtimeMX != null && osMX != null )
++        {
++            bungee.getLogger().info(
++                    String.format( "System info: Java: %s (%s %s) Host: %s %s (%s)",
++                            runtimeMX.getSpecVersion(), runtimeMX.getVmName(), runtimeMX.getVmVersion(),
++                            osMX.getName(), osMX.getVersion(), osMX.getArch() )
++            );
++        }
++        // IvanCord end
          ProxyServer.setInstance( bungee );
+         bungee.start();
+         bungee.getLogger().info( "Enabled IvanCord version " + bungee.getVersion() ); // IvanCord - rebranding
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
 index 95904de9fd0f1f34a397e714c569131a5981b145..069faddf8b3a68fc56d3f51b351b113433129be5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
