@@ -151,10 +151,10 @@ index d7ed3e1143745b91c6a98bf78f4be02b3bbf704b..209cb85988d005103ebc5529db43b162
      private final Configuration defaults;
  
 diff --git a/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java b/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
-index eece88704387e211fbab8e8c736b9d9fa81c2e63..5b6ff2ebebedc41622314267146b38e296ace0c2 100644
+index 0118fca2c08f2e4482058ead860a8c4c239489ac..9f3496232960da55ecd6f8b198662d8bb531cdcb 100644
 --- a/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
 +++ b/config/src/main/java/net/md_5/bungee/config/ConfigurationProvider.java
-@@ -23,6 +23,22 @@ public abstract class ConfigurationProvider
+@@ -37,6 +37,22 @@ public abstract class ConfigurationProvider
          return providers.get( provider );
      }
  
@@ -166,9 +166,9 @@ index eece88704387e211fbab8e8c736b9d9fa81c2e63..5b6ff2ebebedc41622314267146b38e2
 +
 +    public static <T extends ConfigurationProvider> void unregisterProvider(Class<T> provider)
 +    {
-+        if ( provider.isAssignableFrom( YamlConfiguration.class ) )
++        if ( provider.isAssignableFrom( YamlConfiguration.class ) || provider.isAssignableFrom( JsonConfiguration.class ) )
 +        {
-+            throw new IllegalArgumentException( "YamlConfiguration provider cannot be unregistered." );
++            throw new IllegalArgumentException( "YamlConfiguration and JsonConfiguration providers cannot be unregistered." );
 +        }
 +        providers.remove( provider );
 +    }
@@ -274,7 +274,7 @@ index 139c4f09cb731628d3ff00e4df48fec51e8f0872..5611a53a44f8681ff72e65faf72ff6c9
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 95dbaefdb4b3b3bc291c555756957a041f43b844..efb9222d69d231d4e6c7abdad122ab49de8efbb5 100644
+index d82a363bb18ad38f6dbacb35ee476a0cc39222d4..86ed27934de8c18a0af404724ad79f4ca6da123b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -319,7 +319,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -369,7 +369,7 @@ index 18422669106553a2e6555c47ef06a8eaf891a989..66747e0570c07e392c6133fe08b8f150
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 6dc5633f5241ad6a1619500d37790e5c24c67155..d45a6140780f592d9f8c67cf2f7cb83496a14681 100644
+index 6dc5633f5241ad6a1619500d37790e5c24c67155..0f53e42eac116541ebc980c9a8f30b73e8d4e02f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 @@ -49,7 +49,7 @@ public class ChannelWrapper
@@ -381,3 +381,11 @@ index 6dc5633f5241ad6a1619500d37790e5c24c67155..d45a6140780f592d9f8c67cf2f7cb834
          {
              if ( packet instanceof PacketWrapper )
              {
+@@ -98,6 +98,7 @@ public class ChannelWrapper
+             // Minecraft client can take some time to switch protocols.
+             // Sending the wrong disconnect packet whilst a protocol switch is in progress will crash it.
+             // Delay 250ms to ensure that the protocol switch (if any) has definitely taken place.
++            ch.flush(); // IvanCord - SpigotMC/BungeeCord#2749
+             ch.eventLoop().schedule( new Runnable()
+             {
+ 

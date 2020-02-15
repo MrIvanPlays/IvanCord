@@ -249,7 +249,7 @@ index 9b6be3d5ef054879a81c7467ac630d4a812e7ac4..a68fa11ef34c58bd50119b0396cc5942
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 1072f33e989fe6b9a733f18afb36cfa37e148ab8..c73fc9f4edcaa7d1be2d0a5bdd85638691656fc0 100644
+index 4caef09ce6a0d703ebacd97760e68860675aaedc..b6646c633c47deaa075a7bc4956ef53c763e75d6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -115,6 +115,10 @@ public final class UserConnection implements ProxiedPlayer

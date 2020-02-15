@@ -341,7 +341,7 @@ index 5611a53a44f8681ff72e65faf72ff6c94340c3c7..a1e9ec90e4f52f19e0d2fe1d16aeaf5c
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index efb9222d69d231d4e6c7abdad122ab49de8efbb5..599ff5dc95a5f660ff66bce7fce059afd8c3d845 100644
+index 86ed27934de8c18a0af404724ad79f4ca6da123b..0fc1b2ae1a456a2665fab8e94826216657fe8a17 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -42,7 +42,9 @@ import net.md_5.bungee.api.event.ServerConnectEvent;

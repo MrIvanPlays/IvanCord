@@ -98,13 +98,13 @@ index 0000000000000000000000000000000000000000..43747a43f2e6d49d0bebce85ebb52a66
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/ServerConnectEvent.java b/api/src/main/java/net/md_5/bungee/api/event/ServerConnectEvent.java
-index dd13f764a002fd050759552da7fee0d56ee99d1e..2060d867bc9c2e6cd0cede8d362d9451f74dc63b 100644
+index 9be3b8fb524f256ccf5fadf127c249656996acef..42f96b5ea22f771b5e881fd36bf304ea9da0eddc 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/ServerConnectEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/ServerConnectEvent.java
-@@ -4,10 +4,15 @@ import lombok.Data;
- import lombok.EqualsAndHashCode;
+@@ -5,10 +5,15 @@ import lombok.EqualsAndHashCode;
  import lombok.NonNull;
  import lombok.ToString;
+ import net.md_5.bungee.api.ServerConnectRequest;
 +import net.md_5.bungee.api.Callback; // IvanCord
  import net.md_5.bungee.api.config.ServerInfo;
  import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -117,7 +117,7 @@ index dd13f764a002fd050759552da7fee0d56ee99d1e..2060d867bc9c2e6cd0cede8d362d9451
  
  /**
   * Called when deciding to connect to a server. At the time when this event is
-@@ -18,7 +23,7 @@ import net.md_5.bungee.api.plugin.Event;
+@@ -19,7 +24,7 @@ import net.md_5.bungee.api.plugin.Event;
  @Data
  @ToString(callSuper = false)
  @EqualsAndHashCode(callSuper = false)
@@ -126,21 +126,28 @@ index dd13f764a002fd050759552da7fee0d56ee99d1e..2060d867bc9c2e6cd0cede8d362d9451
  {
  
      /**
-@@ -36,14 +41,19 @@ public class ServerConnectEvent extends Event implements Cancellable
+@@ -44,20 +49,19 @@ public class ServerConnectEvent extends Event implements Cancellable
+      */
      private boolean cancelled;
-     private final Reason reason;
  
+-    @Deprecated
+-    public ServerConnectEvent(ProxiedPlayer player, ServerInfo target)
+-    {
+-        this( player, target, Reason.UNKNOWN );
+-    }
+-
 +    // IvanCord start
 +    /*
      @Deprecated
-     public ServerConnectEvent(ProxiedPlayer player, ServerInfo target)
+     public ServerConnectEvent(ProxiedPlayer player, ServerInfo target, Reason reason)
      {
-         this( player, target, Reason.UNKNOWN );
+-        this( player, target, reason, null );
++        this( player, target, Reason.UNKNOWN );
      }
 +     */
  
--    public ServerConnectEvent(ProxiedPlayer player, ServerInfo target, Reason reason)
-+    public ServerConnectEvent(ProxiedPlayer player, ServerInfo target, Reason reason, Callback<ServerConnectEvent> callback)
+-    public ServerConnectEvent(ProxiedPlayer player, ServerInfo target, Reason reason, ServerConnectRequest request)
++    public ServerConnectEvent(ProxiedPlayer player, ServerInfo target, Reason reason, ServerConnectRequest request, Callback<ServerConnectEvent> callback)
      {
 +        super( callback );
 +        // IvanCord end
@@ -148,7 +155,7 @@ index dd13f764a002fd050759552da7fee0d56ee99d1e..2060d867bc9c2e6cd0cede8d362d9451
          this.target = target;
          this.reason = reason;
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7eaa702d3a7d918b75151605669033b83ca099c0..13b28ef191d0165d0d9bc40847d1aacbdf45b76a 100644
+index e2f6c8d5098b41217e8e78b9da5524f74529c9b9..a0e677094911ff9457239ca9fe511d13645c3d09 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -329,8 +329,11 @@ public final class UserConnection implements ProxiedPlayer
@@ -156,7 +163,7 @@ index 7eaa702d3a7d918b75151605669033b83ca099c0..13b28ef191d0165d0d9bc40847d1aacb
  
          final Callback<ServerConnectRequest.Result> callback = request.getCallback();
 +        /* // IvanCord
-         ServerConnectEvent event = new ServerConnectEvent( this, request.getTarget(), request.getReason() );
+         ServerConnectEvent event = new ServerConnectEvent( this, request.getTarget(), request.getReason(), request );
 -        if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
 +         */ // IvanCord
 +        Callback<ServerConnectEvent> callCallback = (result, error) -> { // IvanCord
@@ -178,7 +185,7 @@ index 7eaa702d3a7d918b75151605669033b83ca099c0..13b28ef191d0165d0d9bc40847d1aacb
          }
          b.connect().addListener( listener );
 +        }; // IvanCord
-+        bungee.getPluginManager().callEvent( new ServerConnectEvent( this, request.getTarget(), request.getReason(), callCallback ) ); // IvanCord
++        bungee.getPluginManager().callEvent( new ServerConnectEvent( this, request.getTarget(), request.getReason(), request, callCallback ) ); // IvanCord
      }
  
      @Override

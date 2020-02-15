@@ -369,7 +369,7 @@ index a1e9ec90e4f52f19e0d2fe1d16aeaf5cd0d577fa..ba0516139190f1a58a3a1b9c185d2145
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 23a603c704ed3d49f967a63b803779165d424b4f..1072f33e989fe6b9a733f18afb36cfa37e148ab8 100644
+index 85a950f0226606154388f85d77eddb1c4ec95e0e..4caef09ce6a0d703ebacd97760e68860675aaedc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -60,6 +60,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;

@@ -288,7 +288,7 @@ index 9f618938243c69bd3868f3816dce349c04fa7386..6979712c099648b7361a814508c3a133
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 13b28ef191d0165d0d9bc40847d1aacbdf45b76a..2a787fadb98fd7403419f42ad5178d4d1eb3a967 100644
+index a0e677094911ff9457239ca9fe511d13645c3d09..fd0d7d5996d9149c2b18116735881157e98feb97 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -378,8 +378,8 @@ public final class UserConnection implements ProxiedPlayer
@@ -319,10 +319,10 @@ index 6df3f3dd9f637e7b096c6c91e26ca819520b0bdb..4e4b6f2aabfad5e0c9bc3b2df1ca3a98
  
          channel.write( new Handshake( protocol, target.getAddress().getHostString(), target.getAddress().getPort(), 1 ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 826c5f1e6a36b8aa1ca3f21a7f246a1c014e1cc6..227b14b535b12bf1305fe8589041cef1b450bd2b 100644
+index ce376ce5c5f1b80dbc34dfb19b73cdf0ef15f662..eaca86c4e18beecf3de69a6c85ab9d77a5971d17 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -90,8 +90,8 @@ public class PipelineUtils
+@@ -91,8 +91,8 @@ public class PipelineUtils
              }
              // IvanCord end
              ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );

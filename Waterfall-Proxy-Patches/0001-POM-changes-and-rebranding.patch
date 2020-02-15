@@ -5,7 +5,7 @@ Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 2380a5fd5e52030ef03b5f6ec22e7125d3108f59..5145aee2ac89bfca9b29057555e9a3405036b82d 100644
+index 705b72793fe8b0dca8a5c8e1abc54d337b01d275..7b0fbe084c14e8e0c341b0a8be945c862943e6d3 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -64,7 +64,7 @@ index 2380a5fd5e52030ef03b5f6ec22e7125d3108f59..5145aee2ac89bfca9b29057555e9a340
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index e7b76d5b910ae6e27df1368e6d9272eea1aa01d5..875697e688b19e43ee868f2b7eff3894cbc0c626 100644
+index 2876d8d683eae98c8cc094ed619cf86e07ec5910..ad9b8729af6c2418fa1ec9d69ad1f55346c7cca4 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,18 @@
@@ -92,7 +92,7 @@ index e7b76d5b910ae6e27df1368e6d9272eea1aa01d5..875697e688b19e43ee868f2b7eff3894
  
      <properties>
          <maven.deploy.skip>true</maven.deploy.skip>
-@@ -28,15 +27,15 @@
+@@ -29,15 +28,15 @@
  
      <dependencies>
          <dependency>
@@ -154,7 +154,7 @@ index 0bd76ea5e3e2c79b27a3b6639f7ed92461ec4754..cd332a9d1e1b25b2e87cf70e48adcc1c
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 764fcc6b746990b15b74d6abf1881bb5c6b6a033..fe519aa092626dd6a38bc785d318ed134f24c5c1 100644
+index 4bf7237fc118c0ada7be1736db75254d8c26f8d5..1ac8cf8b1d9e36cc122da15b71b3ff6827f5c5c1 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,18 @@
@@ -308,7 +308,7 @@ index f8b549dcec76c113bb9fe87b28472ea83834235c..ee857ff54fb426564d96be7874d35506
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index ae6f901ed32087d473671b04595cd510f9611d08..74595e2801cbe814efd6a06c262398d1995043e8 100644
+index 37bdaf3d313461bdf7d50dec524d37eac27e11f9..f5dd685082c6456797e9da2dd08dbe2003cf1609 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -419,93 +419,6 @@ index ae6f901ed32087d473671b04595cd510f9611d08..74595e2801cbe814efd6a06c262398d1
              <scope>compile</scope>
          </dependency>
          <dependency>
-@@ -201,86 +163,4 @@
-         </plugins>
-     </build>
- 
--    <profiles>
--        <profile>
--            <id>deployment</id>
--            <build>
--                <plugins>
--                    <plugin>
--                        <groupId>org.projectlombok</groupId>
--                        <artifactId>lombok-maven-plugin</artifactId>
--                        <version>1.18.4.0</version>
--                        <executions>
--                            <execution>
--                                <id>delombok</id>
--                                <phase>generate-sources</phase>
--                                <goals>
--                                    <goal>delombok</goal>
--                                </goals>
--                                <configuration>
--                                    <addOutputDirectory>false</addOutputDirectory>
--                                    <sourceDirectory>src/main/java</sourceDirectory>
--                                </configuration>
--                            </execution>
--                        </executions>
--                    </plugin>
--                    <plugin>
--                        <groupId>org.apache.maven.plugins</groupId>
--                        <artifactId>maven-javadoc-plugin</artifactId>
--                        <version>3.1.0</version>
--                        <configuration>
--                            <doclint>none</doclint>
--                        </configuration>
--                        <executions>
--                            <execution>
--                                <id>attach-javadocs</id>
--                                <phase>package</phase>
--                                <goals>
--                                    <goal>jar</goal>
--                                </goals>
--                                <configuration>
--                                    <sourcepath>target/generated-sources/delombok</sourcepath>
--                                </configuration>
--                            </execution>
--                            <execution>
--                                <id>aggregate-javadocs</id>
--                                <phase>package</phase>
--                                <goals>
--                                    <goal>javadoc</goal>
--                                </goals>
--                                <inherited>false</inherited>
--                                <configuration>
--                                    <doctitle>Waterfall ${project.version} API</doctitle>
--                                    <windowtitle>Waterfall ${project.version} API</windowtitle>
--                                    <sourcepath>
--                                        api/target/generated-sources/delombok;
--                                        chat/target/generated-sources/delombok
--                                    </sourcepath>
--                                </configuration>
--                            </execution>
--                        </executions>
--                    </plugin>
--                    <plugin>
--                        <groupId>org.apache.maven.plugins</groupId>
--                        <artifactId>maven-source-plugin</artifactId>
--                        <version>2.4</version>
--                        <executions>
--                            <execution>
--                                <id>attach-sources</id>
--                                <phase>package</phase>
--                                <goals>
--                                    <goal>jar-no-fork</goal>
--                                </goals>
--                            </execution>
--                        </executions>
--                    </plugin>
--                    <plugin>
--                        <groupId>org.apache.maven.plugins</groupId>
--                        <artifactId>maven-deploy-plugin</artifactId>
--                        <version>2.7</version>
--                    </plugin>
--                </plugins>
--            </build>
--        </profile>
--    </profiles>
- </project>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
 index 4592e2b39d81c8c27d30e1401549c922a793ad07..3360fd317aa3c399b0c2e157e0b61656df34c8d8 100644
 --- a/protocol/pom.xml
@@ -547,7 +460,7 @@ index 4592e2b39d81c8c27d30e1401549c922a793ad07..3360fd317aa3c399b0c2e157e0b61656
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 52e45fe1a083aade9219dc0066a991592c5d59fc..23bdbf1a9c52d476e4f3bbfdd40f95771564e15b 100644
+index 54500ddeeb45cedd7b04adc7ef747fe165c34d5d..6df6a482c9e7cf5ec312a80b67290f4ccaed066c 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -573,7 +486,7 @@ index 52e45fe1a083aade9219dc0066a991592c5d59fc..23bdbf1a9c52d476e4f3bbfdd40f9577
      <description>Proxy component of the Elastic Portal Suite</description>
  
      <properties>
-@@ -63,32 +62,32 @@
+@@ -64,32 +63,32 @@
              <scope>compile</scope>
          </dependency>
          <dependency>
