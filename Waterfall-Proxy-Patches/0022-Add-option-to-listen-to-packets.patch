@@ -319,10 +319,10 @@ index 6df3f3dd9f637e7b096c6c91e26ca819520b0bdb..4e4b6f2aabfad5e0c9bc3b2df1ca3a98
  
          channel.write( new Handshake( protocol, target.getAddress().getHostString(), target.getAddress().getPort(), 1 ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index ce376ce5c5f1b80dbc34dfb19b73cdf0ef15f662..eaca86c4e18beecf3de69a6c85ab9d77a5971d17 100644
+index dd448fd6984da75741a0e343acbbb084d5a26334..a9469901b2270dc0ec2de1edc31f725c36faeb91 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -91,8 +91,8 @@ public class PipelineUtils
+@@ -97,8 +97,8 @@ public class PipelineUtils
              }
              // IvanCord end
              ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
