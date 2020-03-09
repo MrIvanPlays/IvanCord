@@ -1,0 +1,95 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Mon, 9 Mar 2020 15:30:06 +0200
+Subject: [PATCH] Add functionallity to listen to all the events
+
+
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/EventExecutor.java b/api/src/main/java/com/mrivanplays/ivancord/api/EventExecutor.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..0e734a2b1845bbb3b6c086d67f519c88fb3b07d1
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/EventExecutor.java
+@@ -0,0 +1,9 @@
++package com.mrivanplays.ivancord.api;
++
++import net.md_5.bungee.api.plugin.Event;
++
++public interface EventExecutor
++{
++
++    void onEvent(Event event);
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 56db8c54c3745cd6f31c175e93ea7a8b0bd85b34..3c8d101c678faa8567a878d821c6534cd733ae6f 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
+ import com.google.common.collect.ArrayListMultimap;
+ import com.google.common.collect.Multimap;
+ import com.google.common.eventbus.Subscribe;
++import com.mrivanplays.ivancord.api.EventExecutor; // IvanCord
+ import java.io.File;
+ import java.io.InputStream;
+ import java.lang.reflect.Method;
+@@ -58,6 +59,7 @@ public final class PluginManager
+     private Map<String, PluginDescription> toLoad = new HashMap<>();
+     private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
+     private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
++    private final Multimap<Plugin, EventExecutor> globalEventListenersByPlugin = ArrayListMultimap.create(); // IvanCord
+ 
+     @SuppressWarnings("unchecked")
+     public PluginManager(ProxyServer proxy)
+@@ -440,6 +442,12 @@ public final class PluginManager
+ 
+         long start = System.nanoTime();
+         eventBus.post( event );
++        // IvanCord start
++        for ( EventExecutor executor : globalEventListenersByPlugin.values() )
++        {
++            executor.onEvent( event );
++        }
++        // IvanCord end
+         event.postCall();
+ 
+         long elapsed = System.nanoTime() - start;
+@@ -474,6 +482,32 @@ public final class PluginManager
+         listenersByPlugin.put( plugin, listener );
+     }
+ 
++    // IvanCord start
++
++    /**
++     * Registers a global event listener, for listening to all events
++     * called.
++     *
++     * @param plugin the owning plugin
++     * @param globalListener the global listener to register events for
++     */
++    public void registerGlobalEventListener(Plugin plugin, EventExecutor globalListener)
++    {
++        globalEventListenersByPlugin.put( plugin, globalListener );
++    }
++
++    /**
++     * Unregister a global event listener so that the events do not reach
++     * it anymore.
++     *
++     * @param globalListener the global event listener to unregister
++     */
++    public void unregisterGlobalEventListener(EventExecutor globalListener)
++    {
++        globalEventListenersByPlugin.values().remove( globalListener );
++    }
++    // IvanCord end
++
+     /**
+      * Unregister a {@link Listener} so that the events do not reach it anymore.
+      *
+@@ -497,6 +531,7 @@ public final class PluginManager
+             eventBus.unregister( it.next() );
+             it.remove();
+         }
++        globalEventListenersByPlugin.removeAll( plugin ); // IvanCord
+     }
+ 
+     /**
