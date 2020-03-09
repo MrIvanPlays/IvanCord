@@ -249,7 +249,7 @@ index 9b6be3d5ef054879a81c7467ac630d4a812e7ac4..a68fa11ef34c58bd50119b0396cc5942
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 4caef09ce6a0d703ebacd97760e68860675aaedc..b6646c633c47deaa075a7bc4956ef53c763e75d6 100644
+index adaddf2ba0b27e95d4ead42256fd4d5c9980ba76..00dfd5ffe591752cbe8cd6956de25af1a0111d17 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -115,6 +115,10 @@ public final class UserConnection implements ProxiedPlayer
@@ -297,10 +297,10 @@ index 4caef09ce6a0d703ebacd97760e68860675aaedc..b6646c633c47deaa075a7bc4956ef53c
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index afafe58d0dc9a92bb6278e60c99a6aab7fb6aca5..b2bc825de03c2f242dc086b2be656783c4c64566 100644
+index 51ee3ae3075cecaf63b7b624bc60450b36bf79c9..c40b2e58694df9749f46910a3668337471b1c4b3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -104,7 +104,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -107,7 +107,7 @@ public class YamlConfig implements ConfigurationAdapter
              set( "permissions.admin", Arrays.asList( new String[]
              {
                  "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload",

@@ -125,10 +125,10 @@ index 7b002089ef9dd9f365dc0f7db076976b8dc6260c..1ab5a0b3c175a39ad8ca6a39ce2568be
          return false;
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index ba0516139190f1a58a3a1b9c185d21457c892fc4..d446f1cf8260efa1ef3dca171760353aa39a7be2 100644
+index 84c576af679d128c4d93b1a60ed9f3e6018f0090..08c46b9b248f54891a55a41b929a7fcc1580fd08 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -354,7 +354,10 @@ public class ServerConnector extends PacketHandler
+@@ -360,7 +360,10 @@ public class ServerConnector extends PacketHandler
          }
  
          // Add to new server
@@ -141,7 +141,7 @@ index ba0516139190f1a58a3a1b9c185d21457c892fc4..d446f1cf8260efa1ef3dca171760353a
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b6646c633c47deaa075a7bc4956ef53c763e75d6..e2f6c8d5098b41217e8e78b9da5524f74529c9b9 100644
+index 00dfd5ffe591752cbe8cd6956de25af1a0111d17..c0b37e750c1ae1b40e0996ae6f861e647d921e4f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -289,7 +289,12 @@ public final class UserConnection implements ProxiedPlayer

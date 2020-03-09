@@ -72,10 +72,10 @@ index e575054b3f06703973c07c5a6ee92b4bd26ece9d..9b6be3d5ef054879a81c7467ac630d4a
          {
              if ( EncryptionUtil.nativeFactory.load() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 1c2e7d69b2c0e6c3511392e0274dd587f5b86d6d..afafe58d0dc9a92bb6278e60c99a6aab7fb6aca5 100644
+index 994bc589f26adb06ffe28313679ba6299878a6c8..51ee3ae3075cecaf63b7b624bc60450b36bf79c9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -103,7 +103,8 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -106,7 +106,8 @@ public class YamlConfig implements ConfigurationAdapter
              } ) );
              set( "permissions.admin", Arrays.asList( new String[]
              {

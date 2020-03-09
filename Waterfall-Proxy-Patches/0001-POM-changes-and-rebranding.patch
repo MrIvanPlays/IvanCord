@@ -594,10 +594,10 @@ index 720d0c3b5ef7107690757142a5ded0268a84270a..477c45ab5442e53956aa95c402adf424
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 85c2a0b52f5035cbb52df009c54327aedbcbf0bd..1c2e7d69b2c0e6c3511392e0274dd587f5b86d6d 100644
+index 65121ba2472c2b939d0de78880d14ea63f2dbc1d..994bc589f26adb06ffe28313679ba6299878a6c8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-@@ -224,7 +224,7 @@ public class YamlConfig implements ConfigurationAdapter
+@@ -227,7 +227,7 @@ public class YamlConfig implements ConfigurationAdapter
              Map<String, Object> val = entry.getValue();
              String name = entry.getKey();
              String addr = get( "address", "localhost:25565", val );

@@ -139,10 +139,10 @@ index 5e7b51f80009790fc69776ed7207a90705ec1f67..6a4973fed3127bd4eb2a4207204b9df2
       * Gets this player's chat mode.
       *
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index e4f149748685e7e588dfc13b05f3d1fb81334367..e893a4727002f5ca84de11fc4f316ecd05455184 100644
+index 252389bd1d21a35e12b4e48e523ab85abd367e52..e0e68ecabbda76bf83011b67de558e83e7f7b4a7 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -23,6 +23,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
+@@ -24,6 +24,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
  import net.md_5.bungee.protocol.packet.PingPacket;
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -150,7 +150,7 @@ index e4f149748685e7e588dfc13b05f3d1fb81334367..e893a4727002f5ca84de11fc4f316ecd
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-@@ -176,6 +177,12 @@ public abstract class AbstractPacketHandler
+@@ -181,6 +182,12 @@ public abstract class AbstractPacketHandler
      {
      }
  
@@ -164,10 +164,10 @@ index e4f149748685e7e588dfc13b05f3d1fb81334367..e893a4727002f5ca84de11fc4f316ecd
      public void handle(EntityEffect entityEffect) throws Exception
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index abe97f7b32e20e20f59e87f0281c8360db48744f..1b4b2b59557d3978095a63cda95032f69fb77d25 100644
+index 88e154c04eee84c79240a7bba837a99f4bb37966..e2fe5bc45befbbf9ea9338d6665f5dc5eaf91d2e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -29,6 +29,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
+@@ -30,6 +30,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
  import net.md_5.bungee.protocol.packet.PingPacket;
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -175,7 +175,7 @@ index abe97f7b32e20e20f59e87f0281c8360db48744f..1b4b2b59557d3978095a63cda95032f6
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  // IvanCord - comment these
-@@ -314,6 +315,18 @@ public enum Protocol
+@@ -320,6 +321,18 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x0A ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x0B )
              );
@@ -255,7 +255,7 @@ index 0000000000000000000000000000000000000000..f23fe50e8c9a22ce934f5797f9e75fb2
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 0fc1b2ae1a456a2665fab8e94826216657fe8a17..85a950f0226606154388f85d77eddb1c4ec95e0e 100644
+index 4144c2a858f8295ca5d362bc788b8c88de8b7657..2b6195d37c06a9a37e751f7aa28f5a1464fd0551 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -67,6 +67,7 @@ import net.md_5.bungee.tab.ServerUnique;

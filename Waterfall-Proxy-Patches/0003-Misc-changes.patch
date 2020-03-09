@@ -68,10 +68,10 @@ index 25ec1bd8f208859c8aba196150aae6b6c41e6105..052baf480002ea9f532bc623ba3cf9b9
   * Dummy class which all callable events must extend.
   */
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 22f0c1d814da1f440a852207f3c877ebc46101d6..0026970afae1e3481ded54751ca6390c88e72c5e 100644
+index 70d3736ba038c698709018bcdd8839980c2ee6e5..b6acc34b43d9f30d3dfc9934d0fc37e92c64dcb6 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -389,9 +389,9 @@ public class PluginManager
+@@ -388,9 +388,9 @@ public final class PluginManager
          Preconditions.checkNotNull( folder, "folder" );
          Preconditions.checkArgument( folder.isDirectory(), "Must load from a directory" );
  
@@ -83,7 +83,7 @@ index 22f0c1d814da1f440a852207f3c877ebc46101d6..0026970afae1e3481ded54751ca6390c
              {
                  try ( JarFile jar = new JarFile( file ) )
                  {
-@@ -456,11 +456,13 @@ public class PluginManager
+@@ -455,11 +455,13 @@ public final class PluginManager
       */
      public void registerListener(Plugin plugin, Listener listener)
      {
@@ -254,27 +254,11 @@ index c40f3e032faf34ec66ddaf4080c3d17c416a91ee..77d712bddf100b4ac898c80686085921
          ProxyServer.setInstance( bungee );
          bungee.start();
          bungee.getLogger().info( "Enabled IvanCord version " + bungee.getVersion() ); // IvanCord - rebranding
-diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
-index 95904de9fd0f1f34a397e714c569131a5981b145..069faddf8b3a68fc56d3f51b351b113433129be5 100644
---- a/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
-+++ b/proxy/src/main/java/net/md_5/bungee/ServerConnection.java
-@@ -57,7 +57,11 @@ public class ServerConnection implements Server
-     {
-         Preconditions.checkArgument( reason.length == 0, "Server cannot have disconnect reason" );
- 
-+        /* IvanCord start - don't use delayed close
-         ch.delayedClose( null );
-+         */
-+        ch.close();
-+        // IvanCord end
-     }
- 
-     @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 139c4f09cb731628d3ff00e4df48fec51e8f0872..5611a53a44f8681ff72e65faf72ff6c94340c3c7 100644
+index 858b3ae69eb0b6d49ed269f042d397b715a4971d..61379a4386be4e0ef4d8a04aeffcf77e3f536b1f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -283,6 +283,13 @@ public class ServerConnector extends PacketHandler
+@@ -284,6 +284,13 @@ public class ServerConnector extends PacketHandler
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.BossBar( bossbar, 1 ) );
              }
              user.getSentBossBars().clear();
@@ -289,7 +273,7 @@ index 139c4f09cb731628d3ff00e4df48fec51e8f0872..5611a53a44f8681ff72e65faf72ff6c9
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index d82a363bb18ad38f6dbacb35ee476a0cc39222d4..86ed27934de8c18a0af404724ad79f4ca6da123b 100644
+index 7c12922197e8caa8ff8139437e93dc4d26b9b8ea..82f6d68e1d2f4851b74086fb3d5418b6a18b19aa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -319,7 +319,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -320,15 +304,6 @@ index d82a363bb18ad38f6dbacb35ee476a0cc39222d4..86ed27934de8c18a0af404724ad79f4c
          if ( !ch.isClosing() )
          {
              bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
-@@ -419,7 +422,7 @@ public final class UserConnection implements ProxiedPlayer
-                 getName(), BaseComponent.toLegacyText( reason )
-             } );
- 
--            ch.delayedClose( new Kick( ComponentSerializer.toString( reason ) ) );
-+            ch.close( new Kick( ComponentSerializer.toString( reason ) ) ); // IvanCord
- 
-             if ( server != null )
-             {
 @@ -719,6 +722,14 @@ public final class UserConnection implements ProxiedPlayer
          title.send( this );
      }
