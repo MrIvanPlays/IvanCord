@@ -530,10 +530,10 @@ index 54500ddeeb45cedd7b04adc7ef747fe165c34d5d..6df6a482c9e7cf5ec312a80b67290f4c
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c7ac1735dda933cc58321f839e11ce457f445e9d..3f2912dfcd2fdaaae73490c0c95a75f40e273713 100644
+index a839cba5c24f9f70763704d47212f098b3b75023..643bdf2b841e599031d992926f970fa72c0c07b9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -181,7 +181,7 @@ public class BungeeCord extends ProxyServer
+@@ -187,7 +187,7 @@ public class BungeeCord extends ProxyServer
      public BungeeCord() throws IOException
      {
          // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
@@ -542,7 +542,7 @@ index c7ac1735dda933cc58321f839e11ce457f445e9d..3f2912dfcd2fdaaae73490c0c95a75f4
  
          try
          {
-@@ -498,7 +498,7 @@ public class BungeeCord extends ProxyServer
+@@ -533,7 +533,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {

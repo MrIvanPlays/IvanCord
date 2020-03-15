@@ -678,10 +678,10 @@ index 0000000000000000000000000000000000000000..4915d8d7b55c1f6d16ad55024ec807a2
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 3f2912dfcd2fdaaae73490c0c95a75f40e273713..bcca8ff9f7ba97812bd60c8726fa21905800c99a 100644
+index 643bdf2b841e599031d992926f970fa72c0c07b9..4a75b665d04039a04cf1434debb142b03112af70 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -92,6 +92,15 @@ import net.md_5.bungee.query.RemoteQuery;
+@@ -93,6 +93,15 @@ import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
  
@@ -697,7 +697,7 @@ index 3f2912dfcd2fdaaae73490c0c95a75f40e273713..bcca8ff9f7ba97812bd60c8726fa2190
  /**
   * Main BungeeCord proxy class.
   */
-@@ -165,7 +174,9 @@ public class BungeeCord extends ProxyServer
+@@ -171,7 +180,9 @@ public class BungeeCord extends ProxyServer
              .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
      @Getter
      private ConnectionThrottle connectionThrottle;
@@ -707,7 +707,7 @@ index 3f2912dfcd2fdaaae73490c0c95a75f40e273713..bcca8ff9f7ba97812bd60c8726fa2190
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -223,6 +234,15 @@ public class BungeeCord extends ProxyServer
+@@ -229,6 +240,15 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandBungee() );
          getPluginManager().registerCommand( null, new CommandPerms() );
  
@@ -723,7 +723,7 @@ index 3f2912dfcd2fdaaae73490c0c95a75f40e273713..bcca8ff9f7ba97812bd60c8726fa2190
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
              if ( EncryptionUtil.nativeFactory.load() )
-@@ -260,9 +280,11 @@ public class BungeeCord extends ProxyServer
+@@ -266,9 +286,11 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  

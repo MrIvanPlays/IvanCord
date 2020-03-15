@@ -201,13 +201,13 @@ index 3b3525f08caec962b51d90ce6e42758dac64aa10..b83a144c1cd388034a02d1a59227ccaf
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index bcca8ff9f7ba97812bd60c8726fa21905800c99a..98690b669ce8934ebbaf77ba0e1bce1c458f2edb 100644
+index 4a75b665d04039a04cf1434debb142b03112af70..25b3364a1fa94a9742389f85813cc9b85720c84f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -476,8 +476,10 @@ public class BungeeCord extends ProxyServer
-                 }
+@@ -505,8 +505,10 @@ public class BungeeCord extends ProxyServer
+         }
  
-                 getLogger().info( "Closing IO threads" );
+         getLogger().info( "Closing IO threads" );
 -                bossEventLoopGroup.shutdownGracefully();
 -                workerEventLoopGroup.shutdownGracefully();
 +                // IvanCord start - speed up shutdown

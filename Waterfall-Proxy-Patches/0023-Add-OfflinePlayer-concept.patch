@@ -483,10 +483,10 @@ index 0000000000000000000000000000000000000000..6326bed99c7f5578e79a0f89ba5ea535
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 6979712c099648b7361a814508c3a133dc06a2dd..2b695fe928b945cd8007d6709df884dc1ff601d2 100644
+index 963e31aeafbfceee09016f4902d2c8284cdb59ef..213039d4db60219055feca58813b3ec613de9f63 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -118,6 +118,8 @@ import com.mrivanplays.ivancord.SimpleServicesManager;
+@@ -119,6 +119,8 @@ import com.mrivanplays.ivancord.SimpleServicesManager;
  import com.mrivanplays.ivancord.api.plugin.ServicesManager;
  import com.mrivanplays.ivancord.protocol.PacketListener;
  import com.mrivanplays.ivancord.api.PacketDirection;
@@ -495,7 +495,7 @@ index 6979712c099648b7361a814508c3a133dc06a2dd..2b695fe928b945cd8007d6709df884dc
  // IvanCord end
  
  /**
-@@ -211,6 +213,8 @@ public class BungeeCord extends ProxyServer
+@@ -217,6 +219,8 @@ public class BungeeCord extends ProxyServer
                      .setNameFormat( "PacketListener Executor/#%d" )
                      .build()
      );
@@ -504,7 +504,7 @@ index 6979712c099648b7361a814508c3a133dc06a2dd..2b695fe928b945cd8007d6709df884dc
      // IvanCord end
  
      {
-@@ -878,5 +882,23 @@ public class BungeeCord extends ProxyServer
+@@ -913,5 +917,23 @@ public class BungeeCord extends ProxyServer
              }
          } );
      }

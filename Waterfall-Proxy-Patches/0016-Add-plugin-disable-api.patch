@@ -187,10 +187,10 @@ index b6acc34b43d9f30d3dfc9934d0fc37e92c64dcb6..9757fcbffc8c7b8c91a372b73f470d5d
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 132d480fb0d78115cd785e3021b2c25235815c95..289e2cd46125e36ceab626e2c992d97a4ff2cd98 100644
+index c468fb99992e6c8a8c335efa7cd85a8d46331cfd..befcfc793b5f162c59d4bbee6ae41781fc39f94b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -45,6 +45,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
+@@ -46,6 +46,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  import java.util.logging.Handler;
  import java.util.logging.Level;
  import java.util.logging.Logger;
@@ -198,31 +198,29 @@ index 132d480fb0d78115cd785e3021b2c25235815c95..289e2cd46125e36ceab626e2c992d97a
  import lombok.Getter;
  import lombok.Setter;
  import lombok.Synchronized;
-@@ -490,24 +491,13 @@ public class BungeeCord extends ProxyServer
-                 saveThread.cancel();
-                 // metricsThread.cancel(); // Waterfall: Disable Metrics
+@@ -521,22 +522,12 @@ public class BungeeCord extends ProxyServer
+         //metricsThread.cancel(); // Waterfall: Disable Metrics
  
--                // TODO: Fix this shit
-                 getLogger().info( "Disabling plugins" );
-+                // IvanCord start - fix this shit
-                 for ( Plugin plugin : Lists.reverse( new ArrayList<>( pluginManager.getPlugins() ) ) )
-                 {
--                    try
--                    {
--                        plugin.onDisable();
--                        for ( Handler handler : plugin.getLogger().getHandlers() )
--                        {
--                            handler.close();
--                        }
--                    } catch ( Throwable t )
--                    {
--                        getLogger().log( Level.SEVERE, "Exception disabling plugin " + plugin.getDescription().getName(), t );
--                    }
--                    getScheduler().cancel( plugin );
--                    plugin.getExecutorService().shutdownNow();
-+                    pluginManager.disablePlugin( plugin );
-                 }
-+                // IvanCord end
+         getLogger().info( "Disabling plugins" );
++        // IvanCord start - fix this shit
+         for ( Plugin plugin : Lists.reverse( new ArrayList<>( pluginManager.getPlugins() ) ) )
+         {
+-            try
+-            {
+-                plugin.onDisable();
+-                for ( Handler handler : plugin.getLogger().getHandlers() )
+-                {
+-                    handler.close();
+-                }
+-            } catch ( Throwable t )
+-            {
+-                getLogger().log( Level.SEVERE, "Exception disabling plugin " + plugin.getDescription().getName(), t );
+-            }
+-            getScheduler().cancel( plugin );
+-            plugin.getExecutorService().shutdownNow();
++            pluginManager.disablePlugin( plugin );
+         }
++        // IvanCord end
  
-                 getLogger().info( "Closing IO threads" );
+         getLogger().info( "Closing IO threads" );
                  // IvanCord start - speed up shutdown
