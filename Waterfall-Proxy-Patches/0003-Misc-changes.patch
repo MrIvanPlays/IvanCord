@@ -218,24 +218,11 @@ index 4a75b665d04039a04cf1434debb142b03112af70..25b3364a1fa94a9742389f85813cc9b8
                      try {
                          bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index c40f3e032faf34ec66ddaf4080c3d17c416a91ee..77d712bddf100b4ac898c80686085921b29fe6b8 100644
+index 3f548c6538d4d22a705be718a0931b674c7dd634..dc32c863578c9d06f1e08368e109ec3af14fc7fb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -40,6 +40,8 @@ public class BungeeCordLauncher
-             return;
+@@ -57,6 +57,19 @@ public class BungeeCordLauncher
          }
- 
-+        // IvanCord start - remove startup delay
-+        /*
-         if ( BungeeCord.class.getPackage().getSpecificationVersion() != null && System.getProperty( "IReallyKnowWhatIAmDoingISwear" ) == null )
-         {
-             Date buildDate = new SimpleDateFormat( "yyyyMMdd" ).parse( BungeeCord.class.getPackage().getSpecificationVersion() );
-@@ -55,8 +57,23 @@ public class BungeeCordLauncher
-                 Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
-             }
-         }
-+         */
-+        // IvanCord end
  
          BungeeCord bungee = new BungeeCord();
 +        // IvanCord start - output JVM and OS information on startup

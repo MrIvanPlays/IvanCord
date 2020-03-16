@@ -552,9 +552,18 @@ index a839cba5c24f9f70763704d47212f098b3b75023..643bdf2b841e599031d992926f970fa7
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index dc2c584d19972bcf0690db15c49aa7d590a5eaa1..c40f3e032faf34ec66ddaf4080c3d17c416a91ee 100644
+index dc2c584d19972bcf0690db15c49aa7d590a5eaa1..3f548c6538d4d22a705be718a0931b674c7dd634 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
+@@ -49,7 +49,7 @@ public class BungeeCordLauncher
+             if ( buildDate.before( deadline.getTime() ) )
+             {
+                 System.err.println( "*** Hey! This build is potentially outdated :( ***" );
+-                System.err.println( "*** Please check for a new build from https://papermc.io/ci/job/Waterfall/ ***" );
++                System.err.println( "*** Please check for a new build from https://ci.mrivanplays.com/job/IvanCord/ ***" ); // IvanCord - rebranding
+                 System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
+                 System.err.println( "*** Server will start in 10 seconds ***" );
+                 Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
 @@ -58,8 +58,8 @@ public class BungeeCordLauncher
  
          BungeeCord bungee = new BungeeCord();
