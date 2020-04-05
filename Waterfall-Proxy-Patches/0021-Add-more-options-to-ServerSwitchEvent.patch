@@ -5,47 +5,22 @@ Subject: [PATCH] Add more options to ServerSwitchEvent
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/ServerSwitchEvent.java b/api/src/main/java/net/md_5/bungee/api/event/ServerSwitchEvent.java
-index 4722517aed4f34a214516ebbd3350e1adc1dc4b1..db9d219a655052d8a3197c87b980ab237fc9ec0f 100644
+index 4414ec793b0fed706ea91e42a5030d59ff0030d2..550feafdfcd758a05d2fe8880b4814451d740be0 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/ServerSwitchEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/ServerSwitchEvent.java
-@@ -3,6 +3,7 @@ package net.md_5.bungee.api.event;
- import lombok.Data;
- import lombok.EqualsAndHashCode;
- import lombok.ToString;
-+import net.md_5.bungee.api.config.ServerInfo; // IvanCord
- import net.md_5.bungee.api.connection.ProxiedPlayer;
- import net.md_5.bungee.api.plugin.Event;
- 
-@@ -19,4 +20,14 @@ public class ServerSwitchEvent extends Event
-      * Player whom the server is for.
+@@ -25,4 +25,15 @@ public class ServerSwitchEvent extends Event
+      * connection.
       */
-     private final ProxiedPlayer player;
+     private final ServerInfo from;
 +
-+    // IvanCord start - more options
-+
++    // IvanCord start
 +    /**
-+     * The server, where the player switched from.
-+     *
-+     * This may return null if the connection is initial
++     * @deprecated upstream added {@link #getFrom()}, you should use this
 +     */
-+    private final ServerInfo oldServer;
++    @Deprecated
++    public ServerInfo getOldServer()
++    {
++        return from;
++    }
 +    // IvanCord end
  }
-diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 08c46b9b248f54891a55a41b929a7fcc1580fd08..4fd09930ae492ba5930e8ff3490db3e7250f7f68 100644
---- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-+++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -369,10 +369,12 @@ public class ServerConnector extends PacketHandler
-         user.setServerJoinQueue( null );
-         user.setDimensionChange( false );
- 
-+        ServerInfo old = user.getServer() != null ? user.getServer().getInfo() : null; // IvanCord - add more options to ServerSwitchEvent
-+
-         user.setServer( server );
-         ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
- 
--        bungee.getPluginManager().callEvent( new ServerSwitchEvent( user ) );
-+        bungee.getPluginManager().callEvent( new ServerSwitchEvent( user, old ) ); // IvanCord
- 
-         thisState = State.FINISHED;
- 

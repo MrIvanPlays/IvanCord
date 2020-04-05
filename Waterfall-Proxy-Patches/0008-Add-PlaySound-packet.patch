@@ -337,7 +337,7 @@ index 0000000000000000000000000000000000000000..6b8ef02070ddabb4edb23793901cd4d9
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 075761ce8fe36ae7b0f68a542eab0d2163f90afb..84c576af679d128c4d93b1a60ed9f3e6018f0090 100644
+index 926ec66fd21265e8be8d80f310168673140201c3..e4d23d6d394720415040c4a6fd34c717e0881488 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -46,6 +46,7 @@ import net.md_5.bungee.protocol.packet.Kick;
@@ -348,7 +348,7 @@ index 075761ce8fe36ae7b0f68a542eab0d2163f90afb..84c576af679d128c4d93b1a60ed9f3e6
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  import net.md_5.bungee.protocol.packet.ScoreboardObjective;
-@@ -459,6 +460,19 @@ public class ServerConnector extends PacketHandler
+@@ -460,6 +461,19 @@ public class ServerConnector extends PacketHandler
          user.unsafe().sendPacket( pluginMessage );
      }
  
