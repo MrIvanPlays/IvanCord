@@ -20,7 +20,7 @@ index 0000000000000000000000000000000000000000..0e734a2b1845bbb3b6c086d67f519c88
 +    void onEvent(Event event);
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 4a3827867b135802cac1b25152700275333b72db..c05e4086ede289daa709a56c52fcb527eae3f030 100644
+index 9ea8067a4ab78dc8def6a8e54869be92a33e3cd9..c3cfe9d16bed630f20c1957c2908eb09817e454c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;

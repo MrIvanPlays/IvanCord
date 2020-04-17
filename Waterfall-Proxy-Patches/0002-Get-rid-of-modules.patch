@@ -181,7 +181,7 @@ index 0000000000000000000000000000000000000000..f8cd072326c78518f6b2dec796fc3eaa
 \ No newline at end of file
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..460482042d0b6f38fdd75aa7b4e74b58c02cfb8d
+index 0000000000000000000000000000000000000000..71a6d808da8fe2e01bc6c67f415ac90179578d3e
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java
 @@ -0,0 +1,47 @@
@@ -229,7 +229,7 @@ index 0000000000000000000000000000000000000000..460482042d0b6f38fdd75aa7b4e74b58
 +            sender.sendMessage( ICUtil.translation( "command_list", server.getName(), server.getPlayers().size(), Util.format( players, ChatColor.RESET + ", " ) ) );
 +        }
 +
-+        sender.sendMessage( ProxyServer.getInstance().getTranslation( "total_players", ProxyServer.getInstance().getOnlineCount() ) );
++        sender.sendMessage( ICUtil.translation( "total_players", ProxyServer.getInstance().getOnlineCount() ) );
 +    }
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java
