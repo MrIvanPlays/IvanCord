@@ -248,7 +248,7 @@ index 35a19224f3e3e7c0a703c2569f549f47780743eb..c0c796b3b959619e1856ce1b306d9273
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7c12922197e8caa8ff8139437e93dc4d26b9b8ea..82f6d68e1d2f4851b74086fb3d5418b6a18b19aa 100644
+index 87cff4ffcaa80f745aae542af2f918f4f62639dd..a4f63029ec561bc9e72a23cc9832d965c6aa6c9a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -319,7 +319,7 @@ public final class UserConnection implements ProxiedPlayer

@@ -289,10 +289,10 @@ index a1e6973dba6429fa4cc3a568f75654f96e0770bb..bcb83c377832f147956dc61efa475e31
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a7ca73e933313453a7c6d0a3ff26c960d568169b..97a24924ceec48eee445e9cffa53f5d9943e9c17 100644
+index 9f6bcb57d207352b5c144afa50000502911b0dde..77113efafdf6afc2f85309960f7fae1db7042f69 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -378,8 +378,8 @@ public final class UserConnection implements ProxiedPlayer
+@@ -373,8 +373,8 @@ public final class UserConnection implements ProxiedPlayer
              protected void initChannel(Channel ch) throws Exception
              {
                  PipelineUtils.BASE.initChannel( ch );

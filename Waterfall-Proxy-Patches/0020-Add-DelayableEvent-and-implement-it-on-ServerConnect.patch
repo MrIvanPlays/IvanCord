@@ -155,10 +155,10 @@ index 9be3b8fb524f256ccf5fadf127c249656996acef..42f96b5ea22f771b5e881fd36bf304ea
          this.target = target;
          this.reason = reason;
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c0b37e750c1ae1b40e0996ae6f861e647d921e4f..a7ca73e933313453a7c6d0a3ff26c960d568169b 100644
+index 11b4dc7e53a84ae98fcc6bde77d5151d690921ed..9f6bcb57d207352b5c144afa50000502911b0dde 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -329,8 +329,11 @@ public final class UserConnection implements ProxiedPlayer
+@@ -324,8 +324,11 @@ public final class UserConnection implements ProxiedPlayer
          Preconditions.checkNotNull( request, "request" );
  
          final Callback<ServerConnectRequest.Result> callback = request.getCallback();
@@ -171,7 +171,7 @@ index c0b37e750c1ae1b40e0996ae6f861e647d921e4f..a7ca73e933313453a7c6d0a3ff26c960
          {
              if ( callback != null )
              {
-@@ -344,7 +347,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -339,7 +342,7 @@ public final class UserConnection implements ProxiedPlayer
              return;
          }
  
@@ -180,7 +180,7 @@ index c0b37e750c1ae1b40e0996ae6f861e647d921e4f..a7ca73e933313453a7c6d0a3ff26c960
  
          if ( getServer() != null && Objects.equals( getServer().getInfo(), target ) )
          {
-@@ -423,6 +426,8 @@ public final class UserConnection implements ProxiedPlayer
+@@ -418,6 +421,8 @@ public final class UserConnection implements ProxiedPlayer
              b.localAddress( getPendingConnection().getListener().getHost().getHostString(), 0 );
          }
          b.connect().addListener( listener );

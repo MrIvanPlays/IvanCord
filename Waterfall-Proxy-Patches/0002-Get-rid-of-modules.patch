@@ -5,7 +5,7 @@ Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index 21284c43eb62d27e67c7471382c9948516d68100..ea13f87d1080b7cac80f3275d003c95dfcaa2627 100644
+index 781f1121e8b032165c189d2bf3ee8dcd467123f9..5192e65a7f556878b54e19d5af9d35a70e6f8b0e 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -38,7 +38,9 @@
@@ -234,18 +234,22 @@ index 0000000000000000000000000000000000000000..71a6d808da8fe2e01bc6c67f415ac901
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..78ddb0ca1b14f567ba4583ef6e6a33f86ce829d4
+index 0000000000000000000000000000000000000000..9dd1472f4a21012d8e9572350fa137108e91d03b
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java
-@@ -0,0 +1,192 @@
+@@ -0,0 +1,208 @@
 +package com.mrivanplays.ivancord.modules;
 +
++import com.google.common.base.Joiner;
 +import com.google.common.collect.HashMultimap;
++import com.google.common.collect.ImmutableSet;
 +import com.google.common.collect.Multimap;
 +import com.mrivanplays.ivancord.util.ICUtil;
 +import java.util.ArrayList;
 +import java.util.Collections;
++import java.util.HashMap;
 +import java.util.HashSet;
++import java.util.Iterator;
 +import java.util.List;
 +import java.util.Locale;
 +import java.util.Map;
@@ -258,6 +262,7 @@ index 0000000000000000000000000000000000000000..78ddb0ca1b14f567ba4583ef6e6a33f8
 +import net.md_5.bungee.api.ServerConnectRequest;
 +import net.md_5.bungee.api.chat.ComponentBuilder;
 +import net.md_5.bungee.api.chat.HoverEvent;
++import net.md_5.bungee.api.chat.TextComponent;
 +import net.md_5.bungee.api.config.ServerInfo;
 +import net.md_5.bungee.api.connection.ProxiedPlayer;
 +import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -270,26 +275,32 @@ index 0000000000000000000000000000000000000000..78ddb0ca1b14f567ba4583ef6e6a33f8
 +    protected static class SendCallback
 +    {
 +
-+        private final Multimap<ServerConnectRequest.Result, String> results = HashMultimap.create();
++        private final Map<ServerConnectRequest.Result, List<String>> results = new HashMap<>();
 +        private final CommandSender sender;
 +        private int count = 0;
 +
 +        public SendCallback(CommandSender sender)
 +        {
 +            this.sender = sender;
++            for ( ServerConnectRequest.Result result : ServerConnectRequest.Result.values() )
++            {
++                results.put( result, new ArrayList<>() );
++            }
 +        }
 +
 +        public void lastEntryDone()
 +        {
-+            sender.sendMessage( new ComponentBuilder( "Send results: " ).color( ChatColor.GREEN ).bold( true ).create() );
-+            for ( Map.Entry<ServerConnectRequest.Result, String> entry : results.entries() )
++            sender.sendMessage( ChatColor.GREEN.toString() + ChatColor.BOLD + "Send Results:" );
++            for ( Map.Entry<ServerConnectRequest.Result, List<String>> entry : results.entrySet() )
 +            {
 +                ComponentBuilder builder = new ComponentBuilder( "" );
 +                if ( !entry.getValue().isEmpty() )
 +                {
-+                    builder.event( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder( entry.getValue() ).color( ChatColor.YELLOW ).create() ) );
++                    builder.event( new HoverEvent( HoverEvent.Action.SHOW_TEXT,
++                            new ComponentBuilder( Joiner.on( ", " ).join( entry.getValue() ) ).color( ChatColor.YELLOW ).create() ) );
 +                }
-+                builder.append( entry.getKey().name() + ": " ).color( ChatColor.GREEN ).append( String.valueOf( results.get( entry.getKey() ).size() ) );
++                builder.append( entry.getKey().name() + ": " ).color( ChatColor.GREEN );
++                builder.append( "" + entry.getValue().size() ).bold( true );
 +                sender.sendMessage( builder.create() );
 +            }
 +        }
@@ -312,7 +323,7 @@ index 0000000000000000000000000000000000000000..78ddb0ca1b14f567ba4583ef6e6a33f8
 +            @Override
 +            public void done(ServerConnectRequest.Result result, Throwable error)
 +            {
-+                callback.results.put( result, player.getName() );
++                callback.results.get( result ).add( player.getName() );
 +                if ( result == ServerConnectRequest.Result.SUCCESS )
 +                {
 +                    player.sendMessage( ICUtil.translation( "you_got_summoned", target.getName(), callback.sender.getName() ) );
@@ -339,8 +350,8 @@ index 0000000000000000000000000000000000000000..78ddb0ca1b14f567ba4583ef6e6a33f8
 +            sender.sendMessage( ICUtil.translation( "send_cmd_usage" ) );
 +            return;
 +        }
-+        ServerInfo target = ProxyServer.getInstance().getServerInfo( args[1] );
-+        if ( target == null )
++        ServerInfo server = ProxyServer.getInstance().getServerInfo( args[1] );
++        if ( server == null )
 +        {
 +            sender.sendMessage( ICUtil.translation( "no_server" ) );
 +            return;
@@ -377,21 +388,21 @@ index 0000000000000000000000000000000000000000..78ddb0ca1b14f567ba4583ef6e6a33f8
 +                targets = Collections.singletonList( player );
 +            }
 +        }
-+        SendCallback callback = new SendCallback( sender );
-+        for ( ProxiedPlayer player : targets )
++
++        final SendCallback callback = new SendCallback( sender );
++        Iterator<ProxiedPlayer> iterator = targets.iterator();
++        while ( iterator.hasNext() )
 +        {
++            ProxiedPlayer player = iterator.next();
 +            ServerConnectRequest request = ServerConnectRequest.builder()
-+                    .target( target )
++                    .target( server )
 +                    .reason( ServerConnectEvent.Reason.COMMAND )
-+                    .callback( new SendCallback.Entry( callback, player, target ) )
++                    .callback( new SendCallback.Entry( callback, player, server ) )
 +                    .build();
 +            player.connect( request );
 +        }
 +
-+        sender.sendMessage(
-+                new ComponentBuilder( "Attempting to send " + targets.size() + " players to " + target.getName() )
-+                        .color( ChatColor.DARK_GREEN )
-+                        .create() );
++        sender.sendMessage( TextComponent.fromLegacyText( ChatColor.DARK_GREEN + "Attempting to send " + targets.size() + " players to " + server.getName() ) );
 +    }
 +
 +    @Override
@@ -399,18 +410,20 @@ index 0000000000000000000000000000000000000000..78ddb0ca1b14f567ba4583ef6e6a33f8
 +    {
 +        if ( args.length > 2 || args.length == 0 )
 +        {
-+            return Collections.emptyList();
++            return ImmutableSet.of();
 +        }
 +
 +        Set<String> matches = new HashSet<>();
 +        if ( args.length == 1 )
 +        {
 +            String search = args[0].toLowerCase( Locale.ROOT );
-+            matches.addAll( ProxyServer.getInstance().getPlayers()
-+                    .stream()
-+                    .map( CommandSender::getName )
-+                    .filter( name -> name.toLowerCase( Locale.ROOT ).startsWith( search ) )
-+                    .collect( Collectors.toList() ) );
++            for ( ProxiedPlayer player : ProxyServer.getInstance().getPlayers() )
++            {
++                if ( player.getName().toLowerCase( Locale.ROOT ).startsWith( search ) )
++                {
++                    matches.add( player.getName() );
++                }
++            }
 +            if ( "all".startsWith( search ) )
 +            {
 +                matches.add( "all" );
@@ -422,15 +435,17 @@ index 0000000000000000000000000000000000000000..78ddb0ca1b14f567ba4583ef6e6a33f8
 +        } else
 +        {
 +            String search = args[1].toLowerCase( Locale.ROOT );
-+            matches.addAll( ProxyServer.getInstance().getServersCopy().keySet()
-+                    .stream()
-+                    .filter( name -> name.toLowerCase( Locale.ROOT ).startsWith( search ) )
-+                    .collect( Collectors.toList() ) );
++            for ( String server : ProxyServer.getInstance().getServersCopy().keySet() )
++            {
++                if ( server.toLowerCase( Locale.ROOT ).startsWith( search ) )
++                {
++                    matches.add( server );
++                }
++            }
 +        }
 +        return matches;
 +    }
 +}
-\ No newline at end of file
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..a52c612ebef5119363111bd3adc48dbc874cc84b
