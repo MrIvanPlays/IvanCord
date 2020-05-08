@@ -20,7 +20,7 @@ index 0000000000000000000000000000000000000000..0e734a2b1845bbb3b6c086d67f519c88
 +    void onEvent(Event event);
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 9ea8067a4ab78dc8def6a8e54869be92a33e3cd9..c3cfe9d16bed630f20c1957c2908eb09817e454c 100644
+index 8eeeef02f37adc28e2cb91ba4862809c763b9981..d3543dbbba1351dac9b1869d136bdc7526834264 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -31,7 +31,7 @@ index 9ea8067a4ab78dc8def6a8e54869be92a33e3cd9..c3cfe9d16bed630f20c1957c2908eb09
  import java.io.File;
  import java.io.InputStream;
  import java.lang.reflect.Method;
-@@ -58,6 +59,7 @@ public final class PluginManager
+@@ -64,6 +65,7 @@ public final class PluginManager
      private Map<String, PluginDescription> toLoad = new HashMap<>();
      private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
      private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
@@ -39,20 +39,27 @@ index 9ea8067a4ab78dc8def6a8e54869be92a33e3cd9..c3cfe9d16bed630f20c1957c2908eb09
  
      @SuppressWarnings("unchecked")
      public PluginManager(ProxyServer proxy)
-@@ -440,6 +442,12 @@ public final class PluginManager
+@@ -459,6 +461,19 @@ public final class PluginManager
  
          long start = System.nanoTime();
-         eventBus.post( event );
+         eventBus.post( event, this::handleEventException ); //Waterfall - pass exception handler below
 +        // IvanCord start
 +        for ( EventExecutor executor : globalEventListenersByPlugin.values() )
 +        {
-+            executor.onEvent( event );
++            // implement waterfall's stupid "exception reporting" shit
++            try
++            {
++                executor.onEvent( event );
++            } catch ( Throwable t )
++            {
++                this.handleEventException( "Error dispatching global event listener", event, null, t );
++            }
 +        }
 +        // IvanCord end
          event.postCall();
  
          long elapsed = System.nanoTime() - start;
-@@ -474,6 +482,32 @@ public final class PluginManager
+@@ -501,6 +516,32 @@ public final class PluginManager
          listenersByPlugin.put( plugin, listener );
      }
  
@@ -85,7 +92,7 @@ index 9ea8067a4ab78dc8def6a8e54869be92a33e3cd9..c3cfe9d16bed630f20c1957c2908eb09
      /**
       * Unregister a {@link Listener} so that the events do not reach it anymore.
       *
-@@ -497,6 +531,7 @@ public final class PluginManager
+@@ -524,6 +565,7 @@ public final class PluginManager
              eventBus.unregister( it.next() );
              it.remove();
          }

@@ -183,10 +183,10 @@ index 58a8c3fda38a99e102e07255102d02c7656c2453..1111e912f1668b5cb330c13fd27972d5
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 37719bcb05576731b38d13b604a3b73fd40bcec6..c468fb99992e6c8a8c335efa7cd85a8d46331cfd 100644
+index fe9fcec57dd470adb3a03cb79a483bf209965903..271b2b12580bb8366e4468bb4d2538d446de7eea 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -104,6 +104,9 @@ import com.mrivanplays.ivancord.commands.CommandPlugins;
+@@ -106,6 +106,9 @@ import com.mrivanplays.ivancord.commands.CommandPlugins;
  import com.mrivanplays.ivancord.conf.OpsConfiguration;
  import com.mrivanplays.ivancord.commands.op.CommandDeop;
  import com.mrivanplays.ivancord.commands.op.CommandOp;
@@ -196,7 +196,7 @@ index 37719bcb05576731b38d13b604a3b73fd40bcec6..c468fb99992e6c8a8c335efa7cd85a8d
  // IvanCord end
  
  /**
-@@ -321,6 +324,23 @@ public class BungeeCord extends ProxyServer
+@@ -323,6 +326,23 @@ public class BungeeCord extends ProxyServer
  
          isRunning = true;
  
