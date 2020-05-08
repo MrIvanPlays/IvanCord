@@ -483,7 +483,7 @@ index 0000000000000000000000000000000000000000..6326bed99c7f5578e79a0f89ba5ea535
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e45b6894dc3789eb6c38d3902a9fec24c84684b6..22149b0eeb1f71f40743f1272e7b53bcc556e950 100644
+index f36c180601550a929aab9a6bc219ff22e4ac3906..b8543245a33ba1c8f73eb53f0ca7c400a1b9665c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -121,6 +121,8 @@ import com.mrivanplays.ivancord.SimpleServicesManager;
@@ -504,7 +504,7 @@ index e45b6894dc3789eb6c38d3902a9fec24c84684b6..22149b0eeb1f71f40743f1272e7b53bc
      // IvanCord end
  
      {
-@@ -936,5 +940,23 @@ public class BungeeCord extends ProxyServer
+@@ -916,5 +920,23 @@ public class BungeeCord extends ProxyServer
              }
          } );
      }

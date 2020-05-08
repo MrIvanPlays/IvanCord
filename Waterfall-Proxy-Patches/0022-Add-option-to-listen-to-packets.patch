@@ -179,7 +179,7 @@ index d4b0384348c17de5c2350c8c5f928fcc0c1868db..15a74ecba539cca97fe01868a642659f
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d7c10099a61dbeea10869498f550b163fd9e969a..e45b6894dc3789eb6c38d3902a9fec24c84684b6 100644
+index 485f952857c59b61fae92acd808dd6bd293da238..f36c180601550a929aab9a6bc219ff22e4ac3906 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -3,6 +3,7 @@ package net.md_5.bungee;
@@ -247,7 +247,7 @@ index d7c10099a61dbeea10869498f550b163fd9e969a..e45b6894dc3789eb6c38d3902a9fec24
  
          getLogger().info( "Disabling plugins" );
          // IvanCord start - fix this shit
-@@ -878,4 +901,40 @@ public class BungeeCord extends ProxyServer
+@@ -858,4 +881,40 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
