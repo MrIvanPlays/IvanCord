@@ -234,10 +234,10 @@ index 0000000000000000000000000000000000000000..71a6d808da8fe2e01bc6c67f415ac901
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..9dd1472f4a21012d8e9572350fa137108e91d03b
+index 0000000000000000000000000000000000000000..bc67f15520e35694f53ae3aadaa3eb1dfe0c02d1
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java
-@@ -0,0 +1,208 @@
+@@ -0,0 +1,206 @@
 +package com.mrivanplays.ivancord.modules;
 +
 +import com.google.common.base.Joiner;
@@ -390,10 +390,8 @@ index 0000000000000000000000000000000000000000..9dd1472f4a21012d8e9572350fa13710
 +        }
 +
 +        final SendCallback callback = new SendCallback( sender );
-+        Iterator<ProxiedPlayer> iterator = targets.iterator();
-+        while ( iterator.hasNext() )
++        for ( ProxiedPlayer player : targets )
 +        {
-+            ProxiedPlayer player = iterator.next();
 +            ServerConnectRequest request = ServerConnectRequest.builder()
 +                    .target( server )
 +                    .reason( ServerConnectEvent.Reason.COMMAND )

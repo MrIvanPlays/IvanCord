@@ -6,7 +6,7 @@ Subject: [PATCH] Close connection if invalid handshake packet state was
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b3ea81a3a7016b4dd1b590f66199a0e9e97b3aba..30929029207447b6c78e6f0fcc88b105d2dc1942 100644
+index ed525efadd950d34a0f6638117facedc81b76143..3df4d910c607193d2a83cbc4c5732ae13c2e52ce 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -354,7 +354,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -14,7 +14,7 @@ index b3ea81a3a7016b4dd1b590f66199a0e9e97b3aba..30929029207447b6c78e6f0fcc88b105
                  break;
              default:
 +                /* // IvanCord start - close connection if invalid handshake packet state was received instead of throwing exception
-                 throw new IllegalArgumentException( "Cannot request protocol " + handshake.getRequestedProtocol() );
+                 throw new QuietException( "Cannot request protocol " + handshake.getRequestedProtocol() );
 +                 */
 +                ch.close();
 +                // IvanCord end
