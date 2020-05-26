@@ -356,7 +356,7 @@ index d6ecd645391805e4cf43608f9a5f78942deb05eb..73dbab919ba87a9a637e7f3a6c454266
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 02be0e4b5b727effbd94eb8e31b45f5aec2a4d23..67f733a21266d2fbf016779467c6649ce7ae0296 100644
+index 15c22f788c397a779fe8420d4624f15a633fa96d..f618468a521672e7716c035b3d311bdd821e1007 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -29,9 +29,11 @@ import net.md_5.bungee.protocol.packet.Chat;
@@ -371,7 +371,7 @@ index 02be0e4b5b727effbd94eb8e31b45f5aec2a4d23..67f733a21266d2fbf016779467c6649c
  
  public class UpstreamBridge extends PacketHandler
  {
-@@ -271,6 +273,14 @@ public class UpstreamBridge extends PacketHandler
+@@ -272,6 +274,14 @@ public class UpstreamBridge extends PacketHandler
          }
      }
  

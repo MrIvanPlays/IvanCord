@@ -143,7 +143,7 @@ index e4d23d6d394720415040c4a6fd34c717e0881488..70aed7927b1092164b52b0897d95cf63
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 67f733a21266d2fbf016779467c6649ce7ae0296..45e3ab213a72b4fdf28fac996323887bff84f1f0 100644
+index f618468a521672e7716c035b3d311bdd821e1007..11d9f15d65223251a759e23c664182adb0ea7728 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -34,6 +34,7 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
