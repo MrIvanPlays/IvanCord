@@ -320,7 +320,7 @@ index 6df3f3dd9f637e7b096c6c91e26ca819520b0bdb..4e4b6f2aabfad5e0c9bc3b2df1ca3a98
  
          channel.write( new Handshake( protocol, target.getAddress().getHostString(), target.getAddress().getPort(), 1 ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index dd448fd6984da75741a0e343acbbb084d5a26334..a9469901b2270dc0ec2de1edc31f725c36faeb91 100644
+index e4f4b2f4e6f96c1a29cdc62df6e9f621439a2da0..edcec8ef01aa93e9770e44f85a74b821f82a1148 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -97,8 +97,8 @@ public class PipelineUtils

@@ -346,3 +346,15 @@ index 6dc5633f5241ad6a1619500d37790e5c24c67155..d45a6140780f592d9f8c67cf2f7cb834
          {
              if ( packet instanceof PacketWrapper )
              {
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 9a39f69e9b93708eb69cba16ae3685a8acef3bf8..4c12fffa22621169c3bfff9a7e5ed5b8b725f261 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -187,6 +187,7 @@ public class PipelineUtils
+                 // IP_TOS is not supported (Windows XP / Windows Server 2003)
+             }
+             ch.config().setOption( ChannelOption.TCP_NODELAY, true );
++            ch.config().setOption( ChannelOption.SO_KEEPALIVE, true ); // IvanCord
+             ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
+             ch.config().setWriteBufferWaterMark( MARK );
+ 
