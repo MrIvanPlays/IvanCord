@@ -1,0 +1,304 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <ivan@mrivanplays.com>
+Date: Mon, 15 Jun 2020 13:11:25 +0300
+Subject: [PATCH] Use ASM to invoke event handlers
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
+index 75c75e2db14b893dbe7fb5f41562a98f47763d38..755e9d8dc7539c72fb37e45e59dd70f3e7b33a96 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
+@@ -7,7 +7,7 @@ import java.util.Set;
+ import java.util.concurrent.CopyOnWriteArraySet;
+ import net.md_5.bungee.api.ProxyServer;
+ 
+-final class PluginClassloader extends URLClassLoader
++public final class PluginClassloader extends URLClassLoader implements com.mrivanplays.ivancord.event.DynamicClassLoader // IvanCord - changed
+ {
+ 
+     private static final Set<PluginClassloader> allLoaders = new CopyOnWriteArraySet<>();
+@@ -75,4 +75,12 @@ final class PluginClassloader extends URLClassLoader
+         this.plugin = plugin;
+         plugin.init( proxy, desc );
+     }
++
++    // IvanCord start - implement DynamicClassLoader
++    @Override
++    public Class<?> defineClass(String name, byte[] data)
++    {
++        return this.defineClass( name, data, 0, data.length );
++    }
++    // IvanCord end
+ }
+diff --git a/event/src/main/java/com/mrivanplays/ivancord/event/ASMEventExecutor.java b/event/src/main/java/com/mrivanplays/ivancord/event/ASMEventExecutor.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..82a28903ce1034abf02a89d01d457631d95ecb9b
+--- /dev/null
++++ b/event/src/main/java/com/mrivanplays/ivancord/event/ASMEventExecutor.java
+@@ -0,0 +1,116 @@
++package com.mrivanplays.ivancord.event;
++
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Method;
++import java.util.Map;
++import java.util.WeakHashMap;
++import java.util.concurrent.atomic.AtomicInteger;
++import jdk.internal.org.objectweb.asm.ClassWriter;
++import jdk.internal.org.objectweb.asm.MethodVisitor;
++import jdk.internal.org.objectweb.asm.Opcodes;
++import jdk.internal.org.objectweb.asm.Type;
++
++class ASMEventExecutor
++{
++
++    private static final AtomicInteger CLASS_NAME_COUNTER = new AtomicInteger( 0 );
++    private static final Method defineClassMethod;
++
++    private static final Map<Method, EventExecutor> generatedExecutors = new WeakHashMap<>();
++
++    static
++    {
++        try
++        {
++            defineClassMethod = ClassLoader.class.getDeclaredMethod( "defineClass", String.class, byte[].class, int.class, int.class );
++            defineClassMethod.setAccessible( true );
++        } catch ( NoSuchMethodException e )
++        {
++            throw new RuntimeException( "Failed to get ClassLoader#defineClass method", e );
++        }
++    }
++
++    static EventExecutor getEventExecutor(Method handlerMethod)
++    {
++        return generatedExecutors.computeIfAbsent( handlerMethod, $ ->
++        {
++            try
++            {
++                ClassLoader classLoader = handlerMethod.getDeclaringClass().getClassLoader();
++                String className = generateNewClassName();
++                byte[] generated = generateEventExecutor( className, handlerMethod );
++                Class<? extends EventExecutor> eventExecutorClass = defineClass( classLoader, className, generated ).asSubclass( EventExecutor.class );
++
++                return eventExecutorClass.getConstructor().newInstance();
++            } catch ( InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e )
++            {
++                throw new RuntimeException( "Failed to generate an event executor", e );
++            }
++        } );
++    }
++
++    static String generateNewClassName()
++    {
++        return ASMEventExecutor.class.getPackage().getName() + ".generated.GeneratedASMEventExecutor" + CLASS_NAME_COUNTER.getAndIncrement();
++    }
++
++    static byte[] generateEventExecutor(String className, Method handlerMethod)
++    {
++        String rawName = className.replace( '.', '/' );
++
++        Class<?> listenerClass = handlerMethod.getDeclaringClass();
++        Class<?> eventClass = handlerMethod.getParameterTypes()[0];
++
++        String objectName = Type.getInternalName( Object.class );
++        String objectDesc = "L" + objectName + ";";
++        String eeName = Type.getInternalName( EventExecutor.class );
++        String eeDesc = "(" + objectDesc + objectDesc + ")V";
++
++        ClassWriter cw = new ClassWriter( ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS );
++        cw.visit( Opcodes.V1_8, Opcodes.ACC_PUBLIC, rawName, null, objectName, new String[] { eeName } );
++
++        {
++            MethodVisitor mv = cw.visitMethod( Opcodes.ACC_PUBLIC, "<init>", "()V", null, null );
++            mv.visitVarInsn( Opcodes.ALOAD, 0 );
++            mv.visitMethodInsn( Opcodes.INVOKESPECIAL, objectName, "<init>", "()V", false );
++            mv.visitInsn( Opcodes.RETURN );
++            mv.visitMaxs( 0, 0 );
++            mv.visitEnd();
++        }
++
++        {
++            MethodVisitor mv = cw.visitMethod( Opcodes.ACC_PUBLIC, "invoke", eeDesc, null, null );
++            mv.visitVarInsn( Opcodes.ALOAD, 1 );
++            mv.visitTypeInsn( Opcodes.CHECKCAST, Type.getInternalName( listenerClass ) );
++            mv.visitVarInsn( Opcodes.ALOAD, 2 );
++            mv.visitTypeInsn( Opcodes.CHECKCAST, Type.getInternalName( eventClass ) );
++            int inv = listenerClass.isInterface() ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL;
++            mv.visitMethodInsn( inv, Type.getInternalName( listenerClass ), handlerMethod.getName(), Type.getMethodDescriptor( handlerMethod ), listenerClass.isInterface() );
++            if ( handlerMethod.getReturnType() != void.class )
++            {
++                mv.visitInsn( Opcodes.POP );
++            }
++            mv.visitInsn( Opcodes.RETURN );
++            mv.visitMaxs( 0, 0 );
++            mv.visitEnd();
++        }
++
++        cw.visitEnd();
++        return cw.toByteArray();
++    }
++
++    private static Class<?> defineClass(ClassLoader loader, String name, byte[] data)
++    {
++        if ( loader instanceof DynamicClassLoader )
++        {
++            return ( (DynamicClassLoader) loader ).defineClass( name, data );
++        }
++        try
++        {
++            return (Class<?>) defineClassMethod.invoke( loader, name, data, 0, data.length );
++        } catch ( Exception e )
++        {
++            throw new RuntimeException( "Failed to define class '" + name + "'", e );
++        }
++    }
++}
+diff --git a/event/src/main/java/com/mrivanplays/ivancord/event/DynamicClassLoader.java b/event/src/main/java/com/mrivanplays/ivancord/event/DynamicClassLoader.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e7ff702e908c1e6672b2cfdb31b9b4ea8be52a8f
+--- /dev/null
++++ b/event/src/main/java/com/mrivanplays/ivancord/event/DynamicClassLoader.java
+@@ -0,0 +1,7 @@
++package com.mrivanplays.ivancord.event;
++
++public interface DynamicClassLoader
++{
++
++    Class<?> defineClass(String name, byte[] data);
++}
+diff --git a/event/src/main/java/com/mrivanplays/ivancord/event/EventExecutor.java b/event/src/main/java/com/mrivanplays/ivancord/event/EventExecutor.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f29d059ca318c7d80a0b5a143148c3b36c1b4dde
+--- /dev/null
++++ b/event/src/main/java/com/mrivanplays/ivancord/event/EventExecutor.java
+@@ -0,0 +1,22 @@
++package com.mrivanplays.ivancord.event;
++
++import java.lang.reflect.Method;
++import java.lang.reflect.Modifier;
++
++public interface EventExecutor
++{
++
++    void invoke(Object listener, Object event);
++
++    static EventExecutor create(Method method)
++    {
++        if ( Modifier.isPublic( method.getModifiers() ) )
++        {
++            return ASMEventExecutor.getEventExecutor( method );
++        } else
++        {
++            method.setAccessible( true );
++            return new MethodHandleEventExecutor( method );
++        }
++    }
++}
+diff --git a/event/src/main/java/com/mrivanplays/ivancord/event/MethodHandleEventExecutor.java b/event/src/main/java/com/mrivanplays/ivancord/event/MethodHandleEventExecutor.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..b4e25e6425f4af3856d44a487c69d952243e36e7
+--- /dev/null
++++ b/event/src/main/java/com/mrivanplays/ivancord/event/MethodHandleEventExecutor.java
+@@ -0,0 +1,48 @@
++package com.mrivanplays.ivancord.event;
++
++import java.lang.invoke.MethodHandle;
++import java.lang.invoke.MethodHandles;
++import java.lang.reflect.Method;
++import java.lang.reflect.Modifier;
++import lombok.SneakyThrows;
++
++class MethodHandleEventExecutor implements EventExecutor
++{
++
++    private final Class<?> eventClass;
++    private final MethodHandle handle;
++    private final boolean isStatic;
++
++    @SneakyThrows
++    MethodHandleEventExecutor(Method method)
++    {
++        this.eventClass = method.getParameterTypes()[0];
++        this.handle = MethodHandles.lookup().unreflect( method );
++        this.isStatic = Modifier.isStatic( method.getModifiers() );
++    }
++
++    @Override
++    @SneakyThrows
++    public void invoke(Object listener, Object event)
++    {
++        if ( eventClass.isInstance( event ) )
++        {
++            // ??????
++            return;
++        }
++
++        if ( isStatic )
++        {
++            executeStatic( event );
++        } else
++        {
++            handle.invoke( listener, event );
++        }
++    }
++
++    @SneakyThrows
++    public void executeStatic(Object event)
++    {
++        handle.invoke( event );
++    }
++}
+diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
+index d7c3b90d54a3003395e6e85d1a4a66fbaea0259b..77c8f73c95be78b8bd37134ce631072deb96cd64 100644
+--- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
++++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
+@@ -51,10 +51,10 @@ public class EventBus
+                 } catch ( IllegalArgumentException ex )
+                 {
+                     throw new Error( "Method rejected target/argument: " + event, ex );
+-                } catch ( InvocationTargetException ex )
++                } catch ( Throwable ex ) // IvanCord
+                 {
+                     String msg = MessageFormat.format( "Error dispatching event {0} to listener {1}", event, method.getListener() );
+-                    logger.log( Level.WARNING, msg, ex.getCause() );
++                    logger.log( Level.WARNING, msg, ex ); // IvanCord
+                     if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, ex ); //Waterfall - call passed exception handler
+                 }
+             }
+@@ -118,7 +118,7 @@ public class EventBus
+                         currentPriorityMap = new HashMap<>();
+                         prioritiesMap.put( entry.getKey(), currentPriorityMap );
+                     }
+-                    Method[] baked = new Method[ entry.getValue().size() ];
++                    Method[] baked = new Method[ 0 ]; // IvanCord - 0 is faster
+                     currentPriorityMap.put( listener, entry.getValue().toArray( baked ) );
+                 }
+                 bakeHandlers( e.getKey() );
+@@ -191,13 +191,13 @@ public class EventBus
+                     {
+                         for ( Method method : listenerHandlers.getValue() )
+                         {
+-                            EventHandlerMethod ehm = new EventHandlerMethod( listenerHandlers.getKey(), method );
++                            EventHandlerMethod ehm = new EventHandlerMethod( listenerHandlers.getKey(), com.mrivanplays.ivancord.event.EventExecutor.create( method ) ); // IvanCord
+                             handlersList.add( ehm );
+                         }
+                     }
+                 }
+             } while ( value++ < Byte.MAX_VALUE );
+-            byEventBaked.put( eventClass, handlersList.toArray( new EventHandlerMethod[ handlersList.size() ] ) );
++            byEventBaked.put( eventClass, handlersList.toArray( new EventHandlerMethod[ 0 ] ) ); // IvanCord - 0 is faster
+         } else
+         {
+             byEventBaked.remove( eventClass );
+diff --git a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
+index ad19c020c77a45c3b3a8a18aaf2f59c2de15ec7c..8c20bfc70d6adf93b8d7ce9a7b54e75afaa4d1b3 100644
+--- a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
++++ b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
+@@ -12,7 +12,7 @@ public class EventHandlerMethod
+     @Getter
+     private final Object listener;
+     @Getter
+-    private final Method method;
++    private final com.mrivanplays.ivancord.event.EventExecutor method; // IvanCord
+ 
+     public void invoke(Object event) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+     {

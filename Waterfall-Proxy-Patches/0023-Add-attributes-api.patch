@@ -365,7 +365,7 @@ index 70aed7927b1092164b52b0897d95cf63dbf86aea..128f546b97d58178f041ca3787821bb0
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
              // And immediate respawn
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 11b4dc7e53a84ae98fcc6bde77d5151d690921ed..b7f1d8a7cd6811b732cfd04505dec943b73b59a1 100644
+index 11b4dc7e53a84ae98fcc6bde77d5151d690921ed..86c4b861f2802e5b49338f402f8fb45245087f82 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
@@ -393,16 +393,18 @@ index 11b4dc7e53a84ae98fcc6bde77d5151d690921ed..b7f1d8a7cd6811b732cfd04505dec943
  import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlaySound; // IvanCord
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
-@@ -119,6 +123,8 @@ public final class UserConnection implements ProxiedPlayer
+@@ -119,6 +123,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      private boolean globalOp;
      // IvanCord end
 +    // IvanCord start
++    @Setter
 +    public List<Attribute> attributes;
++    // IvanCord end
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -822,6 +828,41 @@ public final class UserConnection implements ProxiedPlayer
+@@ -822,6 +830,36 @@ public final class UserConnection implements ProxiedPlayer
          BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
          this.globalOp = globalOp;
      }
@@ -411,11 +413,6 @@ index 11b4dc7e53a84ae98fcc6bde77d5151d690921ed..b7f1d8a7cd6811b732cfd04505dec943
 +    public List<Attribute> getAttributes()
 +    {
 +        return attributes == null ? Collections.emptyList() : Collections.unmodifiableList( attributes );
-+    }
-+
-+    public void setAttributes(List<Attribute> attributes)
-+    {
-+        this.attributes = attributes;
 +    }
 +
 +    @Override
