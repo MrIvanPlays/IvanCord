@@ -32,45 +32,6 @@ index 9a262c8a11caeade95a084e5e5bc0be398917bbf..266a46e3abf3c4948477cb15c19a7e3b
 +    }
 +    // IvanCord end
  }
-diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 3546e3eb40e0a066d129a58cc1af607e9a265fcf..4834378b88889bf497c36190c115e0b548138085 100644
---- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-+++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -294,5 +294,14 @@ public interface ProxyConfig
-      */
-     String getReconnectHandlerType();
- 
-+    /**
-+     * Gets the connect timeout milliseconds
-+     *
-+     * @return connect timeout, specified in milliseconds
-+     * @deprecated returns upstream's server connect timeout and does not return config value from ivancord. deprecated for removal
-+     */
-+    @Deprecated
-+    int getConnectTimeoutMillis();
-+
-     // IvanCord end
- }
-diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 1111e912f1668b5cb330c13fd27972d5875b31b8..59874c0a878d84a02ab05f84ce7722057b0cde1f 100644
---- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-+++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-@@ -17,6 +17,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
-     private boolean kickToLobby = true;
-     private boolean disableTabListRewrite = isOnlineMode();
-     private String reconnectHandlerType = ReconnectHandlerType.YAML.name();
-+    private int connectTimeoutMillis;
- 
-     @Accessors(fluent = true)
-     private boolean isTCPFastOpenEnabled = true;
-@@ -34,6 +35,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
-         isTCPFastOpenEnabled = config.getBoolean( "tcp_fast_open_enabled", isTCPFastOpenEnabled );
-         getTCPFastOpenMode = setupTFO( config.getInt( "tcp_fast_open_mode", getTCPFastOpenMode ) );
-         reconnectHandlerType = setupReconnectHandlerType( config.getString( "reconnect_handler_type", reconnectHandlerType ) );
-+        connectTimeoutMillis = getServerConnectTimeout();
-     }
- 
-     private int setupTFO(int incoming)
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 index 7b002089ef9dd9f365dc0f7db076976b8dc6260c..1ab5a0b3c175a39ad8ca6a39ce2568be1345fc83 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java

@@ -188,6 +188,24 @@ index 3b3525f08caec962b51d90ce6e42758dac64aa10..b83a144c1cd388034a02d1a59227ccaf
                      <!-- Log root and BungeeCord loggers without prefix -->
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %minecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+index 743d65e43549f4db3b1f6785a69ab69e19004285..b8aa41afc195fac3c72148097efc5c561d242b5b 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+@@ -15,6 +15,13 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+     @Override
+     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
+     {
++        // IvanCord start
++        if ( !ctx.channel().isActive() )
++        {
++            in.skipBytes( in.readableBytes() );
++            return;
++        }
++        // IvanCord end
+         in.markReaderIndex();
+ 
+         for ( int i = 0; i < 3; i++ ) // Waterfall
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index 937980c0ce7639c92f470e3673e8e91c14171263..4edaad4d47c07220b21b5c8eeb0690abd5546889 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java

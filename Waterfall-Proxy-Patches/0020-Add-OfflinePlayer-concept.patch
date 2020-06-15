@@ -65,20 +65,20 @@ index 0000000000000000000000000000000000000000..3a0afe137062596b7a3d3903a5a2594d
 +    Optional<ServerInfo> getLastServer();
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index e52b8f201d68db7806809be7711624c1a636d2f1..3619ff12e483f60e5610c611a30401bf4c480adc 100644
+index 1a789e83a7e14bfbb4c2254a0be1018691ec2d2a..6ca9f8e4adb03e3974b9b8eca86aa7e8e75c4af8 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -9,6 +9,7 @@ import java.util.Map;
+@@ -8,6 +8,7 @@ import java.util.Collection;
+ import java.util.Map;
  import java.util.UUID;
- import java.util.function.BiConsumer; // IvanCord
  import java.util.logging.Logger;
 +import com.mrivanplays.ivancord.api.connection.OfflinePlayer; // IvanCord
  import lombok.Getter;
  import net.md_5.bungee.api.chat.BaseComponent;
  import net.md_5.bungee.api.config.ConfigurationAdapter;
-@@ -363,6 +364,31 @@ public abstract class ProxyServer
+@@ -338,6 +339,31 @@ public abstract class ProxyServer
       */
-     public abstract void registerOutboundPacketListener(Plugin plugin, BiConsumer<DefinedPacket, PacketDirection> packetListener);
+     public abstract ServicesManager getServicesManager();
  
 +    /**
 +     * Returns a {@link OfflinePlayer}, specified by his name. This method
@@ -483,32 +483,33 @@ index 0000000000000000000000000000000000000000..6326bed99c7f5578e79a0f89ba5ea535
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f36c180601550a929aab9a6bc219ff22e4ac3906..b8543245a33ba1c8f73eb53f0ca7c400a1b9665c 100644
+index 485f952857c59b61fae92acd808dd6bd293da238..04e2eaff2be3fc2782f6f8ac27a08bdb51669e7f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -121,6 +121,8 @@ import com.mrivanplays.ivancord.SimpleServicesManager;
+@@ -112,6 +112,8 @@ import com.mrivanplays.ivancord.ReconnectHandlerType;
+ import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
+ import com.mrivanplays.ivancord.SimpleServicesManager;
  import com.mrivanplays.ivancord.api.plugin.ServicesManager;
- import com.mrivanplays.ivancord.protocol.PacketListener;
- import com.mrivanplays.ivancord.api.PacketDirection;
 +import com.mrivanplays.ivancord.api.connection.OfflinePlayer;
 +import com.mrivanplays.ivancord.connection.Playerdata;
  // IvanCord end
  
  /**
-@@ -219,6 +221,8 @@ public class BungeeCord extends ProxyServer
-                     .setNameFormat( "PacketListener Executor/#%d" )
-                     .build()
-     );
+@@ -203,6 +205,8 @@ public class BungeeCord extends ProxyServer
+     // IvanCord start
+     @Getter
+     private ServicesManager servicesManager;
 +    @Getter
 +    private Playerdata playerdata = new Playerdata();
      // IvanCord end
  
      {
-@@ -916,5 +920,23 @@ public class BungeeCord extends ProxyServer
-             }
-         } );
+@@ -858,4 +862,24 @@ public class BungeeCord extends ProxyServer
+     {
+         return new BungeeTitle();
      }
 +
++    // IvanCord start
 +    @Override
 +    public OfflinePlayer getOfflinePlayer(String name)
 +    {
@@ -526,7 +527,7 @@ index f36c180601550a929aab9a6bc219ff22e4ac3906..b8543245a33ba1c8f73eb53f0ca7c400
 +    {
 +        return playerdata.getOfflinePlayers();
 +    }
-     // IvanCord end
++    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 index 11d9f15d65223251a759e23c664182adb0ea7728..007834311a1381add3b39548cc9674bfa1a8ea4a 100644

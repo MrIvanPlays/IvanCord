@@ -1,0 +1,495 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <ivan@mrivanplays.com>
+Date: Mon, 15 Jun 2020 11:01:09 +0300
+Subject: [PATCH] Add attributes api
+
+
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/attributes/Attribute.java b/api/src/main/java/com/mrivanplays/ivancord/api/attributes/Attribute.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..14547ba459ac66a138643128fe0c3320ec04fdd0
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/attributes/Attribute.java
+@@ -0,0 +1,13 @@
++package com.mrivanplays.ivancord.api.attributes;
++
++import java.util.List;
++import lombok.Data;
++
++@Data
++public class Attribute
++{
++
++    private final AttributeKey key;
++    private final double value;
++    private List<AttributeModifier> modifierList;
++}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/attributes/AttributeKey.java b/api/src/main/java/com/mrivanplays/ivancord/api/attributes/AttributeKey.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..c972695198f2c93b96792c624ed222487115ae53
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/attributes/AttributeKey.java
+@@ -0,0 +1,78 @@
++package com.mrivanplays.ivancord.api.attributes;
++
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++public enum AttributeKey
++{
++    GENERIC_MAX_HEALTH( "generic.maxHealth", "generic.max_health", 20.0, 0.0, 1024.0 ),
++    GENERIC_FOLLOW_RANGE( "generic.followRange", "generic.follow_range", 32.0, 0.0, 2048.0 ),
++    GENERIC_KNOCKBACK_RESISTANCE( "generic.knockbackResistance", "generic.knockback_resistance", 0.0, 0.0, 1.0 ),
++    GENERIC_MOVEMENT_SPEED( "generic.movementSpeed", "generic.movement_speed", 0.7, 0.0, 1024.0 ),
++    GENERIC_ATTACK_DAMAGE( "generic.attackDamage", "generic.attack_damage", 2.0, 0.0, 2048.0 ),
++    GENERIC_FLYING_SPEED( "generic.flyingSpeed", "generic.flying_speed", 4.0, 0.0, 2048.0 ),
++    GENERIC_ARMOR( "generic.armor", null, 0.0, 0.0, 30.0 ),
++    GENERIC_ARMOR_TOUGHNESS( "generic.armorToughness", "generic.armor_toughness", 0.0, 0.0, 20.0 ),
++    GENERIC_ATTACK_KNOCKBACK( "generic.attackKnockback", "generic.attack_knockback", 0.0, 0.0, 5.0 ),
++    GENERIC_LUCK( "generic.luck", null, 0.0, -1024.0, 1024.0 ),
++    HORSE_JUMP_STRENGTH( "horse.jumpStrength", "horse.jump_strength", 0.7, 0.0, 2.0 ),
++    ZOMBIE_SPAWN_REINFORCEMENTS( "zombie.spawnReinforcements", "zombie.spawn_reinforcements", 0.0, 0.0, 1.0 );
++
++    private String pre1_16_key, after1_16_key;
++    private double defaultValue, minValue, maxValue;
++
++    AttributeKey(String preKey, String afterKey, double defaultValue, double minValue, double maxValue)
++    {
++        this.pre1_16_key = preKey;
++        if ( afterKey == null )
++        {
++            this.after1_16_key = preKey;
++        } else
++        {
++            this.after1_16_key = afterKey;
++        }
++        this.defaultValue = defaultValue;
++        this.minValue = minValue;
++        this.maxValue = maxValue;
++    }
++
++    public static AttributeKey fromKey(String key)
++    {
++        for ( AttributeKey attr : AttributeKey.values() )
++        {
++            if ( attr.after1_16_key.equalsIgnoreCase( key ) )
++            {
++                return attr;
++            } else if ( attr.pre1_16_key.equalsIgnoreCase( key ) )
++            {
++                return attr;
++            }
++        }
++        throw new IllegalArgumentException( "Invalid attribute key : " + key );
++    }
++
++    public String getKey(int protocolVersion)
++    {
++        if ( protocolVersion <= ProtocolConstants.MINECRAFT_1_15_2 )
++        {
++            return pre1_16_key;
++        } else
++        {
++            return after1_16_key;
++        }
++    }
++
++    public double getDefaultValue()
++    {
++        return defaultValue;
++    }
++
++    public double getMinValue()
++    {
++        return minValue;
++    }
++
++    public double getMaxValue()
++    {
++        return maxValue;
++    }
++}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/attributes/AttributeModifier.java b/api/src/main/java/com/mrivanplays/ivancord/api/attributes/AttributeModifier.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..8c83c3172888a0f83960a380bdce119816578e61
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/attributes/AttributeModifier.java
+@@ -0,0 +1,48 @@
++package com.mrivanplays.ivancord.api.attributes;
++
++import java.util.UUID;
++import lombok.AllArgsConstructor;
++import lombok.Data;
++import lombok.NoArgsConstructor;
++
++@Data
++@AllArgsConstructor
++@NoArgsConstructor
++public class AttributeModifier
++{
++
++    private UUID uuid;
++    private double amount;
++    private Operation operation;
++
++    public enum Operation
++    {
++        ADD_SUBTRACT( (byte) 0 ),
++        ADD_SUBTRACT_PERCENT( (byte) 1 ),
++        MULTIPLY_PERCENT( (byte) 2 );
++
++        private final byte value;
++
++        Operation(byte value)
++        {
++            this.value = value;
++        }
++
++        public byte getByteValue()
++        {
++            return value;
++        }
++
++        public static Operation fromByteValue(byte byteValue)
++        {
++            for ( Operation operation : Operation.values() )
++            {
++                if ( operation.getByteValue() == byteValue )
++                {
++                    return operation;
++                }
++            }
++            throw new IllegalArgumentException( "Invalid byte value for attribute operation: " + byteValue );
++        }
++    }
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+index 4c98df25ca5788b1edc7c6d93bf0b12ab861f42c..d9c6d2dff573e1b7a8f3c725e4adbaf66a772479 100644
+--- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
++++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
+@@ -1,5 +1,9 @@
+ package net.md_5.bungee.api.connection;
+ 
++import com.mrivanplays.ivancord.api.attributes.Attribute;
++import com.mrivanplays.ivancord.api.attributes.AttributeKey;
++import com.mrivanplays.ivancord.api.attributes.AttributeModifier;
++import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.UUID;
+@@ -431,4 +435,10 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      */
+     void setGlobalOp(boolean globalOp);
+     // IvanCord end
++
++    // IvanCord start - attributes
++    List<Attribute> getAttributes();
++
++    void modifyAttribute(AttributeKey key, double value);
++    // IvanCord end
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
+index e3c1f2ac922616234cf6f746ede040de3751d6ac..3d2adedbefe1d8c07520cc70cff57281273eda0c 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
+@@ -7,6 +7,7 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
+ import net.md_5.bungee.protocol.packet.Commands;
+ import net.md_5.bungee.protocol.packet.EncryptionRequest;
+ import net.md_5.bungee.protocol.packet.EncryptionResponse;
++import net.md_5.bungee.protocol.packet.EntityAttributes;
+ import net.md_5.bungee.protocol.packet.EntityEffect; // Waterfall
+ import net.md_5.bungee.protocol.packet.EntityRemoveEffect; // Waterfall
+ import net.md_5.bungee.protocol.packet.EntityStatus;
+@@ -203,5 +204,9 @@ public abstract class AbstractPacketHandler
+     public void handle(PlaySound playSound) throws Exception
+     {
+     }
++
++    public void handle(EntityAttributes entityAttributes) throws Exception
++    {
++    }
+     // IvanCord end
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 5c4f40713c023e0b46d76d988c261fa9ee2cecb6..ccf6493946ae0a7c16722da38a3eb1c8a59f7a01 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -15,6 +15,7 @@ import net.md_5.bungee.protocol.packet.ClientSettings;
+ import net.md_5.bungee.protocol.packet.Commands;
+ import net.md_5.bungee.protocol.packet.EncryptionRequest;
+ import net.md_5.bungee.protocol.packet.EncryptionResponse;
++import net.md_5.bungee.protocol.packet.EntityAttributes;
+ import net.md_5.bungee.protocol.packet.EntityStatus;
+ import net.md_5.bungee.protocol.packet.GameState;
+ import net.md_5.bungee.protocol.packet.EntityEffect;
+@@ -343,6 +344,18 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x19 ),
+                     map( ProtocolConstants.MINECRAFT_1_15, 0x1A )
+             );
++            // entity attributes packet
++            TO_CLIENT.registerPacket(
++                    EntityAttributes.class,
++                    map( ProtocolConstants.MINECRAFT_1_8, 0x20 ),
++                    map( ProtocolConstants.MINECRAFT_1_9, 0x4B ),
++                    map( ProtocolConstants.MINECRAFT_1_9_4, 0x4A ),
++                    map( ProtocolConstants.MINECRAFT_1_12, 0x4D ),
++                    map( ProtocolConstants.MINECRAFT_1_12_1, 0x4E ),
++                    map( ProtocolConstants.MINECRAFT_1_13, 0x52 ),
++                    map( ProtocolConstants.MINECRAFT_1_14, 0x58 ),
++                    map( ProtocolConstants.MINECRAFT_1_15, 0x59 )
++            );
+             // IvanCord end
+         }
+     },
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityAttributes.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityAttributes.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..1b476fa84a1a7383b692cbbcb58ea9f77150039f
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityAttributes.java
+@@ -0,0 +1,96 @@
++// IvanCord start
++package net.md_5.bungee.protocol.packet;
++
++import io.netty.buffer.ByteBuf;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.UUID;
++import lombok.AllArgsConstructor;
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.NoArgsConstructor;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.ProtocolConstants;
++
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++@EqualsAndHashCode(callSuper = false)
++public class EntityAttributes extends DefinedPacket
++{
++
++    private int entityId;
++    private List<Attribute> attributes;
++
++    @Override
++    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        entityId = readVarInt( buf );
++        int count = buf.readInt();
++        attributes = new ArrayList<>( count );
++        for ( int i = 0; i < count; i++ )
++        {
++            Attribute attribute = new Attribute();
++            attribute.key = readString( buf );
++            attribute.value = buf.readDouble();
++            int modifierCount = readVarInt( buf );
++            attribute.modifierList = new ArrayList<>( modifierCount );
++            for ( int j = 0; j < modifierCount; j++ )
++            {
++                AttributeModifier modifier = new AttributeModifier();
++                modifier.uuid = readUUID( buf );
++                modifier.amount = buf.readDouble();
++                modifier.operation = buf.readByte();
++                attribute.modifierList.add( modifier );
++            }
++            attributes.add( attribute );
++        }
++    }
++
++    @Override
++    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        writeVarInt( entityId, buf );
++        buf.writeInt( attributes.size() );
++        for ( Attribute attribute : attributes )
++        {
++            writeString( attribute.key, buf );
++            buf.writeDouble( attribute.value );
++            writeVarInt( attribute.modifierList.size(), buf );
++            for ( AttributeModifier modifier : attribute.modifierList )
++            {
++                writeUUID( modifier.uuid, buf );
++                buf.writeDouble( modifier.amount );
++                buf.writeByte( modifier.operation );
++            }
++        }
++    }
++
++    @Override
++    public void handle(AbstractPacketHandler handler) throws Exception
++    {
++        handler.handle( this );
++    }
++
++    @Data
++    @NoArgsConstructor
++    @AllArgsConstructor
++    public static class Attribute
++    {
++
++        private String key;
++        private double value;
++        private List<AttributeModifier> modifierList;
++    }
++
++    @Data
++    public static class AttributeModifier
++    {
++
++        private UUID uuid;
++        private double amount;
++        private byte operation;
++    }
++}
++// IvanCord end
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 70aed7927b1092164b52b0897d95cf63dbf86aea..128f546b97d58178f041ca3787821bb0d8bc95f8 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -1,6 +1,7 @@
+ package net.md_5.bungee;
+ 
+ import com.google.common.base.Preconditions;
++import com.mrivanplays.ivancord.api.attributes.AttributeKey; // IvanCord
+ import io.netty.buffer.ByteBuf;
+ import io.netty.buffer.ByteBufAllocator;
+ import java.net.InetSocketAddress;
+@@ -299,6 +300,10 @@ public class ServerConnector extends PacketHandler
+             user.resetTabHeader();
+             // IvanCord end
+ 
++            // IvanCord start - reset max health attribute on server switch
++            user.modifyAttribute( AttributeKey.GENERIC_MAX_HEALTH, AttributeKey.GENERIC_MAX_HEALTH.getDefaultValue() );
++            // IvanCord end
++
+             // Update debug info from login packet
+             user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
+             // And immediate respawn
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 11b4dc7e53a84ae98fcc6bde77d5151d690921ed..b7f1d8a7cd6811b732cfd04505dec943b73b59a1 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
+ import com.google.common.collect.HashMultimap;
+ import com.google.common.collect.ImmutableMap;
+ import com.google.common.collect.Multimap;
++import com.mrivanplays.ivancord.api.attributes.Attribute; // IvanCord
++import com.mrivanplays.ivancord.api.attributes.AttributeKey; // IvanCord
+ import io.netty.bootstrap.Bootstrap;
+ import io.netty.channel.Channel;
+ import io.netty.channel.ChannelFuture;
+@@ -17,6 +19,7 @@ import java.util.Collection;
+ import java.util.Collections;
+ import java.util.HashSet;
+ import java.util.LinkedList;
++import java.util.List; // IvanCord
+ import java.util.Locale;
+ import java.util.Map;
+ import java.util.Objects;
+@@ -59,6 +62,7 @@ import net.md_5.bungee.protocol.Protocol;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.ClientSettings;
++import net.md_5.bungee.protocol.packet.EntityAttributes;
+ import net.md_5.bungee.protocol.packet.Kick;
+ import net.md_5.bungee.protocol.packet.PlaySound; // IvanCord
+ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
+@@ -119,6 +123,8 @@ public final class UserConnection implements ProxiedPlayer
+     @Getter
+     private boolean globalOp;
+     // IvanCord end
++    // IvanCord start
++    public List<Attribute> attributes;
+     @Getter
+     private int compressionThreshold = -1;
+     // Used for trying multiple servers in order
+@@ -822,6 +828,41 @@ public final class UserConnection implements ProxiedPlayer
+         BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
+         this.globalOp = globalOp;
+     }
++
++    @Override
++    public List<Attribute> getAttributes()
++    {
++        return attributes == null ? Collections.emptyList() : Collections.unmodifiableList( attributes );
++    }
++
++    public void setAttributes(List<Attribute> attributes)
++    {
++        this.attributes = attributes;
++    }
++
++    @Override
++    public void modifyAttribute(AttributeKey key, double value)
++    {
++        if ( value > key.getMaxValue() )
++        {
++            value = key.getMaxValue();
++        }
++        if ( value < key.getMinValue() )
++        {
++            value = key.getMinValue();
++        }
++
++        String strKey = key.getKey( pendingConnection.getVersion() );
++        EntityAttributes packet = new EntityAttributes();
++        packet.setEntityId( clientEntityId );
++        packet.setAttributes( Collections.singletonList( new EntityAttributes.Attribute( strKey, value, Collections.emptyList() ) ) );
++        unsafe().sendPacket( packet );
++
++        Attribute newAttribute = new Attribute( key, value );
++        newAttribute.setModifierList( Collections.emptyList() );
++        attributes.stream().filter( attribute -> attribute.getKey() == key ).findFirst().ifPresent( attributes::remove );
++        attributes.add( newAttribute );
++    }
+     // IvanCord end
+ 
+     // IvanCord start - comment this. Not used anywhere, so...
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 007834311a1381add3b39548cc9674bfa1a8ea4a..dab8ef26d00aba5723aa7389b0360f8ec84a400f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -4,6 +4,9 @@ import com.google.common.base.Preconditions;
+ import com.mojang.brigadier.context.StringRange;
+ import com.mojang.brigadier.suggestion.Suggestion;
+ import com.mojang.brigadier.suggestion.Suggestions;
++import com.mrivanplays.ivancord.api.attributes.Attribute;
++import com.mrivanplays.ivancord.api.attributes.AttributeKey;
++import com.mrivanplays.ivancord.api.attributes.AttributeModifier;
+ import io.github.waterfallmc.waterfall.StringUtil;
+ import io.netty.channel.Channel;
+ import java.util.ArrayList;
+@@ -27,6 +30,7 @@ import net.md_5.bungee.protocol.PacketWrapper;
+ import net.md_5.bungee.protocol.ProtocolConstants;
+ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.ClientSettings;
++import net.md_5.bungee.protocol.packet.EntityAttributes;
+ import net.md_5.bungee.protocol.packet.KeepAlive;
+ import net.md_5.bungee.protocol.packet.PlayerListItem;
+ import net.md_5.bungee.protocol.packet.PlayerPosition;
+@@ -287,6 +291,26 @@ public class UpstreamBridge extends PacketHandler
+     }
+     // IvanCord end
+ 
++    // IvanCord start
++    @Override
++    public void handle(EntityAttributes attributes)
++    {
++        List<Attribute> attr = new ArrayList<>();
++        for ( EntityAttributes.Attribute packetAttr : attributes.getAttributes() )
++        {
++            Attribute attribute = new Attribute( AttributeKey.fromKey( packetAttr.getKey() ), packetAttr.getValue() );
++            List<AttributeModifier> modifiers = new ArrayList<>();
++            for ( EntityAttributes.AttributeModifier packetModifier : packetAttr.getModifierList() )
++            {
++                modifiers.add( new AttributeModifier( packetModifier.getUuid(), packetModifier.getAmount(), AttributeModifier.Operation.fromByteValue( packetModifier.getOperation() ) ) );
++            }
++            attribute.setModifierList( modifiers );
++            attr.add( attribute );
++        }
++        con.setAttributes( attr );
++    }
++    // IvanCord end
++
+     @Override
+     public String toString()
+     {
