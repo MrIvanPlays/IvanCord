@@ -30,9 +30,27 @@ index 75c75e2db14b893dbe7fb5f41562a98f47763d38..755e9d8dc7539c72fb37e45e59dd70f3
 +    }
 +    // IvanCord end
  }
+diff --git a/event/pom.xml b/event/pom.xml
+index 9d185558770ed07475a907ad0e1f489ad84c0f78..257259ddc98c75059da3ae8655ef9893269f05f0 100644
+--- a/event/pom.xml
++++ b/event/pom.xml
+@@ -16,4 +16,13 @@
+ 
+     <name>IvanCord-Event</name>
+     <description>Generic java event dispatching API intended for use with IvanCord</description>
++
++    <dependencies>
++        <dependency>
++            <groupId>org.ow2.asm</groupId>
++            <artifactId>asm</artifactId>
++            <version>8.0.1</version>
++            <scope>compile</scope>
++        </dependency>
++    </dependencies>
+ </project>
 diff --git a/event/src/main/java/com/mrivanplays/ivancord/event/ASMEventExecutor.java b/event/src/main/java/com/mrivanplays/ivancord/event/ASMEventExecutor.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..82a28903ce1034abf02a89d01d457631d95ecb9b
+index 0000000000000000000000000000000000000000..ac35661d850b512151e7129ee0c2ba267f281bbb
 --- /dev/null
 +++ b/event/src/main/java/com/mrivanplays/ivancord/event/ASMEventExecutor.java
 @@ -0,0 +1,116 @@
@@ -43,10 +61,10 @@ index 0000000000000000000000000000000000000000..82a28903ce1034abf02a89d01d457631
 +import java.util.Map;
 +import java.util.WeakHashMap;
 +import java.util.concurrent.atomic.AtomicInteger;
-+import jdk.internal.org.objectweb.asm.ClassWriter;
-+import jdk.internal.org.objectweb.asm.MethodVisitor;
-+import jdk.internal.org.objectweb.asm.Opcodes;
-+import jdk.internal.org.objectweb.asm.Type;
++import org.objectweb.asm.ClassWriter;
++import org.objectweb.asm.MethodVisitor;
++import org.objectweb.asm.Opcodes;
++import org.objectweb.asm.Type;
 +
 +class ASMEventExecutor
 +{
@@ -167,7 +185,7 @@ index 0000000000000000000000000000000000000000..e7ff702e908c1e6672b2cfdb31b9b4ea
 +}
 diff --git a/event/src/main/java/com/mrivanplays/ivancord/event/EventExecutor.java b/event/src/main/java/com/mrivanplays/ivancord/event/EventExecutor.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f29d059ca318c7d80a0b5a143148c3b36c1b4dde
+index 0000000000000000000000000000000000000000..531976878901241b047718a824597257b167e773
 --- /dev/null
 +++ b/event/src/main/java/com/mrivanplays/ivancord/event/EventExecutor.java
 @@ -0,0 +1,22 @@
@@ -189,36 +207,34 @@ index 0000000000000000000000000000000000000000..f29d059ca318c7d80a0b5a143148c3b3
 +        } else
 +        {
 +            method.setAccessible( true );
-+            return new MethodHandleEventExecutor( method );
++            return new MethodEventExecutor( method );
 +        }
 +    }
 +}
-diff --git a/event/src/main/java/com/mrivanplays/ivancord/event/MethodHandleEventExecutor.java b/event/src/main/java/com/mrivanplays/ivancord/event/MethodHandleEventExecutor.java
+diff --git a/event/src/main/java/com/mrivanplays/ivancord/event/MethodEventExecutor.java b/event/src/main/java/com/mrivanplays/ivancord/event/MethodEventExecutor.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b4e25e6425f4af3856d44a487c69d952243e36e7
+index 0000000000000000000000000000000000000000..af98fbff282dc893fd96b560dc91a4b2e34053dc
 --- /dev/null
-+++ b/event/src/main/java/com/mrivanplays/ivancord/event/MethodHandleEventExecutor.java
-@@ -0,0 +1,48 @@
++++ b/event/src/main/java/com/mrivanplays/ivancord/event/MethodEventExecutor.java
+@@ -0,0 +1,46 @@
 +package com.mrivanplays.ivancord.event;
 +
-+import java.lang.invoke.MethodHandle;
-+import java.lang.invoke.MethodHandles;
 +import java.lang.reflect.Method;
 +import java.lang.reflect.Modifier;
 +import lombok.SneakyThrows;
 +
-+class MethodHandleEventExecutor implements EventExecutor
++class MethodEventExecutor implements EventExecutor
 +{
 +
 +    private final Class<?> eventClass;
-+    private final MethodHandle handle;
++    private final Method method;
 +    private final boolean isStatic;
 +
 +    @SneakyThrows
-+    MethodHandleEventExecutor(Method method)
++    MethodEventExecutor(Method method)
 +    {
 +        this.eventClass = method.getParameterTypes()[0];
-+        this.handle = MethodHandles.lookup().unreflect( method );
++        this.method = method;
 +        this.isStatic = Modifier.isStatic( method.getModifiers() );
 +    }
 +
@@ -237,14 +253,14 @@ index 0000000000000000000000000000000000000000..b4e25e6425f4af3856d44a487c69d952
 +            executeStatic( event );
 +        } else
 +        {
-+            handle.invoke( listener, event );
++            method.invoke( listener, event );
 +        }
 +    }
 +
 +    @SneakyThrows
 +    public void executeStatic(Object event)
 +    {
-+        handle.invoke( event );
++        method.invoke( null, event );
 +    }
 +}
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
@@ -290,15 +306,18 @@ index d7c3b90d54a3003395e6e85d1a4a66fbaea0259b..77c8f73c95be78b8bd37134ce631072d
          {
              byEventBaked.remove( eventClass );
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
-index ad19c020c77a45c3b3a8a18aaf2f59c2de15ec7c..8c20bfc70d6adf93b8d7ce9a7b54e75afaa4d1b3 100644
+index ad19c020c77a45c3b3a8a18aaf2f59c2de15ec7c..4607f99116c75b9c3beaf501b4e76369afab6d5d 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
-@@ -12,7 +12,7 @@ public class EventHandlerMethod
+@@ -12,9 +12,9 @@ public class EventHandlerMethod
      @Getter
      private final Object listener;
      @Getter
 -    private final Method method;
 +    private final com.mrivanplays.ivancord.event.EventExecutor method; // IvanCord
  
-     public void invoke(Object event) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+-    public void invoke(Object event) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
++    public void invoke(Object event) throws Throwable // IvanCord
      {
+         method.invoke( listener, event );
+     }
