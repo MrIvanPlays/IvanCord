@@ -1,0 +1,66 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <ivan@mrivanplays.com>
+Date: Tue, 16 Jun 2020 10:54:03 +0300
+Subject: [PATCH] Configurable brand
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 3546e3eb40e0a066d129a58cc1af607e9a265fcf..7e93a59fd9e875b3ba8d9fe64db5df8e92a7d563 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -294,5 +294,14 @@ public interface ProxyConfig
+      */
+     String getReconnectHandlerType();
+ 
++    /**
++     * Returns the brand proxy will send to the client. Please note that
++     * the server, connecting to is also going to append its brand like
++     * "<- (platform name)" so it is best to change the brand on the server side.
++     *
++     * @return brand
++     */
++    String getBrand();
++
+     // IvanCord end
+ }
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+index 1111e912f1668b5cb330c13fd27972d5875b31b8..712c5fc65f4709e50e60e2672955e5dd024e4797 100644
+--- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+@@ -6,6 +6,7 @@ import com.mrivanplays.ivancord.ReconnectHandlerType;
+ import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
+ import lombok.Getter;
+ import lombok.experimental.Accessors;
++import net.md_5.bungee.BungeeCord;
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.conf.YamlConfig;
+ import com.mrivanplays.ivancord.tcpfastopen.TCPFastOpenMode;
+@@ -17,6 +18,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+     private boolean kickToLobby = true;
+     private boolean disableTabListRewrite = isOnlineMode();
+     private String reconnectHandlerType = ReconnectHandlerType.YAML.name();
++    private String brand = BungeeCord.getInstance().getName() + " (" + BungeeCord.getInstance().getVersion() + ")";
+ 
+     @Accessors(fluent = true)
+     private boolean isTCPFastOpenEnabled = true;
+@@ -34,6 +36,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+         isTCPFastOpenEnabled = config.getBoolean( "tcp_fast_open_enabled", isTCPFastOpenEnabled );
+         getTCPFastOpenMode = setupTFO( config.getInt( "tcp_fast_open_mode", getTCPFastOpenMode ) );
+         reconnectHandlerType = setupReconnectHandlerType( config.getString( "reconnect_handler_type", reconnectHandlerType ) );
++        brand = config.getString( "brand", brand );
+     }
+ 
+     private int setupTFO(int incoming)
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 128f546b97d58178f041ca3787821bb0d8bc95f8..1bf1cef764169271de5db8c5f6ae192b1c121637 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -255,7 +255,7 @@ public class ServerConnector extends PacketHandler
+             user.unsafe().sendPacket( modLogin );
+ 
+             ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
+-            DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
++            DefinedPacket.writeString( bungee.getConfig().getBrand(), brand ); // IvanCord - configurable brand
+             user.unsafe().sendPacket( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler.isServerForge() ) );
+             brand.release();
+ 
