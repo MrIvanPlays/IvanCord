@@ -5,17 +5,15 @@ Subject: [PATCH] Configurable brand
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 3546e3eb40e0a066d129a58cc1af607e9a265fcf..7e93a59fd9e875b3ba8d9fe64db5df8e92a7d563 100644
+index 3546e3eb40e0a066d129a58cc1af607e9a265fcf..f56db5737913afc343b332fdfffc7c6adce8e87f 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -294,5 +294,14 @@ public interface ProxyConfig
+@@ -294,5 +294,12 @@ public interface ProxyConfig
       */
      String getReconnectHandlerType();
  
 +    /**
-+     * Returns the brand proxy will send to the client. Please note that
-+     * the server, connecting to is also going to append its brand like
-+     * "<- (platform name)" so it is best to change the brand on the server side.
++     * Returns the brand proxy will send to the client.
 +     *
 +     * @return brand
 +     */
@@ -64,3 +62,16 @@ index 128f546b97d58178f041ca3787821bb0d8bc95f8..1bf1cef764169271de5db8c5f6ae192b
              user.unsafe().sendPacket( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler.isServerForge() ) );
              brand.release();
  
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index b138a8ec499276184e55cef57a9db08ebe57d9aa..300f71ebe0684c1b7fa8c61838adc5f95c685861 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -314,7 +314,7 @@ public class DownstreamBridge extends PacketHandler
+             Preconditions.checkState( !serverBrand.contains( bungee.getName() ), "Cannot connect proxy to itself!" );
+ 
+             brand = ByteBufAllocator.DEFAULT.heapBuffer();
+-            DefinedPacket.writeString( bungee.getName() + " <- " + serverBrand, brand ); // Waterfall
++            DefinedPacket.writeString( bungee.getConfig().getBrand(), brand ); // Waterfall // IvanCord - custom brand
+             pluginMessage.setData( brand );
+             brand.release();
+             // changes in the packet are ignored so we need to send it manually

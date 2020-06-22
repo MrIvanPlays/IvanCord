@@ -410,7 +410,7 @@ index a4f63029ec561bc9e72a23cc9832d965c6aa6c9a..29241213677c8372bf3d70074cf161a0
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 057ae13dad56134e0a1af2e3260d73110168ab90..d6ecd645391805e4cf43608f9a5f78942deb05eb 100644
+index d3b7a9123ff59d0a4348fe91e01a70f15a626d18..695f70d9d0e6034dd9ad5251a0af6873df0970f1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -42,11 +42,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
