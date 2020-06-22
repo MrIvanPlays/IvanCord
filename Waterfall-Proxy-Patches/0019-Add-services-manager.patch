@@ -6,29 +6,10 @@ Subject: [PATCH] Add services manager
 
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..310fab3c2a2040a7b41e2e81fa6730db0686240a
+index 0000000000000000000000000000000000000000..4b280f2301632bd22422d96bad0c1f73e0de38e3
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceRegisteredEvent.java
-@@ -0,0 +1,41 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,22 @@
 +package com.mrivanplays.ivancord.api.event;
 +
 +import lombok.AllArgsConstructor;
@@ -53,29 +34,10 @@ index 0000000000000000000000000000000000000000..310fab3c2a2040a7b41e2e81fa6730db
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..169b02fa4cdf5ed5f3748fda1e0967734e52d877
+index 0000000000000000000000000000000000000000..350ba09a852d4d7b9a8908e40072038cfcc5ff4f
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/ServiceUnregisteredEvent.java
-@@ -0,0 +1,41 @@
-+/*
-+ * Copyright 2019 Ivan Pekov (MrIvanPlays)
-+
-+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
-+ * this software and associated documentation files (the "Software"), to deal in the
-+ * Software without restriction, including without limitation the rights to use, copy,
-+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-+
-+ * The above copyright notice and this permission notice shall be included in all copies
-+ * or substantial portions of the Software.
-+
-+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-+ **/
+@@ -0,0 +1,22 @@
 +package com.mrivanplays.ivancord.api.event;
 +
 +import lombok.AllArgsConstructor;
