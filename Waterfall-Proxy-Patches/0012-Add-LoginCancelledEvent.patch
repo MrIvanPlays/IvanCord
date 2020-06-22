@@ -65,7 +65,7 @@ index 0000000000000000000000000000000000000000..f140b0195e9661e364dafab7c3aba7ec
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 37ea35e3021faff572b2a2f2b562bc36a8fb975e..ed525efadd950d34a0f6638117facedc81b76143 100644
+index 37ea35e3021faff572b2a2f2b562bc36a8fb975e..7235aeeba825434d6738a8957da406ed612b3bc4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -65,7 +65,7 @@ import net.md_5.bungee.protocol.packet.StatusResponse;
@@ -123,50 +123,15 @@ index 37ea35e3021faff572b2a2f2b562bc36a8fb975e..ed525efadd950d34a0f6638117facedc
                      return;
                  }
  
-@@ -530,6 +545,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-                     @Override
-                     public void run()
-                     {
-+                        // IvanCord start - recreate this in favour of LoginCancelledEvent
-+                        /*
-                         if ( !ch.isClosing() )
-                         {
-                             UserConnection userCon = new UserConnection( bungee, ch, getName(), InitialHandler.this );
-@@ -558,6 +575,38 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -558,6 +573,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
                              thisState = State.FINISHED;
                          }
-+                         */
-+                        if ( ch.isClosing() )
++                        // IvanCord start
++                        else
 +                        {
 +                            new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).callEvent();
-+                            return;
 +                        }
-+                        UserConnection userCon = new UserConnection( bungee, ch, getName(), InitialHandler.this );
-+                        userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
-+                        userCon.init();
-+
-+                        unsafe.sendPacket( new LoginSuccess( getUniqueId().toString(), getName() ) ); // With dashes in between
-+                        ch.setProtocol( Protocol.GAME );
-+
-+                        ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new UpstreamBridge( bungee, userCon ) );
-+                        bungee.getPluginManager().callEvent( new PostLoginEvent( userCon ) );
-+                        ServerInfo server;
-+                        if ( bungee.getReconnectHandler() != null )
-+                        {
-+                            server = bungee.getReconnectHandler().getServer( userCon );
-+                        } else
-+                        {
-+                            server = AbstractReconnectHandler.getForcedHost( InitialHandler.this );
-+                        }
-+                        if ( server == null )
-+                        {
-+                            server = bungee.getServerInfo( listener.getDefaultServer() );
-+                        }
-+
-+                        userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
-+
-+                        thisState = State.FINISHED;
 +                        // IvanCord end
                      }
                  } );
