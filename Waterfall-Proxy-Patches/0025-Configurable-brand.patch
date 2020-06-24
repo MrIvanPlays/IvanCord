@@ -22,7 +22,7 @@ index 3546e3eb40e0a066d129a58cc1af607e9a265fcf..f56db5737913afc343b332fdfffc7c6a
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 1111e912f1668b5cb330c13fd27972d5875b31b8..712c5fc65f4709e50e60e2672955e5dd024e4797 100644
+index 1111e912f1668b5cb330c13fd27972d5875b31b8..161f0bf5b4fa0e5fefdbebfdea178be2252116a0 100644
 --- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -6,6 +6,7 @@ import com.mrivanplays.ivancord.ReconnectHandlerType;
@@ -37,7 +37,7 @@ index 1111e912f1668b5cb330c13fd27972d5875b31b8..712c5fc65f4709e50e60e2672955e5dd
      private boolean kickToLobby = true;
      private boolean disableTabListRewrite = isOnlineMode();
      private String reconnectHandlerType = ReconnectHandlerType.YAML.name();
-+    private String brand = BungeeCord.getInstance().getName() + " (" + BungeeCord.getInstance().getVersion() + ")";
++    private String brand = "IvanCord by MrIvanPlays";
  
      @Accessors(fluent = true)
      private boolean isTCPFastOpenEnabled = true;
