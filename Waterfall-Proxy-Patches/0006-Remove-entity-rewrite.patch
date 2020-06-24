@@ -103,7 +103,7 @@ index 849ba1cf93a234f71b363073904efa52ca6d7ce5..d4d7323a084ccae0444c428a266ead50
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index aa1515f4ab0cc3200e047382ec6bbd89e0c96fec..88e154c04eee84c79240a7bba837a99f4bb37966 100644
+index 546564fbee55ccf84d866d3c623583a451a937d2..97a0d7713021497f79a15519d45dac14cc2d2108 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -32,15 +32,20 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
@@ -127,33 +127,33 @@ index aa1515f4ab0cc3200e047382ec6bbd89e0c96fec..88e154c04eee84c79240a7bba837a99f
  import net.md_5.bungee.protocol.packet.Title;
  import net.md_5.bungee.protocol.packet.ViewDistance;
  
-@@ -106,6 +111,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_9, 0x0C ),
-                     map( ProtocolConstants.MINECRAFT_1_15, 0x0D )
+@@ -111,6 +116,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_15, 0x0D ),
+                     map( ProtocolConstants.MINECRAFT_1_16, 0x0C )
              );
 +            // IvanCord start - stop this from registering
 +            /*
              // Waterfall start
              TO_CLIENT.registerPacket(
                      EntityEffect.class,
-@@ -131,6 +138,7 @@ public enum Protocol
-                     map(ProtocolConstants.MINECRAFT_1_15, 0x39)
+@@ -138,6 +145,7 @@ public enum Protocol
+                     map(ProtocolConstants.MINECRAFT_1_16, 0x38)
              );
              // Waterfall end
 +            */ // IvanCord end
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      PlayerListItem::new, // Waterfall - speed up packet construction
-@@ -149,6 +157,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_13, 0x10 ),
-                     map( ProtocolConstants.MINECRAFT_1_15, 0x11 )
+@@ -158,6 +166,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_15, 0x11 ),
+                     map( ProtocolConstants.MINECRAFT_1_16, 0x10 )
              );
 +            // IvanCord start - remove these from handling
 +            /*
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
                      ScoreboardObjective::new, // Waterfall - speed up packet construction
-@@ -193,6 +203,8 @@ public enum Protocol
+@@ -202,6 +212,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_14, 0x4B ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x4C )
              );
@@ -276,7 +276,7 @@ index c25f6500eb5eaf210fefdbe4efaf34d26439cb40..794e79a27b1e19a5dd82781b01d3f6f4
      @Override
      public void load() {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index c0c796b3b959619e1856ce1b306d92734882d757..926ec66fd21265e8be8d80f310168673140201c3 100644
+index 2dfbc28cf6cef374f0786c41bc6cf824e594e8e9..339f4e79e1ad12bd82c29c50b08b3dcde71c0653 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -228,10 +228,12 @@ public class ServerConnector extends PacketHandler
@@ -310,15 +310,20 @@ index c0c796b3b959619e1856ce1b306d92734882d757..926ec66fd21265e8be8d80f310168673
  
              for ( UUID bossbar : user.getSentBossBars() )
              {
-@@ -301,15 +307,19 @@ public class ServerConnector extends PacketHandler
+@@ -301,7 +307,9 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
+-            if ( !user.isDisableEntityMetadataRewrite() && login.getDimension().equals( user.getDimension() ) ) // Waterfall - defer
 +            // IvanCord start - get rid of this
 +            /*
-             if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
++            if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
              {
-                 user.unsafe().sendPacket( new Respawn( ( login.getDimension() >= 0 ? -1 : 0 ), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
+                 Object newDim;
+                 String worldName = login.getWorldName();
+@@ -315,11 +323,13 @@ public class ServerConnector extends PacketHandler
+ 
+                 user.unsafe().sendPacket( new Respawn( newDim, worldName, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
              }
 +             */
 +            // IvanCord end
@@ -331,17 +336,17 @@ index c0c796b3b959619e1856ce1b306d92734882d757..926ec66fd21265e8be8d80f310168673
                  // Ensure that we maintain consistency
                  user.setClientEntityId( login.getEntityId() );
  
-@@ -326,7 +336,7 @@ public class ServerConnector extends PacketHandler
-                 if (user.getDimension() == login.getDimension()) {
-                     user.unsafe().sendPacket( new Respawn(user.getDimension() == 0 ? -1 : 0, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType()));
+@@ -353,7 +363,7 @@ public class ServerConnector extends PacketHandler
+                     }
+                     user.unsafe().sendPacket( new Respawn( newDim, worldName, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
                  }
 -            }
 +            // } // IvanCord - comment
              // Waterfall end
-             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getLevelType() ) );
+             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a4f63029ec561bc9e72a23cc9832d965c6aa6c9a..29241213677c8372bf3d70074cf161a050f61f04 100644
+index 917b2b5631c0801446f6617bbd731177154db948..d57f51663af33d259adb3a01158e5b85a756fd03 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -42,7 +42,9 @@ import net.md_5.bungee.api.event.ServerConnectEvent;

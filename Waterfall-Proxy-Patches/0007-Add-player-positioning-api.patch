@@ -164,7 +164,7 @@ index 252389bd1d21a35e12b4e48e523ab85abd367e52..e0e68ecabbda76bf83011b67de558e83
      public void handle(EntityEffect entityEffect) throws Exception
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 88e154c04eee84c79240a7bba837a99f4bb37966..e2fe5bc45befbbf9ea9338d6665f5dc5eaf91d2e 100644
+index 97a0d7713021497f79a15519d45dac14cc2d2108..a7642c562809353d12139ab425cd9f79e9dd5bb0 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -30,6 +30,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
@@ -175,7 +175,7 @@ index 88e154c04eee84c79240a7bba837a99f4bb37966..e2fe5bc45befbbf9ea9338d6665f5dc5
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  // IvanCord - comment these
-@@ -320,6 +321,18 @@ public enum Protocol
+@@ -339,6 +340,19 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x0A ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x0B )
              );
@@ -188,7 +188,8 @@ index 88e154c04eee84c79240a7bba837a99f4bb37966..e2fe5bc45befbbf9ea9338d6665f5dc5
 +                    map( ProtocolConstants.MINECRAFT_1_12, 0x0F ),
 +                    map( ProtocolConstants.MINECRAFT_1_12_1, 0x0E ),
 +                    map( ProtocolConstants.MINECRAFT_1_13, 0x11 ),
-+                    map( ProtocolConstants.MINECRAFT_1_14, 0x12 )
++                    map( ProtocolConstants.MINECRAFT_1_14, 0x12 ),
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x13 )
 +            );
 +            // IvanCord end
          }
@@ -255,7 +256,7 @@ index 0000000000000000000000000000000000000000..f23fe50e8c9a22ce934f5797f9e75fb2
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 29241213677c8372bf3d70074cf161a050f61f04..2b6eda939afbc57484ab13b0c57ef684f4f14ea8 100644
+index d57f51663af33d259adb3a01158e5b85a756fd03..c397b68e2e8228a6925af5cb6a74d8fe05b67f5a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -67,6 +67,7 @@ import net.md_5.bungee.tab.ServerUnique;
