@@ -211,31 +211,25 @@ index 9537382cd328a7424e673e3dc6f87000cd432a84..b3cbe291677280698cc027a82e19e30a
 +    <description>Generic java event dispatching API intended for use with IvanCord</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index 063232fb74acade5ea0fd9003bac3e0b98367434..33824cdb9681f03e43668aadca14071c0648db68 100644
+index 063232fb74acade5ea0fd9003bac3e0b98367434..14ddd035e493bf0a0ef04c206a920f1ff5af4c1f 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
-@@ -4,6 +4,7 @@
+@@ -4,19 +4,18 @@
      <modelVersion>4.0.0</modelVersion>
  
      <parent>
-+<<<<<<< HEAD
-         <groupId>io.github.waterfallmc</groupId>
-         <artifactId>waterfall-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
-@@ -13,10 +14,20 @@
-     <groupId>io.github.waterfallmc</groupId>
-     <artifactId>waterfall-log</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
-+=======
+-        <groupId>io.github.waterfallmc</groupId>
+-        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-+        <version>1.15-SNAPSHOT</version>
-+        <relativePath>../pom.xml</relativePath>
-+    </parent>
-+
+         <version>1.16-R0.1-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>io.github.waterfallmc</groupId>
+-    <artifactId>waterfall-log</artifactId>
 +    <artifactId>ivancord-log</artifactId>
-+    <version>1.15-SNAPSHOT</version>
-+>>>>>>> POM changes and rebranding
+     <version>1.16-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Log</name>
@@ -245,7 +239,7 @@ index 063232fb74acade5ea0fd9003bac3e0b98367434..33824cdb9681f03e43668aadca14071c
  
      <dependencies>
          <dependency>
-@@ -26,8 +37,8 @@
+@@ -26,8 +25,8 @@
              <scope>compile</scope>
          </dependency>
          <dependency>
