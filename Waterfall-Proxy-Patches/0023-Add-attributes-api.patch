@@ -344,7 +344,7 @@ index 0000000000000000000000000000000000000000..1b476fa84a1a7383b692cbbcb58ea9f7
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 652acac3adc5754b2f1c02893d1ccace872f8a1e..6ce158fa02c67cd4d8d9ae64cb3bb253cdc5233a 100644
+index f0311fb938450b636fdff263d4a7af10a8383226..643ddfa28f1719d0d402ee19d3625b7e058e1b0c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -1,6 +1,7 @@
@@ -367,7 +367,7 @@ index 652acac3adc5754b2f1c02893d1ccace872f8a1e..6ce158fa02c67cd4d8d9ae64cb3bb253
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
              // And immediate respawn
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 80f2fd456f94dde4c3b9bbabc746630f72b33501..ba220d891c6667b7327bb9e8d2b518d2574e1cdc 100644
+index 80f2fd456f94dde4c3b9bbabc746630f72b33501..cf76ece77e57c258a7d0844367518c1bd5d5dfdf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
@@ -379,7 +379,12 @@ index 80f2fd456f94dde4c3b9bbabc746630f72b33501..ba220d891c6667b7327bb9e8d2b518d2
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFuture;
-@@ -17,6 +19,7 @@ import java.util.Collection;
+@@ -13,10 +15,12 @@ import io.netty.channel.ChannelOption;
+ import io.netty.util.internal.PlatformDependent;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
++import java.util.ArrayList; // IvanCord
+ import java.util.Collection;
  import java.util.Collections;
  import java.util.HashSet;
  import java.util.LinkedList;
@@ -387,7 +392,7 @@ index 80f2fd456f94dde4c3b9bbabc746630f72b33501..ba220d891c6667b7327bb9e8d2b518d2
  import java.util.Locale;
  import java.util.Map;
  import java.util.Objects;
-@@ -59,6 +62,7 @@ import net.md_5.bungee.protocol.Protocol;
+@@ -59,6 +63,7 @@ import net.md_5.bungee.protocol.Protocol;
  import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
@@ -395,7 +400,7 @@ index 80f2fd456f94dde4c3b9bbabc746630f72b33501..ba220d891c6667b7327bb9e8d2b518d2
  import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlaySound; // IvanCord
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
-@@ -119,6 +123,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -119,6 +124,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      private boolean globalOp;
      // IvanCord end
@@ -406,7 +411,7 @@ index 80f2fd456f94dde4c3b9bbabc746630f72b33501..ba220d891c6667b7327bb9e8d2b518d2
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -822,6 +830,36 @@ public final class UserConnection implements ProxiedPlayer
+@@ -822,6 +831,42 @@ public final class UserConnection implements ProxiedPlayer
          BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
          this.globalOp = globalOp;
      }
@@ -437,7 +442,13 @@ index 80f2fd456f94dde4c3b9bbabc746630f72b33501..ba220d891c6667b7327bb9e8d2b518d2
 +
 +        Attribute newAttribute = new Attribute( key, value );
 +        newAttribute.setModifierList( Collections.emptyList() );
-+        attributes.stream().filter( attribute -> attribute.getKey() == key ).findFirst().ifPresent( attributes::remove );
++        if ( attributes != null )
++        {
++            attributes.stream().filter( attribute -> attribute.getKey() == key ).findFirst().ifPresent( attributes::remove );
++        } else
++        {
++            attributes = new ArrayList<>();
++        }
 +        attributes.add( newAttribute );
 +    }
      // IvanCord end

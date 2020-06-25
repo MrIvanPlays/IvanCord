@@ -338,7 +338,7 @@ index 0000000000000000000000000000000000000000..6b8ef02070ddabb4edb23793901cd4d9
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 339f4e79e1ad12bd82c29c50b08b3dcde71c0653..fd5461b2a96bf2817693069395365b1332e95248 100644
+index 11d35166594c13b1d5046622d56c7f7556a34ae2..21b56df8b9392cd63846060dc3576ede2da02643 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -46,6 +46,7 @@ import net.md_5.bungee.protocol.packet.Kick;

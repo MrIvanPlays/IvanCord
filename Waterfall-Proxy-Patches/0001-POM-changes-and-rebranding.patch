@@ -309,7 +309,7 @@ index c5c1f9e37614e39538c785fe5eeca7a380d0e148..b14a83b7d750ff12188dd997494f0a0f
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 570b9ea1c29e2f369666924b8dcd0c22ddc5b7bc..749147f78b565d742ed92567eacbf4c6afe6f9c6 100644
+index 395a963abd1f01a1e9c48c4ad9552438f270ea0e..de0be10bf52819a71e0c96091962fdab2adabcdb 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -346,7 +346,7 @@ index 570b9ea1c29e2f369666924b8dcd0c22ddc5b7bc..749147f78b565d742ed92567eacbf4c6
 +
      <licenses>
          <license>
-             <name>The BSD 3-Clause License</name>
+             <name>Modified BSD 3-Clause License</name>
 @@ -33,19 +24,7 @@
  
      <developers>

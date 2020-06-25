@@ -276,7 +276,7 @@ index c25f6500eb5eaf210fefdbe4efaf34d26439cb40..794e79a27b1e19a5dd82781b01d3f6f4
      @Override
      public void load() {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 2dfbc28cf6cef374f0786c41bc6cf824e594e8e9..339f4e79e1ad12bd82c29c50b08b3dcde71c0653 100644
+index 43d40b92502c7310a8f41af8978257c2ef0d3452..11d35166594c13b1d5046622d56c7f7556a34ae2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -228,10 +228,12 @@ public class ServerConnector extends PacketHandler
