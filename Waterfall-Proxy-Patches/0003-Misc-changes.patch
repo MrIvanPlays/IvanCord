@@ -248,10 +248,10 @@ index 3f548c6538d4d22a705be718a0931b674c7dd634..dc32c863578c9d06f1e08368e109ec3a
          bungee.start();
          bungee.getLogger().info( "Enabled IvanCord version " + bungee.getVersion() ); // IvanCord - rebranding
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 170b590be2276197d7285d1a1d4d78fb23148ad7..43d40b92502c7310a8f41af8978257c2ef0d3452 100644
+index 78401dae2076fc837da463bf987eb8fb85ba17c3..228a3ee7d7d1cb91d2b02c07b271db1faf15ce78 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -284,6 +284,13 @@ public class ServerConnector extends PacketHandler
+@@ -303,6 +303,13 @@ public class ServerConnector extends PacketHandler
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.BossBar( bossbar, 1 ) );
              }
              user.getSentBossBars().clear();

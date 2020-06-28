@@ -276,7 +276,7 @@ index c25f6500eb5eaf210fefdbe4efaf34d26439cb40..794e79a27b1e19a5dd82781b01d3f6f4
      @Override
      public void load() {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 43d40b92502c7310a8f41af8978257c2ef0d3452..11d35166594c13b1d5046622d56c7f7556a34ae2 100644
+index 228a3ee7d7d1cb91d2b02c07b271db1faf15ce78..17477febf6143afce297927cb806c68f3cf9d881 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -228,10 +228,12 @@ public class ServerConnector extends PacketHandler
@@ -292,7 +292,7 @@ index 43d40b92502c7310a8f41af8978257c2ef0d3452..11d35166594c13b1d5046622d56c7f75
  
          if ( user.getForgeClientHandler().getClientModList() == null && !user.getForgeClientHandler().isHandshakeComplete() ) // Vanilla
          {
-@@ -261,6 +263,8 @@ public class ServerConnector extends PacketHandler
+@@ -280,6 +282,8 @@ public class ServerConnector extends PacketHandler
              user.getServer().setObsolete( true );
              user.getTabListHandler().onServerChange();
  
@@ -301,7 +301,7 @@ index 43d40b92502c7310a8f41af8978257c2ef0d3452..11d35166594c13b1d5046622d56c7f75
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
              if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
              for ( Objective objective : serverScoreboard.getObjectives() )
-@@ -277,6 +281,8 @@ public class ServerConnector extends PacketHandler
+@@ -296,6 +300,8 @@ public class ServerConnector extends PacketHandler
              }
              } // Waterfall
              serverScoreboard.clear();
@@ -310,20 +310,15 @@ index 43d40b92502c7310a8f41af8978257c2ef0d3452..11d35166594c13b1d5046622d56c7f75
  
              for ( UUID bossbar : user.getSentBossBars() )
              {
-@@ -301,7 +307,9 @@ public class ServerConnector extends PacketHandler
+@@ -320,15 +326,19 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
--            if ( !user.isDisableEntityMetadataRewrite() && login.getDimension().equals( user.getDimension() ) ) // Waterfall - defer
 +            // IvanCord start - get rid of this
 +            /*
-+            if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
+             if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
              {
-                 Object newDim;
-                 String worldName = login.getWorldName();
-@@ -315,11 +323,13 @@ public class ServerConnector extends PacketHandler
- 
-                 user.unsafe().sendPacket( new Respawn( newDim, worldName, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
+                 user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
              }
 +             */
 +            // IvanCord end
@@ -336,9 +331,9 @@ index 43d40b92502c7310a8f41af8978257c2ef0d3452..11d35166594c13b1d5046622d56c7f75
                  // Ensure that we maintain consistency
                  user.setClientEntityId( login.getEntityId() );
  
-@@ -353,7 +363,7 @@ public class ServerConnector extends PacketHandler
-                     }
-                     user.unsafe().sendPacket( new Respawn( newDim, worldName, login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
+@@ -347,7 +357,7 @@ public class ServerConnector extends PacketHandler
+                 {
+                     user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
                  }
 -            }
 +            // } // IvanCord - comment

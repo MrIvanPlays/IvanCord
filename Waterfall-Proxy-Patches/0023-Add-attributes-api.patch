@@ -344,7 +344,7 @@ index 0000000000000000000000000000000000000000..1b476fa84a1a7383b692cbbcb58ea9f7
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index f0311fb938450b636fdff263d4a7af10a8383226..643ddfa28f1719d0d402ee19d3625b7e058e1b0c 100644
+index 4ac763bbea3b75fc898a66e22e6648ecca661d3e..cf016d3e0384e8a39bb258bb4a0864eb01cd3747 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -1,6 +1,7 @@
@@ -355,7 +355,7 @@ index f0311fb938450b636fdff263d4a7af10a8383226..643ddfa28f1719d0d402ee19d3625b7e
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import java.net.InetSocketAddress;
-@@ -299,6 +300,10 @@ public class ServerConnector extends PacketHandler
+@@ -318,6 +319,10 @@ public class ServerConnector extends PacketHandler
              user.resetTabHeader();
              // IvanCord end
  

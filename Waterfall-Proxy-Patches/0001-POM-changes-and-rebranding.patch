@@ -5,7 +5,7 @@ Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index dc9c887ffd2cb469113fefafd67d46d972f0b6ea..7f301c079d74c33b28826f587e1391970fa0e64e 100644
+index 3db5911561da27245da178cefb53a5646577651c..406a419b77e44a3ff819c128bcd5f602279925e0 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -16,14 +16,14 @@ index dc9c887ffd2cb469113fefafd67d46d972f0b6ea..7f301c079d74c33b28826f587e139197
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
+         <version>1.16-R0.2-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-api</artifactId>
 +    <artifactId>ivancord-api</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-API</name>
@@ -64,7 +64,7 @@ index dc9c887ffd2cb469113fefafd67d46d972f0b6ea..7f301c079d74c33b28826f587e139197
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index c291560dd65f6563881b5c4907344cb659d1d144..22e41c904d67df0700e201a319cb0c936b9e2b5f 100644
+index 9c1ec374085d1cc99f1f5e60e19540b41043f7cb..b321c43473754a6e92f9d6731a9861de1bed09a9 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,18 @@
@@ -75,14 +75,14 @@ index c291560dd65f6563881b5c4907344cb659d1d144..22e41c904d67df0700e201a319cb0c93
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
+         <version>1.16-R0.2-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-bootstrap</artifactId>
 +    <artifactId>ivancord-bootstrap</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Bootstrap</name>
@@ -125,7 +125,7 @@ index a4516ed96a91e257e7beab1479b812b185099168..37402b0ecce3076744034234f6ea638f
              return;
          }
 diff --git a/chat/pom.xml b/chat/pom.xml
-index bc8eab6818ce72ca6c5c7b1210885d615a5c148e..272692f561b371b525dc7180a62b2f3829cdfda3 100644
+index 3055357bb6908480aec6608656e830e2eaa5a1dd..050be3ee6142a57ec93558c6a2b610940377f30e 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -4,20 +4,18 @@
@@ -137,14 +137,14 @@ index bc8eab6818ce72ca6c5c7b1210885d615a5c148e..272692f561b371b525dc7180a62b2f38
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
+         <version>1.16-R0.2-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-chat</artifactId>
 +    <artifactId>ivancord-chat</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Chat</name>
@@ -155,7 +155,7 @@ index bc8eab6818ce72ca6c5c7b1210885d615a5c148e..272692f561b371b525dc7180a62b2f38
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index c12f6f81dc353f9b6ebc98ad766d4ac62f034b3e..056a34c43a68645ae59478af78d6211a60373670 100644
+index cec0e98a86e17c583877cd4b445afa925662ce87..85b992b7b8f0a39fb322978909505d75f91b89b0 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,18 @@
@@ -166,14 +166,14 @@ index c12f6f81dc353f9b6ebc98ad766d4ac62f034b3e..056a34c43a68645ae59478af78d6211a
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
+         <version>1.16-R0.2-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-config</artifactId>
 +    <artifactId>ivancord-config</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Config</name>
@@ -184,7 +184,7 @@ index c12f6f81dc353f9b6ebc98ad766d4ac62f034b3e..056a34c43a68645ae59478af78d6211a
      <dependencies>
          <dependency>
 diff --git a/event/pom.xml b/event/pom.xml
-index 9537382cd328a7424e673e3dc6f87000cd432a84..b3cbe291677280698cc027a82e19e30af5d089b0 100644
+index 5c6342727e087b3e1c27bb148c6bab6e16efcd5f..5ab70e95bf3954c0ecf9ff1fc5ab63f18825d944 100644
 --- a/event/pom.xml
 +++ b/event/pom.xml
 @@ -4,17 +4,16 @@
@@ -195,14 +195,14 @@ index 9537382cd328a7424e673e3dc6f87000cd432a84..b3cbe291677280698cc027a82e19e30a
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
+         <version>1.16-R0.2-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-event</artifactId>
 +    <artifactId>ivancord-event</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Event</name>
@@ -211,7 +211,7 @@ index 9537382cd328a7424e673e3dc6f87000cd432a84..b3cbe291677280698cc027a82e19e30a
 +    <description>Generic java event dispatching API intended for use with IvanCord</description>
  </project>
 diff --git a/log/pom.xml b/log/pom.xml
-index 063232fb74acade5ea0fd9003bac3e0b98367434..14ddd035e493bf0a0ef04c206a920f1ff5af4c1f 100644
+index ccba264adb6cfb1685a2338d1eba01fb77dfee8b..c32272ec27859e227116a9118f07908e26a36e0f 100644
 --- a/log/pom.xml
 +++ b/log/pom.xml
 @@ -4,19 +4,18 @@
@@ -222,14 +222,14 @@ index 063232fb74acade5ea0fd9003bac3e0b98367434..14ddd035e493bf0a0ef04c206a920f1f
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
+         <version>1.16-R0.2-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-log</artifactId>
 +    <artifactId>ivancord-log</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Log</name>
@@ -251,7 +251,7 @@ index 063232fb74acade5ea0fd9003bac3e0b98367434..14ddd035e493bf0a0ef04c206a920f1f
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index e9d935ef1eb044580544451fb49ad90e02ed58df..348e723fc28ca676146db52a0053bb09e85a1f36 100644
+index 2229d3476e3f617bea9d177dfa66d9ff102ad82c..f90b5469d398005ab2ce0ecab1b45b0b1802377b 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -3,19 +3,18 @@
@@ -262,14 +262,14 @@ index e9d935ef1eb044580544451fb49ad90e02ed58df..348e723fc28ca676146db52a0053bb09
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
+         <version>1.16-R0.2-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-log4j</artifactId>
 +    <artifactId>ivancord-log4j</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Log</name>
@@ -280,7 +280,7 @@ index e9d935ef1eb044580544451fb49ad90e02ed58df..348e723fc28ca676146db52a0053bb09
      <properties>
          <log4j2.version>2.12.0</log4j2.version>
 diff --git a/native/pom.xml b/native/pom.xml
-index c5c1f9e37614e39538c785fe5eeca7a380d0e148..b14a83b7d750ff12188dd997494f0a0fd7c25eb0 100644
+index c69672f9fa3041acb881387b1e63108848e1f8b0..8a11b6bc9a287ba00f4f1303f4db2e06544a8320 100644
 --- a/native/pom.xml
 +++ b/native/pom.xml
 @@ -4,19 +4,18 @@
@@ -291,14 +291,14 @@ index c5c1f9e37614e39538c785fe5eeca7a380d0e148..b14a83b7d750ff12188dd997494f0a0f
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
+         <version>1.16-R0.2-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-native</artifactId>
 +    <artifactId>ivancord-native</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Native</name>
@@ -309,7 +309,7 @@ index c5c1f9e37614e39538c785fe5eeca7a380d0e148..b14a83b7d750ff12188dd997494f0a0f
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 395a963abd1f01a1e9c48c4ad9552438f270ea0e..de0be10bf52819a71e0c96091962fdab2adabcdb 100644
+index 5b283b4ba926debd59c074751478585f50c852f5..2a2d37dbae457246aaf1a43a8b1c90b0a6a4496e 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -327,7 +327,7 @@ index 395a963abd1f01a1e9c48c4ad9552438f270ea0e..de0be10bf52819a71e0c96091962fdab
 -    <artifactId>waterfall-parent</artifactId>
 +    <groupId>com.github.mrivanplays</groupId>
 +    <artifactId>ivancord-parent</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>pom</packaging>
  
 -    <name>Waterfall-Parent</name>
@@ -421,7 +421,7 @@ index 395a963abd1f01a1e9c48c4ad9552438f270ea0e..de0be10bf52819a71e0c96091962fdab
          </dependency>
          <dependency>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index 04196782b0e598e1a9bcb17e727aec862f572a62..89895661d282ba9f1d88560033a8fbddd5f6d801 100644
+index e58a361e57b7fa8da030dacbef95fa0110cda537..a27b7b34128378fd46e1044ba106c02e331a2c26 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,18 @@
@@ -432,14 +432,14 @@ index 04196782b0e598e1a9bcb17e727aec862f572a62..89895661d282ba9f1d88560033a8fbdd
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
+         <version>1.16-R0.2-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-protocol</artifactId>
 +    <artifactId>ivancord-protocol</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Protocol</name>
@@ -461,7 +461,7 @@ index 04196782b0e598e1a9bcb17e727aec862f572a62..89895661d282ba9f1d88560033a8fbdd
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index d84b7143cc70960f6b40bde54d2303360d9e5ea7..5353b91dcce2ba786e1c1cf07f5978f08a2aea23 100644
+index 4c61d336d1cab95265e0d2b7648da9501247c47f..9107387505b5cb76fc847efa6d862aa79421e355 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -472,14 +472,14 @@ index d84b7143cc70960f6b40bde54d2303360d9e5ea7..5353b91dcce2ba786e1c1cf07f5978f0
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
+         <version>1.16-R0.2-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-proxy</artifactId>
 +    <artifactId>ivancord-proxy</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Proxy</name>
@@ -617,7 +617,7 @@ index 65121ba2472c2b939d0de78880d14ea63f2dbc1d..994bc589f26adb06ffe28313679ba629
              SocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 diff --git a/query/pom.xml b/query/pom.xml
-index 352eb37a2fa7afd5786921cb6408c227866cba78..ee3e0ec4671d282afca27ea896207e8f49049ebc 100644
+index 15cc4166ee30045a43e89a22cf4c776ae60e5745..63f0fd3d2f3b694633c2e681ef3493a41fa2833e 100644
 --- a/query/pom.xml
 +++ b/query/pom.xml
 @@ -4,19 +4,18 @@
@@ -628,14 +628,14 @@ index 352eb37a2fa7afd5786921cb6408c227866cba78..ee3e0ec4671d282afca27ea896207e8f
 -        <artifactId>waterfall-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
 +        <artifactId>ivancord-parent</artifactId>
-         <version>1.16-R0.1-SNAPSHOT</version>
+         <version>1.16-R0.2-SNAPSHOT</version>
          <relativePath>../pom.xml</relativePath>
      </parent>
  
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-query</artifactId>
 +    <artifactId>ivancord-query</artifactId>
-     <version>1.16-R0.1-SNAPSHOT</version>
+     <version>1.16-R0.2-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Waterfall-Query</name>

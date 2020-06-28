@@ -50,18 +50,18 @@ index 1111e912f1668b5cb330c13fd27972d5875b31b8..161f0bf5b4fa0e5fefdbebfdea178be2
  
      private int setupTFO(int incoming)
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 643ddfa28f1719d0d402ee19d3625b7e058e1b0c..4d6c835603e23887548b3a0c5a3b285f68ee74dc 100644
+index cf016d3e0384e8a39bb258bb4a0864eb01cd3747..a6e052baee4a862b1db94869b6a92e385324accb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -255,7 +255,7 @@ public class ServerConnector extends PacketHandler
-             user.unsafe().sendPacket( modLogin );
- 
-             ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
--            DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
-+            DefinedPacket.writeString( bungee.getConfig().getBrand(), brand ); // IvanCord - configurable brand
-             user.unsafe().sendPacket( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler.isServerForge() ) );
-             brand.release();
- 
+@@ -273,7 +273,7 @@ public class ServerConnector extends PacketHandler
+             } else
+             {
+                 ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
+-                DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
++                DefinedPacket.writeString( bungee.getConfig().getBrand(), brand ); // IvanCord - configurable brand
+                 user.unsafe().sendPacket( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:brand" : "MC|Brand", brand, handshakeHandler.isServerForge() ) );
+                 brand.release();
+             }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 index b138a8ec499276184e55cef57a9db08ebe57d9aa..300f71ebe0684c1b7fa8c61838adc5f95c685861 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
