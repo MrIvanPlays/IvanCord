@@ -256,7 +256,7 @@ index 0000000000000000000000000000000000000000..f23fe50e8c9a22ce934f5797f9e75fb2
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index d57f51663af33d259adb3a01158e5b85a756fd03..c397b68e2e8228a6925af5cb6a74d8fe05b67f5a 100644
+index bb53eb5285b815bf256947f558a1168086e90ee9..e73ac8210f954276d5b916faa9baf9e36bf12e4f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -67,6 +67,7 @@ import net.md_5.bungee.tab.ServerUnique;
@@ -292,7 +292,7 @@ index d57f51663af33d259adb3a01158e5b85a756fd03..c397b68e2e8228a6925af5cb6a74d8fe
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 695f70d9d0e6034dd9ad5251a0af6873df0970f1..3b5f1dca3871eabcf7f55679cf2a61b869218152 100644
+index 3c6eb1297a5661415ef2de23d0f730f472b59c6c..92630789cbdcbe54f0f605d700508f74f4031e10 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -66,6 +66,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
@@ -314,7 +314,7 @@ index 695f70d9d0e6034dd9ad5251a0af6873df0970f1..3b5f1dca3871eabcf7f55679cf2a61b8
  
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
-@@ -728,6 +733,41 @@ public class DownstreamBridge extends PacketHandler
+@@ -747,6 +752,41 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  

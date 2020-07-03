@@ -215,10 +215,10 @@ index 0000000000000000000000000000000000000000..8a99463de283645730f4578eb4c38ba3
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0f1c0336baf556810e001b4d55a2c0e536bac9f8..fe9fcec57dd470adb3a03cb79a483bf209965903 100644
+index aa870c1e400d4db3fd76088cabaedd1654a8077e..27d32b029a7e4aada0bd3a957e90631e5f3751eb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -103,6 +103,9 @@ import com.mrivanplays.ivancord.modules.CommandList;
+@@ -102,6 +102,9 @@ import com.mrivanplays.ivancord.modules.CommandList;
  import com.mrivanplays.ivancord.modules.CommandSend;
  import com.mrivanplays.ivancord.modules.CommandServer;
  import com.mrivanplays.ivancord.commands.CommandPlugins;
@@ -228,7 +228,7 @@ index 0f1c0336baf556810e001b4d55a2c0e536bac9f8..fe9fcec57dd470adb3a03cb79a483bf2
  // IvanCord end
  
  /**
-@@ -120,6 +123,10 @@ public class BungeeCord extends ProxyServer
+@@ -119,6 +122,10 @@ public class BungeeCord extends ProxyServer
       */
      @Getter
      public final Configuration config = new com.mrivanplays.ivancord.conf.IvanCordConfiguration(); // IvanCord - ivancord specific configuration
@@ -239,7 +239,7 @@ index 0f1c0336baf556810e001b4d55a2c0e536bac9f8..fe9fcec57dd470adb3a03cb79a483bf2
      /**
       * Localization bundle.
       */
-@@ -254,6 +261,8 @@ public class BungeeCord extends ProxyServer
+@@ -253,6 +260,8 @@ public class BungeeCord extends ProxyServer
  
          // IvanCord start - specific commands to IvanCord
          getPluginManager().registerCommand( null, new CommandPlugins() );
@@ -249,7 +249,7 @@ index 0f1c0336baf556810e001b4d55a2c0e536bac9f8..fe9fcec57dd470adb3a03cb79a483bf2
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e16a15a95d227a189cc91e42af3558989d46a77f..80f2fd456f94dde4c3b9bbabc746630f72b33501 100644
+index a3ab808d89dffd5cc567696f2595af3660e5dbe3..400478248dee379f20a7ada2b594dbbe00ecfdb3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -115,6 +115,10 @@ public final class UserConnection implements ProxiedPlayer

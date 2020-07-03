@@ -367,7 +367,7 @@ index 4ac763bbea3b75fc898a66e22e6648ecca661d3e..cf016d3e0384e8a39bb258bb4a0864eb
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
              // And immediate respawn
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 80f2fd456f94dde4c3b9bbabc746630f72b33501..cf76ece77e57c258a7d0844367518c1bd5d5dfdf 100644
+index 400478248dee379f20a7ada2b594dbbe00ecfdb3..834cd54309c34bafbdf0083802af200eeaff3bed 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;

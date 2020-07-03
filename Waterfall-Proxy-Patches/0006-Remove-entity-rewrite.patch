@@ -341,7 +341,7 @@ index 228a3ee7d7d1cb91d2b02c07b271db1faf15ce78..17477febf6143afce297927cb806c68f
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 917b2b5631c0801446f6617bbd731177154db948..d57f51663af33d259adb3a01158e5b85a756fd03 100644
+index 3e320b249888307c3b7c0d7e86d5b46a0e8a87dc..bb53eb5285b815bf256947f558a1168086e90ee9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -42,7 +42,9 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -410,7 +410,7 @@ index 917b2b5631c0801446f6617bbd731177154db948..d57f51663af33d259adb3a01158e5b85
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index d3b7a9123ff59d0a4348fe91e01a70f15a626d18..695f70d9d0e6034dd9ad5251a0af6873df0970f1 100644
+index 1c9f7dd89317511d70305a5c49cfb9bdc3ccca4f..3c6eb1297a5661415ef2de23d0f730f472b59c6c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -42,11 +42,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
@@ -479,7 +479,7 @@ index d3b7a9123ff59d0a4348fe91e01a70f15a626d18..695f70d9d0e6034dd9ad5251a0af6873
  
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
-@@ -634,6 +649,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -653,6 +668,8 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -488,7 +488,7 @@ index d3b7a9123ff59d0a4348fe91e01a70f15a626d18..695f70d9d0e6034dd9ad5251a0af6873
      // Waterfall start
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
-@@ -661,6 +678,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -680,6 +697,7 @@ public class DownstreamBridge extends PacketHandler
          return entityId;
      }
      // Waterfall end

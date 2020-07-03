@@ -194,7 +194,7 @@ index 25e370a760613cfbcdc900f30df6108486a41914..f442091e2ce13a77df24398b592b75d3
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 271b2b12580bb8366e4468bb4d2538d446de7eea..b44daac2993c04a96772acf1c3301623ffa4b47e 100644
+index b0d54ad759f03b7a0734a12e1eadb32e01ad1910..2339f3517ec16ef7ece6ce8ffbaf00055996d1fd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -48,6 +48,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -205,7 +205,7 @@ index 271b2b12580bb8366e4468bb4d2538d446de7eea..b44daac2993c04a96772acf1c3301623
  import lombok.Getter;
  import lombok.Setter;
  import lombok.Synchronized;
-@@ -523,26 +524,12 @@ public class BungeeCord extends ProxyServer
+@@ -522,26 +523,12 @@ public class BungeeCord extends ProxyServer
          //metricsThread.cancel(); // Waterfall: Disable Metrics
  
          getLogger().info( "Disabling plugins" );

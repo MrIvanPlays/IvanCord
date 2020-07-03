@@ -207,10 +207,10 @@ index 743d65e43549f4db3b1f6785a69ab69e19004285..b8aa41afc195fac3c72148097efc5c56
  
          for ( int i = 0; i < 3; i++ ) // Waterfall
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 937980c0ce7639c92f470e3673e8e91c14171263..4edaad4d47c07220b21b5c8eeb0690abd5546889 100644
+index 069504dda7ea79b51acb46b61533693fa4b186af..06747505a700cd9b1aaac42e8c02c7599deb2e94 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -511,8 +511,10 @@ public class BungeeCord extends ProxyServer
+@@ -510,8 +510,10 @@ public class BungeeCord extends ProxyServer
          }
  
          getLogger().info( "Closing IO threads" );
@@ -266,7 +266,7 @@ index 78401dae2076fc837da463bf987eb8fb85ba17c3..228a3ee7d7d1cb91d2b02c07b271db1f
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 4826f0d56af3e433cf148c3e27521a028e278a10..917b2b5631c0801446f6617bbd731177154db948 100644
+index b01252455e6330e7e861e58dc21e4d16256f3589..3e320b249888307c3b7c0d7e86d5b46a0e8a87dc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -319,7 +319,7 @@ public final class UserConnection implements ProxiedPlayer

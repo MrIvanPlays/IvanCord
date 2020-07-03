@@ -51,19 +51,18 @@ index 06d74844fe24fb7bdc33dc81c8ec28280e7a1c12..238bc3c1f43aa5bd6de34f4355ede2de
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index daac860451d639fe2c6414f8c6a27a9a8e5098bd..d3b7a9123ff59d0a4348fe91e01a70f15a626d18 100644
+index 8c7e3ab8874c327c3959662d871e3511e9d0a127..1c9f7dd89317511d70305a5c49cfb9bdc3ccca4f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -31,6 +31,8 @@ import net.md_5.bungee.ServerConnection.KeepAliveData;
+@@ -31,6 +31,7 @@ import net.md_5.bungee.ServerConnection.KeepAliveData;
  import net.md_5.bungee.UserConnection;
  import net.md_5.bungee.Util;
  import net.md_5.bungee.api.ProxyServer;
-+import net.md_5.bungee.api.chat.BaseComponent;
-+import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.md_5.bungee.api.chat.ComponentBuilder; // IvanCord
+ import net.md_5.bungee.api.chat.BaseComponent;
  import net.md_5.bungee.api.chat.TextComponent;
  import net.md_5.bungee.api.config.ServerInfo;
- import net.md_5.bungee.api.connection.ProxiedPlayer;
-@@ -519,14 +521,46 @@ public class DownstreamBridge extends PacketHandler
+@@ -539,14 +540,46 @@ public class DownstreamBridge extends PacketHandler
          {
              def = null;
          }
