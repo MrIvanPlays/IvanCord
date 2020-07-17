@@ -5,12 +5,12 @@ Subject: [PATCH] Avoid creating buf copy
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 6c3c7ab8d872c7acffa0b1897c10ccdd9b1aefd2..d018b0ddb0b721777246ba1f2ce1306b80b4e31c 100644
+index 1a647f2b935f122e5f8b0c6fa982b26183630abc..c3c1ba8083947c3011154acd5aa7a19cc93406c7 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-@@ -31,7 +31,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
-     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
-     {
+@@ -38,7 +38,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+         }
+ 
          Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
 +        /* IvanCord start - avoid creating buf copy
          ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
@@ -20,7 +20,7 @@ index 6c3c7ab8d872c7acffa0b1897c10ccdd9b1aefd2..d018b0ddb0b721777246ba1f2ce1306b
  
          Object packetTypeInfo = null;
          try
-@@ -55,13 +59,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -62,13 +66,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
                  {
                      throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot.getDirection() );
                  }
@@ -39,7 +39,7 @@ index 6c3c7ab8d872c7acffa0b1897c10ccdd9b1aefd2..d018b0ddb0b721777246ba1f2ce1306b
          } catch (BadPacketException | IndexOutOfBoundsException e) {
              final String packetTypeStr;
              if (packetTypeInfo instanceof Integer) {
-@@ -71,13 +78,15 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -78,13 +85,15 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              } else {
                  packetTypeStr = "unknown";
              }
