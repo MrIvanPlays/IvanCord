@@ -441,7 +441,7 @@ index 989bfd87b9e6d62abba28d51984b8526d6298bfd..75d3c8f4f310bf92ea290fb77ab5e20b
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index e4f4b2f4e6f96c1a29cdc62df6e9f621439a2da0..65b6d8dcd440f6570e0983221e22d43268a92966 100644
+index e4f4b2f4e6f96c1a29cdc62df6e9f621439a2da0..76fc8bf4e0cdef3fe6325d6372799aca94ed1410 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -63,14 +63,14 @@ public class PipelineUtils
@@ -525,7 +525,7 @@ index e4f4b2f4e6f96c1a29cdc62df6e9f621439a2da0..65b6d8dcd440f6570e0983221e22d432
              ch.config().setWriteBufferWaterMark( MARK );
  
 -            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
-+            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( 300L, TimeUnit.MILLISECONDS ) ); // IvanCord
++            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( 3000L, TimeUnit.MILLISECONDS ) ); // IvanCord
              ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
              ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
  
