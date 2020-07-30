@@ -17,6 +17,111 @@ index 77c8f73c95be78b8bd37134ce631072deb96cd64..10bcb39104cf61abc862b9c1fc4a278a
                              EventHandlerMethod ehm = new EventHandlerMethod( listenerHandlers.getKey(), com.mrivanplays.ivancord.event.EventExecutor.create( method ) ); // IvanCord
                              handlersList.add( ehm );
                          }
+diff --git a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
+index a6d7cfb518420f18fd6466b892447b1462ee5201..67315501a343ffaeff2d7e87b6453a2dcb03d4b0 100644
+--- a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
++++ b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
+@@ -12,12 +12,21 @@ public final class NativeCode<T>
+ {
+ 
+     private final String name;
++    /* // IvanCord start
+     private final Class<? extends T> javaImpl;
+     private final Class<? extends T> nativeImpl;
++     */
++    private final java.util.function.Supplier<? extends T> javaImpl;
++    private final java.util.function.Supplier<? extends T> nativeImpl;
++    // IvanCord end
+     //
+     private boolean loaded;
+ 
++    /* // IvanCord start
+     public NativeCode(String name, Class<? extends T> javaImpl, Class<? extends T> nativeImpl)
++     */
++    public NativeCode(String name, java.util.function.Supplier<? extends T> javaImpl, java.util.function.Supplier<? extends T> nativeImpl)
++    // IvanCord end
+     {
+         if ("Mac OS X".equals( System.getProperty( "os.name" ))) name = "osx-" + name; // Waterfall
+         this.name = name;
+@@ -27,13 +36,21 @@ public final class NativeCode<T>
+ 
+     public T newInstance()
+     {
++        // IvanCord start
++        /*
+         try
+         {
++         */
++            /*
+             return ( loaded ) ? nativeImpl.getDeclaredConstructor().newInstance() : javaImpl.getDeclaredConstructor().newInstance();
++             */
++            return ( loaded ) ? nativeImpl.get() : javaImpl.get();
++            /*
+         } catch ( ReflectiveOperationException ex )
+         {
+             throw new RuntimeException( "Error getting instance", ex );
+         }
++             */ // IvanCord end
+     }
+ 
+     public boolean load()
+diff --git a/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java b/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java
+index d211cef6d592d7857f0ba828a78c547b7927f40b..f9b31f496c1839f56f7860f4fd548f8ad7f87f96 100644
+--- a/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java
++++ b/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java
+@@ -11,7 +11,7 @@ import javax.crypto.spec.IvParameterSpec;
+ public class JavaCipher implements BungeeCipher
+ {
+ 
+-    private final Cipher cipher;
++    private Cipher cipher; // IvanCord - final modifier removed
+     private static final ThreadLocal<byte[]> heapInLocal = new EmptyByteThreadLocal();
+     private static final ThreadLocal<byte[]> heapOutLocal = new EmptyByteThreadLocal();
+ 
+@@ -25,14 +25,17 @@ public class JavaCipher implements BungeeCipher
+         }
+     }
+ 
++    /* // IvanCord start
+     public JavaCipher() throws GeneralSecurityException
+     {
+         this.cipher = Cipher.getInstance( "AES/CFB8/NoPadding" );
+     }
++     */ // IvanCord end
+ 
+     @Override
+     public void init(boolean forEncryption, SecretKey key) throws GeneralSecurityException
+     {
++        Cipher cipher = this.cipher = Cipher.getInstance( "AES/CFB8/NoPadding" ); // IvanCord
+         int mode = forEncryption ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE;
+         cipher.init( mode, key, new IvParameterSpec( key.getEncoded() ) );
+     }
+diff --git a/native/src/test/java/net/md_5/bungee/NativeCipherTest.java b/native/src/test/java/net/md_5/bungee/NativeCipherTest.java
+index 72b81ab87ad600857dd625727449a45832e18f67..1b7ff35b0d6534bbf12a30c235319604f505f7c5 100644
+--- a/native/src/test/java/net/md_5/bungee/NativeCipherTest.java
++++ b/native/src/test/java/net/md_5/bungee/NativeCipherTest.java
+@@ -26,7 +26,7 @@ public class NativeCipherTest
+     private final SecretKey secret = new SecretKeySpec( new byte[ 16 ], "AES" );
+     private static final int BENCHMARK_COUNT = 4096;
+     //
+-    private static final NativeCode<BungeeCipher> factory = new NativeCode<>( "native-cipher", JavaCipher.class, NativeCipher.class );
++    private static final NativeCode<BungeeCipher> factory = new NativeCode<>( "native-cipher", JavaCipher::new, NativeCipher::new ); // IvanCord
+ 
+     @Test
+     public void testNative() throws Exception
+diff --git a/native/src/test/java/net/md_5/bungee/NativeZlibTest.java b/native/src/test/java/net/md_5/bungee/NativeZlibTest.java
+index fde626b1ac777f14600eb052f36cb4b11fa8044c..e64ea66b1e7de49834bed0b7d195e084ec3f77ca 100644
+--- a/native/src/test/java/net/md_5/bungee/NativeZlibTest.java
++++ b/native/src/test/java/net/md_5/bungee/NativeZlibTest.java
+@@ -15,7 +15,7 @@ import org.junit.Test;
+ public class NativeZlibTest
+ {
+ 
+-    private final NativeCode<BungeeZlib> factory = new NativeCode<>( "native-compress", JavaZlib.class, NativeZlib.class );
++    private final NativeCode<BungeeZlib> factory = new NativeCode<>( "native-compress", JavaZlib::new, NativeZlib::new ); // IvanCord
+ 
+     @Test
+     public void doTest() throws DataFormatException
 diff --git a/pom.xml b/pom.xml
 index 7a5c3544a5ea536c574ab49dfc48589718df6c05..4cd1bd3a3cda37275f16e622a7bdf04776054e94 100644
 --- a/pom.xml
@@ -158,7 +263,7 @@ index 237955ab5262adc730c1e976659809d4aec1a338..a8cb2aa76de78bf35837b0b3cbcaaf10
  
      public OverflowPacketException(String message)
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-index c0d371426a16565e735015b1f679278e0360ed1c..978c3df41239c95bc3dc50293ca6ceed50cd826a 100644
+index c0d371426a16565e735015b1f679278e0360ed1c..f33df1f37bda8327f12a55329b65f67d783c653c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 @@ -60,6 +60,9 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
@@ -167,7 +272,7 @@ index c0d371426a16565e735015b1f679278e0360ed1c..978c3df41239c95bc3dc50293ca6ceed
  
 -        throw new CorruptedFrameException( "length wider than 21-bit" );
 +        // IvanCord start
-+        super.setSingleDecode( true );
++        setSingleDecode( true );
 +        com.mrivanplays.ivancord.shared.Errors.badFrameLength();
 +        // IvanCord end
      }
@@ -239,6 +344,19 @@ index 35d533252b7009bd5f4c14b265cea0bc05f11b91..25c321a1bc62b969839cc0a2462fbbf4
                  .build( new CacheLoader<InetAddress, AtomicInteger>()
                  {
                      @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java b/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
+index ff6bb8c16d4c399cbbf933e4b706fd9bf17127b5..2f41e77085a11ca5004dafc78cc5f3333331d9c7 100644
+--- a/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
++++ b/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
+@@ -31,7 +31,7 @@ public class EncryptionUtil
+     public static final KeyPair keys;
+     @Getter
+     private static final SecretKey secret = new SecretKeySpec( new byte[ 16 ], "AES" );
+-    public static final NativeCode<BungeeCipher> nativeFactory = new NativeCode<>( "native-cipher", JavaCipher.class, NativeCipher.class );
++    public static final NativeCode<BungeeCipher> nativeFactory = new NativeCode<>( "native-cipher", JavaCipher::new, NativeCipher::new ); // IvanCord
+ 
+     static
+     {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 index 834cd54309c34bafbdf0083802af200eeaff3bed..a5ef6a90ee2a20dc7e49aba71a4ee0cf9f78f05b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
@@ -252,6 +370,17 @@ index 834cd54309c34bafbdf0083802af200eeaff3bed..a5ef6a90ee2a20dc7e49aba71a4ee0cf
                  .group( ch.getHandle().eventLoop() )
                  .handler( initializer )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
+diff --git a/proxy/src/main/java/net/md_5/bungee/compress/CompressFactory.java b/proxy/src/main/java/net/md_5/bungee/compress/CompressFactory.java
+index 1f2d5a70aa660d97aa95e28d35702efed3898eaa..0747afe9803977e53c43b208c69f5c0bc95a636c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/compress/CompressFactory.java
++++ b/proxy/src/main/java/net/md_5/bungee/compress/CompressFactory.java
+@@ -8,5 +8,5 @@ import net.md_5.bungee.jni.zlib.NativeZlib;
+ public class CompressFactory
+ {
+ 
+-    public static final NativeCode<BungeeZlib> zlib = new NativeCode<>( "native-compress", JavaZlib.class, NativeZlib.class );
++    public static final NativeCode<BungeeZlib> zlib = new NativeCode<>( "native-compress", JavaZlib::new, NativeZlib::new ); // IvanCord
+ }
 diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
 index 37fe6ac73504cee4ba7fc336d6623b5c833c6d1d..3185204d5b5499dd68fc9315f959f91ead28458a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
@@ -350,18 +479,10 @@ index 3733742927e88c0674644b6944a707ab16ba6939..528dcc155e4dd0dd7cb694793d99196e
      }
      // Waterfall End
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index d45a6140780f592d9f8c67cf2f7cb83496a14681..63cda35cbcd97ba723118423673d11cb21a66f5a 100644
+index d45a6140780f592d9f8c67cf2f7cb83496a14681..9d768f9bd262bb87e904f8b35a5d2978e2a86c9c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-@@ -39,6 +39,7 @@ public class ChannelWrapper
-     {
-         ch.pipeline().get( MinecraftDecoder.class ).setProtocol( protocol );
-         ch.pipeline().get( MinecraftEncoder.class ).setProtocol( protocol );
-+        ch.pipeline().get( HandlerBoss.class ).setProtocol( protocol ); // IvanCord
-     }
- 
-     public void setVersion(int protocol)
-@@ -47,6 +48,13 @@ public class ChannelWrapper
+@@ -47,6 +47,13 @@ public class ChannelWrapper
          ch.pipeline().get( MinecraftEncoder.class ).setProtocolVersion( protocol );
      }
  
@@ -376,24 +497,22 @@ index d45a6140780f592d9f8c67cf2f7cb83496a14681..63cda35cbcd97ba723118423673d11cb
      {
          if ( !closed && ch.isActive() ) // IvanCord
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 989bfd87b9e6d62abba28d51984b8526d6298bfd..75d3c8f4f310bf92ea290fb77ab5e20b6e450716 100644
+index 989bfd87b9e6d62abba28d51984b8526d6298bfd..ed3261bdbff164ab00295035d88e38f7d34c3687 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-@@ -27,6 +27,13 @@ import net.md_5.bungee.util.QuietException;
+@@ -27,6 +27,11 @@ import net.md_5.bungee.util.QuietException;
  public class HandlerBoss extends ChannelInboundHandlerAdapter
  {
  
 +    // IvanCord start
 +    private static long lastInitialHandlerError;
 +    private static int initialHandlerSuppressedCount;
-+    @lombok.Setter
-+    private net.md_5.bungee.protocol.Protocol protocol;
 +    // IvanCord end
 +
      private ChannelWrapper channel;
      private PacketHandler handler;
  
-@@ -124,6 +131,22 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -124,6 +129,22 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
      {
          if ( ctx.channel().isActive() )
          {
@@ -416,7 +535,7 @@ index 989bfd87b9e6d62abba28d51984b8526d6298bfd..75d3c8f4f310bf92ea290fb77ab5e20b
              boolean logExceptions = !( handler instanceof PingHandler );
  
              if ( logExceptions )
-@@ -151,6 +174,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -151,6 +172,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
                          {
                              handler, cause.getCause().getMessage()
                          } );
@@ -431,7 +550,7 @@ index 989bfd87b9e6d62abba28d51984b8526d6298bfd..75d3c8f4f310bf92ea290fb77ab5e20b
                      }
                  } else if ( cause instanceof IOException || ( cause instanceof IllegalStateException && handler instanceof InitialHandler ) )
                  {
-@@ -181,7 +212,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -181,7 +210,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
                  }
              }
  
@@ -441,7 +560,7 @@ index 989bfd87b9e6d62abba28d51984b8526d6298bfd..75d3c8f4f310bf92ea290fb77ab5e20b
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index e4f4b2f4e6f96c1a29cdc62df6e9f621439a2da0..76fc8bf4e0cdef3fe6325d6372799aca94ed1410 100644
+index e4f4b2f4e6f96c1a29cdc62df6e9f621439a2da0..a72e313dfac5d9a18eb3d98aeeab0ea165bec139 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -63,14 +63,14 @@ public class PipelineUtils
@@ -449,7 +568,7 @@ index e4f4b2f4e6f96c1a29cdc62df6e9f621439a2da0..76fc8bf4e0cdef3fe6325d6372799aca
              if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
              {
 -                ch.close();
-+                com.mrivanplays.ivancord.shared.ChannelUtil.shutdownChannel( ch, null ); // IvanCord
++                com.mrivanplays.ivancord.shared.ChannelUtil.shutdownChannel( ch, null, true ); // IvanCord
                  return;
              }
              ListenerInfo listener = ch.attr( LISTENER ).get();
@@ -457,7 +576,7 @@ index e4f4b2f4e6f96c1a29cdc62df6e9f621439a2da0..76fc8bf4e0cdef3fe6325d6372799aca
              if ( BungeeCord.getInstance().getPluginManager().callEvent( new ClientConnectEvent( remoteAddress, listener ) ).isCancelled() )
              {
 -                ch.close();
-+                com.mrivanplays.ivancord.shared.ChannelUtil.shutdownChannel( ch, null ); // IvanCord
++                com.mrivanplays.ivancord.shared.ChannelUtil.shutdownChannel( ch, null, true ); // IvanCord
                  return;
              }
  
@@ -667,14 +786,15 @@ index 0000000000000000000000000000000000000000..6408b33974567c54dad9452a22675f72
 +}
 diff --git a/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelUtil.java b/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelUtil.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..520fed48b871b4b1fc5d5ae90a05d5814f95bdb6
+index 0000000000000000000000000000000000000000..b471a7118c5df8c68a895732ca33b87d28e1b694
 --- /dev/null
 +++ b/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelUtil.java
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,42 @@
 +package com.mrivanplays.ivancord.shared;
 +
 +import io.netty.channel.Channel;
 +import io.netty.channel.ChannelPipeline;
++import io.netty.handler.codec.ByteToMessageDecoder;
 +import lombok.SneakyThrows;
 +import lombok.experimental.UtilityClass;
 +
@@ -685,13 +805,20 @@ index 0000000000000000000000000000000000000000..520fed48b871b4b1fc5d5ae90a05d581
 +    private final String DISCARD_HANDLER = "discard-handler";
 +
 +    @SneakyThrows
-+    public void shutdownChannel(Channel channel, Throwable t)
++    public void shutdownChannel(Channel channel, Throwable t, boolean closeForcibly)
 +    {
++        if ( closeForcibly )
++        {
++            channel.unsafe().closeForcibly();
++            return;
++        }
 +        ChannelPipeline pipeline = channel.pipeline();
-+        if ( pipeline.get( DISCARD_HANDLER ) == null )
++        if ( pipeline.first() != ChannelDiscardHandler.INSTANCE )
 +        {
 +            channel.config().setAutoRead( false );
 +            pipeline.addFirst( DISCARD_HANDLER, ChannelDiscardHandler.INSTANCE );
++            ( (ByteToMessageDecoder) pipeline.get( "frame-decoder" ) ).setSingleDecode( true );
++            ( (ByteToMessageDecoder) pipeline.get( "legacy-decoder" ) ).setSingleDecode( true );
 +            channel.close();
 +            if ( Errors.isDebug() && t != null )
 +            {
@@ -699,13 +826,18 @@ index 0000000000000000000000000000000000000000..520fed48b871b4b1fc5d5ae90a05d581
 +            }
 +        }
 +    }
++
++    public void shutdownChannel(Channel channel, Throwable t)
++    {
++        shutdownChannel( channel, t, false );
++    }
 +}
 diff --git a/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java b/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..9f0754451179b6a145101d7139624966b360313f
+index 0000000000000000000000000000000000000000..02d2d9a4c985a36f2443a6af1e0e88ea2919175c
 --- /dev/null
 +++ b/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java
-@@ -0,0 +1,93 @@
+@@ -0,0 +1,73 @@
 +package com.mrivanplays.ivancord.shared;
 +
 +import io.netty.buffer.ByteBuf;
@@ -720,10 +852,8 @@ index 0000000000000000000000000000000000000000..9f0754451179b6a145101d7139624966
 +    private final boolean DEBUG = Boolean.getBoolean( "net.md_5.bungee.debug" );
 +    private final QuietException INVALID_PROTOCOL = newError( "Invalid protocol requested" );
 +    private final QuietException UNEXPECTED_LOGIN_PACKET = newError( "Invalid packet received during login process" );
-+    private final QuietException VARINT_TOO_BIG = newError( "VarInt too big" );
 +    private final QuietException UNEXPECTED_BUFFER_END = newError( "Buffer end reached unexpectedly" );
 +    private final QuietException BAD_FRAME_LENGTH = newError( "length wider than 21-bit" );
-+    private final QuietException EMPTY_PACKET = newError( "Empty paket" );
 +    private final QuietException DISCARD = newError( "Discard handler is added to the pipeline" );
 +
 +    public void invalidProtocol(int protocol)
@@ -744,15 +874,6 @@ index 0000000000000000000000000000000000000000..9f0754451179b6a145101d7139624966
 +        throw UNEXPECTED_LOGIN_PACKET;
 +    }
 +
-+    public void varIntTooBig()
-+    {
-+        if ( DEBUG )
-+        {
-+            throw new IllegalStateException( "VarInt too big" );
-+        }
-+        throw VARINT_TOO_BIG;
-+    }
-+
 +    public void endOfBuffer()
 +    {
 +        if ( DEBUG )
@@ -769,15 +890,6 @@ index 0000000000000000000000000000000000000000..9f0754451179b6a145101d7139624966
 +            throw new CorruptedFrameException( "length wider than 21-bit" );
 +        }
 +        throw BAD_FRAME_LENGTH;
-+    }
-+
-+    public void emptyPacket()
-+    {
-+        if ( DEBUG )
-+        {
-+            throw new CorruptedFrameException( "Empty Packet!" );
-+        }
-+        throw EMPTY_PACKET;
 +    }
 +
 +    public Exception discard()
