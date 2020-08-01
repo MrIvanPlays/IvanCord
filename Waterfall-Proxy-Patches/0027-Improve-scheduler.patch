@@ -1,0 +1,109 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <ivan@mrivanplays.com>
+Date: Sat, 1 Aug 2020 16:20:52 +0300
+Subject: [PATCH] Improve scheduler
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+index a8555de3637e7a884c5af015f98bd792982bd4fb..99dc5d13ce5bad13b1ef89af1bc348d4793d4026 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
+@@ -212,11 +212,13 @@ public class Plugin
+     }
+ 
+     //
+-    private ExecutorService service;
++    //private ExecutorService service; // IvanCord
+ 
+     @Deprecated
+     public ExecutorService getExecutorService()
+     {
++        // IvanCord start - rewrite this
++        /*
+         if ( service == null )
+         {
+             String name = ( getDescription() == null ) ? "unknown" : getDescription().getName();
+@@ -224,6 +226,11 @@ public class Plugin
+                     .setThreadFactory( new GroupedThreadFactory( this, name ) ).build() );
+         }
+         return service;
++         */
++        // actually returns the global scheduler executor service
++        // and not actually plugin's executor service
++        return proxy.getScheduler().unsafe().getExecutorService( this );
++        // IvanCord end
+     }
+     //
+ }
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/scheduler/SchedulerThreadFactory.java b/proxy/src/main/java/com/mrivanplays/ivancord/scheduler/SchedulerThreadFactory.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..dd608a365938be37873a92fce93672485f0b5ab4
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/scheduler/SchedulerThreadFactory.java
+@@ -0,0 +1,19 @@
++package com.mrivanplays.ivancord.scheduler;
++
++import java.util.concurrent.ThreadFactory;
++import java.util.concurrent.atomic.AtomicInteger;
++
++public class SchedulerThreadFactory implements ThreadFactory
++{
++
++    private AtomicInteger threadCount = new AtomicInteger( 0 );
++    private final ThreadGroup threadGroup = new ThreadGroup( "IvanCord" );
++
++    @Override
++    public Thread newThread(Runnable r)
++    {
++        Thread thread = new Thread( threadGroup, r );
++        thread.setName( "Scheduler Pool Thread #" + threadCount.getAndIncrement() );
++        return thread;
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java
+index fd0dabcf462acab89baa80cc0f2ee946e7939bcb..a6dbf8b9a484906bc0456767d24daeac35cdf0fb 100644
+--- a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java
++++ b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java
+@@ -23,6 +23,11 @@ public class BungeeScheduler implements TaskScheduler
+     private final AtomicInteger taskCounter = new AtomicInteger();
+     private final TIntObjectMap<BungeeTask> tasks = TCollections.synchronizedMap( new TIntObjectHashMap<BungeeTask>() );
+     private final Multimap<Plugin, BungeeTask> tasksByPlugin = Multimaps.synchronizedMultimap( HashMultimap.<Plugin, BungeeTask>create() );
++    // IvanCord start
++    private ExecutorService scheduler = java.util.concurrent.Executors.newCachedThreadPool(
++        new com.mrivanplays.ivancord.scheduler.SchedulerThreadFactory()
++    );
++    // IvanCord end
+     //
+     private final Unsafe unsafe = new Unsafe()
+     {
+@@ -30,7 +35,7 @@ public class BungeeScheduler implements TaskScheduler
+         @Override
+         public ExecutorService getExecutorService(Plugin plugin)
+         {
+-            return plugin.getExecutorService();
++            return scheduler; // IvanCord
+         }
+     };
+ 
+@@ -101,7 +106,7 @@ public class BungeeScheduler implements TaskScheduler
+             tasksByPlugin.put( owner, prepared );
+         }
+ 
+-        owner.getExecutorService().execute( prepared );
++        scheduler.execute( prepared ); // IvanCord
+         return prepared;
+     }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java
+index 02ec98fc14596330718aa756473cd3cefc600459..6ceda4d1bacfc393e977b90cabab2d46099b0a78 100644
+--- a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java
++++ b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeTask.java
+@@ -67,7 +67,7 @@ public class BungeeTask implements Runnable, ScheduledTask
+             } catch ( Throwable t )
+             {
+                 //Waterfall start - throw exception event
+-                String msg = String.format( "Task %s encountered an exception", this );
++                String msg = String.format( "Task %s from plugin %s encountered an exception", id, owner.getDescription().getName() ); // IvanCord
+                 ProxyServer.getInstance().getLogger().log( Level.SEVERE, msg, t );
+                 ProxyServer.getInstance().getPluginManager().callEvent( new ProxyExceptionEvent( new ProxySchedulerException( msg, t, this ) ) );
+                 //Waterfall end
