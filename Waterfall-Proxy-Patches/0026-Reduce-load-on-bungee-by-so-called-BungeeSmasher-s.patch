@@ -746,7 +746,7 @@ index 0000000000000000000000000000000000000000..277f71c3181f9b110188c435bc38bb23
 \ No newline at end of file
 diff --git a/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelDiscardHandler.java b/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelDiscardHandler.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..6408b33974567c54dad9452a22675f723b73e970
+index 0000000000000000000000000000000000000000..da84dcb977f7ebc645b033360bf868c3efedb59f
 --- /dev/null
 +++ b/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelDiscardHandler.java
 @@ -0,0 +1,34 @@
@@ -786,7 +786,7 @@ index 0000000000000000000000000000000000000000..6408b33974567c54dad9452a22675f72
 +}
 diff --git a/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelUtil.java b/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelUtil.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b471a7118c5df8c68a895732ca33b87d28e1b694
+index 0000000000000000000000000000000000000000..5ff0a1da7435ce5fe500a0da2c223f08a4e32e71
 --- /dev/null
 +++ b/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelUtil.java
 @@ -0,0 +1,42 @@
@@ -834,7 +834,7 @@ index 0000000000000000000000000000000000000000..b471a7118c5df8c68a895732ca33b87d
 +}
 diff --git a/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java b/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..02d2d9a4c985a36f2443a6af1e0e88ea2919175c
+index 0000000000000000000000000000000000000000..15d4214c05eb4b83aa17665c909560d4c318f29c
 --- /dev/null
 +++ b/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java
 @@ -0,0 +1,73 @@

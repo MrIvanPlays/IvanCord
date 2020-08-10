@@ -37,7 +37,7 @@ index a8555de3637e7a884c5af015f98bd792982bd4fb..99dc5d13ce5bad13b1ef89af1bc348d4
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/scheduler/SchedulerThreadFactory.java b/proxy/src/main/java/com/mrivanplays/ivancord/scheduler/SchedulerThreadFactory.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..dd608a365938be37873a92fce93672485f0b5ab4
+index 0000000000000000000000000000000000000000..00ff4769884de0b635144bc7ca134f355510a3f4
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/scheduler/SchedulerThreadFactory.java
 @@ -0,0 +1,19 @@
