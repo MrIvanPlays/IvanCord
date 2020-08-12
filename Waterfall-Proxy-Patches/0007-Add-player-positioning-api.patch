@@ -164,7 +164,7 @@ index 252389bd1d21a35e12b4e48e523ab85abd367e52..e0e68ecabbda76bf83011b67de558e83
      public void handle(EntityEffect entityEffect) throws Exception
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 97a0d7713021497f79a15519d45dac14cc2d2108..a7642c562809353d12139ab425cd9f79e9dd5bb0 100644
+index 477499e8b0da4a2054168a50d6ad0e3009bf69b2..0945118da3a49c79367cb46470d70e1ecc5f0d9a 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -30,6 +30,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
@@ -175,7 +175,7 @@ index 97a0d7713021497f79a15519d45dac14cc2d2108..a7642c562809353d12139ab425cd9f79
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  // IvanCord - comment these
-@@ -339,6 +340,19 @@ public enum Protocol
+@@ -349,6 +350,19 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_13, 0x0A ),
                      map( ProtocolConstants.MINECRAFT_1_14, 0x0B )
              );
@@ -292,10 +292,10 @@ index bb53eb5285b815bf256947f558a1168086e90ee9..e73ac8210f954276d5b916faa9baf9e3
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 3c6eb1297a5661415ef2de23d0f730f472b59c6c..92630789cbdcbe54f0f605d700508f74f4031e10 100644
+index c9f0e7593364f0bda04d79cb528699c2ee7138ed..d729b747c2944b359abe64b52b3027a4fe84ec68 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -66,6 +66,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
+@@ -67,6 +67,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -303,7 +303,7 @@ index 3c6eb1297a5661415ef2de23d0f730f472b59c6c..92630789cbdcbe54f0f605d700508f74
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  // IvanCord - comment not needed imports
-@@ -77,6 +78,10 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
+@@ -78,6 +79,10 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
  import net.md_5.bungee.protocol.packet.SetCompression;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
  import net.md_5.bungee.tab.TabList;
@@ -314,7 +314,7 @@ index 3c6eb1297a5661415ef2de23d0f730f472b59c6c..92630789cbdcbe54f0f605d700508f74
  
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
-@@ -747,6 +752,41 @@ public class DownstreamBridge extends PacketHandler
+@@ -752,6 +757,41 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -357,10 +357,10 @@ index 3c6eb1297a5661415ef2de23d0f730f472b59c6c..92630789cbdcbe54f0f605d700508f74
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 15c22f788c397a779fe8420d4624f15a633fa96d..f618468a521672e7716c035b3d311bdd821e1007 100644
+index 60ae4c0a8076fff4c86240083debda4427b17294..1efdc559d3c90063946fe38d1ad4e53a99eb198a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -29,9 +29,11 @@ import net.md_5.bungee.protocol.packet.Chat;
+@@ -30,9 +30,11 @@ import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -372,7 +372,7 @@ index 15c22f788c397a779fe8420d4624f15a633fa96d..f618468a521672e7716c035b3d311bdd
  
  public class UpstreamBridge extends PacketHandler
  {
-@@ -272,6 +274,14 @@ public class UpstreamBridge extends PacketHandler
+@@ -277,6 +279,14 @@ public class UpstreamBridge extends PacketHandler
          }
      }
  

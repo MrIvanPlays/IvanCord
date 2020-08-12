@@ -51,7 +51,7 @@ index 06d74844fe24fb7bdc33dc81c8ec28280e7a1c12..238bc3c1f43aa5bd6de34f4355ede2de
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 8c7e3ab8874c327c3959662d871e3511e9d0a127..1c9f7dd89317511d70305a5c49cfb9bdc3ccca4f 100644
+index 44e6ed3f15361d5f241f0059208be1cf7a8cd669..6ba7484210937ee31cb0245fec662764c2892511 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -31,6 +31,7 @@ import net.md_5.bungee.ServerConnection.KeepAliveData;
@@ -62,7 +62,7 @@ index 8c7e3ab8874c327c3959662d871e3511e9d0a127..1c9f7dd89317511d70305a5c49cfb9bd
  import net.md_5.bungee.api.chat.BaseComponent;
  import net.md_5.bungee.api.chat.TextComponent;
  import net.md_5.bungee.api.config.ServerInfo;
-@@ -539,14 +540,46 @@ public class DownstreamBridge extends PacketHandler
+@@ -544,14 +545,46 @@ public class DownstreamBridge extends PacketHandler
          {
              def = null;
          }

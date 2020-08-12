@@ -103,7 +103,7 @@ index 849ba1cf93a234f71b363073904efa52ca6d7ce5..d4d7323a084ccae0444c428a266ead50
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 546564fbee55ccf84d866d3c623583a451a937d2..97a0d7713021497f79a15519d45dac14cc2d2108 100644
+index d372933d8e6eae0833b03bf6309ea8b604881c69..477499e8b0da4a2054168a50d6ad0e3009bf69b2 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -32,15 +32,20 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
@@ -127,7 +127,7 @@ index 546564fbee55ccf84d866d3c623583a451a937d2..97a0d7713021497f79a15519d45dac14
  import net.md_5.bungee.protocol.packet.Title;
  import net.md_5.bungee.protocol.packet.ViewDistance;
  
-@@ -111,6 +116,8 @@ public enum Protocol
+@@ -114,6 +119,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_15, 0x0D ),
                      map( ProtocolConstants.MINECRAFT_1_16, 0x0C )
              );
@@ -136,24 +136,24 @@ index 546564fbee55ccf84d866d3c623583a451a937d2..97a0d7713021497f79a15519d45dac14
              // Waterfall start
              TO_CLIENT.registerPacket(
                      EntityEffect.class,
-@@ -138,6 +145,7 @@ public enum Protocol
-                     map(ProtocolConstants.MINECRAFT_1_16, 0x38)
+@@ -142,6 +149,7 @@ public enum Protocol
+                     map(ProtocolConstants.MINECRAFT_1_16_2, 0x37)
              );
              // Waterfall end
 +            */ // IvanCord end
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      PlayerListItem::new, // Waterfall - speed up packet construction
-@@ -158,6 +166,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_15, 0x11 ),
-                     map( ProtocolConstants.MINECRAFT_1_16, 0x10 )
+@@ -164,6 +172,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_16, 0x10 ),
+                     map( ProtocolConstants.MINECRAFT_1_16_2, 0x0F )
              );
 +            // IvanCord start - remove these from handling
 +            /*
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
                      ScoreboardObjective::new, // Waterfall - speed up packet construction
-@@ -202,6 +212,8 @@ public enum Protocol
+@@ -208,6 +218,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_14, 0x4B ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x4C )
              );
@@ -276,7 +276,7 @@ index c25f6500eb5eaf210fefdbe4efaf34d26439cb40..794e79a27b1e19a5dd82781b01d3f6f4
      @Override
      public void load() {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 228a3ee7d7d1cb91d2b02c07b271db1faf15ce78..17477febf6143afce297927cb806c68f3cf9d881 100644
+index 74edd3481ca19f9f71fe3b1da5938dab8ac17ad3..240ea31aca8c9dbdbde27f9f7306243f240dc13a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -228,10 +228,12 @@ public class ServerConnector extends PacketHandler
@@ -410,7 +410,7 @@ index 3e320b249888307c3b7c0d7e86d5b46a0e8a87dc..bb53eb5285b815bf256947f558a11680
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 1c9f7dd89317511d70305a5c49cfb9bdc3ccca4f..3c6eb1297a5661415ef2de23d0f730f472b59c6c 100644
+index 6ba7484210937ee31cb0245fec662764c2892511..c9f0e7593364f0bda04d79cb528699c2ee7138ed 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -42,11 +42,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
@@ -426,9 +426,9 @@ index 1c9f7dd89317511d70305a5c49cfb9bdc3ccca4f..3c6eb1297a5661415ef2de23d0f730f4
  import net.md_5.bungee.api.score.Team;
 + */
  import net.md_5.bungee.chat.ComponentSerializer;
+ import net.md_5.bungee.entitymap.EntityMap;
  import net.md_5.bungee.netty.ChannelWrapper;
- import net.md_5.bungee.netty.PacketHandler;
-@@ -55,16 +58,22 @@ import net.md_5.bungee.protocol.PacketWrapper;
+@@ -56,16 +59,22 @@ import net.md_5.bungee.protocol.PacketWrapper;
  import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.Commands;
@@ -451,17 +451,21 @@ index 1c9f7dd89317511d70305a5c49cfb9bdc3ccca4f..3c6eb1297a5661415ef2de23d0f730f4
  import net.md_5.bungee.protocol.packet.SetCompression;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
  import net.md_5.bungee.tab.TabList;
-@@ -141,7 +150,9 @@ public class DownstreamBridge extends PacketHandler
+@@ -142,11 +151,13 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PacketWrapper packet) throws Exception
      {
-+        /* IvanCord - get rid of entity rewrites
-         con.getEntityRewrite().rewriteClientbound( packet.buf, con.getServerEntityId(), con.getClientEntityId(), con.getPendingConnection().getVersion() );
-+         */
++        /* // IvanCord start - remove entity rewrites
+         EntityMap rewrite = con.getEntityRewrite();
+         if ( rewrite != null )
+         {
+             rewrite.rewriteClientbound( packet.buf, con.getServerEntityId(), con.getClientEntityId(), con.getPendingConnection().getVersion() );
+         }
++         */ // IvanCord end
          con.sendPacket( packet );
      }
  
-@@ -162,6 +173,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -167,6 +178,8 @@ public class DownstreamBridge extends PacketHandler
          throw CancelSendSignal.INSTANCE; // Always throw because of profile rewriting
      }
  
@@ -470,7 +474,7 @@ index 1c9f7dd89317511d70305a5c49cfb9bdc3ccca4f..3c6eb1297a5661415ef2de23d0f730f4
      @Override
      public void handle(ScoreboardObjective objective) throws Exception
      {
-@@ -263,6 +276,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -268,6 +281,8 @@ public class DownstreamBridge extends PacketHandler
              }
          }
      }
@@ -479,7 +483,7 @@ index 1c9f7dd89317511d70305a5c49cfb9bdc3ccca4f..3c6eb1297a5661415ef2de23d0f730f4
  
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
-@@ -653,6 +668,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -658,6 +673,8 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -488,7 +492,7 @@ index 1c9f7dd89317511d70305a5c49cfb9bdc3ccca4f..3c6eb1297a5661415ef2de23d0f730f4
      // Waterfall start
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
-@@ -680,6 +697,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -685,6 +702,7 @@ public class DownstreamBridge extends PacketHandler
          return entityId;
      }
      // Waterfall end
@@ -497,16 +501,20 @@ index 1c9f7dd89317511d70305a5c49cfb9bdc3ccca4f..3c6eb1297a5661415ef2de23d0f730f4
      @Override
      public void handle(Respawn respawn)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 7913d40cc6c966eb576e02dd64d8a82d949e314f..15c22f788c397a779fe8420d4624f15a633fa96d 100644
+index 4d7b1b23e6394ea6a198a957c91e66596d567dee..60ae4c0a8076fff4c86240083debda4427b17294 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -117,7 +117,9 @@ public class UpstreamBridge extends PacketHandler
+@@ -118,11 +118,13 @@ public class UpstreamBridge extends PacketHandler
      {
          if ( con.getServer() != null )
          {
-+            /* IvanCord - get rid of entity rewrites
-             con.getEntityRewrite().rewriteServerbound( packet.buf, con.getClientEntityId(), con.getServerEntityId(), con.getPendingConnection().getVersion() );
-+             */
++            /* // IvanCord start - remove entity rewrites
+             EntityMap rewrite = con.getEntityRewrite();
+             if ( rewrite != null )
+             {
+                 rewrite.rewriteServerbound( packet.buf, con.getClientEntityId(), con.getServerEntityId(), con.getPendingConnection().getVersion() );
+             }
++             */ // IvanCord end
              con.getServer().getCh().write( packet );
          }
      }

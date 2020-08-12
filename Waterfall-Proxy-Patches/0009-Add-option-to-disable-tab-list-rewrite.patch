@@ -42,10 +42,10 @@ index 238bc3c1f43aa5bd6de34f4355ede2dee818fef3..996c02b848c32e44abadb7ddeff9e59d
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 92630789cbdcbe54f0f605d700508f74f4031e10..155bf842484dd3769e8ab000924b471498145c9f 100644
+index d729b747c2944b359abe64b52b3027a4fe84ec68..6ce10d04f21380d5ac8e6c8ec482a691e13d6fb2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -174,8 +174,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -179,8 +179,19 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PlayerListItem playerList) throws Exception
      {

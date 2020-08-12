@@ -530,10 +530,10 @@ index b601b7d86e3738e8e62ab4b3fa6219ff5a6d64c7..75d894ed15e15495c443718567388667
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 11d9f15d65223251a759e23c664182adb0ea7728..007834311a1381add3b39548cc9674bfa1a8ea4a 100644
+index d15adb3967bab45a2901618a80c14c2ae2500054..7e5eafbe822a320a6464afa360ba3f3a00afcf7a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -68,6 +68,9 @@ public class UpstreamBridge extends PacketHandler
+@@ -69,6 +69,9 @@ public class UpstreamBridge extends PacketHandler
          bungee.getPluginManager().callEvent( event );
          con.getTabListHandler().onDisconnect();
          BungeeCord.getInstance().removeConnection( con );

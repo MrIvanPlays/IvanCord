@@ -165,10 +165,10 @@ index f20104a23600f34c10f020ab7c055a5ea371e254..951adc0d4298e4e2a6be06d8c9fd0865
      private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 68c716b9bc4f26698ecc588767cf2a3b1400c0e0..c15033f5b45f6cdca1bbfdc63fc096c8f1a4935f 100644
+index f6e4859feb6091b2b3b4be06fe43449c36817cfe..7cfd8f7223a735942ad74e74a1e6d4e0d18eb203 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -146,8 +146,13 @@ public abstract class DefinedPacket
+@@ -154,8 +154,13 @@ public abstract class DefinedPacket
          int out = 0;
          int bytes = 0;
          byte in;
