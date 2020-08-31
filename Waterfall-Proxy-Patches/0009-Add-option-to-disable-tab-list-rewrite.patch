@@ -42,7 +42,7 @@ index 238bc3c1f43aa5bd6de34f4355ede2dee818fef3..996c02b848c32e44abadb7ddeff9e59d
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index d729b747c2944b359abe64b52b3027a4fe84ec68..6ce10d04f21380d5ac8e6c8ec482a691e13d6fb2 100644
+index a15c63dde5044d62f06c8c3271d778090775c83e..2b607161ac5cdc90edbf926b32410ed3dc0ce765 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -179,8 +179,19 @@ public class DownstreamBridge extends PacketHandler

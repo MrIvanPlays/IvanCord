@@ -410,7 +410,7 @@ index 3e320b249888307c3b7c0d7e86d5b46a0e8a87dc..bb53eb5285b815bf256947f558a11680
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 6ba7484210937ee31cb0245fec662764c2892511..c9f0e7593364f0bda04d79cb528699c2ee7138ed 100644
+index 2f0db32e3d6a16ba4a08c13f9e9057b38ca9e4a2..00d9230dd8c25e6e361061d62a71c4d5a096830e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -42,11 +42,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
@@ -483,7 +483,7 @@ index 6ba7484210937ee31cb0245fec662764c2892511..c9f0e7593364f0bda04d79cb528699c2
  
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
-@@ -658,6 +673,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -677,6 +692,8 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -492,7 +492,7 @@ index 6ba7484210937ee31cb0245fec662764c2892511..c9f0e7593364f0bda04d79cb528699c2
      // Waterfall start
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
-@@ -685,6 +702,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -704,6 +721,7 @@ public class DownstreamBridge extends PacketHandler
          return entityId;
      }
      // Waterfall end
