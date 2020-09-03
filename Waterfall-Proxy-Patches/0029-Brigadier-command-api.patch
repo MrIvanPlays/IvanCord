@@ -1,0 +1,1231 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ivan Pekov <ivan@mrivanplays.com>
+Date: Thu, 3 Sep 2020 16:11:03 +0300
+Subject: [PATCH] Brigadier command api
+
+
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/Brigadier2LegacyCommandTransformer.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/Brigadier2LegacyCommandTransformer.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d7be85cab29e95945584b2d50dd9a129682aed75
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/Brigadier2LegacyCommandTransformer.java
+@@ -0,0 +1,59 @@
++package com.mrivanplays.ivancord.api.command;
++
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.TabExecutor;
++
++class Brigadier2LegacyCommandTransformer
++{
++
++    static Command transform(CommandDispatcherProxy dispatcher, BrigadierCommand command)
++    {
++        return new DummyCommand( dispatcher, command );
++    }
++
++    private static class DummyCommand extends Command implements TabExecutor
++    {
++
++        private final CommandDispatcherProxy dispatcher;
++        private final BrigadierCommand command;
++
++        public DummyCommand(CommandDispatcherProxy dispatcher, BrigadierCommand command)
++        {
++            super( command.getCommandNode().getName(), null, command.getAliases() );
++            this.dispatcher = dispatcher;
++            this.command = command;
++        }
++
++        @Override
++        public void execute(CommandSender sender, String alias, String[] args)
++        {
++            dispatcher.dispatch( sender, alias + String.join( " ", args ) );
++        }
++
++        @Override
++        public boolean hasPermission(CommandSender sender)
++        {
++            return command.getCommandNode().getRequirement() == null || command.getCommandNode().getRequirement().test( sender );
++        }
++
++        @Override
++        public Iterable<String> onTabComplete(CommandSender sender, String alias, String[] args)
++        {
++            return dispatcher.complete( sender, alias + String.join( " ", args ), false );
++        }
++
++        @Override
++        public void execute(CommandSender sender, String[] args)
++        {
++            // dummy
++        }
++
++        @Override
++        public Iterable<String> onTabComplete(CommandSender sender, String[] args)
++        {
++            // dummy
++            return null;
++        }
++    }
++}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..827b9f525ee167ef47ef921eae8f5446bb0d4ae4
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java
+@@ -0,0 +1,38 @@
++package com.mrivanplays.ivancord.api.command;
++
++import com.mojang.brigadier.builder.LiteralArgumentBuilder;
++import com.mojang.brigadier.tree.LiteralCommandNode;
++import lombok.AllArgsConstructor;
++import lombok.Getter;
++import lombok.RequiredArgsConstructor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.plugin.Plugin;
++
++@RequiredArgsConstructor
++@AllArgsConstructor
++@Getter
++public final class BrigadierCommand
++{
++
++    private final Plugin plugin;
++    private final LiteralCommandNode<CommandSender> commandNode;
++    private String[] aliases = null;
++
++    public BrigadierCommand(Plugin plugin, LiteralArgumentBuilder<CommandSender> argumentBuilder)
++    {
++        this.plugin = plugin;
++        this.commandNode = argumentBuilder.build();
++    }
++
++    public BrigadierCommand(Plugin plugin, LiteralArgumentBuilder<CommandSender> argumentBuilder, String... aliases)
++    {
++        this.plugin = plugin;
++        this.commandNode = argumentBuilder.build();
++        this.aliases = aliases;
++    }
++
++    public void setAliases(String[] aliases)
++    {
++        this.aliases = aliases;
++    }
++}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6e8fc5cc2
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
+@@ -0,0 +1,535 @@
++package com.mrivanplays.ivancord.api.command;
++
++import com.google.common.collect.ArrayListMultimap;
++import com.google.common.collect.Multimap;
++import com.mojang.brigadier.CommandDispatcher;
++import com.mojang.brigadier.ParseResults;
++import com.mojang.brigadier.builder.LiteralArgumentBuilder;
++import com.mojang.brigadier.exceptions.CommandSyntaxException;
++import com.mojang.brigadier.suggestion.IntegerSuggestion;
++import com.mojang.brigadier.suggestion.Suggestions;
++import com.mojang.brigadier.tree.CommandNode;
++import com.mojang.brigadier.tree.LiteralCommandNode;
++import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
++import io.github.waterfallmc.waterfall.exception.ProxyCommandException;
++import io.github.waterfallmc.waterfall.exception.ProxyTabCompleteException;
++import java.util.AbstractMap;
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.Collection;
++import java.util.Collections;
++import java.util.List;
++import java.util.Map;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.locks.Lock;
++import java.util.concurrent.locks.ReentrantLock;
++import java.util.logging.Level;
++import java.util.stream.Collectors;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.ComponentBuilder;
++import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.Plugin;
++import net.md_5.bungee.api.plugin.PluginManager;
++
++// FIXME overall command registration / conversion doesn't work properly, needs to be fixed
++public final class CommandDispatcherProxy
++{
++
++    private final PluginManager pluginManager;
++
++    private final CommandDispatcher<CommandSender> dispatcher = new CommandDispatcher<>();
++    private final Multimap<String, String> commandsByPlugin = ArrayListMultimap.create();
++    private final Lock commandsLock = new ReentrantLock();
++    private final Multimap<String, Command> bungeeCommandsByPlugin = ArrayListMultimap.create();
++    private final Lock bungeeCommandsLock = new ReentrantLock();
++
++    private Collection<Map.Entry<String, Command>> cachedCommands;
++
++    public CommandDispatcherProxy(PluginManager pluginManager)
++    {
++        this.pluginManager = pluginManager;
++    }
++
++    public void register(Plugin plugin, Command command)
++    {
++        register( Legacy2BrigadierCommandTransformer.transform( plugin, command ), false );
++        bungeeCommandsLock.lock();
++        try
++        {
++            String main;
++            if ( plugin == null )
++            {
++                main = "BungeeSpecificCommand";
++            } else
++            {
++                main = plugin.getDescription().getMain();
++            }
++            bungeeCommandsByPlugin.put( main, command );
++        } finally
++        {
++            bungeeCommandsLock.unlock();
++        }
++    }
++
++    public void register(BrigadierCommand command, boolean shouldRegisterNormal)
++    {
++        dispatcher.getRoot().addChild( command.getCommandNode() );
++        String main;
++        if ( command.getPlugin() == null )
++        {
++            main = "BungeeSpecificCommand";
++        } else
++        {
++            main = command.getPlugin().getDescription().getMain();
++        }
++        String name = command.getCommandNode().getName();
++
++        commandsLock.lock();
++        try
++        {
++            commandsByPlugin.put( main, name.toLowerCase() );
++            if ( command.getAliases() != null && command.getAliases().length != 0 )
++            {
++                for ( String alias : command.getAliases() )
++                {
++                    LiteralCommandNode<CommandSender> redirect = LiteralArgumentBuilder.<CommandSender>literal( alias.toLowerCase() )
++                        .redirect( command.getCommandNode() )
++                        .build();
++                    dispatcher.getRoot().addChild( redirect );
++                    commandsByPlugin.put( main, alias.toLowerCase() );
++                }
++            }
++        } finally
++        {
++            commandsLock.unlock();
++        }
++        if ( shouldRegisterNormal )
++        {
++            bungeeCommandsLock.lock();
++            try
++            {
++                bungeeCommandsByPlugin.put( main, Brigadier2LegacyCommandTransformer.transform( this, command ) );
++            } finally
++            {
++                bungeeCommandsLock.unlock();
++            }
++        }
++    }
++
++    public void unregister(Command command)
++    {
++        commandsLock.lock();
++        try
++        {
++            Plugin plugin = null;
++            for ( Plugin inPlugins : pluginManager.getPlugins() )
++            {
++                String main = inPlugins.getDescription().getMain();
++                if ( commandsByPlugin.containsKey( main ) )
++                {
++                    Collection<String> commands = commandsByPlugin.get( main );
++                    if ( commands.contains( command.getName().toLowerCase() ) || containsAny( commands, command.getAliases() ) )
++                    {
++                        CommandNode<CommandSender> node = dispatcher.getRoot().getChild( command.getName().toLowerCase() );
++                        if ( node != null )
++                        {
++                            commands.remove( command.getName().toLowerCase() );
++                            dispatcher.getRoot().getChildren().remove( node );
++                            if ( command.getAliases() != null && command.getAliases().length != 0 )
++                            {
++                                for ( String alias : command.getAliases() )
++                                {
++                                    CommandNode<CommandSender> aliasNode = dispatcher.getRoot().getChild( alias.toLowerCase() );
++                                    if ( aliasNode != null )
++                                    {
++                                        commands.remove( alias.toLowerCase() );
++                                        dispatcher.getRoot().getChildren().remove( aliasNode );
++                                    }
++                                }
++                            }
++                            plugin = inPlugins;
++                        }
++                        break;
++                    }
++                }
++            }
++            if ( plugin == null )
++            {
++                return;
++            }
++            bungeeCommandsLock.lock();
++            try
++            {
++                String main = plugin.getDescription().getMain();
++                if ( bungeeCommandsByPlugin.containsKey( main ) )
++                {
++                    bungeeCommandsByPlugin.get( main ).remove( command );
++                }
++            } finally
++            {
++                bungeeCommandsLock.unlock();
++            }
++        } finally
++        {
++            commandsLock.unlock();
++        }
++        cachedCommands = null;
++    }
++
++    private boolean containsAny(Collection<String> col, String[] array)
++    {
++        if ( array == null || array.length == 0 )
++        {
++            return false;
++        }
++        for ( String s : array )
++        {
++            if ( col.contains( s ) )
++            {
++                return true;
++            }
++        }
++        return false;
++    }
++
++    public boolean isExecutable(String commandName, CommandSender sender)
++    {
++        return !( sender instanceof ProxiedPlayer ) || !ProxyServer.getInstance().getDisabledCommands().contains( commandName.toLowerCase() );
++    }
++
++    public void unregister(BrigadierCommand command)
++    {
++        dispatcher.getRoot().getChildren().remove( command.getCommandNode() );
++        commandsLock.lock();
++        try
++        {
++            String main;
++            if ( command.getPlugin() == null )
++            {
++                main = "BungeeSpecificCommand";
++            } else
++            {
++                main = command.getPlugin().getDescription().getMain();
++            }
++            commandsByPlugin.remove( main, command.getCommandNode().getName().toLowerCase() );
++            if ( command.getAliases() != null && command.getAliases().length != 0 )
++            {
++                for ( String alias : command.getAliases() )
++                {
++                    CommandNode<CommandSender> node = dispatcher.getRoot().getChild( alias.toLowerCase() );
++                    if ( node != null )
++                    {
++                        dispatcher.getRoot().getChildren().remove( node );
++                    }
++                }
++            }
++        } finally
++        {
++            commandsLock.unlock();
++        }
++        bungeeCommandsLock.lock();
++        try
++        {
++            List<Command> toRemove = bungeeCommandsByPlugin.values().stream()
++                .filter( cmd ->
++                {
++                    if ( cmd.getName().toLowerCase().equalsIgnoreCase( command.getCommandNode().getName().toLowerCase() ) )
++                    {
++                        return true;
++                    }
++                    if ( cmd.getAliases() != null && cmd.getAliases().length != 0 )
++                    {
++                        for ( String alias : cmd.getAliases() )
++                        {
++                            if ( alias.toLowerCase().equalsIgnoreCase( command.getCommandNode().getName().toLowerCase() ) )
++                            {
++                                return true;
++                            }
++                        }
++                    }
++                    return false;
++                } ).collect( Collectors.toList() );
++            bungeeCommandsByPlugin.values().removeAll( toRemove );
++        } finally
++        {
++            bungeeCommandsLock.unlock();
++        }
++        cachedCommands = null;
++    }
++
++    public void unregisterAll(Plugin plugin)
++    {
++        String main;
++        if ( plugin == null )
++        {
++            main = "BungeeSpecificCommand";
++        } else
++        {
++            main = plugin.getDescription().getMain();
++        }
++        commandsLock.lock();
++        try
++        {
++            for ( String alias : commandsByPlugin.removeAll( main ) )
++            {
++                CommandNode<CommandSender> node = dispatcher.getRoot().getChild( alias.toLowerCase() );
++                if ( node != null )
++                {
++                    dispatcher.getRoot().getChildren().remove( node );
++                }
++            }
++        } finally
++        {
++            commandsLock.unlock();
++        }
++        bungeeCommandsLock.lock();
++        try
++        {
++            bungeeCommandsByPlugin.removeAll( main );
++        } finally
++        {
++            bungeeCommandsLock.unlock();
++        }
++        cachedCommands = null;
++    }
++
++    public int dispatch(CommandSender sender, String input)
++    {
++        if ( input == null || input.isEmpty() )
++        {
++            return 0;
++        }
++        if ( input.indexOf( ' ' ) == -1 && !isExecutable( input, sender ) )
++        {
++            return 0;
++        } else if ( input.indexOf( ' ' ) != -1 )
++        {
++            String[] inputSplit = input.split( " " );
++            String commandName = inputSplit[0].replace( "/", "" ).toLowerCase();
++            if ( !isExecutable( commandName, sender ) )
++            {
++                return 0;
++            }
++        }
++        try
++        {
++            dispatcher.execute( input, sender );
++            return 1;
++        } catch ( CommandSyntaxException e )
++        {
++            boolean syntaxError = !e.getType().equals( CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand() );
++            if ( syntaxError )
++            {
++                sender.sendMessage( TextComponent.fromLegacyText( ChatColor.RED + e.getMessage() ) );
++                return 1;
++            } else
++            {
++                return 0;
++            }
++        } catch ( Throwable e )
++        {
++            // plugins being plugins
++            sender.sendMessage( new ComponentBuilder(
++                "An internal error occurred whilst executing this command, please check the console log for details."
++            ).color( ChatColor.RED ).create() );
++            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", e );
++
++            String[] inputSplit = input.split( " " );
++            String commandName = inputSplit[0].replace( "/", "" ).toLowerCase();
++            String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++            Command command = getCommand( commandName );
++            pluginManager.callEvent( new ProxyExceptionEvent( new ProxyCommandException( e, command, sender, args ) ) );
++            return 1;
++        }
++    }
++
++    private Command getCommand(String commandName)
++    {
++        bungeeCommandsLock.lock();
++        try
++        {
++            for ( Command command : bungeeCommandsByPlugin.values() )
++            {
++                if ( command.getName().toLowerCase().equalsIgnoreCase( commandName.toLowerCase() ) )
++                {
++                    return command;
++                }
++                if ( command.getAliases() != null && command.getAliases().length != 0 )
++                {
++                    for ( String alias : command.getAliases() )
++                    {
++                        if ( alias.toLowerCase().equalsIgnoreCase( commandName.toLowerCase() ) )
++                        {
++                            return command;
++                        }
++                    }
++                }
++            }
++            return null;
++        } finally
++        {
++            bungeeCommandsLock.unlock();
++        }
++    }
++
++    public List<String> complete(CommandSender sender, String input, boolean check)
++    {
++        if ( check )
++        {
++            if ( input == null || input.isEmpty() || input.indexOf( ' ' ) == -1 )
++            {
++                return Collections.emptyList();
++            }
++            String[] inputSplit = input.split( " " );
++            String commandName = inputSplit[0].toLowerCase().replace( "/", "" );
++            if ( !isExecutable( commandName, sender ) )
++            {
++                return Collections.emptyList();
++            }
++        }
++        try
++        {
++            ParseResults<CommandSender> results = dispatcher.parse( input, sender );
++            return dispatcher.getCompletionSuggestions( results )
++                .thenApply( suggestions -> suggestions.getList().stream().map( suggestion ->
++                {
++                    if ( suggestion instanceof IntegerSuggestion )
++                    {
++                        return Integer.toString( ( (IntegerSuggestion) suggestion ).getValue() );
++                    } else
++                    {
++                        return suggestion.getText();
++                    }
++                } ).collect( Collectors.toList() ) ).join();
++        } catch ( Throwable e )
++        {
++            // plugins being plugins
++            sender.sendMessage( new ComponentBuilder(
++                "An internal error occurred whilst executing this command, please check the console log for details."
++            ).color( ChatColor.RED ).create() );
++            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", e );
++
++            String[] inputSplit = input.split( " " );
++            String commandName = inputSplit[0].toLowerCase().replace( "/", "" );
++            String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++            Command command = getCommand( commandName );
++            pluginManager.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( e, command, sender, args ) ) );
++            return Collections.emptyList();
++        }
++    }
++    
++    public CompletableFuture<Suggestions> complete(CommandSender sender, String input)
++    {
++        if ( input == null || input.isEmpty() || input.indexOf( ' ' ) == -1 )
++        {
++            return Suggestions.empty();
++        }
++        String[] inputSplit = input.split( " " );
++        String commandName = inputSplit[0].toLowerCase().replace( "/", "" );
++        if ( !isExecutable( commandName, sender ) )
++        {
++            return Suggestions.empty();
++        }
++        try
++        {
++            ParseResults<CommandSender> results = dispatcher.parse( input, sender );
++            return dispatcher.getCompletionSuggestions( results );
++        } catch ( Throwable e )
++        {
++            // plugins being plugins
++            sender.sendMessage( new ComponentBuilder(
++                "An internal error occurred whilst executing this command, please check the console log for details."
++            ).color( ChatColor.RED ).create() );
++            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", e );
++
++            String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++            Command command = getCommand( commandName );
++            pluginManager.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( e, command, sender, args ) ) );
++            return Suggestions.empty();
++        }
++    }
++
++    public List<String> completeWithNames(CommandSender sender, String input)
++    {
++        if ( input == null || input.isEmpty() )
++        {
++            return Collections.emptyList();
++        }
++        if ( input.indexOf( ' ' ) == -1 && !isExecutable( input, sender ) )
++        {
++            return Collections.emptyList();
++        } else if ( input.indexOf( ' ' ) != -1 )
++        {
++            String[] inputSplit = input.split( " " );
++            String commandName = inputSplit[0].toLowerCase().replace( "/", "" );
++            if ( !isExecutable( commandName, sender ) )
++            {
++                return Collections.emptyList();
++            }
++        }
++        List<String> ret = new ArrayList<>();
++        if ( input.indexOf( ' ' ) == -1 )
++        {
++            commandsLock.lock();
++            try
++            {
++                for ( String name : commandsByPlugin.values() )
++                {
++                    CommandNode<CommandSender> brigadierNode = dispatcher.getRoot().getChild( name.toLowerCase() );
++                    if ( brigadierNode != null && isExecutable( name, sender ) && name.toLowerCase().startsWith( input ) )
++                    {
++                        if ( brigadierNode.getRequirement() == null || brigadierNode.getRequirement().test( sender ) )
++                        {
++                            ret.add( name );
++                        }
++                    }
++                }
++            } finally
++            {
++                commandsLock.unlock();
++            }
++        } else
++        {
++            ret.addAll( complete( sender, input, false ) );
++        }
++        return ret;
++    }
++
++    public Collection<Map.Entry<String, Command>> getCommands()
++    {
++        if ( cachedCommands != null )
++        {
++            return Collections.unmodifiableCollection( cachedCommands );
++        }
++        bungeeCommandsLock.lock();
++        try
++        {
++            Collection<Map.Entry<String, Command>> col = new ArrayList<>();
++            for ( Command command : bungeeCommandsByPlugin.values() )
++            {
++                col.add( new AbstractMap.SimpleEntry<>( command.getName().toLowerCase(), command ) );
++                if ( command.getAliases() != null && command.getAliases().length != 0 )
++                {
++                    for ( String alias : command.getAliases() )
++                    {
++                        col.add( new AbstractMap.SimpleEntry<>( alias.toLowerCase(), command ) );
++                    }
++                }
++            }
++            cachedCommands = col;
++            return Collections.unmodifiableCollection( col );
++        } finally
++        {
++            bungeeCommandsLock.unlock();
++        }
++    }
++
++    public Collection<CommandNode<CommandSender>> getBrigadierCommands()
++    {
++        return Collections.unmodifiableCollection( dispatcher.getRoot().getChildren() );
++    }
++}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..037358dc46fa1dc991b03aae0d32b0b24cfcde44
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
+@@ -0,0 +1,59 @@
++package com.mrivanplays.ivancord.api.command;
++
++import com.mojang.brigadier.arguments.StringArgumentType;
++import com.mojang.brigadier.builder.LiteralArgumentBuilder;
++import com.mojang.brigadier.builder.RequiredArgumentBuilder;
++import com.mojang.brigadier.suggestion.SuggestionProvider;
++import com.mojang.brigadier.tree.LiteralCommandNode;
++import java.util.Arrays;
++import java.util.function.Predicate;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.Plugin;
++import net.md_5.bungee.api.plugin.TabExecutor;
++
++class Legacy2BrigadierCommandTransformer
++{
++
++    static BrigadierCommand transform(Plugin plugin, Command command)
++    {
++        Predicate<CommandSender> requirement = command::hasPermission;
++        com.mojang.brigadier.Command<CommandSender> executes = (context) ->
++        {
++            String[] inputSplit = context.getInput().split( " " );
++            String alias = inputSplit[0].replace( "/", "" );
++            String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++            command.execute( context.getSource(), alias, args );
++            // returning single success is of course, a lie
++            // but that's the nature of bungee's command api...
++            return 1;
++        };
++        SuggestionProvider<CommandSender> suggests = (context, builder) ->
++        {
++            builder = builder.createOffset( builder.getInput().lastIndexOf( ' ' ) + 1 );
++            if ( command instanceof TabExecutor )
++            {
++                String[] inputSplit = context.getInput().split( " " );
++                String alias = inputSplit[0].replace( "/", "" );
++                String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++                Iterable<String> results = ( (TabExecutor) command ).onTabComplete( context.getSource(), alias, args );
++
++                for ( String result : results )
++                {
++                    builder.suggest( result );
++                }
++            }
++            return builder.buildFuture();
++        };
++        LiteralCommandNode<CommandSender> base = LiteralArgumentBuilder.<CommandSender>literal( command.getName() )
++            .requires( requirement )
++            .executes( executes )
++            .then( RequiredArgumentBuilder.<CommandSender, String>argument( "args", StringArgumentType.greedyString() )
++                .requires( requirement )
++                .suggests( suggests )
++                .executes( executes )
++            ).build();
++
++        return new BrigadierCommand( plugin, base, command.getAliases() );
++    }
++}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..78b8d619a85c9692cff5a99cc6cf2ba42b452791
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsEvent.java
+@@ -0,0 +1,25 @@
++package com.mrivanplays.ivancord.api.event;
++
++import com.mojang.brigadier.suggestion.Suggestions;
++import lombok.Getter;
++import lombok.Setter;
++import net.md_5.bungee.api.connection.Connection;
++import net.md_5.bungee.api.event.TargetedEvent;
++import net.md_5.bungee.api.plugin.Cancellable;
++
++@Getter
++@Setter
++public class BrigadierSuggestionsEvent extends TargetedEvent implements Cancellable
++{
++
++    private boolean cancelled;
++    private final String cursor;
++    private Suggestions suggestions;
++
++    public BrigadierSuggestionsEvent(Connection sender, Connection receiver, String cursor, Suggestions suggestions)
++    {
++        super( sender, receiver );
++        this.cursor = cursor;
++        this.suggestions = suggestions;
++    }
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..a6dacfb4eb3e7641a30f577d45b94e5cf251c4fe 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -4,6 +4,12 @@ import com.google.common.base.Preconditions;
+ import com.google.common.collect.ArrayListMultimap;
+ import com.google.common.collect.Multimap;
+ import com.google.common.eventbus.Subscribe;
++// IvanCord start
++import com.mojang.brigadier.suggestion.Suggestions;
++import com.mojang.brigadier.tree.CommandNode;
++import com.mrivanplays.ivancord.api.command.BrigadierCommand;
++import com.mrivanplays.ivancord.api.command.CommandDispatcherProxy;
++// IvanCord end
+ import java.io.File;
+ import java.io.InputStream;
+ import java.lang.reflect.Method;
+@@ -60,9 +66,10 @@ public final class PluginManager
+     private final Yaml yaml;
+     private final EventBus eventBus;
+     private final Map<String, Plugin> plugins = new LinkedHashMap<>();
+-    private final Map<String, Command> commandMap = new HashMap<>();
++    //private final Map<String, Command> commandMap = new HashMap<>(); // IvanCord
++    private final CommandDispatcherProxy commandDispatcher; // IvanCord
+     private Map<String, PluginDescription> toLoad = new HashMap<>();
+-    private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
++    //private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create(); // IvanCord
+     private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
+ 
+     @SuppressWarnings("unchecked")
+@@ -78,6 +85,7 @@ public final class PluginManager
+         yaml = new Yaml( yamlConstructor );
+ 
+         eventBus = new EventBus( proxy.getLogger() );
++        commandDispatcher = new CommandDispatcherProxy( this ); // IvanCord
+     }
+ 
+     /**
+@@ -88,14 +96,30 @@ public final class PluginManager
+      */
+     public void registerCommand(Plugin plugin, Command command)
+     {
++        /* // IvanCord start
+         commandMap.put( command.getName().toLowerCase( Locale.ROOT ), command );
+         for ( String alias : command.getAliases() )
+         {
+             commandMap.put( alias.toLowerCase( Locale.ROOT ), command );
+         }
+         commandsByPlugin.put( plugin, command );
++         */
++        commandDispatcher.register( plugin, command );
++        // IvanCord end
++    }
++
++    // IvanCord start - BrigadierCommand API
++    public void registerCommand(BrigadierCommand command)
++    {
++        commandDispatcher.register( command, true );
+     }
+ 
++    public void unregisterCommand(BrigadierCommand command)
++    {
++        commandDispatcher.unregister( command );
++    }
++    // IvanCord end
++
+     /**
+      * Unregister a command so it will no longer be executed.
+      *
+@@ -103,8 +127,12 @@ public final class PluginManager
+      */
+     public void unregisterCommand(Command command)
+     {
++        /* // IvanCord start
+         while ( commandMap.values().remove( command ) );
+         commandsByPlugin.values().remove( command );
++         */
++        commandDispatcher.unregister( command );
++        // IvanCord end
+     }
+ 
+     /**
+@@ -114,14 +142,20 @@ public final class PluginManager
+      */
+     public void unregisterCommands(Plugin plugin)
+     {
++        /* // IvanCord start
+         for ( Iterator<Command> it = commandsByPlugin.get( plugin ).iterator(); it.hasNext(); )
+         {
+             Command command = it.next();
+             while ( commandMap.values().remove( command ) );
+             it.remove();
+         }
++         */
++        commandDispatcher.unregisterAll( plugin );
++        // IvanCord end
+     }
+ 
++    // IvanCord start - comment this
++    /*
+     private Command getCommandIfEnabled(String commandName, CommandSender sender)
+     {
+         String commandLower = commandName.toLowerCase( Locale.ROOT );
+@@ -134,6 +168,8 @@ public final class PluginManager
+ 
+         return commandMap.get( commandLower );
+     }
++     */
++    // IvanCord end
+ 
+     /**
+      * Checks if the command is registered and can possibly be executed by the
+@@ -145,7 +181,7 @@ public final class PluginManager
+      */
+     public boolean isExecutableCommand(String commandName, CommandSender sender)
+     {
+-        return getCommandIfEnabled( commandName, sender ) != null;
++        return commandDispatcher.isExecutable( commandName, sender ); // IvanCord
+     }
+ 
+     public boolean dispatchCommand(CommandSender sender, String commandLine)
+@@ -166,6 +202,16 @@ public final class PluginManager
+      */
+     public boolean dispatchCommand(CommandSender sender, String commandLine, List<String> tabResults)
+     {
++        // IvanCord start - replace this whoooooooooooooooooooole stuff
++        if ( tabResults == null )
++        {
++            return commandDispatcher.dispatch( sender, commandLine ) == 1;
++        } else
++        {
++            tabResults.addAll( commandDispatcher.complete( sender, commandLine, true ) );
++            return true;
++        }
++        /*
+         String[] split = commandLine.split( " ", -1 );
+         // Check for chat that only contains " "
+         if ( split.length == 0 || split[0].isEmpty() )
+@@ -223,6 +269,7 @@ public final class PluginManager
+         // Waterfall end
+             }
+         return true;
++         */ // IvanCord end
+     }
+ 
+     // Waterfall start - Add method to tab-complete command names
+@@ -238,6 +285,9 @@ public final class PluginManager
+      * @return The tab-complete suggestions
+      */
+     public List<String> tabCompleteCommand(CommandSender sender, String commandLine) {
++        // IvanCord start - replace
++        return commandDispatcher.completeWithNames( sender, commandLine );
++        /*
+         List<String> suggestions = new java.util.ArrayList<>();
+ 
+         if (commandLine.indexOf(' ') == -1) {
+@@ -257,9 +307,17 @@ public final class PluginManager
+         }
+ 
+         return suggestions;
++         */ // IvanCord end
+     }
+     // Waterfall end
+ 
++    // IvanCord start - additional completion stuff
++    public java.util.concurrent.CompletableFuture<Suggestions> getBrigadierCompletions(CommandSender sender, String commandLine)
++    {
++        return commandDispatcher.complete( sender, commandLine );
++    }
++    // IvanCord end
++
+     /**
+      * Returns the {@link Plugin} objects corresponding to all loaded plugins.
+      *
+@@ -533,9 +591,23 @@ public final class PluginManager
+      */
+     public Collection<Map.Entry<String, Command>> getCommands()
+     {
+-        return Collections.unmodifiableCollection( commandMap.entrySet() );
++        //return Collections.unmodifiableCollection( commandMap.entrySet() ); // IvanCord
++        return commandDispatcher.getCommands(); // IvanCord
+     }
+ 
++    // IvanCord start - commands as brigadier commands :)
++
++    /**
++     * Gets all registered commands as brigadier commands.
++     *
++     * @return unmodifiable collection of brigadier commands
++     */
++    public Collection<CommandNode<CommandSender>> getCommandsAsBrigadier()
++    {
++        return commandDispatcher.getBrigadierCommands();
++    }
++    // IvanCord end
++
+     // IvanCord start - plugin disable api
+ 
+     /**
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
+index 26edbca85b40fd0be24a5745f0361157131f45f1..95b88d7516b7f57adcbbf6fe15a799fbd043a208 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
+@@ -614,15 +614,28 @@ public class Commands extends DefinedPacket
+     {
+ 
+         public static final SuggestionProvider ASK_SERVER = new DummyProvider( "minecraft:ask_server" );
++        // IvanCord start
++        public static final SuggestionProvider ALL_RECIPES = new DummyProvider( "minecraft:all_recipes" );
++        public static final SuggestionProvider AVAILABLE_SOUNDS = new DummyProvider( "minecraft:available_sounds" );
++        public static final SuggestionProvider AVAILABLE_BIOMES = new DummyProvider( "minecraft:available_biomes" );
++        public static final SuggestionProvider SUMMONABLE_ENTITIES = new DummyProvider( "minecraft:summonable_entities" );
++        // IvanCord end
+         private static final Map<String, SuggestionProvider<DummyProvider>> PROVIDERS = new HashMap<>();
+ 
+         static
+         {
+             PROVIDERS.put( "minecraft:ask_server", ASK_SERVER );
++            // IvanCord start - no dummies - expose SuggestionRegistry
++            PROVIDERS.put( "minecraft:all_recipes", ALL_RECIPES );
++            PROVIDERS.put( "minecraft:available_sounds", AVAILABLE_SOUNDS );
++            PROVIDERS.put( "minecraft:available_biomes", AVAILABLE_BIOMES );
++            PROVIDERS.put( "minecraft:summonable_entities", SUMMONABLE_ENTITIES );
++            /*
+             registerDummy( "minecraft:all_recipes" );
+             registerDummy( "minecraft:available_sounds" );
+             registerDummy( "minecraft:available_biomes" );
+             registerDummy( "minecraft:summonable_entities" );
++             */ // IvanCord end
+         }
+ 
+         private static void registerDummy(String name)
+@@ -640,9 +653,20 @@ public class Commands extends DefinedPacket
+ 
+         private static String getKey(SuggestionProvider<DummyProvider> provider)
+         {
++            // IvanCord start - change
++            if ( provider instanceof DummyProvider )
++            {
++                return ( (DummyProvider) provider ).key;
++            } else
++            {
++                // in case mojang changes it
++                return ( (DummyProvider) ASK_SERVER ).key;
++            }
++            /*
+             Preconditions.checkArgument( provider instanceof DummyProvider, "Non dummy provider " + provider );
+ 
+             return ( (DummyProvider) provider ).key;
++             */ // IvanCord end
+         }
+ 
+         @Data
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 75783f2d8f6739c3f074acc303f3e93dd9d443f3..93c69a41ca34b83b9969d1ca93f7ea219ebb0c9a 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -6,13 +6,16 @@ import com.google.common.collect.Lists;
+ import com.google.common.io.ByteArrayDataOutput;
+ import com.google.common.io.ByteStreams;
+ import com.mojang.brigadier.arguments.StringArgumentType;
++import com.mojang.brigadier.builder.ArgumentBuilder; // IvanCord
+ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+ import com.mojang.brigadier.context.StringRange;
+ import com.mojang.brigadier.suggestion.Suggestion;
+ import com.mojang.brigadier.suggestion.Suggestions;
++import com.mojang.brigadier.tree.CommandNode; // IvanCord
+ import com.mojang.brigadier.tree.LiteralCommandNode;
+ 
++import com.mojang.brigadier.tree.RootCommandNode; // IvanCord
+ import io.github.waterfallmc.waterfall.event.ProxyDefineCommandsEvent; // Waterfall
+ import io.netty.buffer.ByteBuf;
+ import io.netty.buffer.ByteBufAllocator;
+@@ -30,6 +33,7 @@ import net.md_5.bungee.ServerConnection;
+ import net.md_5.bungee.ServerConnection.KeepAliveData;
+ import net.md_5.bungee.UserConnection;
+ import net.md_5.bungee.Util;
++import net.md_5.bungee.api.CommandSender; // IvanCord
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.chat.ComponentBuilder; // IvanCord
+ import net.md_5.bungee.api.chat.BaseComponent;
+@@ -764,6 +768,29 @@ public class DownstreamBridge extends PacketHandler
+         ProxyDefineCommandsEvent event = new ProxyDefineCommandsEvent( this.server, this.con, commandMap );
+         bungee.getPluginManager().callEvent( event );
+ 
++        // IvanCord start - replace impl completely
++        Map<String, Command> cmds = event.getCommands();
++        RootCommandNode<CommandSender> nodeCopy = new RootCommandNode<>();
++        for ( CommandNode<CommandSender> node : bungee.getPluginManager().getCommandsAsBrigadier() )
++        {
++            nodeCopy.addChild( node );
++        }
++        for ( String cmd : cmds.keySet() )
++        {
++            CommandNode<CommandSender> node = nodeCopy.getChild( cmd.toLowerCase() );
++            if ( node != null )
++            {
++                CommandNode<CommandSender> filteredNode = filterNode( node );
++                if ( filteredNode == null )
++                {
++                    continue;
++                }
++
++                commands.getRoot().addChild( filteredNode );
++                modified = true;
++            }
++        }
++        /*
+         for ( Map.Entry<String, Command> command : event.getCommands().entrySet() )
+         {
+             //noinspection ConstantConditions
+@@ -779,6 +806,7 @@ public class DownstreamBridge extends PacketHandler
+                 modified = true;
+             }
+         }
++         */ // IvanCord end
+ 
+         if ( modified )
+         {
+@@ -787,6 +815,52 @@ public class DownstreamBridge extends PacketHandler
+         }
+     }
+ 
++    // IvanCord start
++    private CommandNode<CommandSender> filterNode(CommandNode<CommandSender> input)
++    {
++        if ( input.getRequirement() != null )
++        {
++            try
++            {
++                if ( !input.getRequirement().test( con ) )
++                {
++                    return null;
++                }
++            } catch ( Throwable e )
++            {
++                // plugins being plugins
++                bungee.getLogger().log( java.util.logging.Level.WARNING,
++                    "Requirement test for command node " + input + " encountered an exception", e );
++                return null;
++            }
++        }
++        ArgumentBuilder<CommandSender, ?> destChildBuilder = input.createBuilder();
++        destChildBuilder.requires( ( sender ) -> true );
++        if ( input.getRedirect() != null )
++        {
++            CommandNode<CommandSender> filteredRedirect = filterNode( input.getRedirect() );
++            if ( filteredRedirect == null )
++            {
++                return null;
++            }
++        }
++        CommandNode<CommandSender> dest = destChildBuilder.build();
++        if ( !input.getChildren().isEmpty() )
++        {
++            for ( CommandNode<CommandSender> source : input.getChildren() )
++            {
++                CommandNode<CommandSender> destChild = filterNode( source );
++                if ( destChild == null )
++                {
++                    continue;
++                }
++                dest.addChild( destChild );
++            }
++        }
++        return dest;
++    }
++    // IvanCord end
++
+     // IvanCord start
+     @Override
+     public void handle(PlayerPosition pac)
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 1d1c89b58beca05802d970f997484f82a1de2331..4324ef8e8a6ac79a87219f89d5d0937f9eff8635 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -193,6 +193,93 @@ public class UpstreamBridge extends PacketHandler
+         }
+ 
+         // Waterfall end - tab limiter
++        // IvanCord start - ditch whole impl
++        // reimplement this entirely
++        if ( con.getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_13 )
++        {
++            List<String> suggestions = new ArrayList<>();
++            if ( tabComplete.getCursor().startsWith( "/" ) )
++            {
++                bungee.getPluginManager().dispatchCommand( con, tabComplete.getCursor().substring( 1 ), suggestions );
++            }
++
++            TabCompleteEvent event = new TabCompleteEvent( con, con.getServer(), tabComplete.getCursor(), suggestions );
++            if ( event.callEvent() )
++            {
++                throw CancelSendSignal.INSTANCE;
++            }
++
++            List<String> results = event.getSuggestions();
++            if ( !results.isEmpty() )
++            {
++                con.unsafe().sendPacket( new TabCompleteResponse( results ) );
++                throw CancelSendSignal.INSTANCE;
++            }
++        } else
++        {
++            // alright, my turn
++            Suggestions suggestions = Suggestions.empty().join();
++            if ( tabComplete.getCursor().startsWith( "/" ) )
++            {
++                suggestions = bungee.getPluginManager().getBrigadierCompletions( con, tabComplete.getCursor().substring( 1 ) ).join();
++            }
++            com.mrivanplays.ivancord.api.event.BrigadierSuggestionsEvent brigadierEvent =
++                new com.mrivanplays.ivancord.api.event.BrigadierSuggestionsEvent( con, con.getServer(), tabComplete.getCursor(), suggestions );
++            if ( brigadierEvent.callEvent() )
++            {
++                throw CancelSendSignal.INSTANCE;
++            }
++            Suggestions suggestionsResult = brigadierEvent.getSuggestions();
++
++            if ( !suggestionsResult.isEmpty() )
++            {
++                // call bungee's event so we don't make them plugins bork and devlopers crying
++                List<String> suggestionsList = suggestionsResult.getList()
++                    .stream().map( suggestion ->
++                    {
++                        if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
++                        {
++                            return Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
++                        } else
++                        {
++                            return suggestion.getText();
++                        }
++                    } ).collect( java.util.stream.Collectors.toList() );
++                TabCompleteEvent bungeeEvent = new TabCompleteEvent( con, con.getServer(), tabComplete.getCursor(), suggestionsList );
++                if ( bungeeEvent.callEvent() )
++                {
++                    throw CancelSendSignal.INSTANCE;
++                }
++
++                List<String> results = bungeeEvent.getSuggestions();
++                if ( !results.isEmpty() )
++                {
++                    List<Suggestion> brigadierSuggestionsList = new ArrayList<>();
++                    for ( Suggestion suggestion : suggestionsResult.getList() )
++                    {
++                        String text;
++                        if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
++                        {
++                            text = Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
++                        } else
++                        {
++                            text = suggestion.getText();
++                        }
++
++                        for ( String result : results )
++                        {
++                            if ( text.equalsIgnoreCase( result ) )
++                            {
++                                brigadierSuggestionsList.add( suggestion );
++                            }
++                        }
++                    }
++                    con.unsafe().sendPacket( new TabCompleteResponse( tabComplete.getTransactionId(), new Suggestions( suggestionsResult.getRange(), brigadierSuggestionsList ) ) );
++                    throw CancelSendSignal.INSTANCE;
++                }
++            }
++        }
++        /*
+         List<String> suggestions = new ArrayList<>();
+ 
+         if ( tabComplete.getCursor().startsWith( "/" ) )
+@@ -232,6 +319,7 @@ public class UpstreamBridge extends PacketHandler
+             }
+             throw CancelSendSignal.INSTANCE;
+         }
++         */ // IvanCord end
+     }
+ 
+     @Override
