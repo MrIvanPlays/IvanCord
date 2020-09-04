@@ -292,7 +292,7 @@ index bb53eb5285b815bf256947f558a1168086e90ee9..e73ac8210f954276d5b916faa9baf9e3
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 00d9230dd8c25e6e361061d62a71c4d5a096830e..a15c63dde5044d62f06c8c3271d778090775c83e 100644
+index 00d9230dd8c25e6e361061d62a71c4d5a096830e..221c746b70d1be4f760d4fd012b34add59a38ee4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -67,6 +67,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
@@ -314,7 +314,7 @@ index 00d9230dd8c25e6e361061d62a71c4d5a096830e..a15c63dde5044d62f06c8c3271d77809
  
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
-@@ -771,6 +776,41 @@ public class DownstreamBridge extends PacketHandler
+@@ -771,6 +776,39 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -332,23 +332,21 @@ index 00d9230dd8c25e6e361061d62a71c4d5a096830e..a15c63dde5044d62f06c8c3271d77809
 +        if ( changed )
 +        {
 +            PlayerChangePositionEvent event = new PlayerChangePositionEvent( con, conPos, packetPos );
-+            if ( !event.callEvent() )
++            if ( event.callEvent() )
 +            {
 +                con.unsafe().sendPacket( pac );
-+                throw CancelSendSignal.INSTANCE;
 +            } else
 +            {
 +                if ( !event.getMovedTo().equals( packetPos ) )
 +                {
 +                    Position pn = event.getMovedTo();
 +                    con.unsafe().sendPacket( new PlayerPosition( pn.getX(), pn.getY(), pn.getZ(), pn.getYaw(), pn.getPitch(), pn.isOnGround() ) );
-+                    throw CancelSendSignal.INSTANCE;
 +                } else
 +                {
 +                    con.unsafe().sendPacket( pac );
-+                    throw CancelSendSignal.INSTANCE;
 +                }
 +            }
++            throw CancelSendSignal.INSTANCE;
 +        }
 +    }
 +    // IvanCord end

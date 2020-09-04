@@ -1006,7 +1006,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..95b88d7516b7f57adcbbf6fe15a799fb
  
          @Data
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 75783f2d8f6739c3f074acc303f3e93dd9d443f3..6783dc94c00e82037974c688cdd71f03cb10681c 100644
+index fd1c0df50b1f7366f0be7044a6499328fecb14b5..b3a058cf5ec44937f4d3055f3c75632ecf1c3997 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -6,13 +6,16 @@ import com.google.common.collect.Lists;
