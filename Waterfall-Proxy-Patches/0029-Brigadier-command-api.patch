@@ -111,10 +111,10 @@ index 0000000000000000000000000000000000000000..bd0154531a620c337cee46b20b1f9416
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ac979b397a75e7858566f1a88bcc65788315204b
+index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a826b4108
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
-@@ -0,0 +1,584 @@
+@@ -0,0 +1,586 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.collect.ArrayListMultimap;
@@ -213,6 +213,8 @@ index 0000000000000000000000000000000000000000..ac979b397a75e7858566f1a88bcc6578
 +            {
 +                for ( String alias : command.getAliases() )
 +                {
++                    // using .redirect doesn't work properly
++                    // see https://github.com/Mojang/brigadier/issues/46
 +                    LiteralCommandNode<CommandSender> redirect = LiteralArgumentBuilder.<CommandSender>literal( alias.toLowerCase() )
 +                        .requires( base.getRequirement() )
 +                        .forward( base.getRedirect(), base.getRedirectModifier(), base.isFork() )
@@ -490,7 +492,7 @@ index 0000000000000000000000000000000000000000..ac979b397a75e7858566f1a88bcc6578
 +                }
 +            }
 +            sender.sendMessage( TextComponent.fromLegacyText( ChatColor.RED + e.getMessage() ) );
-+            return 1;
++            return 2;
 +        } catch ( Throwable e )
 +        {
 +            // plugins being plugins
@@ -701,12 +703,13 @@ index 0000000000000000000000000000000000000000..ac979b397a75e7858566f1a88bcc6578
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..3b43f9fd29ed1c48927c45498cfa97e42a753fbe
+index 0000000000000000000000000000000000000000..a433a2559d1ab3f16bdcd6155e38820e35c61d37
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
-@@ -0,0 +1,66 @@
+@@ -0,0 +1,68 @@
 +package com.mrivanplays.ivancord.api.command;
 +
++import com.google.common.base.Splitter;
 +import com.mojang.brigadier.arguments.StringArgumentType;
 +import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 +import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -722,6 +725,8 @@ index 0000000000000000000000000000000000000000..3b43f9fd29ed1c48927c45498cfa97e4
 +class Legacy2BrigadierCommandTransformer
 +{
 +
++    static final Splitter SPACE_SPLITTER = Splitter.on( ' ' );
++
 +    static BrigadierCommand transform(Plugin plugin, Command command)
 +    {
 +        Predicate<CommandSender> requirement = command::hasPermission;
@@ -733,7 +738,7 @@ index 0000000000000000000000000000000000000000..3b43f9fd29ed1c48927c45498cfa97e4
 +                command.execute( context.getSource(), input, new String[0] );
 +            } else
 +            {
-+                String[] inputSplit = input.split( " " );
++                String[] inputSplit = SPACE_SPLITTER.splitToList( " " ).toArray( new String[0] );
 +                String alias = inputSplit[0].replace( "/", "" );
 +                String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
 +                command.execute( context.getSource(), alias, args );
@@ -744,10 +749,9 @@ index 0000000000000000000000000000000000000000..3b43f9fd29ed1c48927c45498cfa97e4
 +        };
 +        SuggestionProvider<CommandSender> suggests = (context, builder) ->
 +        {
-+            builder = builder.createOffset( builder.getInput().lastIndexOf( ' ' ) + 1 );
 +            if ( command instanceof TabExecutor )
 +            {
-+                String[] inputSplit = builder.getInput().split( " " );
++                String[] inputSplit = SPACE_SPLITTER.splitToList( builder.getInput() ).toArray( new String[0] );
 +                String alias = inputSplit[0].replace( "/", "" );
 +                String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
 +                Iterable<String> results = ( (TabExecutor) command ).onTabComplete( context.getSource(), alias, args );
@@ -1238,10 +1242,10 @@ index 75783f2d8f6739c3f074acc303f3e93dd9d443f3..6783dc94c00e82037974c688cdd71f03
      @Override
      public void handle(PlayerPosition pac)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 1d1c89b58beca05802d970f997484f82a1de2331..177109fbeb1ee77e2e40f341a4c9541aac4cb448 100644
+index 1d1c89b58beca05802d970f997484f82a1de2331..611c443cc29ecf6b96a85373ce81bcd4615d1762 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -193,6 +193,93 @@ public class UpstreamBridge extends PacketHandler
+@@ -193,6 +193,102 @@ public class UpstreamBridge extends PacketHandler
          }
  
          // Waterfall end - tab limiter
@@ -1255,8 +1259,8 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..177109fbeb1ee77e2e40f341a4c9541a
 +                bungee.getPluginManager().dispatchCommand( con, tabComplete.getCursor().substring( 1 ), suggestions );
 +            }
 +
-+            TabCompleteEvent event = new TabCompleteEvent( con, con.getServer(), tabComplete.getCursor(), suggestions );
-+            if ( event.callEvent() )
++            TabCompleteEvent event = bungee.getPluginManager().callEvent( new TabCompleteEvent( con, con.getServer(), tabComplete.getCursor(), suggestions ) );
++            if ( event.isCancelled() )
 +            {
 +                throw CancelSendSignal.INSTANCE;
 +            }
@@ -1270,18 +1274,19 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..177109fbeb1ee77e2e40f341a4c9541a
 +        } else
 +        {
 +            // alright, my turn
-+            Suggestions suggestions = Suggestions.empty().join();
++            Suggestions fromDispatcher = Suggestions.empty().join();
 +            if ( tabComplete.getCursor().startsWith( "/" ) )
 +            {
-+                suggestions = bungee.getPluginManager().getBrigadierCompletions( con, tabComplete.getCursor().substring( 1 ) ).join();
++                fromDispatcher = bungee.getPluginManager().getBrigadierCompletions( con, tabComplete.getCursor().substring( 1 ) ).join();
 +            }
-+            // FIXME
-+            con.unsafe().sendPacket( new TabCompleteResponse( tabComplete.getTransactionId(), suggestions ) );
-+            throw CancelSendSignal.INSTANCE;
-+            /*
++            int start = tabComplete.getCursor().lastIndexOf( ' ' ) + 1;
++            int end = tabComplete.getCursor().length();
++            StringRange range = StringRange.between( start, end );
++            Suggestions suggestions = new Suggestions( range, fromDispatcher.getList() );
++
 +            com.mrivanplays.ivancord.api.event.BrigadierSuggestionsEvent brigadierEvent =
-+                new com.mrivanplays.ivancord.api.event.BrigadierSuggestionsEvent( con, con.getServer(), tabComplete.getCursor(), suggestions );
-+            if ( brigadierEvent.callEvent() )
++                bungee.getPluginManager().callEvent( new com.mrivanplays.ivancord.api.event.BrigadierSuggestionsEvent( con, con.getServer(), tabComplete.getCursor(), suggestions ) );
++            if ( brigadierEvent.isCancelled() )
 +            {
 +                throw CancelSendSignal.INSTANCE;
 +            }
@@ -1289,19 +1294,22 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..177109fbeb1ee77e2e40f341a4c9541a
 +            if ( !suggestionsResult.isEmpty() )
 +            {
 +                // call bungee's event so we don't make them plugins bork and devlopers crying
-+                List<String> suggestionsList = suggestionsResult.getList()
-+                    .stream().map( suggestion ->
++                List<String> suggestionsList = new ArrayList<>();
++                for ( Suggestion suggestion : suggestionsResult.getList() )
++                {
++                    String value;
++                    if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
 +                    {
-+                        if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
-+                        {
-+                            return Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
-+                        } else
-+                        {
-+                            return suggestion.getText();
-+                        }
-+                    } ).collect( java.util.stream.Collectors.toList() );
-+                TabCompleteEvent bungeeEvent = new TabCompleteEvent( con, con.getServer(), tabComplete.getCursor(), suggestionsList );
-+                if ( bungeeEvent.callEvent() )
++                        value = Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
++                    } else
++                    {
++                        value = suggestion.getText();
++                    }
++                    suggestionsList.add( value );
++                }
++                TabCompleteEvent bungeeEvent =
++                    bungee.getPluginManager().callEvent( new TabCompleteEvent( con, con.getServer(), tabComplete.getCursor(), suggestionsList ) );
++                if ( bungeeEvent.isCancelled() )
 +                {
 +                    throw CancelSendSignal.INSTANCE;
 +                }
@@ -1309,33 +1317,38 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..177109fbeb1ee77e2e40f341a4c9541a
 +                List<String> results = bungeeEvent.getSuggestions();
 +                if ( !results.isEmpty() )
 +                {
-+                    List<Suggestion> suggestionList = suggestionsResult.getList().stream()
-+                        .filter( suggestion -> results.stream().anyMatch( s ->
++                    List<Suggestion> suggestionList = new ArrayList<>();
++                    for ( Suggestion suggestion : suggestionsResult.getList() )
++                    {
++                        String suggestionText;
++                        if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
 +                        {
-+                            String suggestionText;
-+                            if ( suggestion instanceof IntegerSuggestion )
++                            suggestionText = Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
++                        } else
++                        {
++                            suggestionText = suggestion.getText();
++                        }
++                        for ( String result : results )
++                        {
++                            if ( suggestionText.toLowerCase().equalsIgnoreCase( result.toLowerCase() ) )
 +                            {
-+                                suggestionText = Integer.toString( ( (IntegerSuggestion) suggestion ).getValue() );
-+                            } else
-+                            {
-+                                suggestionText = suggestion.getText();
++                                suggestionList.add( suggestion );
 +                            }
-+                            return s.toLowerCase().equalsIgnoreCase( suggestionText.toLowerCase() );
-+                        } ) ).collect( java.util.stream.Collectors.toList() );
++                        }
++                    }
 +                    if ( !suggestionList.isEmpty() )
 +                    {
-+                        con.unsafe().sendPacket( new TabCompleteResponse( tabComplete.getTransactionId(), new Suggestions( suggestionsResult.getRange(), suggestionList ) ) );
++                        con.unsafe().sendPacket( new TabCompleteResponse( tabComplete.getTransactionId(), new Suggestions( range, suggestionList ) ) );
 +                        throw CancelSendSignal.INSTANCE;
 +                    }
 +                }
 +            }
-+             */
 +        }
 +        /*
          List<String> suggestions = new ArrayList<>();
  
          if ( tabComplete.getCursor().startsWith( "/" ) )
-@@ -232,6 +319,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -232,6 +328,7 @@ public class UpstreamBridge extends PacketHandler
              }
              throw CancelSendSignal.INSTANCE;
          }
