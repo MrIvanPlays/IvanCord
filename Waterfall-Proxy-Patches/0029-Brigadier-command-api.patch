@@ -111,14 +111,14 @@ index 0000000000000000000000000000000000000000..bd0154531a620c337cee46b20b1f9416
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a826b4108
+index 0000000000000000000000000000000000000000..a2ecfda647ddf85bce7d8c5e04cf3bb9915d7cb3
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
-@@ -0,0 +1,586 @@
+@@ -0,0 +1,501 @@
 +package com.mrivanplays.ivancord.api.command;
 +
-+import com.google.common.collect.ArrayListMultimap;
-+import com.google.common.collect.Multimap;
++import com.google.common.collect.HashBasedTable;
++import com.google.common.collect.Table;
 +import com.mojang.brigadier.CommandDispatcher;
 +import com.mojang.brigadier.ParseResults;
 +import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -158,10 +158,8 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +    private final PluginManager pluginManager;
 +
 +    private final CommandDispatcher<CommandSender> dispatcher = new CommandDispatcher<>();
-+    private final Multimap<String, String> commandsByPlugin = ArrayListMultimap.create();
++    private final Table<String, String, Command> commandsTable = HashBasedTable.create();
 +    private final Lock commandsLock = new ReentrantLock();
-+    private final Multimap<String, Command> bungeeCommandsByPlugin = ArrayListMultimap.create();
-+    private final Lock bungeeCommandsLock = new ReentrantLock();
 +
 +    private Collection<Map.Entry<String, Command>> cachedCommands;
 +
@@ -172,46 +170,28 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +
 +    public void register(Plugin plugin, Command command)
 +    {
-+        register( Legacy2BrigadierCommandTransformer.transform( plugin, command ), false );
-+        bungeeCommandsLock.lock();
-+        try
-+        {
-+            String main;
-+            if ( plugin == null )
-+            {
-+                main = "BungeeSpecificCommand";
-+            } else
-+            {
-+                main = plugin.getDescription().getMain();
-+            }
-+            bungeeCommandsByPlugin.put( main, command );
-+        } finally
-+        {
-+            bungeeCommandsLock.unlock();
-+        }
++        register( Legacy2BrigadierCommandTransformer.transform( plugin, command ), command );
 +    }
 +
-+    public void register(BrigadierCommand command, boolean shouldRegisterNormal)
++    private void register(BrigadierCommand brigadierCommand, Command bungeeCommand)
 +    {
-+        CommandNode<CommandSender> base = command.getCommandNode();
++        CommandNode<CommandSender> base = brigadierCommand.getCommandNode();
 +        dispatcher.getRoot().addChild( base );
 +        String main;
-+        if ( command.getPlugin() == null )
++        if ( brigadierCommand.getPlugin() == null )
 +        {
 +            main = "BungeeSpecificCommand";
 +        } else
 +        {
-+            main = command.getPlugin().getDescription().getMain();
++            main = brigadierCommand.getPlugin().getDescription().getMain();
 +        }
-+        String name = command.getCommandNode().getName();
-+
 +        commandsLock.lock();
 +        try
 +        {
-+            commandsByPlugin.put( main, name.toLowerCase() );
-+            if ( command.getAliases() != null && command.getAliases().length != 0 )
++            commandsTable.put( main, base.getName().toLowerCase(), bungeeCommand );
++            if ( brigadierCommand.getAliases() != null && brigadierCommand.getAliases().length != 0 )
 +            {
-+                for ( String alias : command.getAliases() )
++                for ( String alias : brigadierCommand.getAliases() )
 +                {
 +                    // using .redirect doesn't work properly
 +                    // see https://github.com/Mojang/brigadier/issues/46
@@ -225,24 +205,18 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +                        redirect.addChild( child );
 +                    }
 +                    dispatcher.getRoot().addChild( redirect );
-+                    commandsByPlugin.put( main, alias.toLowerCase() );
++                    commandsTable.put( main, alias.toLowerCase(), bungeeCommand );
 +                }
 +            }
 +        } finally
 +        {
 +            commandsLock.unlock();
 +        }
-+        if ( shouldRegisterNormal )
-+        {
-+            bungeeCommandsLock.lock();
-+            try
-+            {
-+                bungeeCommandsByPlugin.put( main, Brigadier2LegacyCommandTransformer.transform( this, command ) );
-+            } finally
-+            {
-+                bungeeCommandsLock.unlock();
-+            }
-+        }
++    }
++
++    public void register(BrigadierCommand command)
++    {
++        register( command, Brigadier2LegacyCommandTransformer.transform( this, command ) );
 +    }
 +
 +    public void unregister(Command command)
@@ -250,19 +224,19 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +        commandsLock.lock();
 +        try
 +        {
-+            Plugin plugin = null;
-+            for ( Plugin inPlugins : pluginManager.getPlugins() )
++            for ( Plugin plugin : pluginManager.getPlugins() )
 +            {
-+                String main = inPlugins.getDescription().getMain();
-+                if ( commandsByPlugin.containsKey( main ) )
++                String main = plugin.getDescription().getMain();
++                if ( commandsTable.containsRow( main ) )
 +                {
-+                    Collection<String> commands = commandsByPlugin.get( main );
-+                    if ( commands.contains( command.getName().toLowerCase() ) || containsAny( commands, command.getAliases() ) )
++                    Map<String, Command> commands = commandsTable.row( main );
++                    String nameLower = command.getName().toLowerCase();
++                    if ( commands.containsKey( nameLower ) || containsAny( commands, command.getAliases() ) )
 +                    {
-+                        CommandNode<CommandSender> node = dispatcher.getRoot().getChild( command.getName().toLowerCase() );
++                        CommandNode<CommandSender> node = dispatcher.getRoot().getChild( nameLower );
 +                        if ( node != null )
 +                        {
-+                            commands.remove( command.getName().toLowerCase() );
++                            commandsTable.remove( main, nameLower );
 +                            dispatcher.getRoot().getChildren().remove( node );
 +                            if ( command.getAliases() != null && command.getAliases().length != 0 )
 +                            {
@@ -271,32 +245,15 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +                                    CommandNode<CommandSender> aliasNode = dispatcher.getRoot().getChild( alias.toLowerCase() );
 +                                    if ( aliasNode != null )
 +                                    {
-+                                        commands.remove( alias.toLowerCase() );
++                                        commandsTable.remove( main, alias.toLowerCase() );
 +                                        dispatcher.getRoot().getChildren().remove( aliasNode );
 +                                    }
 +                                }
 +                            }
-+                            plugin = inPlugins;
 +                        }
 +                        break;
 +                    }
 +                }
-+            }
-+            if ( plugin == null )
-+            {
-+                return;
-+            }
-+            bungeeCommandsLock.lock();
-+            try
-+            {
-+                String main = plugin.getDescription().getMain();
-+                if ( bungeeCommandsByPlugin.containsKey( main ) )
-+                {
-+                    bungeeCommandsByPlugin.get( main ).remove( command );
-+                }
-+            } finally
-+            {
-+                bungeeCommandsLock.unlock();
 +            }
 +        } finally
 +        {
@@ -305,7 +262,7 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +        cachedCommands = null;
 +    }
 +
-+    private boolean containsAny(Collection<String> col, String[] array)
++    private boolean containsAny(Map<String, Command> col, String[] array)
 +    {
 +        if ( array == null || array.length == 0 )
 +        {
@@ -313,7 +270,7 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +        }
 +        for ( String s : array )
 +        {
-+            if ( col.contains( s ) )
++            if ( col.containsKey( s.toLowerCase() ) )
 +            {
 +                return true;
 +            }
@@ -326,7 +283,7 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +        commandsLock.lock();
 +        try
 +        {
-+            for ( String name : commandsByPlugin.values() )
++            for ( String name : commandsTable.columnKeySet() )
 +            {
 +                if ( name.toLowerCase().equalsIgnoreCase( commandName.toLowerCase() ) )
 +                {
@@ -354,7 +311,7 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +            {
 +                main = command.getPlugin().getDescription().getMain();
 +            }
-+            commandsByPlugin.remove( main, command.getCommandNode().getName().toLowerCase() );
++            commandsTable.remove( main, command.getCommandNode().getName().toLowerCase() );
 +            if ( command.getAliases() != null && command.getAliases().length != 0 )
 +            {
 +                for ( String alias : command.getAliases() )
@@ -363,39 +320,13 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +                    if ( node != null )
 +                    {
 +                        dispatcher.getRoot().getChildren().remove( node );
++                        commandsTable.remove( main, alias.toLowerCase() );
 +                    }
 +                }
 +            }
 +        } finally
 +        {
 +            commandsLock.unlock();
-+        }
-+        bungeeCommandsLock.lock();
-+        try
-+        {
-+            List<Command> toRemove = bungeeCommandsByPlugin.values().stream()
-+                .filter( cmd ->
-+                {
-+                    if ( cmd.getName().toLowerCase().equalsIgnoreCase( command.getCommandNode().getName().toLowerCase() ) )
-+                    {
-+                        return true;
-+                    }
-+                    if ( cmd.getAliases() != null && cmd.getAliases().length != 0 )
-+                    {
-+                        for ( String alias : cmd.getAliases() )
-+                        {
-+                            if ( alias.toLowerCase().equalsIgnoreCase( command.getCommandNode().getName().toLowerCase() ) )
-+                            {
-+                                return true;
-+                            }
-+                        }
-+                    }
-+                    return false;
-+                } ).collect( Collectors.toList() );
-+            bungeeCommandsByPlugin.values().removeAll( toRemove );
-+        } finally
-+        {
-+            bungeeCommandsLock.unlock();
 +        }
 +        cachedCommands = null;
 +    }
@@ -413,7 +344,8 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +        commandsLock.lock();
 +        try
 +        {
-+            for ( String alias : commandsByPlugin.removeAll( main ) )
++            Map<String, Command> commands = commandsTable.rowMap().remove( main );
++            for ( String alias : commands.keySet() )
 +            {
 +                CommandNode<CommandSender> node = dispatcher.getRoot().getChild( alias.toLowerCase() );
 +                if ( node != null )
@@ -424,14 +356,6 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +        } finally
 +        {
 +            commandsLock.unlock();
-+        }
-+        bungeeCommandsLock.lock();
-+        try
-+        {
-+            bungeeCommandsByPlugin.removeAll( main );
-+        } finally
-+        {
-+            bungeeCommandsLock.unlock();
 +        }
 +        cachedCommands = null;
 +    }
@@ -521,30 +445,20 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +
 +    public Command getCommand(String commandName)
 +    {
-+        bungeeCommandsLock.lock();
++        commandsLock.lock();
 +        try
 +        {
-+            for ( Command command : bungeeCommandsByPlugin.values() )
++            for ( Table.Cell<String, String, Command> cell : commandsTable.cellSet() )
 +            {
-+                if ( command.getName().toLowerCase().equalsIgnoreCase( commandName.toLowerCase() ) )
++                if ( cell.getColumnKey() != null && cell.getColumnKey().equalsIgnoreCase( commandName.toLowerCase() ) )
 +                {
-+                    return command;
-+                }
-+                if ( command.getAliases() != null && command.getAliases().length != 0 )
-+                {
-+                    for ( String alias : command.getAliases() )
-+                    {
-+                        if ( alias.toLowerCase().equalsIgnoreCase( commandName.toLowerCase() ) )
-+                        {
-+                            return command;
-+                        }
-+                    }
++                    return cell.getValue();
 +                }
 +            }
 +            return null;
 +        } finally
 +        {
-+            bungeeCommandsLock.unlock();
++            commandsLock.unlock();
 +        }
 +    }
 +
@@ -645,14 +559,19 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +            commandsLock.lock();
 +            try
 +            {
-+                for ( String name : commandsByPlugin.values() )
++                for ( Table.Cell<String, String, Command> cell : commandsTable.cellSet() )
 +                {
-+                    CommandNode<CommandSender> brigadierNode = dispatcher.getRoot().getChild( name.toLowerCase() );
-+                    if ( brigadierNode != null && isExecutable( name, sender ) && name.toLowerCase().startsWith( input ) )
++                    String name = cell.getColumnKey();
++                    if ( name != null )
 +                    {
-+                        if ( brigadierNode.getRequirement() == null || brigadierNode.getRequirement().test( sender ) )
++                        name = name.toLowerCase();
++                        CommandNode<CommandSender> brigadierNode = dispatcher.getRoot().getChild( name.toLowerCase() );
++                        if ( brigadierNode != null && isExecutable( name, sender ) && name.toLowerCase().startsWith( input ) )
 +                        {
-+                            ret.add( name );
++                            if ( brigadierNode.getRequirement() == null || brigadierNode.getRequirement().test( sender ) )
++                            {
++                                ret.add( name );
++                            }
 +                        }
 +                    }
 +                }
@@ -673,26 +592,22 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +        {
 +            return Collections.unmodifiableCollection( cachedCommands );
 +        }
-+        bungeeCommandsLock.lock();
++        commandsLock.lock();
 +        try
 +        {
 +            Collection<Map.Entry<String, Command>> col = new ArrayList<>();
-+            for ( Command command : bungeeCommandsByPlugin.values() )
++            for ( Table.Cell<String, String, Command> cell : commandsTable.cellSet() )
 +            {
-+                col.add( new AbstractMap.SimpleEntry<>( command.getName().toLowerCase(), command ) );
-+                if ( command.getAliases() != null && command.getAliases().length != 0 )
++                if ( cell.getColumnKey() != null && cell.getValue() != null )
 +                {
-+                    for ( String alias : command.getAliases() )
-+                    {
-+                        col.add( new AbstractMap.SimpleEntry<>( alias.toLowerCase(), command ) );
-+                    }
++                    col.add( new AbstractMap.SimpleEntry<>( cell.getColumnKey(), cell.getValue() ) );
 +                }
 +            }
 +            cachedCommands = col;
 +            return Collections.unmodifiableCollection( col );
 +        } finally
 +        {
-+            bungeeCommandsLock.unlock();
++            commandsLock.unlock();
 +        }
 +    }
 +
@@ -703,7 +618,7 @@ index 0000000000000000000000000000000000000000..33fe983b79ba748415b2b0377a9c282a
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a433a2559d1ab3f16bdcd6155e38820e35c61d37
+index 0000000000000000000000000000000000000000..6073b4261419f6d79ef3cb236415a17330df557d
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
 @@ -0,0 +1,68 @@
@@ -738,7 +653,7 @@ index 0000000000000000000000000000000000000000..a433a2559d1ab3f16bdcd6155e38820e
 +                command.execute( context.getSource(), input, new String[0] );
 +            } else
 +            {
-+                String[] inputSplit = SPACE_SPLITTER.splitToList( " " ).toArray( new String[0] );
++                String[] inputSplit = input.split( " " );
 +                String alias = inputSplit[0].replace( "/", "" );
 +                String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
 +                command.execute( context.getSource(), alias, args );
@@ -807,7 +722,7 @@ index 0000000000000000000000000000000000000000..4a456d0cbe1c5364d88ffceda02bc591
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..d2c7669af4027835794d942ee0216728bf464635 100644
+index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..bf4c4c2fcd86b4fbe73b3dd76a9d5bda00518b68 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -4,6 +4,12 @@ import com.google.common.base.Preconditions;
@@ -863,7 +778,7 @@ index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..d2c7669af4027835794d942ee0216728
 +    // IvanCord start - BrigadierCommand API
 +    public void registerCommand(BrigadierCommand command)
 +    {
-+        commandDispatcher.register( command, true );
++        commandDispatcher.register( command );
      }
  
 +    public void unregisterCommand(BrigadierCommand command)
