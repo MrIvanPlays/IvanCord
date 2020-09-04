@@ -721,6 +721,35 @@ index 0000000000000000000000000000000000000000..4a456d0cbe1c5364d88ffceda02bc591
 +        this.suggestions = suggestions;
 +    }
 +}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsResponseEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsResponseEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..02fd1af5464137b5ad0a75ace8c2dde16223b40c
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsResponseEvent.java
+@@ -0,0 +1,23 @@
++package com.mrivanplays.ivancord.api.event;
++
++import com.mojang.brigadier.suggestion.Suggestions;
++import lombok.Getter;
++import lombok.Setter;
++import net.md_5.bungee.api.connection.Connection;
++import net.md_5.bungee.api.event.TargetedEvent;
++import net.md_5.bungee.api.plugin.Cancellable;
++
++@Getter
++@Setter
++public class BrigadierSuggestionsResponseEvent extends TargetedEvent implements Cancellable
++{
++
++    private boolean cancelled = false;
++    private Suggestions suggestions;
++
++    public BrigadierSuggestionsResponseEvent(Connection sender, Connection receiver, Suggestions suggestions)
++    {
++        super( sender, receiver );
++        this.suggestions = suggestions;
++    }
++}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..bf4c4c2fcd86b4fbe73b3dd76a9d5bda00518b68 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
@@ -1006,7 +1035,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..95b88d7516b7f57adcbbf6fe15a799fb
  
          @Data
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index fd1c0df50b1f7366f0be7044a6499328fecb14b5..b3a058cf5ec44937f4d3055f3c75632ecf1c3997 100644
+index fd1c0df50b1f7366f0be7044a6499328fecb14b5..d93cee10176f551fd0fdcaa112fdaca2ea5f53a2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -6,13 +6,16 @@ import com.google.common.collect.Lists;
@@ -1034,7 +1063,96 @@ index fd1c0df50b1f7366f0be7044a6499328fecb14b5..b3a058cf5ec44937f4d3055f3c75632e
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.api.chat.ComponentBuilder; // IvanCord
  import net.md_5.bungee.api.chat.BaseComponent;
-@@ -750,6 +754,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -648,6 +652,80 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public void handle(TabCompleteResponse tabCompleteResponse) throws Exception
+     {
++        // IvanCord start - ditch whole impl
++        // rewrite
++        List<String> commands = tabCompleteResponse.getCommands();
++        if ( commands != null )
++        {
++            // legacy
++            TabCompleteResponseEvent tabCompleteEvent = new TabCompleteResponseEvent( server, con, new ArrayList<>( commands ) );
++            if ( !bungee.getPluginManager().callEvent( tabCompleteEvent ).isCancelled() && !commands.equals( tabCompleteEvent.getSuggestions() ) )
++            {
++                tabCompleteResponse.setCommands( tabCompleteEvent.getSuggestions() );
++                con.unsafe().sendPacket( tabCompleteResponse );
++            }
++        } else
++        {
++            // brigadier
++            Suggestions initial = tabCompleteResponse.getSuggestions();
++            com.mrivanplays.ivancord.api.event.BrigadierSuggestionsResponseEvent brigadierEvent =
++                new com.mrivanplays.ivancord.api.event.BrigadierSuggestionsResponseEvent( server, con, initial );
++            if ( !bungee.getPluginManager().callEvent( brigadierEvent ).isCancelled() )
++            {
++                Suggestions fromEvent = brigadierEvent.getSuggestions();
++
++                // call bungee's event so we don't make them plugins bork and devlopers crying
++                commands = new ArrayList<>();
++                for ( Suggestion suggestion : fromEvent.getList() )
++                {
++                    String value;
++                    if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
++                    {
++                        value = Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
++                    } else
++                    {
++                        value = suggestion.getText();
++                    }
++                    commands.add( value );
++                }
++                TabCompleteResponseEvent tabCompleteEvent = new TabCompleteResponseEvent( server, con, commands );
++                if ( !bungee.getPluginManager().callEvent( tabCompleteEvent ).isCancelled() )
++                {
++                    List<String> updated = tabCompleteEvent.getSuggestions();
++                    if ( commands.equals( updated ) )
++                    {
++                        // in case the first event changed sth
++                        tabCompleteResponse.setSuggestions( fromEvent );
++                        con.unsafe().sendPacket( tabCompleteResponse );
++                        throw CancelSendSignal.INSTANCE;
++                    }
++
++                    List<Suggestion> suggestions = new ArrayList<>();
++                    for ( Suggestion suggestion : fromEvent.getList() )
++                    {
++                        String value;
++                        if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
++                        {
++                            value = Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
++                        } else
++                        {
++                            value = suggestion.getText();
++                        }
++                        for ( String update : updated )
++                        {
++                            if ( update.toLowerCase().equalsIgnoreCase( value.toLowerCase() ) )
++                            {
++                                suggestions.add( suggestion );
++                            }
++                        }
++                    }
++
++                    tabCompleteResponse.setSuggestions( new Suggestions( fromEvent.getRange(), suggestions ) );
++                    con.unsafe().sendPacket( tabCompleteResponse );
++                }
++            }
++        }
++        /*
+         List<String> commands = tabCompleteResponse.getCommands();
+         if ( commands == null )
+         {
+@@ -688,6 +766,7 @@ public class DownstreamBridge extends PacketHandler
+ 
+             con.unsafe().sendPacket( tabCompleteResponse );
+         }
++         */ // IvanCord end
+ 
+         throw CancelSendSignal.INSTANCE;
+     }
+@@ -750,6 +829,8 @@ public class DownstreamBridge extends PacketHandler
      {
          boolean modified = false;
  
@@ -1043,7 +1161,7 @@ index fd1c0df50b1f7366f0be7044a6499328fecb14b5..b3a058cf5ec44937f4d3055f3c75632e
          // Waterfall start
          Map<String, Command> commandMap = new HashMap<>();
          for ( Map.Entry<String, Command> commandEntry : bungee.getPluginManager().getCommands() ) {
-@@ -779,6 +785,43 @@ public class DownstreamBridge extends PacketHandler
+@@ -779,6 +860,43 @@ public class DownstreamBridge extends PacketHandler
                  modified = true;
              }
          }
@@ -1087,7 +1205,7 @@ index fd1c0df50b1f7366f0be7044a6499328fecb14b5..b3a058cf5ec44937f4d3055f3c75632e
  
          if ( modified )
          {
-@@ -787,6 +830,68 @@ public class DownstreamBridge extends PacketHandler
+@@ -787,6 +905,68 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
