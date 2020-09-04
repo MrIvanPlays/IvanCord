@@ -71,10 +71,10 @@ index 0000000000000000000000000000000000000000..d7be85cab29e95945584b2d50dd9a129
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..827b9f525ee167ef47ef921eae8f5446bb0d4ae4
+index 0000000000000000000000000000000000000000..bd0154531a620c337cee46b20b1f94164bafad7d
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,34 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -82,12 +82,14 @@ index 0000000000000000000000000000000000000000..827b9f525ee167ef47ef921eae8f5446
 +import lombok.AllArgsConstructor;
 +import lombok.Getter;
 +import lombok.RequiredArgsConstructor;
++import lombok.Setter;
 +import net.md_5.bungee.api.CommandSender;
 +import net.md_5.bungee.api.plugin.Plugin;
 +
 +@RequiredArgsConstructor
 +@AllArgsConstructor
 +@Getter
++@Setter
 +public final class BrigadierCommand
 +{
 +
@@ -103,22 +105,16 @@ index 0000000000000000000000000000000000000000..827b9f525ee167ef47ef921eae8f5446
 +
 +    public BrigadierCommand(Plugin plugin, LiteralArgumentBuilder<CommandSender> argumentBuilder, String... aliases)
 +    {
-+        this.plugin = plugin;
-+        this.commandNode = argumentBuilder.build();
-+        this.aliases = aliases;
-+    }
-+
-+    public void setAliases(String[] aliases)
-+    {
++        this( plugin, argumentBuilder );
 +        this.aliases = aliases;
 +    }
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6e8fc5cc2
+index 0000000000000000000000000000000000000000..ac979b397a75e7858566f1a88bcc65788315204b
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
-@@ -0,0 +1,535 @@
+@@ -0,0 +1,584 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.collect.ArrayListMultimap;
@@ -156,7 +152,6 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +import net.md_5.bungee.api.plugin.Plugin;
 +import net.md_5.bungee.api.plugin.PluginManager;
 +
-+// FIXME overall command registration / conversion doesn't work properly, needs to be fixed
 +public final class CommandDispatcherProxy
 +{
 +
@@ -198,7 +193,8 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +
 +    public void register(BrigadierCommand command, boolean shouldRegisterNormal)
 +    {
-+        dispatcher.getRoot().addChild( command.getCommandNode() );
++        CommandNode<CommandSender> base = command.getCommandNode();
++        dispatcher.getRoot().addChild( base );
 +        String main;
 +        if ( command.getPlugin() == null )
 +        {
@@ -218,8 +214,14 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +                for ( String alias : command.getAliases() )
 +                {
 +                    LiteralCommandNode<CommandSender> redirect = LiteralArgumentBuilder.<CommandSender>literal( alias.toLowerCase() )
-+                        .redirect( command.getCommandNode() )
++                        .requires( base.getRequirement() )
++                        .forward( base.getRedirect(), base.getRedirectModifier(), base.isFork() )
++                        .executes( base.getCommand() )
 +                        .build();
++                    for ( CommandNode<CommandSender> child : base.getChildren() )
++                    {
++                        redirect.addChild( child );
++                    }
 +                    dispatcher.getRoot().addChild( redirect );
 +                    commandsByPlugin.put( main, alias.toLowerCase() );
 +                }
@@ -319,7 +321,21 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +
 +    public boolean isExecutable(String commandName, CommandSender sender)
 +    {
-+        return !( sender instanceof ProxiedPlayer ) || !ProxyServer.getInstance().getDisabledCommands().contains( commandName.toLowerCase() );
++        commandsLock.lock();
++        try
++        {
++            for ( String name : commandsByPlugin.values() )
++            {
++                if ( name.toLowerCase().equalsIgnoreCase( commandName.toLowerCase() ) )
++                {
++                    return !( sender instanceof ProxiedPlayer ) || !ProxyServer.getInstance().getDisabledCommands().contains( commandName.toLowerCase() );
++                }
++            }
++            return false;
++        } finally
++        {
++            commandsLock.unlock();
++        }
 +    }
 +
 +    public void unregister(BrigadierCommand command)
@@ -424,13 +440,16 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +        {
 +            return 0;
 +        }
-+        if ( input.indexOf( ' ' ) == -1 && !isExecutable( input, sender ) )
++        if ( input.indexOf( ' ' ) == -1 )
 +        {
-+            return 0;
-+        } else if ( input.indexOf( ' ' ) != -1 )
++            if ( !isExecutable( input, sender ) )
++            {
++                return 0;
++            }
++        } else
 +        {
 +            String[] inputSplit = input.split( " " );
-+            String commandName = inputSplit[0].replace( "/", "" ).toLowerCase();
++            String commandName = inputSplit[0].toLowerCase();
 +            if ( !isExecutable( commandName, sender ) )
 +            {
 +                return 0;
@@ -442,15 +461,36 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +            return 1;
 +        } catch ( CommandSyntaxException e )
 +        {
-+            boolean syntaxError = !e.getType().equals( CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand() );
-+            if ( syntaxError )
++            if ( sender instanceof ProxiedPlayer )
 +            {
-+                sender.sendMessage( TextComponent.fromLegacyText( ChatColor.RED + e.getMessage() ) );
-+                return 1;
-+            } else
-+            {
-+                return 0;
++                String commandName;
++                if ( input.indexOf( ' ' ) == -1 )
++                {
++                    commandName = input;
++                } else
++                {
++                    commandName = input.split( " " )[0].toLowerCase();
++                }
++                CommandNode<CommandSender> node = dispatcher.getRoot().getChild( commandName );
++                if ( node != null && node.getRequirement() != null )
++                {
++                    try
++                    {
++                        if ( !node.getRequirement().test( sender ) )
++                        {
++                            sender.sendMessage( TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "no_permission" ) ) );
++                            return 2;
++                        }
++                    } catch ( Throwable e1 )
++                    {
++                        // plugins make me cry
++                        ProxyServer.getInstance().getLogger().log( Level.SEVERE, "Requirement test for command node " + node + " encountered an exception", e1 );
++                        return 2;
++                    }
++                }
 +            }
++            sender.sendMessage( TextComponent.fromLegacyText( ChatColor.RED + e.getMessage() ) );
++            return 1;
 +        } catch ( Throwable e )
 +        {
 +            // plugins being plugins
@@ -459,16 +499,25 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +            ).color( ChatColor.RED ).create() );
 +            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", e );
 +
-+            String[] inputSplit = input.split( " " );
-+            String commandName = inputSplit[0].replace( "/", "" ).toLowerCase();
-+            String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++            String commandName;
++            String[] args;
++            if ( input.indexOf( ' ' ) == -1 )
++            {
++                commandName = input;
++                args = new String[0];
++            } else
++            {
++                String[] inputSplit = input.split( " " );
++                commandName = inputSplit[0].toLowerCase();
++                args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++            }
 +            Command command = getCommand( commandName );
 +            pluginManager.callEvent( new ProxyExceptionEvent( new ProxyCommandException( e, command, sender, args ) ) );
 +            return 1;
 +        }
 +    }
 +
-+    private Command getCommand(String commandName)
++    public Command getCommand(String commandName)
 +    {
 +        bungeeCommandsLock.lock();
 +        try
@@ -505,9 +554,7 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +            {
 +                return Collections.emptyList();
 +            }
-+            String[] inputSplit = input.split( " " );
-+            String commandName = inputSplit[0].toLowerCase().replace( "/", "" );
-+            if ( !isExecutable( commandName, sender ) )
++            if ( !isExecutable( input.split( " " )[0].toLowerCase(), sender ) )
 +            {
 +                return Collections.emptyList();
 +            }
@@ -535,7 +582,7 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", e );
 +
 +            String[] inputSplit = input.split( " " );
-+            String commandName = inputSplit[0].toLowerCase().replace( "/", "" );
++            String commandName = inputSplit[0].toLowerCase();
 +            String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
 +            Command command = getCommand( commandName );
 +            pluginManager.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( e, command, sender, args ) ) );
@@ -550,7 +597,7 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +            return Suggestions.empty();
 +        }
 +        String[] inputSplit = input.split( " " );
-+        String commandName = inputSplit[0].toLowerCase().replace( "/", "" );
++        String commandName = inputSplit[0].toLowerCase();
 +        if ( !isExecutable( commandName, sender ) )
 +        {
 +            return Suggestions.empty();
@@ -585,9 +632,7 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +            return Collections.emptyList();
 +        } else if ( input.indexOf( ' ' ) != -1 )
 +        {
-+            String[] inputSplit = input.split( " " );
-+            String commandName = inputSplit[0].toLowerCase().replace( "/", "" );
-+            if ( !isExecutable( commandName, sender ) )
++            if ( !isExecutable( input.split( " " )[0].toLowerCase(), sender ) )
 +            {
 +                return Collections.emptyList();
 +            }
@@ -656,10 +701,10 @@ index 0000000000000000000000000000000000000000..0c88b7cc3265d3c2dc1c7c49d6c191f6
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..037358dc46fa1dc991b03aae0d32b0b24cfcde44
+index 0000000000000000000000000000000000000000..3b43f9fd29ed1c48927c45498cfa97e42a753fbe
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
-@@ -0,0 +1,59 @@
+@@ -0,0 +1,66 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.mojang.brigadier.arguments.StringArgumentType;
@@ -682,10 +727,17 @@ index 0000000000000000000000000000000000000000..037358dc46fa1dc991b03aae0d32b0b2
 +        Predicate<CommandSender> requirement = command::hasPermission;
 +        com.mojang.brigadier.Command<CommandSender> executes = (context) ->
 +        {
-+            String[] inputSplit = context.getInput().split( " " );
-+            String alias = inputSplit[0].replace( "/", "" );
-+            String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
-+            command.execute( context.getSource(), alias, args );
++            String input = context.getInput();
++            if ( input.indexOf( ' ' ) == -1 )
++            {
++                command.execute( context.getSource(), input, new String[0] );
++            } else
++            {
++                String[] inputSplit = input.split( " " );
++                String alias = inputSplit[0].replace( "/", "" );
++                String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++                command.execute( context.getSource(), alias, args );
++            }
 +            // returning single success is of course, a lie
 +            // but that's the nature of bungee's command api...
 +            return 1;
@@ -695,7 +747,7 @@ index 0000000000000000000000000000000000000000..037358dc46fa1dc991b03aae0d32b0b2
 +            builder = builder.createOffset( builder.getInput().lastIndexOf( ' ' ) + 1 );
 +            if ( command instanceof TabExecutor )
 +            {
-+                String[] inputSplit = context.getInput().split( " " );
++                String[] inputSplit = builder.getInput().split( " " );
 +                String alias = inputSplit[0].replace( "/", "" );
 +                String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
 +                Iterable<String> results = ( (TabExecutor) command ).onTabComplete( context.getSource(), alias, args );
@@ -721,7 +773,7 @@ index 0000000000000000000000000000000000000000..037358dc46fa1dc991b03aae0d32b0b2
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsEvent.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..78b8d619a85c9692cff5a99cc6cf2ba42b452791
+index 0000000000000000000000000000000000000000..4a456d0cbe1c5364d88ffceda02bc59145dab28a
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsEvent.java
 @@ -0,0 +1,25 @@
@@ -739,7 +791,7 @@ index 0000000000000000000000000000000000000000..78b8d619a85c9692cff5a99cc6cf2ba4
 +public class BrigadierSuggestionsEvent extends TargetedEvent implements Cancellable
 +{
 +
-+    private boolean cancelled;
++    private boolean cancelled = false;
 +    private final String cursor;
 +    private Suggestions suggestions;
 +
@@ -751,7 +803,7 @@ index 0000000000000000000000000000000000000000..78b8d619a85c9692cff5a99cc6cf2ba4
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..a6dacfb4eb3e7641a30f577d45b94e5cf251c4fe 100644
+index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..d2c7669af4027835794d942ee0216728bf464635 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -4,6 +4,12 @@ import com.google.common.base.Preconditions;
@@ -862,23 +914,54 @@ index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..a6dacfb4eb3e7641a30f577d45b94e5c
  
      /**
       * Checks if the command is registered and can possibly be executed by the
-@@ -145,7 +181,7 @@ public final class PluginManager
+@@ -145,8 +181,24 @@ public final class PluginManager
       */
      public boolean isExecutableCommand(String commandName, CommandSender sender)
      {
 -        return getCommandIfEnabled( commandName, sender ) != null;
 +        return commandDispatcher.isExecutable( commandName, sender ); // IvanCord
++    }
++
++    // IvanCord start
++
++    /**
++     * Retrieves command in a legacy form by the name/alias specified.
++     *
++     * @param name command name/alias
++     * @return command or null
++     * @deprecated internal use only in order to support waterfall's ProxyDefineCommandsEvent
++     */
++    @Deprecated
++    public Command getCommand(String name)
++    {
++        return commandDispatcher.getCommand( name.toLowerCase() );
      }
++    // IvanCord end
  
      public boolean dispatchCommand(CommandSender sender, String commandLine)
-@@ -166,6 +202,16 @@ public final class PluginManager
+     {
+@@ -166,6 +218,30 @@ public final class PluginManager
       */
      public boolean dispatchCommand(CommandSender sender, String commandLine, List<String> tabResults)
      {
 +        // IvanCord start - replace this whoooooooooooooooooooole stuff
 +        if ( tabResults == null )
 +        {
-+            return commandDispatcher.dispatch( sender, commandLine ) == 1;
++            int result = commandDispatcher.dispatch( sender, commandLine );
++            if ( result == 1 )
++            {
++                if ( proxy.getConfig().isLogCommands() )
++                {
++                    proxy.getLogger().log( Level.INFO, "{0} executed command /{1}", new Object[]
++                    {
++                        sender.getName(), commandLine
++                    } );
++                }
++                return true;
++            } else
++            {
++                return result == 2;
++            }
 +        } else
 +        {
 +            tabResults.addAll( commandDispatcher.complete( sender, commandLine, true ) );
@@ -888,7 +971,7 @@ index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..a6dacfb4eb3e7641a30f577d45b94e5c
          String[] split = commandLine.split( " ", -1 );
          // Check for chat that only contains " "
          if ( split.length == 0 || split[0].isEmpty() )
-@@ -223,6 +269,7 @@ public final class PluginManager
+@@ -223,6 +299,7 @@ public final class PluginManager
          // Waterfall end
              }
          return true;
@@ -896,7 +979,7 @@ index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..a6dacfb4eb3e7641a30f577d45b94e5c
      }
  
      // Waterfall start - Add method to tab-complete command names
-@@ -238,6 +285,9 @@ public final class PluginManager
+@@ -238,6 +315,9 @@ public final class PluginManager
       * @return The tab-complete suggestions
       */
      public List<String> tabCompleteCommand(CommandSender sender, String commandLine) {
@@ -906,7 +989,7 @@ index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..a6dacfb4eb3e7641a30f577d45b94e5c
          List<String> suggestions = new java.util.ArrayList<>();
  
          if (commandLine.indexOf(' ') == -1) {
-@@ -257,9 +307,17 @@ public final class PluginManager
+@@ -257,9 +337,17 @@ public final class PluginManager
          }
  
          return suggestions;
@@ -924,7 +1007,7 @@ index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..a6dacfb4eb3e7641a30f577d45b94e5c
      /**
       * Returns the {@link Plugin} objects corresponding to all loaded plugins.
       *
-@@ -533,9 +591,23 @@ public final class PluginManager
+@@ -533,9 +621,23 @@ public final class PluginManager
       */
      public Collection<Map.Entry<String, Command>> getCommands()
      {
@@ -1004,7 +1087,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..95b88d7516b7f57adcbbf6fe15a799fb
  
          @Data
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 75783f2d8f6739c3f074acc303f3e93dd9d443f3..93c69a41ca34b83b9969d1ca93f7ea219ebb0c9a 100644
+index 75783f2d8f6739c3f074acc303f3e93dd9d443f3..6783dc94c00e82037974c688cdd71f03cb10681c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -6,13 +6,16 @@ import com.google.common.collect.Lists;
@@ -1032,90 +1115,121 @@ index 75783f2d8f6739c3f074acc303f3e93dd9d443f3..93c69a41ca34b83b9969d1ca93f7ea21
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.api.chat.ComponentBuilder; // IvanCord
  import net.md_5.bungee.api.chat.BaseComponent;
-@@ -764,6 +768,29 @@ public class DownstreamBridge extends PacketHandler
-         ProxyDefineCommandsEvent event = new ProxyDefineCommandsEvent( this.server, this.con, commandMap );
-         bungee.getPluginManager().callEvent( event );
+@@ -750,6 +754,8 @@ public class DownstreamBridge extends PacketHandler
+     {
+         boolean modified = false;
  
 +        // IvanCord start - replace impl completely
-+        Map<String, Command> cmds = event.getCommands();
-+        RootCommandNode<CommandSender> nodeCopy = new RootCommandNode<>();
-+        for ( CommandNode<CommandSender> node : bungee.getPluginManager().getCommandsAsBrigadier() )
-+        {
-+            nodeCopy.addChild( node );
-+        }
-+        for ( String cmd : cmds.keySet() )
-+        {
-+            CommandNode<CommandSender> node = nodeCopy.getChild( cmd.toLowerCase() );
-+            if ( node != null )
-+            {
-+                CommandNode<CommandSender> filteredNode = filterNode( node );
-+                if ( filteredNode == null )
-+                {
-+                    continue;
-+                }
-+
-+                commands.getRoot().addChild( filteredNode );
-+                modified = true;
-+            }
-+        }
 +        /*
-         for ( Map.Entry<String, Command> command : event.getCommands().entrySet() )
-         {
-             //noinspection ConstantConditions
-@@ -779,6 +806,7 @@ public class DownstreamBridge extends PacketHandler
+         // Waterfall start
+         Map<String, Command> commandMap = new HashMap<>();
+         for ( Map.Entry<String, Command> commandEntry : bungee.getPluginManager().getCommands() ) {
+@@ -779,6 +785,43 @@ public class DownstreamBridge extends PacketHandler
                  modified = true;
              }
          }
-+         */ // IvanCord end
++         */
++        // since we don't want to expose the CommandDispatcherProxy in PluginManager thats how we should construct
++        // the root node.
++        RootCommandNode<CommandSender> rootCopy = new RootCommandNode<>();
++        for ( CommandNode<CommandSender> node : bungee.getPluginManager().getCommandsAsBrigadier() )
++        {
++            rootCopy.addChild( node );
++        }
++        RootCommandNode<CommandSender> filtered =
++            (RootCommandNode<CommandSender>) filterCommandNode( rootCopy, new java.util.IdentityHashMap<>() );
++        java.util.Collection<CommandNode<CommandSender>> nodes = filtered.getChildren();
++        if ( nodes.isEmpty() )
++        {
++            return;
++        }
++        Map<String, Command> commandMap = new HashMap<>();
++        for ( CommandNode<CommandSender> node : nodes )
++        {
++            Command legacy = bungee.getPluginManager().getCommand( node.getName() );
++            if ( legacy != null )
++            {
++                commandMap.put( node.getName(), legacy );
++            }
++        }
++        ProxyDefineCommandsEvent defineCommandsEvent = new ProxyDefineCommandsEvent( server, con, commandMap );
++        bungee.getPluginManager().callEvent( defineCommandsEvent );
++        Map<String, Command> updatedMap = defineCommandsEvent.getCommands();
++        for ( String name : updatedMap.keySet() )
++        {
++            CommandNode<CommandSender> node = filtered.getChild( name );
++            if ( node != null )
++            {
++                commands.getRoot().addChild( node );
++                modified = true;
++            }
++        }
++        // IvanCord end
  
          if ( modified )
          {
-@@ -787,6 +815,52 @@ public class DownstreamBridge extends PacketHandler
+@@ -787,6 +830,68 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
 +    // IvanCord start
-+    private CommandNode<CommandSender> filterNode(CommandNode<CommandSender> input)
++    private CommandNode<CommandSender> filterCommandNode(
++        CommandNode<CommandSender> source,
++        Map<CommandNode<CommandSender>, CommandNode<CommandSender>> commandNodeMapping
++    )
 +    {
-+        if ( input.getRequirement() != null )
++        CommandNode<CommandSender> dest;
++        if ( source instanceof RootCommandNode )
 +        {
-+            try
++            dest = new RootCommandNode<>();
++        } else
++        {
++            if ( bungee.getDisabledCommands().contains( source.getName() ) )
 +            {
-+                if ( !input.getRequirement().test( con ) )
-+                {
-+                    return null;
-+                }
-+            } catch ( Throwable e )
-+            {
-+                // plugins being plugins
-+                bungee.getLogger().log( java.util.logging.Level.WARNING,
-+                    "Requirement test for command node " + input + " encountered an exception", e );
++                commandNodeMapping.put( source, null );
 +                return null;
 +            }
-+        }
-+        ArgumentBuilder<CommandSender, ?> destChildBuilder = input.createBuilder();
-+        destChildBuilder.requires( ( sender ) -> true );
-+        if ( input.getRedirect() != null )
-+        {
-+            CommandNode<CommandSender> filteredRedirect = filterNode( input.getRedirect() );
-+            if ( filteredRedirect == null )
++            if ( source.getRequirement() != null )
 +            {
-+                return null;
-+            }
-+        }
-+        CommandNode<CommandSender> dest = destChildBuilder.build();
-+        if ( !input.getChildren().isEmpty() )
-+        {
-+            for ( CommandNode<CommandSender> source : input.getChildren() )
-+            {
-+                CommandNode<CommandSender> destChild = filterNode( source );
-+                if ( destChild == null )
++                try
 +                {
-+                    continue;
++                    if ( !source.getRequirement().test( con ) )
++                    {
++                        commandNodeMapping.put( source, null );
++                        return null;
++                    }
++                } catch ( Throwable t )
++                {
++                    bungee.getLogger().log( java.util.logging.Level.SEVERE, "Requirement test for command node " + source + " encountered an exception", t );
 +                }
-+                dest.addChild( destChild );
 +            }
++
++            ArgumentBuilder<CommandSender, ?> destChildBuilder = source.createBuilder();
++            destChildBuilder.requires( sender -> true );
++            if ( destChildBuilder.getRedirect() != null )
++            {
++                if ( commandNodeMapping.containsKey( destChildBuilder.getRedirect() ) )
++                {
++                    destChildBuilder.redirect( commandNodeMapping.get( destChildBuilder.getRedirect() ) );
++                } else
++                {
++                    destChildBuilder.redirect( filterCommandNode( destChildBuilder.getRedirect(), commandNodeMapping ) );
++                }
++            }
++            dest = destChildBuilder.build();
 +        }
++
++        for ( CommandNode<CommandSender> sourceChild : source.getChildren() )
++        {
++            CommandNode<CommandSender> destChild = filterCommandNode( sourceChild, commandNodeMapping );
++            if ( destChild == null )
++            {
++                continue;
++            }
++            dest.addChild( destChild );
++        }
++        commandNodeMapping.put( source, dest );
++
 +        return dest;
 +    }
 +    // IvanCord end
@@ -1124,7 +1238,7 @@ index 75783f2d8f6739c3f074acc303f3e93dd9d443f3..93c69a41ca34b83b9969d1ca93f7ea21
      @Override
      public void handle(PlayerPosition pac)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 1d1c89b58beca05802d970f997484f82a1de2331..4324ef8e8a6ac79a87219f89d5d0937f9eff8635 100644
+index 1d1c89b58beca05802d970f997484f82a1de2331..177109fbeb1ee77e2e40f341a4c9541aac4cb448 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -193,6 +193,93 @@ public class UpstreamBridge extends PacketHandler
@@ -1161,6 +1275,10 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..4324ef8e8a6ac79a87219f89d5d0937f
 +            {
 +                suggestions = bungee.getPluginManager().getBrigadierCompletions( con, tabComplete.getCursor().substring( 1 ) ).join();
 +            }
++            // FIXME
++            con.unsafe().sendPacket( new TabCompleteResponse( tabComplete.getTransactionId(), suggestions ) );
++            throw CancelSendSignal.INSTANCE;
++            /*
 +            com.mrivanplays.ivancord.api.event.BrigadierSuggestionsEvent brigadierEvent =
 +                new com.mrivanplays.ivancord.api.event.BrigadierSuggestionsEvent( con, con.getServer(), tabComplete.getCursor(), suggestions );
 +            if ( brigadierEvent.callEvent() )
@@ -1168,7 +1286,6 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..4324ef8e8a6ac79a87219f89d5d0937f
 +                throw CancelSendSignal.INSTANCE;
 +            }
 +            Suggestions suggestionsResult = brigadierEvent.getSuggestions();
-+
 +            if ( !suggestionsResult.isEmpty() )
 +            {
 +                // call bungee's event so we don't make them plugins bork and devlopers crying
@@ -1192,30 +1309,27 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..4324ef8e8a6ac79a87219f89d5d0937f
 +                List<String> results = bungeeEvent.getSuggestions();
 +                if ( !results.isEmpty() )
 +                {
-+                    List<Suggestion> brigadierSuggestionsList = new ArrayList<>();
-+                    for ( Suggestion suggestion : suggestionsResult.getList() )
-+                    {
-+                        String text;
-+                        if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
++                    List<Suggestion> suggestionList = suggestionsResult.getList().stream()
++                        .filter( suggestion -> results.stream().anyMatch( s ->
 +                        {
-+                            text = Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
-+                        } else
-+                        {
-+                            text = suggestion.getText();
-+                        }
-+
-+                        for ( String result : results )
-+                        {
-+                            if ( text.equalsIgnoreCase( result ) )
++                            String suggestionText;
++                            if ( suggestion instanceof IntegerSuggestion )
 +                            {
-+                                brigadierSuggestionsList.add( suggestion );
++                                suggestionText = Integer.toString( ( (IntegerSuggestion) suggestion ).getValue() );
++                            } else
++                            {
++                                suggestionText = suggestion.getText();
 +                            }
-+                        }
++                            return s.toLowerCase().equalsIgnoreCase( suggestionText.toLowerCase() );
++                        } ) ).collect( java.util.stream.Collectors.toList() );
++                    if ( !suggestionList.isEmpty() )
++                    {
++                        con.unsafe().sendPacket( new TabCompleteResponse( tabComplete.getTransactionId(), new Suggestions( suggestionsResult.getRange(), suggestionList ) ) );
++                        throw CancelSendSignal.INSTANCE;
 +                    }
-+                    con.unsafe().sendPacket( new TabCompleteResponse( tabComplete.getTransactionId(), new Suggestions( suggestionsResult.getRange(), brigadierSuggestionsList ) ) );
-+                    throw CancelSendSignal.INSTANCE;
 +                }
 +            }
++             */
 +        }
 +        /*
          List<String> suggestions = new ArrayList<>();
