@@ -6,7 +6,7 @@ Subject: [PATCH] Brigadier command api
 
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/Brigadier2LegacyCommandTransformer.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/Brigadier2LegacyCommandTransformer.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d7be85cab29e95945584b2d50dd9a129682aed75
+index 0000000000000000000000000000000000000000..abe35790b14c9e2808379145d6fa281ad67f393e
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/Brigadier2LegacyCommandTransformer.java
 @@ -0,0 +1,59 @@
@@ -71,7 +71,7 @@ index 0000000000000000000000000000000000000000..d7be85cab29e95945584b2d50dd9a129
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..bd0154531a620c337cee46b20b1f94164bafad7d
+index 0000000000000000000000000000000000000000..171f58f26fd965e89fac31c8175e2cb2f2c5d1c3
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java
 @@ -0,0 +1,34 @@
@@ -111,7 +111,7 @@ index 0000000000000000000000000000000000000000..bd0154531a620c337cee46b20b1f9416
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a2ecfda647ddf85bce7d8c5e04cf3bb9915d7cb3
+index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cccb062f0a
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 @@ -0,0 +1,501 @@
@@ -618,7 +618,7 @@ index 0000000000000000000000000000000000000000..a2ecfda647ddf85bce7d8c5e04cf3bb9
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..6073b4261419f6d79ef3cb236415a17330df557d
+index 0000000000000000000000000000000000000000..dd94b35766ffb3506e956c336729d008831b7153
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
 @@ -0,0 +1,68 @@
@@ -692,7 +692,7 @@ index 0000000000000000000000000000000000000000..6073b4261419f6d79ef3cb236415a173
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsEvent.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..4a456d0cbe1c5364d88ffceda02bc59145dab28a
+index 0000000000000000000000000000000000000000..4a4f5cf87da15e57db5526fa5fa0eed6cb018e56
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsEvent.java
 @@ -0,0 +1,25 @@
@@ -723,7 +723,7 @@ index 0000000000000000000000000000000000000000..4a456d0cbe1c5364d88ffceda02bc591
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsResponseEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsResponseEvent.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..02fd1af5464137b5ad0a75ace8c2dde16223b40c
+index 0000000000000000000000000000000000000000..4fc5dc47aacbef26e12902e1f4c668ab4372008f
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/BrigadierSuggestionsResponseEvent.java
 @@ -0,0 +1,23 @@

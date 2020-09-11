@@ -395,7 +395,7 @@ index 37fe6ac73504cee4ba7fc336d6623b5c833c6d1d..3185204d5b5499dd68fc9315f959f91e
          } else
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index f54cf5b66e82d299562bfed6545f51073827dcfb..e6f59a7fb0b609654636d1f495d0fb7c5e5c29a6 100644
+index 0cfa805c511b9ea5ca70cc8655a81dcd5159d0c7..96c940c11e82ce8dc079de8125dae7423c3e46c0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -137,9 +137,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
