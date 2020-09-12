@@ -6,10 +6,10 @@ Subject: [PATCH] Brigadier command api
 
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/Brigadier2LegacyCommandTransformer.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/Brigadier2LegacyCommandTransformer.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..abe35790b14c9e2808379145d6fa281ad67f393e
+index 0000000000000000000000000000000000000000..158fef8dbd9e616c2bfebbfecde662bca22390be
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/Brigadier2LegacyCommandTransformer.java
-@@ -0,0 +1,59 @@
+@@ -0,0 +1,46 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import net.md_5.bungee.api.CommandSender;
@@ -53,19 +53,6 @@ index 0000000000000000000000000000000000000000..abe35790b14c9e2808379145d6fa281a
 +        public Iterable<String> onTabComplete(CommandSender sender, String alias, String[] args)
 +        {
 +            return dispatcher.complete( sender, alias + String.join( " ", args ), false );
-+        }
-+
-+        @Override
-+        public void execute(CommandSender sender, String[] args)
-+        {
-+            // dummy
-+        }
-+
-+        @Override
-+        public Iterable<String> onTabComplete(CommandSender sender, String[] args)
-+        {
-+            // dummy
-+            return null;
 +        }
 +    }
 +}
@@ -618,10 +605,10 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..dd94b35766ffb3506e956c336729d008831b7153
+index 0000000000000000000000000000000000000000..09000bf62ecf9ecb8991cba18cb2e3e4ca8fce56
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,77 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.base.Splitter;
@@ -631,6 +618,7 @@ index 0000000000000000000000000000000000000000..dd94b35766ffb3506e956c336729d008
 +import com.mojang.brigadier.suggestion.SuggestionProvider;
 +import com.mojang.brigadier.tree.LiteralCommandNode;
 +import java.util.Arrays;
++import java.util.Iterator;
 +import java.util.function.Predicate;
 +import net.md_5.bungee.api.CommandSender;
 +import net.md_5.bungee.api.plugin.Command;
@@ -671,9 +659,17 @@ index 0000000000000000000000000000000000000000..dd94b35766ffb3506e956c336729d008
 +                String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
 +                Iterable<String> results = ( (TabExecutor) command ).onTabComplete( context.getSource(), alias, args );
 +
-+                for ( String result : results )
++                if ( results != null )
 +                {
-+                    builder.suggest( result );
++                    Iterator<String> iterator = results.iterator();
++                    if ( !iterator.hasNext() )
++                    {
++                        return builder.buildFuture();
++                    }
++                    while ( iterator.hasNext() )
++                    {
++                        builder.suggest( iterator.next() );
++                    }
 +                }
 +            }
 +            return builder.buildFuture();

@@ -5,18 +5,21 @@ Subject: [PATCH] Include alias in command execution and tab completion
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
-index eba3040aef98ef4932cbfe3870fa9b694c4ca208..0a9ecd1108b0758b61761d4668110eec3e539fac 100644
+index eba3040aef98ef4932cbfe3870fa9b694c4ca208..7215ae7c2cac77ac4a2b8208514a915b59e197cf 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
-@@ -49,9 +49,26 @@ public abstract class Command
+@@ -49,8 +49,27 @@ public abstract class Command
       *
       * @param sender the executor of this command
       * @param args arguments used to invoke this command
 +     * @deprecated new execute method, including alias. Migrate to {@link #execute(CommandSender, String, String[])}
       */
-+    @Deprecated // IvanCord
-     public abstract void execute(CommandSender sender, String[] args);
- 
+-    public abstract void execute(CommandSender sender, String[] args);
++    @Deprecated // IvanCord start
++    public void execute(CommandSender sender, String[] args)
++    {
++    } // IvanCord end
++
 +    // IvanCord start
 +
 +    /**
@@ -31,10 +34,9 @@ index eba3040aef98ef4932cbfe3870fa9b694c4ca208..0a9ecd1108b0758b61761d4668110eec
 +        execute( sender, args );
 +    }
 +    // IvanCord end
-+
+ 
      /**
       * Check if this command can be executed by the given sender.
-      *
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 index a22709e21ab582461da7059e74f520ca23bc91e6..0c59b9fbe8ec84984541fe16178ea775ef22a3f9 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
@@ -58,18 +60,22 @@ index a22709e21ab582461da7059e74f520ca23bc91e6..0c59b9fbe8ec84984541fe16178ea775
                      tabResults.add( s );
                  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/TabExecutor.java b/api/src/main/java/net/md_5/bungee/api/plugin/TabExecutor.java
-index fb63ea4d1252321a4397b8780ff1121db5392390..234269e650e9c3bf8819d4c5696b2435468a93bd 100644
+index fb63ea4d1252321a4397b8780ff1121db5392390..17c2238733fd11d13bd1b68acf0d5f8855ab1273 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/TabExecutor.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/TabExecutor.java
-@@ -5,5 +5,16 @@ import net.md_5.bungee.api.CommandSender;
+@@ -5,5 +5,19 @@ import net.md_5.bungee.api.CommandSender;
  public interface TabExecutor
  {
  
+-    public Iterable<String> onTabComplete(CommandSender sender, String[] args);
 +    /**
 +     * @deprecated new tab complete method, including alias. Migrate to {@link #onTabComplete(CommandSender, String, String[])}
 +     */
-+    @Deprecated // IvanCord
-     public Iterable<String> onTabComplete(CommandSender sender, String[] args);
++    @Deprecated // IvanCord start
++    default Iterable<String> onTabComplete(CommandSender sender, String[] args)
++    {
++        return null;
++    } // IvanCord end
 +
 +    // IvanCord start
 +    default Iterable<String> onTabComplete(CommandSender sender, String alias, String[] args)
