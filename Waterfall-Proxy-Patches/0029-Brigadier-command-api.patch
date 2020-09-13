@@ -58,16 +58,18 @@ index 0000000000000000000000000000000000000000..158fef8dbd9e616c2bfebbfecde662bc
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..171f58f26fd965e89fac31c8175e2cb2f2c5d1c3
+index 0000000000000000000000000000000000000000..c49979c8f3388e841ed0e974f082ef5949e864e6
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java
-@@ -0,0 +1,34 @@
+@@ -0,0 +1,38 @@
 +package com.mrivanplays.ivancord.api.command;
 +
++import com.google.common.base.Preconditions;
 +import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 +import com.mojang.brigadier.tree.LiteralCommandNode;
 +import lombok.AllArgsConstructor;
 +import lombok.Getter;
++import lombok.NonNull;
 +import lombok.RequiredArgsConstructor;
 +import lombok.Setter;
 +import net.md_5.bungee.api.CommandSender;
@@ -81,11 +83,13 @@ index 0000000000000000000000000000000000000000..171f58f26fd965e89fac31c8175e2cb2
 +{
 +
 +    private final Plugin plugin;
++    @NonNull
 +    private final LiteralCommandNode<CommandSender> commandNode;
 +    private String[] aliases = null;
 +
 +    public BrigadierCommand(Plugin plugin, LiteralArgumentBuilder<CommandSender> argumentBuilder)
 +    {
++        Preconditions.checkNotNull( argumentBuilder, "argumentBuilder" );
 +        this.plugin = plugin;
 +        this.commandNode = argumentBuilder.build();
 +    }
@@ -98,12 +102,13 @@ index 0000000000000000000000000000000000000000..171f58f26fd965e89fac31c8175e2cb2
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cccb062f0a
+index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60a284f379
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
-@@ -0,0 +1,501 @@
+@@ -0,0 +1,520 @@
 +package com.mrivanplays.ivancord.api.command;
 +
++import com.google.common.base.Preconditions;
 +import com.google.common.collect.HashBasedTable;
 +import com.google.common.collect.Table;
 +import com.mojang.brigadier.CommandDispatcher;
@@ -157,6 +162,7 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +
 +    public void register(Plugin plugin, Command command)
 +    {
++        Preconditions.checkNotNull( command, "command" );
 +        register( Legacy2BrigadierCommandTransformer.transform( plugin, command ), command );
 +    }
 +
@@ -203,11 +209,14 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +
 +    public void register(BrigadierCommand command)
 +    {
++        Preconditions.checkNotNull( command, "command" );
 +        register( command, Brigadier2LegacyCommandTransformer.transform( this, command ) );
 +    }
 +
 +    public void unregister(Command command)
 +    {
++        Preconditions.checkNotNull( command, "command" );
++        String nameLower = command.getName().toLowerCase();
 +        commandsLock.lock();
 +        try
 +        {
@@ -217,7 +226,6 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +                if ( commandsTable.containsRow( main ) )
 +                {
 +                    Map<String, Command> commands = commandsTable.row( main );
-+                    String nameLower = command.getName().toLowerCase();
 +                    if ( commands.containsKey( nameLower ) || containsAny( commands, command.getAliases() ) )
 +                    {
 +                        CommandNode<CommandSender> node = dispatcher.getRoot().getChild( nameLower );
@@ -229,10 +237,11 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +                            {
 +                                for ( String alias : command.getAliases() )
 +                                {
-+                                    CommandNode<CommandSender> aliasNode = dispatcher.getRoot().getChild( alias.toLowerCase() );
++                                    alias = alias.toLowerCase();
++                                    CommandNode<CommandSender> aliasNode = dispatcher.getRoot().getChild( alias );
 +                                    if ( aliasNode != null )
 +                                    {
-+                                        commandsTable.remove( main, alias.toLowerCase() );
++                                        commandsTable.remove( main, alias );
 +                                        dispatcher.getRoot().getChildren().remove( aliasNode );
 +                                    }
 +                                }
@@ -267,14 +276,20 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +
 +    public boolean isExecutable(String commandName, CommandSender sender)
 +    {
++        if ( commandName == null || commandName.isEmpty() )
++        {
++            return false;
++        }
++        Preconditions.checkNotNull( sender, "sender" );
++        commandName = commandName.toLowerCase();
 +        commandsLock.lock();
 +        try
 +        {
 +            for ( String name : commandsTable.columnKeySet() )
 +            {
-+                if ( name.toLowerCase().equalsIgnoreCase( commandName.toLowerCase() ) )
++                if ( name.toLowerCase().equalsIgnoreCase( commandName ) )
 +                {
-+                    return !( sender instanceof ProxiedPlayer ) || !ProxyServer.getInstance().getDisabledCommands().contains( commandName.toLowerCase() );
++                    return !( sender instanceof ProxiedPlayer ) || !ProxyServer.getInstance().getDisabledCommands().contains( commandName );
 +                }
 +            }
 +            return false;
@@ -286,6 +301,7 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +
 +    public void unregister(BrigadierCommand command)
 +    {
++        Preconditions.checkNotNull( command, "command" );
 +        dispatcher.getRoot().getChildren().remove( command.getCommandNode() );
 +        commandsLock.lock();
 +        try
@@ -303,11 +319,12 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +            {
 +                for ( String alias : command.getAliases() )
 +                {
-+                    CommandNode<CommandSender> node = dispatcher.getRoot().getChild( alias.toLowerCase() );
++                    alias = alias.toLowerCase();
++                    CommandNode<CommandSender> node = dispatcher.getRoot().getChild( alias );
 +                    if ( node != null )
 +                    {
 +                        dispatcher.getRoot().getChildren().remove( node );
-+                        commandsTable.remove( main, alias.toLowerCase() );
++                        commandsTable.remove( main, alias );
 +                    }
 +                }
 +            }
@@ -349,13 +366,14 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +
 +    public int dispatch(CommandSender sender, String input)
 +    {
++        Preconditions.checkNotNull( sender, "sender" );
 +        if ( input == null || input.isEmpty() )
 +        {
 +            return 0;
 +        }
 +        if ( input.indexOf( ' ' ) == -1 )
 +        {
-+            if ( !isExecutable( input, sender ) )
++            if ( !isExecutable( input.toLowerCase(), sender ) )
 +            {
 +                return 0;
 +            }
@@ -379,7 +397,7 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +                String commandName;
 +                if ( input.indexOf( ' ' ) == -1 )
 +                {
-+                    commandName = input;
++                    commandName = input.toLowerCase();
 +                } else
 +                {
 +                    commandName = input.split( " " )[0].toLowerCase();
@@ -432,12 +450,14 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +
 +    public Command getCommand(String commandName)
 +    {
++        Preconditions.checkNotNull( commandName, "commandName" );
++        commandName = commandName.toLowerCase();
 +        commandsLock.lock();
 +        try
 +        {
 +            for ( Table.Cell<String, String, Command> cell : commandsTable.cellSet() )
 +            {
-+                if ( cell.getColumnKey() != null && cell.getColumnKey().equalsIgnoreCase( commandName.toLowerCase() ) )
++                if ( cell.getColumnKey() != null && cell.getColumnKey().equalsIgnoreCase( commandName ) )
 +                {
 +                    return cell.getValue();
 +                }
@@ -451,6 +471,7 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +
 +    public List<String> complete(CommandSender sender, String input, boolean check)
 +    {
++        Preconditions.checkNotNull( sender, "sender" );
 +        if ( check )
 +        {
 +            if ( input == null || input.isEmpty() || input.indexOf( ' ' ) == -1 )
@@ -495,6 +516,7 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +    
 +    public CompletableFuture<Suggestions> complete(CommandSender sender, String input)
 +    {
++        Preconditions.checkNotNull( sender, "sender" );
 +        if ( input == null || input.isEmpty() || input.indexOf( ' ' ) == -1 )
 +        {
 +            return Suggestions.empty();
@@ -526,6 +548,7 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +
 +    public List<String> completeWithNames(CommandSender sender, String input)
 +    {
++        Preconditions.checkNotNull( sender, "sender" );
 +        if ( input == null || input.isEmpty() )
 +        {
 +            return Collections.emptyList();
@@ -552,8 +575,8 @@ index 0000000000000000000000000000000000000000..8376badea9500624fdaf5fbe3f2070cc
 +                    if ( name != null )
 +                    {
 +                        name = name.toLowerCase();
-+                        CommandNode<CommandSender> brigadierNode = dispatcher.getRoot().getChild( name.toLowerCase() );
-+                        if ( brigadierNode != null && isExecutable( name, sender ) && name.toLowerCase().startsWith( input ) )
++                        CommandNode<CommandSender> brigadierNode = dispatcher.getRoot().getChild( name );
++                        if ( brigadierNode != null && isExecutable( name, sender ) && name.startsWith( input ) )
 +                        {
 +                            if ( brigadierNode.getRequirement() == null || brigadierNode.getRequirement().test( sender ) )
 +                            {
