@@ -102,10 +102,10 @@ index 0000000000000000000000000000000000000000..c49979c8f3388e841ed0e974f082ef59
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60a284f379
+index 0000000000000000000000000000000000000000..59da27dd5a7c3be2511a86c7ab436b5cf4881572
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
-@@ -0,0 +1,520 @@
+@@ -0,0 +1,531 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.base.Preconditions;
@@ -148,6 +148,7 @@ index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60
 +{
 +
 +    private final PluginManager pluginManager;
++    private final ProxyServer proxy; // easier access
 +
 +    private final CommandDispatcher<CommandSender> dispatcher = new CommandDispatcher<>();
 +    private final Table<String, String, Command> commandsTable = HashBasedTable.create();
@@ -158,6 +159,7 @@ index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60
 +    public CommandDispatcherProxy(PluginManager pluginManager)
 +    {
 +        this.pluginManager = pluginManager;
++        proxy = ProxyServer.getInstance();
 +    }
 +
 +    public void register(Plugin plugin, Command command)
@@ -186,9 +188,10 @@ index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60
 +            {
 +                for ( String alias : brigadierCommand.getAliases() )
 +                {
++                    alias = alias.toLowerCase();
 +                    // using .redirect doesn't work properly
 +                    // see https://github.com/Mojang/brigadier/issues/46
-+                    LiteralCommandNode<CommandSender> redirect = LiteralArgumentBuilder.<CommandSender>literal( alias.toLowerCase() )
++                    LiteralCommandNode<CommandSender> redirect = LiteralArgumentBuilder.<CommandSender>literal( alias )
 +                        .requires( base.getRequirement() )
 +                        .forward( base.getRedirect(), base.getRedirectModifier(), base.isFork() )
 +                        .executes( base.getCommand() )
@@ -198,7 +201,7 @@ index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60
 +                        redirect.addChild( child );
 +                    }
 +                    dispatcher.getRoot().addChild( redirect );
-+                    commandsTable.put( main, alias.toLowerCase(), bungeeCommand );
++                    commandsTable.put( main, alias, bungeeCommand );
 +                }
 +            }
 +        } finally
@@ -289,7 +292,7 @@ index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60
 +            {
 +                if ( name.toLowerCase().equalsIgnoreCase( commandName ) )
 +                {
-+                    return !( sender instanceof ProxiedPlayer ) || !ProxyServer.getInstance().getDisabledCommands().contains( commandName );
++                    return !( sender instanceof ProxiedPlayer ) || !proxy.getDisabledCommands().contains( commandName );
 +                }
 +            }
 +            return false;
@@ -397,38 +400,49 @@ index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60
 +                String commandName;
 +                if ( input.indexOf( ' ' ) == -1 )
 +                {
-+                    commandName = input.toLowerCase();
++                    commandName = input;
 +                } else
 +                {
-+                    commandName = input.split( " " )[0].toLowerCase();
++                    commandName = input.split( " " )[0];
 +                }
-+                CommandNode<CommandSender> node = dispatcher.getRoot().getChild( commandName );
++                CommandNode<CommandSender> node = dispatcher.getRoot().getChild( commandName.toLowerCase() );
 +                if ( node != null && node.getRequirement() != null )
 +                {
 +                    try
 +                    {
 +                        if ( !node.getRequirement().test( sender ) )
 +                        {
-+                            sender.sendMessage( TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "no_permission" ) ) );
++                            sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "no_permission" ) ) );
 +                            return 2;
 +                        }
 +                    } catch ( Throwable e1 )
 +                    {
 +                        // plugins make me cry
-+                        ProxyServer.getInstance().getLogger().log( Level.SEVERE, "Requirement test for command node " + node + " encountered an exception", e1 );
++                        sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_executing" ) ) );
++                        proxy.getLogger().log( Level.WARNING, "Requirement test for command node " + node.getName() + " encountered an exception", e1 );
++
++                        String[] args;
++                        if ( input.indexOf( ' ' ) == -1 )
++                        {
++                            args = new String[0];
++                        } else
++                        {
++                            String[] inputSplit = input.split( " " );
++                            args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++                        }
++                        Command command = getCommand( commandName );
++                        pluginManager.callEvent( new ProxyExceptionEvent( new ProxyCommandException( e1, command, sender, args ) ) );
 +                        return 2;
 +                    }
 +                }
 +            }
-+            sender.sendMessage( TextComponent.fromLegacyText( ChatColor.RED + e.getMessage() ) );
++            sender.sendMessage( new ComponentBuilder( e.getMessage() ).color( ChatColor.RED ).create() );
 +            return 2;
 +        } catch ( Throwable e )
 +        {
 +            // plugins being plugins
-+            sender.sendMessage( new ComponentBuilder(
-+                "An internal error occurred whilst executing this command, please check the console log for details."
-+            ).color( ChatColor.RED ).create() );
-+            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", e );
++            sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_executing" ) ) );
++            proxy.getLogger().log( Level.WARNING, "Error in dispatching command", e );
 +
 +            String commandName;
 +            String[] args;
@@ -439,7 +453,7 @@ index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60
 +            } else
 +            {
 +                String[] inputSplit = input.split( " " );
-+                commandName = inputSplit[0].toLowerCase();
++                commandName = inputSplit[0];
 +                args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
 +            }
 +            Command command = getCommand( commandName );
@@ -500,10 +514,8 @@ index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60
 +        } catch ( Throwable e )
 +        {
 +            // plugins being plugins
-+            sender.sendMessage( new ComponentBuilder(
-+                "An internal error occurred whilst executing this command, please check the console log for details."
-+            ).color( ChatColor.RED ).create() );
-+            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", e );
++            sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_completing" ) ) );
++            proxy.getLogger().log( Level.WARNING, "Error in dispatching command", e );
 +
 +            String[] inputSplit = input.split( " " );
 +            String commandName = inputSplit[0].toLowerCase();
@@ -534,10 +546,8 @@ index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60
 +        } catch ( Throwable e )
 +        {
 +            // plugins being plugins
-+            sender.sendMessage( new ComponentBuilder(
-+                "An internal error occurred whilst executing this command, please check the console log for details."
-+            ).color( ChatColor.RED ).create() );
-+            ProxyServer.getInstance().getLogger().log( Level.WARNING, "Error in dispatching command", e );
++            sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_completing" ) ) );
++            proxy.getLogger().log( Level.WARNING, "Error in dispatching command", e );
 +
 +            String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
 +            Command command = getCommand( commandName );
@@ -566,6 +576,7 @@ index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60
 +        List<String> ret = new ArrayList<>();
 +        if ( input.indexOf( ' ' ) == -1 )
 +        {
++            input = input.toLowerCase();
 +            commandsLock.lock();
 +            try
 +            {
@@ -576,7 +587,7 @@ index 0000000000000000000000000000000000000000..19dac425b769b6c5beb6ea24d04f7b60
 +                    {
 +                        name = name.toLowerCase();
 +                        CommandNode<CommandSender> brigadierNode = dispatcher.getRoot().getChild( name );
-+                        if ( brigadierNode != null && isExecutable( name, sender ) && name.startsWith( input ) )
++                        if ( brigadierNode != null && isExecutable( name, sender ) && input.startsWith( name ) )
 +                        {
 +                            if ( brigadierNode.getRequirement() == null || brigadierNode.getRequirement().test( sender ) )
 +                            {
@@ -1408,3 +1419,13 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..611c443cc29ecf6b96a85373ce81bcd4
      }
  
      @Override
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+index 423c7768705cbd0bf5435473f726de5f931465f7..18da578855feabfbe9e644d7bc4203f75183c8b6 100644
+--- a/proxy/src/main/resources/messages.properties
++++ b/proxy/src/main/resources/messages.properties
+@@ -40,3 +40,5 @@ command_perms_permission=\u00a79- {0}
+ command_ip=\u00a79IP of {0} is {1}
+ kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
+ command_plugins_message=Plugins ({0}): {1}
++internal_error_executing=\u00a7cAn internal error occurred whilst executing this command, please check the console log for details.
++internal_error_completing=\u00a7cAn internal error occurred whilst tab completing this command, please check the console log for details.
