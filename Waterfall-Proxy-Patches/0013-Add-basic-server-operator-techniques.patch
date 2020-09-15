@@ -4,6 +4,23 @@ Date: Tue, 25 Jun 2019 17:21:37 +0300
 Subject: [PATCH] Add basic server operator techniques
 
 
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 673ec25d1cbac86631e5bf0e2f6243f583545ff9..5954e657c16ee442bc20c11e0dd943c87525f127 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -287,5 +287,12 @@ public interface ProxyConfig
+      */
+     int getTCPFastOpenMode();
+ 
++    /**
++     * Returns whether or not IvanCord should check for global op independently of {@link net.md_5.bungee.api.event.PermissionCheckEvent}
++     *
++     * @return should check for global op independently
++     */
++    boolean shouldCheckForGlobalOpIndependently();
++
+     // IvanCord end
+ }
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 index b4382724e5f0d892466aa068e5040016cc63423b..4c98df25ca5788b1edc7c6d93bf0b12ab861f42c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
@@ -137,6 +154,27 @@ index 0000000000000000000000000000000000000000..5255a62d303fd866c6f9c168b3e16243
 +        return new ComponentBuilder( message ).color( ChatColor.RED ).create();
 +    }
 +}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+index 58a8c3fda38a99e102e07255102d02c7656c2453..3fcabecefbeb95d15889e938d1c1115c969c2779 100644
+--- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+@@ -20,6 +20,8 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+     private boolean isTCPFastOpenEnabled = true;
+     @Accessors(fluent = true)
+     private int getTCPFastOpenMode = TCPFastOpenMode.CLIENT_ONLY.getValue();
++    @Accessors(fluent = true)
++    private boolean shouldCheckForGlobalOpIndependently = true;
+ 
+     @Override
+     public void load()
+@@ -31,6 +33,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+         disableTabListRewrite = config.getBoolean( "disable_tablist_rewrite", disableTabListRewrite );
+         isTCPFastOpenEnabled = config.getBoolean( "tcp_fast_open_enabled", isTCPFastOpenEnabled );
+         getTCPFastOpenMode = setupTFO( config.getInt( "tcp_fast_open_mode", getTCPFastOpenMode ) );
++        shouldCheckForGlobalOpIndependently = config.getBoolean( "should_check_for_global_op_independently", shouldCheckForGlobalOpIndependently );
+     }
+ 
+     private int setupTFO(int incoming)
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/OpsConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/OpsConfiguration.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..8a99463de283645730f4578eb4c38ba3933c2edf
@@ -249,7 +287,7 @@ index aa870c1e400d4db3fd76088cabaedd1654a8077e..27d32b029a7e4aada0bd3a957e90631e
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a3ab808d89dffd5cc567696f2595af3660e5dbe3..400478248dee379f20a7ada2b594dbbe00ecfdb3 100644
+index a3ab808d89dffd5cc567696f2595af3660e5dbe3..2d52fd06a1a78280e912b8c88fe10c57f83331bc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -115,6 +115,10 @@ public final class UserConnection implements ProxiedPlayer
@@ -273,16 +311,24 @@ index a3ab808d89dffd5cc567696f2595af3660e5dbe3..400478248dee379f20a7ada2b594dbbe
      }
  
      public void sendPacket(PacketWrapper packet)
-@@ -586,7 +593,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -586,7 +593,15 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public boolean hasPermission(String permission)
      {
 -        return bungee.getPluginManager().callEvent( new PermissionCheckEvent( this, permission, permissions.contains( permission ) ) ).hasPermission();
-+        return bungee.getPluginManager().callEvent( new PermissionCheckEvent( this, permission, globalOp || permissions.contains( permission ) ) ).hasPermission(); // IvanCord
++        // IvanCord start
++        if ( !bungee.getConfig().shouldCheckForGlobalOpIndependently() )
++        {
++            return bungee.getPluginManager().callEvent( new PermissionCheckEvent( this, permission, globalOp || permissions.contains( permission ) ) ).hasPermission();
++        } else
++        {
++            return globalOp || bungee.getPluginManager().callEvent( new PermissionCheckEvent( this, permission, permissions.contains( permission ) ) ).hasPermission();
++        }
++        // IvanCord end
      }
  
      @Override
-@@ -808,6 +815,13 @@ public final class UserConnection implements ProxiedPlayer
+@@ -808,6 +823,13 @@ public final class UserConnection implements ProxiedPlayer
          new SoundPlayedEvent( this, position,
                  PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category.ordinal() ).callEvent();
      }

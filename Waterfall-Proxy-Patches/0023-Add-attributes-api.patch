@@ -367,7 +367,7 @@ index be490d126f634190b20e3fb779cd5bf3bd7b3a6a..0030e9ba992c02dd3ec2a07c6dc0af7e
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
              // And immediate respawn
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 400478248dee379f20a7ada2b594dbbe00ecfdb3..834cd54309c34bafbdf0083802af200eeaff3bed 100644
+index 2d52fd06a1a78280e912b8c88fe10c57f83331bc..8151c1eb8af4b0ad527e33e228eb25bf44a295cc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
@@ -411,7 +411,7 @@ index 400478248dee379f20a7ada2b594dbbe00ecfdb3..834cd54309c34bafbdf0083802af200e
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -822,6 +831,42 @@ public final class UserConnection implements ProxiedPlayer
+@@ -830,6 +839,42 @@ public final class UserConnection implements ProxiedPlayer
          BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
          this.globalOp = globalOp;
      }

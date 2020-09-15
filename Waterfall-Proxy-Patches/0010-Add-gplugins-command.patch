@@ -6,12 +6,13 @@ Subject: [PATCH] Add gplugins command
 
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java b/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b43ccc930ded59fd95ab98d757e9a98dc23e8e6d
+index 0000000000000000000000000000000000000000..5d6a1d0c22a94b049636c40fbbe3e9de6b9704f1
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,37 @@
 +package com.mrivanplays.ivancord.commands;
 +
++import java.util.Collection;
 +import java.util.Set;
 +import java.util.stream.Collectors;
 +
@@ -20,6 +21,7 @@ index 0000000000000000000000000000000000000000..b43ccc930ded59fd95ab98d757e9a98d
 +import net.md_5.bungee.api.ProxyServer;
 +import net.md_5.bungee.api.chat.TextComponent;
 +import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.Plugin;
 +
 +public class CommandPlugins extends Command
 +{
@@ -33,19 +35,16 @@ index 0000000000000000000000000000000000000000..b43ccc930ded59fd95ab98d757e9a98d
 +    public void execute(CommandSender sender, String[] args)
 +    {
 +        ProxyServer proxy = ProxyServer.getInstance();
-+        Set<String> pluginNames = proxy.getPluginManager().getPlugins()
-+                .parallelStream()
-+                .map( plugin -> plugin.getDescription().getName() )
-+                .collect( Collectors.toSet() );
++        Collection<Plugin> pluginsCol = proxy.getPluginManager().getPlugins();
 +        StringBuilder pluginsList = new StringBuilder();
-+        for ( String name : pluginNames )
++        for ( Plugin plugin : pluginsCol )
 +        {
-+            pluginsList.append( ChatColor.GREEN.toString() ).append( name ).append( ChatColor.WHITE.toString() ).append( ", " );
++            pluginsList.append( ChatColor.GREEN.toString() ).append( plugin.getDescription().getName() )
++                .append( ChatColor.WHITE.toString() ).append( ", " );
 +        }
 +        String plugins = pluginsList.substring( 0, pluginsList.lastIndexOf( "," ) - 1 );
-+        String message = proxy.getTranslation( "command_plugins_message", pluginNames.size(), plugins );
++        String message = proxy.getTranslation( "command_plugins_message", pluginsCol.size(), plugins );
 +        sender.sendMessage( TextComponent.fromLegacyText( message ) );
-+        pluginNames.clear();
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
