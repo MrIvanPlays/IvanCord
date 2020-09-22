@@ -58,10 +58,10 @@ index 0000000000000000000000000000000000000000..158fef8dbd9e616c2bfebbfecde662bc
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c49979c8f3388e841ed0e974f082ef5949e864e6
+index 0000000000000000000000000000000000000000..c4769518b0e957b5365983434adcfca81dc51115
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/BrigadierCommand.java
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,43 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.base.Preconditions;
@@ -81,6 +81,11 @@ index 0000000000000000000000000000000000000000..c49979c8f3388e841ed0e974f082ef59
 +@Setter
 +public final class BrigadierCommand
 +{
++
++    /**
++     * A special return value saying to forward the command to the server.
++     */
++    public static int FORWARD = 0xF448224;
 +
 +    private final Plugin plugin;
 +    @NonNull
@@ -102,10 +107,10 @@ index 0000000000000000000000000000000000000000..c49979c8f3388e841ed0e974f082ef59
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..59da27dd5a7c3be2511a86c7ab436b5cf4881572
+index 0000000000000000000000000000000000000000..10a0cd4a3f282acf033fcd02e977233609898432
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
-@@ -0,0 +1,531 @@
+@@ -0,0 +1,537 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.base.Preconditions;
@@ -391,7 +396,13 @@ index 0000000000000000000000000000000000000000..59da27dd5a7c3be2511a86c7ab436b5c
 +        }
 +        try
 +        {
-+            dispatcher.execute( input, sender );
++            int result = dispatcher.execute( input, sender );
++            if ( result == BrigadierCommand.FORWARD )
++            {
++                // that's of course, a lie for the dispatchCommand's return value
++                // but we can't just break bungee api so im sorry for lying :(
++                return 0;
++            }
 +            return 1;
 +        } catch ( CommandSyntaxException e )
 +        {
