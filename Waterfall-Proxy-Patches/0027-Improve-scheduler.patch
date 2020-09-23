@@ -35,6 +35,19 @@ index a8555de3637e7a884c5af015f98bd792982bd4fb..99dc5d13ce5bad13b1ef89af1bc348d4
      }
      //
  }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..dc21fab440263f16fbf82308b599b13b0e4d50c4 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -581,7 +581,7 @@ public final class PluginManager
+         unregisterCommands( plugin );
+         proxy.getServicesManager().unregisterAll( plugin );
+         proxy.getScheduler().cancel( plugin );
+-        plugin.getExecutorService().shutdownNow();
++        //plugin.getExecutorService().shutdownNow();
+         plugins.remove( plugin.getDescription().getName(), plugin );
+         callEvent( new PluginDisabledEvent( plugin ) );
+         System.gc();
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/scheduler/SchedulerThreadFactory.java b/proxy/src/main/java/com/mrivanplays/ivancord/scheduler/SchedulerThreadFactory.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..00ff4769884de0b635144bc7ca134f355510a3f4
@@ -60,8 +73,20 @@ index 0000000000000000000000000000000000000000..00ff4769884de0b635144bc7ca134f35
 +        return thread;
 +    }
 +}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index fe461f6ce49badf4dc413c822f2f5347b801c320..5c0acf0bbcafb28ada3a8b9cf512f18b63f4079c 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -543,6 +543,7 @@ public class BungeeCord extends ProxyServer
+         {
+             pluginManager.disablePlugin( plugin );
+         }
++        scheduler.scheduler.shutdownNow();
+         // IvanCord end
+ 
+         getLogger().info( "Closing IO threads" );
 diff --git a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java
-index fd0dabcf462acab89baa80cc0f2ee946e7939bcb..a6dbf8b9a484906bc0456767d24daeac35cdf0fb 100644
+index fd0dabcf462acab89baa80cc0f2ee946e7939bcb..7be2deb2d3a5aab08fe0a2b60b34ba7a3da09f73 100644
 --- a/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/scheduler/BungeeScheduler.java
 @@ -23,6 +23,11 @@ public class BungeeScheduler implements TaskScheduler
@@ -69,7 +94,7 @@ index fd0dabcf462acab89baa80cc0f2ee946e7939bcb..a6dbf8b9a484906bc0456767d24daeac
      private final TIntObjectMap<BungeeTask> tasks = TCollections.synchronizedMap( new TIntObjectHashMap<BungeeTask>() );
      private final Multimap<Plugin, BungeeTask> tasksByPlugin = Multimaps.synchronizedMultimap( HashMultimap.<Plugin, BungeeTask>create() );
 +    // IvanCord start
-+    private ExecutorService scheduler = java.util.concurrent.Executors.newCachedThreadPool(
++    public ExecutorService scheduler = java.util.concurrent.Executors.newCachedThreadPool(
 +        new com.mrivanplays.ivancord.scheduler.SchedulerThreadFactory()
 +    );
 +    // IvanCord end

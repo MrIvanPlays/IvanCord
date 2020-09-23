@@ -792,7 +792,7 @@ index 0000000000000000000000000000000000000000..4fc5dc47aacbef26e12902e1f4c668ab
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 0c59b9fbe8ec84984541fe16178ea775ef22a3f9..bf4c4c2fcd86b4fbe73b3dd76a9d5bda00518b68 100644
+index dc21fab440263f16fbf82308b599b13b0e4d50c4..14d6ac621a1acfd83a9e005ed9ea3bfab4b9a0a1 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -4,6 +4,12 @@ import com.google.common.base.Preconditions;
