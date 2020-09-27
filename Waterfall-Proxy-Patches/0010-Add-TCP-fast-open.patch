@@ -5,13 +5,14 @@ Subject: [PATCH] Add TCP fast open
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index d6dd1125c33aff926dca2301c62ab6bb15156c2c..673ec25d1cbac86631e5bf0e2f6243f583545ff9 100644
+index 6f91deb32a5a9191340638431c1480dece5392a8..10cdb48e549bad465c27355b92309b08d6297bf5 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -273,5 +273,19 @@ public interface ProxyConfig
+@@ -271,5 +271,19 @@ public interface ProxyConfig
+      * @return should the player kicked be transferred to lobby
       */
-     boolean isDisableTabListRewrite();
- 
+     boolean isKickToLobby();
++
 +    /**
 +     * Returns whenever the TCP fast open mode is enabled.
 +     *
@@ -25,11 +26,10 @@ index d6dd1125c33aff926dca2301c62ab6bb15156c2c..673ec25d1cbac86631e5bf0e2f6243f5
 +     * @return tcp fast open mode
 +     */
 +    int getTCPFastOpenMode();
-+
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 996c02b848c32e44abadb7ddeff9e59d57bc4449..58a8c3fda38a99e102e07255102d02c7656c2453 100644
+index 238bc3c1f43aa5bd6de34f4355ede2dee818fef3..077dbc9f5ba7375a3ecd9607c515ed72d3e87874 100644
 --- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -1,10 +1,13 @@
@@ -47,9 +47,9 @@ index 996c02b848c32e44abadb7ddeff9e59d57bc4449..58a8c3fda38a99e102e07255102d02c7
  
  @Getter
  public class IvanCordConfiguration extends WaterfallConfiguration
-@@ -13,6 +16,11 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -12,6 +15,11 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+ 
      private boolean kickToLobby = true;
-     private boolean disableTabListRewrite = isOnlineMode();
  
 +    @Accessors(fluent = true)
 +    private boolean isTCPFastOpenEnabled = true;
@@ -59,10 +59,10 @@ index 996c02b848c32e44abadb7ddeff9e59d57bc4449..58a8c3fda38a99e102e07255102d02c7
      @Override
      public void load()
      {
-@@ -21,5 +29,14 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -19,5 +27,14 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+         YamlConfig config = new YamlConfig( new File( "ivancord.yml" ) );
          config.load( false );
          kickToLobby = config.getBoolean( "kick_to_lobby", kickToLobby );
-         disableTabListRewrite = config.getBoolean( "disable_tablist_rewrite", disableTabListRewrite );
 +        isTCPFastOpenEnabled = config.getBoolean( "tcp_fast_open_enabled", isTCPFastOpenEnabled );
 +        getTCPFastOpenMode = setupTFO( config.getInt( "tcp_fast_open_mode", getTCPFastOpenMode ) );
 +    }

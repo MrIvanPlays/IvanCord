@@ -5,24 +5,24 @@ Subject: [PATCH] Configurable brand
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 676e4aa356e12386b65cf76467671afbef757dea..6444a8fb9688d9eb3962a1174a726e04f7801986 100644
+index a83d4b06d63beb5382823ed5675c8ff984eb8b03..33dd8e5c66ea9f5e0d9a24a972c436a08809983b 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -301,5 +301,12 @@ public interface ProxyConfig
+@@ -299,5 +299,12 @@ public interface ProxyConfig
+      * @return type of the reconnect handler
       */
      String getReconnectHandlerType();
- 
++
 +    /**
 +     * Returns the brand proxy will send to the client.
 +     *
 +     * @return brand
 +     */
 +    String getBrand();
-+
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 86657c6f13ca487b42e6e92b126bc70ee6c00252..bbed4c266e5746a6080564d98fc5c0cc143414ea 100644
+index 8da2ff6a2b590968422c23a456552223e2501ba7..3550470cff53c61c3aef1f3397cd931767db3832 100644
 --- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 @@ -6,6 +6,7 @@ import com.mrivanplays.ivancord.ReconnectHandlerType;
@@ -33,15 +33,15 @@ index 86657c6f13ca487b42e6e92b126bc70ee6c00252..bbed4c266e5746a6080564d98fc5c0cc
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.conf.YamlConfig;
  import com.mrivanplays.ivancord.tcpfastopen.TCPFastOpenMode;
-@@ -17,6 +18,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -16,6 +17,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+ 
      private boolean kickToLobby = true;
-     private boolean disableTabListRewrite = isOnlineMode();
      private String reconnectHandlerType = ReconnectHandlerType.YAML.name();
 +    private String brand = "IvanCord by MrIvanPlays";
  
      @Accessors(fluent = true)
      private boolean isTCPFastOpenEnabled = true;
-@@ -37,6 +39,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -35,6 +37,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
          getTCPFastOpenMode = setupTFO( config.getInt( "tcp_fast_open_mode", getTCPFastOpenMode ) );
          shouldCheckForGlobalOpIndependently = config.getBoolean( "should_check_for_global_op_independently", shouldCheckForGlobalOpIndependently );
          reconnectHandlerType = setupReconnectHandlerType( config.getString( "reconnect_handler_type", reconnectHandlerType ) );
@@ -63,10 +63,10 @@ index 0030e9ba992c02dd3ec2a07c6dc0af7ec50dd361..30fc044d46cd51f304e3ec249c32d4e7
                  brand.release();
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index ae1647d1196737f99e033e3088093e67137ef62c..fd1c0df50b1f7366f0be7044a6499328fecb14b5 100644
+index 2e95f5f41082e67dda64f138e18ad08c67159f86..35018310cc952e71a581ca652a4e029ae55316be 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -319,7 +319,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -314,7 +314,7 @@ public class DownstreamBridge extends PacketHandler
              Preconditions.checkState( !serverBrand.contains( bungee.getName() ), "Cannot connect proxy to itself!" );
  
              brand = ByteBufAllocator.DEFAULT.heapBuffer();

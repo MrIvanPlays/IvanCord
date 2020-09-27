@@ -263,7 +263,7 @@ index a5555f6aff10b821c1648b52fb4abc827fd690a9..aeddabe2ee30057af6859d2e32b5a380
  {
  
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index c25f6500eb5eaf210fefdbe4efaf34d26439cb40..794e79a27b1e19a5dd82781b01d3f6f4215ee10a 100644
+index b5750e142b213e07159f31e39254707c906a95de..f67bfe349d2a63ccd6fec3efa0214314e0b2f818 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -42,7 +42,7 @@ public abstract class WaterfallConfiguration extends Configuration { // IvanCord
@@ -272,9 +272,9 @@ index c25f6500eb5eaf210fefdbe4efaf34d26439cb40..794e79a27b1e19a5dd82781b01d3f6f4
  
 -    private boolean disableEntityMetadataRewrite = false;
 +    private boolean disableEntityMetadataRewrite = true; // IvanCord - default to true
+     private boolean disableTabListRewrite = false;
  
      @Override
-     public void load() {
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 index 74edd3481ca19f9f71fe3b1da5938dab8ac17ad3..240ea31aca8c9dbdbde27f9f7306243f240dc13a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
@@ -410,7 +410,7 @@ index 3e320b249888307c3b7c0d7e86d5b46a0e8a87dc..bb53eb5285b815bf256947f558a11680
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 2f0db32e3d6a16ba4a08c13f9e9057b38ca9e4a2..00d9230dd8c25e6e361061d62a71c4d5a096830e 100644
+index 2c2427a6c2acf037cbb84b3a440e92cb64519352..b233d3786372fbc4b20b54108a33eea442391dde 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -42,11 +42,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
@@ -465,8 +465,8 @@ index 2f0db32e3d6a16ba4a08c13f9e9057b38ca9e4a2..00d9230dd8c25e6e361061d62a71c4d5
          con.sendPacket( packet );
      }
  
-@@ -167,6 +178,8 @@ public class DownstreamBridge extends PacketHandler
-         throw CancelSendSignal.INSTANCE; // Always throw because of profile rewriting
+@@ -173,6 +184,8 @@ public class DownstreamBridge extends PacketHandler
+         // Waterfall end
      }
  
 +    // IvanCord start - remove these from handling
@@ -474,7 +474,7 @@ index 2f0db32e3d6a16ba4a08c13f9e9057b38ca9e4a2..00d9230dd8c25e6e361061d62a71c4d5
      @Override
      public void handle(ScoreboardObjective objective) throws Exception
      {
-@@ -268,6 +281,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -274,6 +287,8 @@ public class DownstreamBridge extends PacketHandler
              }
          }
      }
@@ -483,7 +483,7 @@ index 2f0db32e3d6a16ba4a08c13f9e9057b38ca9e4a2..00d9230dd8c25e6e361061d62a71c4d5
  
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
-@@ -677,6 +692,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -683,6 +698,8 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -492,7 +492,7 @@ index 2f0db32e3d6a16ba4a08c13f9e9057b38ca9e4a2..00d9230dd8c25e6e361061d62a71c4d5
      // Waterfall start
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
-@@ -704,6 +721,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -710,6 +727,7 @@ public class DownstreamBridge extends PacketHandler
          return entityId;
      }
      // Waterfall end
