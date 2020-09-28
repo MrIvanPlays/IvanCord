@@ -650,7 +650,7 @@ index 0000000000000000000000000000000000000000..10a0cd4a3f282acf033fcd02e9772336
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..09000bf62ecf9ecb8991cba18cb2e3e4ca8fce56
+index 0000000000000000000000000000000000000000..c358613703df96101810aee906556c27d65d1358
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/Legacy2BrigadierCommandTransformer.java
 @@ -0,0 +1,77 @@
@@ -678,12 +678,12 @@ index 0000000000000000000000000000000000000000..09000bf62ecf9ecb8991cba18cb2e3e4
 +    static BrigadierCommand transform(Plugin plugin, Command command)
 +    {
 +        Predicate<CommandSender> requirement = command::hasPermission;
-+        com.mojang.brigadier.Command<CommandSender> executes = (context) ->
++        com.mojang.brigadier.Command<CommandSender> executes = ( context ) ->
 +        {
 +            String input = context.getInput();
 +            if ( input.indexOf( ' ' ) == -1 )
 +            {
-+                command.execute( context.getSource(), input, new String[0] );
++                command.execute( context.getSource(), input.replace( "/", "" ), new String[0] );
 +            } else
 +            {
 +                String[] inputSplit = input.split( " " );
@@ -695,7 +695,7 @@ index 0000000000000000000000000000000000000000..09000bf62ecf9ecb8991cba18cb2e3e4
 +            // but that's the nature of bungee's command api...
 +            return 1;
 +        };
-+        SuggestionProvider<CommandSender> suggests = (context, builder) ->
++        SuggestionProvider<CommandSender> suggests = ( context, builder ) ->
 +        {
 +            if ( command instanceof TabExecutor )
 +            {
