@@ -114,7 +114,7 @@ index 9e180c30c05d946e892ae9fbd4d7d796e202d5d4..2c2427a6c2acf037cbb84b3a440e92cb
          throw CancelSendSignal.INSTANCE;
      }
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 6e3ef0a47beb55f997e2ea6c59bb887a309533f9..c6612b3f90697e07c67fc6e15570c2990d84907a 100644
+index 2a79e62b65a6e1f964793f732836a01bb6ee4ec4..e838024539689e7ff1109d116434ddc64c9e088f 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
 @@ -38,3 +38,4 @@ you_got_summoned=\u00a76Summoned to {0} by {1}

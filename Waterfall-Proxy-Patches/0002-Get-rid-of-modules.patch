@@ -5,7 +5,7 @@ Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index b305cbad9b01ee4091950ec243472536a9ecb6e4..7a5c3544a5ea536c574ab49dfc48589718df6c05 100644
+index 104ad79e6608ec8cd23c326a8640405b6bbaeb24..8cbacf28e55be0014f23d5819dc3bd403b1671f4 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -38,7 +38,9 @@
