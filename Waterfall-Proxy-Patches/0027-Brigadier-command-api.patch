@@ -107,10 +107,10 @@ index 0000000000000000000000000000000000000000..c4769518b0e957b5365983434adcfca8
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..10a0cd4a3f282acf033fcd02e977233609898432
+index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116f4153ac4
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
-@@ -0,0 +1,537 @@
+@@ -0,0 +1,527 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.base.Preconditions;
@@ -290,21 +290,11 @@ index 0000000000000000000000000000000000000000..10a0cd4a3f282acf033fcd02e9772336
 +        }
 +        Preconditions.checkNotNull( sender, "sender" );
 +        commandName = commandName.toLowerCase();
-+        commandsLock.lock();
-+        try
++        if ( dispatcher.getRoot().getChild( commandName ) != null )
 +        {
-+            for ( String name : commandsTable.columnKeySet() )
-+            {
-+                if ( name.toLowerCase().equalsIgnoreCase( commandName ) )
-+                {
-+                    return !( sender instanceof ProxiedPlayer ) || !proxy.getDisabledCommands().contains( commandName );
-+                }
-+            }
-+            return false;
-+        } finally
-+        {
-+            commandsLock.unlock();
++            return !( sender instanceof ProxiedPlayer ) || !proxy.getDisabledCommands().contains( commandName );
 +        }
++        return false;
 +    }
 +
 +    public void unregister(BrigadierCommand command)
