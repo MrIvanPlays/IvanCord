@@ -107,20 +107,21 @@ index 0000000000000000000000000000000000000000..c4769518b0e957b5365983434adcfca8
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116f4153ac4
+index 0000000000000000000000000000000000000000..eedc106f583fe54b3dc7ce804e9cfb40487462e5
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
-@@ -0,0 +1,527 @@
+@@ -0,0 +1,519 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.base.Preconditions;
 +import com.google.common.collect.HashBasedTable;
++import com.google.common.collect.Lists;
 +import com.google.common.collect.Table;
 +import com.mojang.brigadier.CommandDispatcher;
 +import com.mojang.brigadier.ParseResults;
 +import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 +import com.mojang.brigadier.exceptions.CommandSyntaxException;
-+import com.mojang.brigadier.suggestion.IntegerSuggestion;
++import com.mojang.brigadier.suggestion.Suggestion;
 +import com.mojang.brigadier.suggestion.Suggestions;
 +import com.mojang.brigadier.tree.CommandNode;
 +import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -138,7 +139,6 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +import java.util.concurrent.locks.Lock;
 +import java.util.concurrent.locks.ReentrantLock;
 +import java.util.logging.Level;
-+import java.util.stream.Collectors;
 +import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.CommandSender;
 +import net.md_5.bungee.api.ProxyServer;
@@ -347,12 +347,15 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +        try
 +        {
 +            Map<String, Command> commands = commandsTable.rowMap().remove( main );
-+            for ( String alias : commands.keySet() )
++            if ( commands != null )
 +            {
-+                CommandNode<CommandSender> node = dispatcher.getRoot().getChild( alias.toLowerCase() );
-+                if ( node != null )
++                for ( String alias : commands.keySet() )
 +                {
-+                    dispatcher.getRoot().getChildren().remove( node );
++                    CommandNode<CommandSender> node = dispatcher.getRoot().getChild( alias.toLowerCase() );
++                    if ( node != null )
++                    {
++                        dispatcher.getRoot().getChildren().remove( node );
++                    }
 +                }
 +            }
 +        } finally
@@ -377,8 +380,8 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +            }
 +        } else
 +        {
-+            String[] inputSplit = input.split( " " );
-+            String commandName = inputSplit[0].toLowerCase();
++            int firstSpace = input.indexOf( ' ' );
++            String commandName = input.substring( 0, firstSpace );
 +            if ( !isExecutable( commandName, sender ) )
 +            {
 +                return 0;
@@ -398,14 +401,8 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +        {
 +            if ( sender instanceof ProxiedPlayer )
 +            {
-+                String commandName;
-+                if ( input.indexOf( ' ' ) == -1 )
-+                {
-+                    commandName = input;
-+                } else
-+                {
-+                    commandName = input.split( " " )[0];
-+                }
++                int firstSpace = input.indexOf( ' ' );
++                String commandName = firstSpace == -1 ? input.toLowerCase() : input.substring( 0, firstSpace );
 +                CommandNode<CommandSender> node = dispatcher.getRoot().getChild( commandName.toLowerCase() );
 +                if ( node != null && node.getRequirement() != null )
 +                {
@@ -423,7 +420,7 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +                        proxy.getLogger().log( Level.WARNING, "Requirement test for command node " + node.getName() + " encountered an exception", e1 );
 +
 +                        String[] args;
-+                        if ( input.indexOf( ' ' ) == -1 )
++                        if ( firstSpace == -1 )
 +                        {
 +                            args = new String[0];
 +                        } else
@@ -449,12 +446,12 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +            String[] args;
 +            if ( input.indexOf( ' ' ) == -1 )
 +            {
-+                commandName = input;
++                commandName = input.toLowerCase();
 +                args = new String[0];
 +            } else
 +            {
 +                String[] inputSplit = input.split( " " );
-+                commandName = inputSplit[0];
++                commandName = inputSplit[0].toLowerCase();
 +                args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
 +            }
 +            Command command = getCommand( commandName );
@@ -493,7 +490,7 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +            {
 +                return Collections.emptyList();
 +            }
-+            if ( !isExecutable( input.split( " " )[0].toLowerCase(), sender ) )
++            if ( !isExecutable( input.substring( 0, input.indexOf( ' ' ) ), sender ) )
 +            {
 +                return Collections.emptyList();
 +            }
@@ -502,16 +499,7 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +        {
 +            ParseResults<CommandSender> results = dispatcher.parse( input, sender );
 +            return dispatcher.getCompletionSuggestions( results )
-+                .thenApply( suggestions -> suggestions.getList().stream().map( suggestion ->
-+                {
-+                    if ( suggestion instanceof IntegerSuggestion )
-+                    {
-+                        return Integer.toString( ( (IntegerSuggestion) suggestion ).getValue() );
-+                    } else
-+                    {
-+                        return suggestion.getText();
-+                    }
-+                } ).collect( Collectors.toList() ) ).join();
++                .thenApply( suggestions -> Lists.transform( suggestions.getList(), Suggestion::getText ) ).join();
 +        } catch ( Throwable e )
 +        {
 +            // plugins being plugins
@@ -526,7 +514,7 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +            return Collections.emptyList();
 +        }
 +    }
-+    
++
 +    public CompletableFuture<Suggestions> complete(CommandSender sender, String input)
 +    {
 +        Preconditions.checkNotNull( sender, "sender" );
@@ -534,8 +522,7 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +        {
 +            return Suggestions.empty();
 +        }
-+        String[] inputSplit = input.split( " " );
-+        String commandName = inputSplit[0].toLowerCase();
++        String commandName = input.substring( 0, input.indexOf( ' ' ) );
 +        if ( !isExecutable( commandName, sender ) )
 +        {
 +            return Suggestions.empty();
@@ -550,7 +537,12 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +            sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_completing" ) ) );
 +            proxy.getLogger().log( Level.WARNING, "Error in dispatching command", e );
 +
-+            String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++            String[] args = new String[0];
++            if ( input.indexOf( ' ' ) != -1 )
++            {
++                String[] inputSplit = input.split( " " );
++                args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++            }
 +            Command command = getCommand( commandName );
 +            pluginManager.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( e, command, sender, args ) ) );
 +            return Suggestions.empty();
@@ -569,7 +561,7 @@ index 0000000000000000000000000000000000000000..ec27c5e0e8e5ad1dbbc288ca97914116
 +            return Collections.emptyList();
 +        } else if ( input.indexOf( ' ' ) != -1 )
 +        {
-+            if ( !isExecutable( input.split( " " )[0].toLowerCase(), sender ) )
++            if ( !isExecutable( input.substring( 0, input.indexOf( ' ' ) ), sender ) )
 +            {
 +                return Collections.emptyList();
 +            }
@@ -1066,7 +1058,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..95b88d7516b7f57adcbbf6fe15a799fb
  
          @Data
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 35018310cc952e71a581ca652a4e029ae55316be..b7801e898ea26bc8fbc642dbf96f64de2a20405b 100644
+index 35018310cc952e71a581ca652a4e029ae55316be..a640e0f024528ecd2102f57f03a420db64eacc4e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -6,13 +6,16 @@ import com.google.common.collect.Lists;
@@ -1094,7 +1086,7 @@ index 35018310cc952e71a581ca652a4e029ae55316be..b7801e898ea26bc8fbc642dbf96f64de
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.api.chat.ComponentBuilder; // IvanCord
  import net.md_5.bungee.api.chat.BaseComponent;
-@@ -643,6 +647,80 @@ public class DownstreamBridge extends PacketHandler
+@@ -643,6 +647,65 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(TabCompleteResponse tabCompleteResponse) throws Exception
      {
@@ -1124,15 +1116,7 @@ index 35018310cc952e71a581ca652a4e029ae55316be..b7801e898ea26bc8fbc642dbf96f64de
 +                commands = new ArrayList<>();
 +                for ( Suggestion suggestion : fromEvent.getList() )
 +                {
-+                    String value;
-+                    if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
-+                    {
-+                        value = Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
-+                    } else
-+                    {
-+                        value = suggestion.getText();
-+                    }
-+                    commands.add( value );
++                    commands.add( suggestion.getText() );
 +                }
 +                TabCompleteResponseEvent tabCompleteEvent = new TabCompleteResponseEvent( server, con, commands );
 +                if ( !bungee.getPluginManager().callEvent( tabCompleteEvent ).isCancelled() )
@@ -1149,14 +1133,7 @@ index 35018310cc952e71a581ca652a4e029ae55316be..b7801e898ea26bc8fbc642dbf96f64de
 +                    List<Suggestion> suggestions = new ArrayList<>();
 +                    for ( Suggestion suggestion : fromEvent.getList() )
 +                    {
-+                        String value;
-+                        if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
-+                        {
-+                            value = Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
-+                        } else
-+                        {
-+                            value = suggestion.getText();
-+                        }
++                        String value = suggestion.getText();
 +                        for ( String update : updated )
 +                        {
 +                            if ( update.toLowerCase().equalsIgnoreCase( value.toLowerCase() ) )
@@ -1175,7 +1152,7 @@ index 35018310cc952e71a581ca652a4e029ae55316be..b7801e898ea26bc8fbc642dbf96f64de
          List<String> commands = tabCompleteResponse.getCommands();
          if ( commands == null )
          {
-@@ -683,6 +761,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -683,6 +746,7 @@ public class DownstreamBridge extends PacketHandler
  
              con.unsafe().sendPacket( tabCompleteResponse );
          }
@@ -1183,7 +1160,7 @@ index 35018310cc952e71a581ca652a4e029ae55316be..b7801e898ea26bc8fbc642dbf96f64de
  
          throw CancelSendSignal.INSTANCE;
      }
-@@ -745,6 +824,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -745,6 +809,8 @@ public class DownstreamBridge extends PacketHandler
      {
          boolean modified = false;
  
@@ -1192,7 +1169,7 @@ index 35018310cc952e71a581ca652a4e029ae55316be..b7801e898ea26bc8fbc642dbf96f64de
          // Waterfall start
          Map<String, Command> commandMap = new HashMap<>();
          for ( Map.Entry<String, Command> commandEntry : bungee.getPluginManager().getCommands() ) {
-@@ -774,6 +855,43 @@ public class DownstreamBridge extends PacketHandler
+@@ -774,6 +840,43 @@ public class DownstreamBridge extends PacketHandler
                  modified = true;
              }
          }
@@ -1236,7 +1213,7 @@ index 35018310cc952e71a581ca652a4e029ae55316be..b7801e898ea26bc8fbc642dbf96f64de
  
          if ( modified )
          {
-@@ -782,6 +900,68 @@ public class DownstreamBridge extends PacketHandler
+@@ -782,6 +885,68 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -1306,10 +1283,10 @@ index 35018310cc952e71a581ca652a4e029ae55316be..b7801e898ea26bc8fbc642dbf96f64de
      @Override
      public void handle(PlayerPosition pac)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 1d1c89b58beca05802d970f997484f82a1de2331..611c443cc29ecf6b96a85373ce81bcd4615d1762 100644
+index 1d1c89b58beca05802d970f997484f82a1de2331..4603408e1af16a2d8e71b08dbc294feb7cc8302a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -193,6 +193,102 @@ public class UpstreamBridge extends PacketHandler
+@@ -193,6 +193,87 @@ public class UpstreamBridge extends PacketHandler
          }
  
          // Waterfall end - tab limiter
@@ -1361,15 +1338,7 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..611c443cc29ecf6b96a85373ce81bcd4
 +                List<String> suggestionsList = new ArrayList<>();
 +                for ( Suggestion suggestion : suggestionsResult.getList() )
 +                {
-+                    String value;
-+                    if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
-+                    {
-+                        value = Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
-+                    } else
-+                    {
-+                        value = suggestion.getText();
-+                    }
-+                    suggestionsList.add( value );
++                    suggestionsList.add( suggestion.getText() );
 +                }
 +                TabCompleteEvent bungeeEvent =
 +                    bungee.getPluginManager().callEvent( new TabCompleteEvent( con, con.getServer(), tabComplete.getCursor(), suggestionsList ) );
@@ -1384,14 +1353,7 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..611c443cc29ecf6b96a85373ce81bcd4
 +                    List<Suggestion> suggestionList = new ArrayList<>();
 +                    for ( Suggestion suggestion : suggestionsResult.getList() )
 +                    {
-+                        String suggestionText;
-+                        if ( suggestion instanceof com.mojang.brigadier.suggestion.IntegerSuggestion )
-+                        {
-+                            suggestionText = Integer.toString( ( (com.mojang.brigadier.suggestion.IntegerSuggestion) suggestion ).getValue() );
-+                        } else
-+                        {
-+                            suggestionText = suggestion.getText();
-+                        }
++                        String suggestionText = suggestion.getText();
 +                        for ( String result : results )
 +                        {
 +                            if ( suggestionText.toLowerCase().equalsIgnoreCase( result.toLowerCase() ) )
@@ -1412,7 +1374,7 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..611c443cc29ecf6b96a85373ce81bcd4
          List<String> suggestions = new ArrayList<>();
  
          if ( tabComplete.getCursor().startsWith( "/" ) )
-@@ -232,6 +328,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -232,6 +313,7 @@ public class UpstreamBridge extends PacketHandler
              }
              throw CancelSendSignal.INSTANCE;
          }
