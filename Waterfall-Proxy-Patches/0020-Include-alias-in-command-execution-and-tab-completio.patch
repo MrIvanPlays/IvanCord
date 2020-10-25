@@ -5,10 +5,10 @@ Subject: [PATCH] Include alias in command execution and tab completion
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
-index eba3040aef98ef4932cbfe3870fa9b694c4ca208..7215ae7c2cac77ac4a2b8208514a915b59e197cf 100644
+index b45663279d13bfc903433afaef38954ca6952be7..b1e818a0c3b9fb2f8cf479eb66142df9f9442a0a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
-@@ -49,8 +49,27 @@ public abstract class Command
+@@ -53,8 +53,27 @@ public abstract class Command
       *
       * @param sender the executor of this command
       * @param args arguments used to invoke this command
@@ -38,7 +38,7 @@ index eba3040aef98ef4932cbfe3870fa9b694c4ca208..7215ae7c2cac77ac4a2b8208514a915b
      /**
       * Check if this command can be executed by the given sender.
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index a22709e21ab582461da7059e74f520ca23bc91e6..0c59b9fbe8ec84984541fe16178ea775ef22a3f9 100644
+index 0b9561fec6fa5d7d652fb3f71fafd5384e7fce12..dc8f9a0d6008c743c2cde0a05dd9a4a6e9e20f74 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -199,7 +199,7 @@ public final class PluginManager

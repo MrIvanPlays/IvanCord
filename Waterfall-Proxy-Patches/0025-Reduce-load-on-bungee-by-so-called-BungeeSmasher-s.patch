@@ -123,7 +123,7 @@ index fde626b1ac777f14600eb052f36cb4b11fa8044c..e64ea66b1e7de49834bed0b7d195e084
      @Test
      public void doTest() throws DataFormatException
 diff --git a/pom.xml b/pom.xml
-index 8cbacf28e55be0014f23d5819dc3bd403b1671f4..cdfa312837db06e64aa5235092d1754eccc59c58 100644
+index 9ac18c189e699ef825a25fc4dd0443a7cc2f64c9..59f26a5ef95fa7b3355ff469a6cb74e07ba8e421 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -45,6 +45,7 @@
@@ -358,7 +358,7 @@ index ff6bb8c16d4c399cbbf933e4b706fd9bf17127b5..2f41e77085a11ca5004dafc78cc5f333
      static
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 8151c1eb8af4b0ad527e33e228eb25bf44a295cc..dbac2e7d3a8e6929fef1e4331ecca3fa77657631 100644
+index f8a5e0a84f95c241e2b389251e2aaaa439e4c2df..b8445e75e1c0d0f4585afea6d523422077be64f8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -416,7 +416,7 @@ public final class UserConnection implements ProxiedPlayer

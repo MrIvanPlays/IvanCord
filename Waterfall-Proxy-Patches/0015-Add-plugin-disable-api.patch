@@ -81,7 +81,7 @@ index 980445556f91b11498a71a9a08755d6aee92e7a6..a8555de3637e7a884c5af015f98bd792
       * Called by the loader to initialize the fields in this plugin.
       *
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 25e370a760613cfbcdc900f30df6108486a41914..f442091e2ce13a77df24398b592b75d3d31a7a6c 100644
+index 0f8b5009bd1fa1a0d934b5bd15fb3f967dd90e95..7e1c5be8516bf342e99b46442489a03f7650488b 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -23,12 +23,17 @@ import java.util.Set;

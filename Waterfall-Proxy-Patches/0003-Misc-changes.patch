@@ -33,10 +33,10 @@ index 2adcd5739b6af4e32389f69273386cb3cb861c66..b99fb0e074424ba128d468c0646a516d
      }
  
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index f7459860f9da503cdafceacb31ecd4dd0e9346d2..b7b89c421f4904c199a84282a8814200de1e1071 100644
+index 6e908b741a7c0054dd248e37776cfb5fac126316..c42285e687438908d276512af18b08df8ea89eb8 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -326,6 +326,18 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -342,6 +342,18 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      void sendTitle(Title title);
  
@@ -56,7 +56,7 @@ index f7459860f9da503cdafceacb31ecd4dd0e9346d2..b7b89c421f4904c199a84282a8814200
       * Gets whether this player is using a FML client.
       * <p>
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 431d4d6f9b70047350536db36e30be65de4a1629..25e370a760613cfbcdc900f30df6108486a41914 100644
+index 969533dfbdb90bb0786d725327e343f3c5257ab9..0f8b5009bd1fa1a0d934b5bd15fb3f967dd90e95 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -407,9 +407,9 @@ public final class PluginManager
@@ -248,7 +248,7 @@ index b486f2aaa919a049629ec58aef52bebc15c15ecb..74edd3481ca19f9f71fe3b1da5938dab
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b01252455e6330e7e861e58dc21e4d16256f3589..3e320b249888307c3b7c0d7e86d5b46a0e8a87dc 100644
+index 7ec119ea0b8a6e5ec596b1e8957fbb610c91169c..d7ef01a5f96f82399bf42ed0b7fb441ef0f2e643 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -319,7 +319,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -279,7 +279,7 @@ index b01252455e6330e7e861e58dc21e4d16256f3589..3e320b249888307c3b7c0d7e86d5b46a
          if ( !ch.isClosing() )
          {
              bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
-@@ -719,6 +722,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -727,6 +730,14 @@ public final class UserConnection implements ProxiedPlayer
          title.send( this );
      }
  

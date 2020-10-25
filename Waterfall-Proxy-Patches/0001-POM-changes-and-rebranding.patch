@@ -5,7 +5,7 @@ Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 87b279b87aa7cf552d58d3af28e2c78cde62fe10..af4ba6bbdf1d6e6e69ba5d10cea349b5d487b2bf 100644
+index 10db38b73516e9749af53f1503bc379189eb914d..a8c1ba8a11178c21f58f0852e0291070ca1a0174 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -64,7 +64,7 @@ index 87b279b87aa7cf552d58d3af28e2c78cde62fe10..af4ba6bbdf1d6e6e69ba5d10cea349b5
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index a43db9076f3e664d34f30bec07315c7df4e77a9b..f61544f32c0d37511b66d501842264ca6e5514f7 100644
+index 0a8903937fa7087c582d91a2cb8bd2457dce887f..2718228e0f4962775acd71bba40918e60810b72a 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,18 @@
@@ -154,7 +154,7 @@ index 8523d99a48e84e25042175c2ebbfe99ce13efcd9..93049a557daded008f31f5cefbf758ae
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 5f4f2b3306eeb9f067dd4bab26a65ee5926c154e..4e117b42cffa568cad8d8c04f11765abc9d987a8 100644
+index 099a4643da2ea64665a8359b5f1db229fd09873b..64c7b47f0e3be93b5c3801038f1897a3a085cc2d 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,18 @@
@@ -308,7 +308,7 @@ index ec465dd38ef0bcbf6f2b312319b9d581e2d1f595..857c91f7d85230a1af771dbc59b0e6f2
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 3ddd74d4a83d582dafa491cc9439f8bab645ca67..104ad79e6608ec8cd23c326a8640405b6bbaeb24 100644
+index fd03c6405a859f92b187c2066270f9a3e265b17c..897805b935bcd4b13f1e97f45f16bcc5874666d9 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@

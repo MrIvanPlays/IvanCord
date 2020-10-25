@@ -119,7 +119,7 @@ index 0000000000000000000000000000000000000000..5ef58ad8ee5a67f84918be06f6b448e4
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 6a4973fed3127bd4eb2a4207204b9df2d1a3af0b..b4382724e5f0d892466aa068e5040016cc63423b 100644
+index 0e479d51e9a2b869f88c7ffda901410d3262b1ed..d169f5e6530fd1a01c410c91f79ff638f5a99b86 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -14,6 +14,7 @@ import net.md_5.bungee.api.config.ServerInfo;
@@ -130,7 +130,7 @@ index 6a4973fed3127bd4eb2a4207204b9df2d1a3af0b..b4382724e5f0d892466aa068e5040016
  
  /**
   * Represents a player who's connection is being connected to somewhere else,
-@@ -397,4 +398,19 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -413,4 +414,19 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      @Deprecated // IvanCord
      Scoreboard getScoreboard();
@@ -371,7 +371,7 @@ index 240ea31aca8c9dbdbde27f9f7306243f240dc13a..7b74dd28fabbd6d6bbd71957f619d30d
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e73ac8210f954276d5b916faa9baf9e36bf12e4f..a3ab808d89dffd5cc567696f2595af3660e5dbe3 100644
+index e13b65664b536585b647c9495a412396cb503d89..4e8530623aba47ff639d3dd560cc40461184e954 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -60,6 +60,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
@@ -391,7 +391,7 @@ index e73ac8210f954276d5b916faa9baf9e36bf12e4f..a3ab808d89dffd5cc567696f2595af36
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -782,6 +785,31 @@ public final class UserConnection implements ProxiedPlayer
+@@ -790,6 +793,31 @@ public final class UserConnection implements ProxiedPlayer
          return serverSentScoreboard;
      }
  

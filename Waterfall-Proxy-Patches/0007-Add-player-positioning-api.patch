@@ -110,7 +110,7 @@ index 0000000000000000000000000000000000000000..cf92ce1221e8d7b19f7b4f12e6e1d639
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 5e7b51f80009790fc69776ed7207a90705ec1f67..6a4973fed3127bd4eb2a4207204b9df2d1a3af0b 100644
+index 074c6505e09babf1ae5a005aee5eb6032a59e850..0e479d51e9a2b869f88c7ffda901410d3262b1ed 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -13,6 +13,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
@@ -121,7 +121,7 @@ index 5e7b51f80009790fc69776ed7207a90705ec1f67..6a4973fed3127bd4eb2a4207204b9df2
  
  /**
   * Represents a player who's connection is being connected to somewhere else,
-@@ -268,6 +269,16 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -284,6 +285,16 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      byte getViewDistance();
  
@@ -256,7 +256,7 @@ index 0000000000000000000000000000000000000000..f23fe50e8c9a22ce934f5797f9e75fb2
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index bb53eb5285b815bf256947f558a1168086e90ee9..e73ac8210f954276d5b916faa9baf9e36bf12e4f 100644
+index 7e56d62f9c8467700bce88dd5bbe122513f5ebe9..e13b65664b536585b647c9495a412396cb503d89 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -67,6 +67,7 @@ import net.md_5.bungee.tab.ServerUnique;
@@ -278,7 +278,7 @@ index bb53eb5285b815bf256947f558a1168086e90ee9..e73ac8210f954276d5b916faa9baf9e3
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -640,6 +645,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -648,6 +653,12 @@ public final class UserConnection implements ProxiedPlayer
      {
          return ( settings != null ) ? settings.getViewDistance() : 10;
      }

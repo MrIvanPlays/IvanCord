@@ -9,10 +9,10 @@ All score and team packets are not handled by the proxy in no way. They
 dont either register!
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index b7b89c421f4904c199a84282a8814200de1e1071..5e7b51f80009790fc69776ed7207a90705ec1f67 100644
+index c42285e687438908d276512af18b08df8ea89eb8..074c6505e09babf1ae5a005aee5eb6032a59e850 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -382,6 +382,8 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -398,6 +398,8 @@ public interface ProxiedPlayer extends Connection, CommandSender
       * Get the {@link Scoreboard} that belongs to this player.
       *
       * @return this player's {@link Scoreboard}
@@ -341,7 +341,7 @@ index 74edd3481ca19f9f71fe3b1da5938dab8ac17ad3..240ea31aca8c9dbdbde27f9f7306243f
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 3e320b249888307c3b7c0d7e86d5b46a0e8a87dc..bb53eb5285b815bf256947f558a1168086e90ee9 100644
+index d7ef01a5f96f82399bf42ed0b7fb441ef0f2e643..7e56d62f9c8467700bce88dd5bbe122513f5ebe9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -42,7 +42,9 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -389,7 +389,7 @@ index 3e320b249888307c3b7c0d7e86d5b46a0e8a87dc..bb53eb5285b815bf256947f558a11680
  
          this.displayName = name;
  
-@@ -752,14 +765,19 @@ public final class UserConnection implements ProxiedPlayer
+@@ -760,14 +773,19 @@ public final class UserConnection implements ProxiedPlayer
      }
  
      @Override
