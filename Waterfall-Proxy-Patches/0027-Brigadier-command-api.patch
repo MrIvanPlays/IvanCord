@@ -769,7 +769,7 @@ index 0000000000000000000000000000000000000000..4fc5dc47aacbef26e12902e1f4c668ab
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/util/Constants.java b/api/src/main/java/com/mrivanplays/ivancord/api/util/Constants.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..e8236c45f3c92fa0b0c6f9ee6651e0798b6bc8fc
+index 0000000000000000000000000000000000000000..cf484b95c9aea0ee9fe15714941d6fc561852459
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/util/Constants.java
 @@ -0,0 +1,7 @@
