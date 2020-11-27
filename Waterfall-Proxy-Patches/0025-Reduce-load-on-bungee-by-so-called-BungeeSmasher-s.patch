@@ -746,17 +746,19 @@ index 0000000000000000000000000000000000000000..277f71c3181f9b110188c435bc38bb23
 \ No newline at end of file
 diff --git a/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelDiscardHandler.java b/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelDiscardHandler.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..da84dcb977f7ebc645b033360bf868c3efedb59f
+index 0000000000000000000000000000000000000000..b4c425e9d1f4c1d9ebbc05fddba9e4407928c9fc
 --- /dev/null
 +++ b/shared/src/main/java/com/mrivanplays/ivancord/shared/ChannelDiscardHandler.java
-@@ -0,0 +1,34 @@
+@@ -0,0 +1,36 @@
 +package com.mrivanplays.ivancord.shared;
 +
++import io.netty.channel.ChannelHandler;
 +import io.netty.channel.ChannelHandlerContext;
 +import io.netty.channel.ChannelOutboundHandlerAdapter;
 +import io.netty.channel.ChannelPromise;
 +import io.netty.util.ReferenceCountUtil;
 +
++@ChannelHandler.Sharable
 +public class ChannelDiscardHandler extends ChannelOutboundHandlerAdapter
 +{
 +
