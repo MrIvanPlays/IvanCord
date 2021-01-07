@@ -395,10 +395,10 @@ index 37fe6ac73504cee4ba7fc336d6623b5c833c6d1d..3185204d5b5499dd68fc9315f959f91e
          } else
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 0cfa805c511b9ea5ca70cc8655a81dcd5159d0c7..96c940c11e82ce8dc079de8125dae7423c3e46c0 100644
+index 887a073f79156ad426e2877bfca31a15d48d0ad8..ef811eb9e91f718b402ff05ddabe9fe3a9590d95 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -137,9 +137,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -140,9 +140,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          if ( canSendKickMessage() )
          {
              disconnect( ChatColor.RED + Util.exception( t ) );
@@ -410,7 +410,7 @@ index 0cfa805c511b9ea5ca70cc8655a81dcd5159d0c7..96c940c11e82ce8dc079de8125dae742
          }
          // IvanCord start - implement LoginCancelledEvent
          new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY_EXCEPTION ).callEvent();
-@@ -151,7 +153,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -154,7 +156,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -419,7 +419,7 @@ index 0cfa805c511b9ea5ca70cc8655a81dcd5159d0c7..96c940c11e82ce8dc079de8125dae742
          }
      }
  
-@@ -312,6 +314,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -315,6 +317,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              handshake.setHost( split[0] );
              extraDataInHandshake = "\0" + split[1];
          }
@@ -427,7 +427,7 @@ index 0cfa805c511b9ea5ca70cc8655a81dcd5159d0c7..96c940c11e82ce8dc079de8125dae742
  
          // SRV records can end with a . depending on DNS / client.
          if ( handshake.getHost().endsWith( "." ) )
-@@ -356,7 +359,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -359,7 +362,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  break;
              default:
@@ -436,7 +436,7 @@ index 0cfa805c511b9ea5ca70cc8655a81dcd5159d0c7..96c940c11e82ce8dc079de8125dae742
          }
      }
  
-@@ -520,6 +523,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -531,6 +534,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              uniqueId = offlineId;
          }
@@ -444,7 +444,7 @@ index 0cfa805c511b9ea5ca70cc8655a81dcd5159d0c7..96c940c11e82ce8dc079de8125dae742
  
          Callback<LoginEvent> complete = new Callback<LoginEvent>()
          {
-@@ -691,4 +695,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -702,4 +706,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          return !ch.isClosed();
      }

@@ -6,10 +6,10 @@ Subject: [PATCH] Fix infinite relay message accumulation
 Co-authored-by: Ivan Pekov <ivan@mrivanplays.com>
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 96c940c11e82ce8dc079de8125dae7423c3e46c0..a99be0dc5d4e428d0bf5af675cbab1d1d0727233 100644
+index ef811eb9e91f718b402ff05ddabe9fe3a9590d95..0ab2d95b07ee0080c56db45c6d219400e3fa56cf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -161,7 +161,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -164,7 +164,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      public void handle(PluginMessage pluginMessage) throws Exception
      {
          // TODO: Unregister?
