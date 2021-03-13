@@ -22,10 +22,10 @@ index 10cdb48e549bad465c27355b92309b08d6297bf5..84b656f9b6d5541bb4964175d4b81d09
      // IvanCord end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index d169f5e6530fd1a01c410c91f79ff638f5a99b86..b034f5ad610a1eca0321bb35956f7a575cf67ebb 100644
+index 7100fda5cd14fc12e0efdd2d4ff75abfd5a571e7..9d9ea7d5f090b6a97efea0595e568ce38a594157 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -429,4 +429,22 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -428,4 +428,22 @@ public interface ProxiedPlayer extends Connection, CommandSender
      void playSound(Position position, String sound, SoundCategory category, float volume, float pitch);
  
      // IvanCord end

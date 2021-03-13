@@ -123,7 +123,7 @@ index fde626b1ac777f14600eb052f36cb4b11fa8044c..e64ea66b1e7de49834bed0b7d195e084
      @Test
      public void doTest() throws DataFormatException
 diff --git a/pom.xml b/pom.xml
-index 9ac18c189e699ef825a25fc4dd0443a7cc2f64c9..59f26a5ef95fa7b3355ff469a6cb74e07ba8e421 100644
+index ec5190a2f19522e4ea3cd497d5193f21f2d3d23e..3f9569bd41cc8ec4a008dbd5ffeab1a2308cb53d 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -45,6 +45,7 @@
@@ -135,7 +135,7 @@ index 9ac18c189e699ef825a25fc4dd0443a7cc2f64c9..59f26a5ef95fa7b3355ff469a6cb74e0
  
      <scm>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index f86679f6e31d2084520fe1dd3830af355e035d99..452aee05d3bdd522c556a8f557cc6775ccacb9ad 100644
+index c680bde9cf314696dd05801f6658a05269fd6aa2..2e756690b4db953ab5d88e7be2e66f800cd80d73 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -63,5 +63,13 @@
@@ -165,10 +165,10 @@ index f20104a23600f34c10f020ab7c055a5ea371e254..951adc0d4298e4e2a6be06d8c9fd0865
      private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index f6e4859feb6091b2b3b4be06fe43449c36817cfe..7cfd8f7223a735942ad74e74a1e6d4e0d18eb203 100644
+index 31a954950de2f1bbb039b5d95de86df1c517d165..7aabffcd20768938972468bc4bd3cfd0e5e4c322 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -154,8 +154,13 @@ public abstract class DefinedPacket
+@@ -153,8 +153,13 @@ public abstract class DefinedPacket
          int out = 0;
          int bytes = 0;
          byte in;
@@ -204,10 +204,10 @@ index e2e34a34605e9168294b01362d1b46ecebbac80b..b3f96f82eaf2a994bbc267346d505caf
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index c3c1ba8083947c3011154acd5aa7a19cc93406c7..31c8738ac24beff3b253fb61d93000bcb602760f 100644
+index 6d00c28a92cfec816890b35850d9aef150433271..04a8d3799acaa2b4c3f5dc9b0634fff65462bdc4 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-@@ -54,17 +54,42 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+@@ -54,6 +54,13 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              // Waterfall end
  
              int packetId = DefinedPacket.readVarInt( in );
@@ -221,9 +221,10 @@ index c3c1ba8083947c3011154acd5aa7a19cc93406c7..31c8738ac24beff3b253fb61d93000bc
              packetTypeInfo = packetId;
  
              DefinedPacket packet = prot.createPacket( packetId, protocolVersion, supportsForge );
-             if ( packet != null )
+@@ -61,7 +68,18 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              {
                  packetTypeInfo = packet.getClass();
+                 doLengthSanityChecks(in, packet, prot.getDirection(), packetId); // Waterfall: Additional DoS mitigations
 +                try { // IvanCord
                  packet.read( in, prot.getDirection(), protocolVersion );
 +                } catch ( Throwable t ) // IvanCord start
@@ -239,6 +240,10 @@ index c3c1ba8083947c3011154acd5aa7a19cc93406c7..31c8738ac24beff3b253fb61d93000bc
  
                  if ( in.isReadable() )
                  {
+@@ -70,7 +88,14 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                         throw PACKET_NOT_READ_TO_END;
+                     }
+                     // Waterfall end
 +                    // IvanCord start
 +                    if ( server )
 +                    {
@@ -278,7 +283,7 @@ index c0d371426a16565e735015b1f679278e0360ed1c..f33df1f37bda8327f12a55329b65f67d
      }
  }
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 5988f4c6c1716e3984e2aa46be112103f7bfc29a..8c222350cf849dce1b881ece7b050e8a014c5220 100644
+index 00fac5e7556a47a4ad2400c433dc9f4806ae2fea..4669e9cbf281e991d446c57c764954cdfb881740 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -112,6 +112,14 @@
@@ -705,7 +710,7 @@ index 8becc26a5c6bcb3c8072bd9bd550e65c2c20b71b..f9e1cd5f2cd0d74440f0bc548dbff01e
          new Bootstrap()
 diff --git a/shared/pom.xml b/shared/pom.xml
 new file mode 100644
-index 0000000000000000000000000000000000000000..277f71c3181f9b110188c435bc38bb235dd44f87
+index 0000000000000000000000000000000000000000..3cedd5fe74bb650b061dafec611f6cf1df0b0e54
 --- /dev/null
 +++ b/shared/pom.xml
 @@ -0,0 +1,34 @@
@@ -716,7 +721,7 @@ index 0000000000000000000000000000000000000000..277f71c3181f9b110188c435bc38bb23
 +    <parent>
 +        <artifactId>ivancord-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
-+        <version>1.16-R0.4-SNAPSHOT</version>
++        <version>1.16-R0.5-SNAPSHOT</version>
 +    </parent>
 +    <modelVersion>4.0.0</modelVersion>
 +

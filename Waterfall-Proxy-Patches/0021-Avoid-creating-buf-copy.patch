@@ -5,7 +5,7 @@ Subject: [PATCH] Avoid creating buf copy
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 1a647f2b935f122e5f8b0c6fa982b26183630abc..c3c1ba8083947c3011154acd5aa7a19cc93406c7 100644
+index ac9f114d98f3798c367a43fbce7495ae666072f7..6d00c28a92cfec816890b35850d9aef150433271 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -38,7 +38,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -20,8 +20,8 @@ index 1a647f2b935f122e5f8b0c6fa982b26183630abc..c3c1ba8083947c3011154acd5aa7a19c
  
          Object packetTypeInfo = null;
          try
-@@ -62,13 +66,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
-                 {
+@@ -68,13 +72,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                     // Waterfall end
                      throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot.getDirection() );
                  }
 +                /* IvanCord start - avoid creating buf copy
@@ -37,9 +37,9 @@ index 1a647f2b935f122e5f8b0c6fa982b26183630abc..c3c1ba8083947c3011154acd5aa7a19c
 +            out.add( new PacketWrapper( packet, /* slice */ in.retain() ) ); // IvanCord
 +            //slice = null; // IvanCord
          } catch (BadPacketException | IndexOutOfBoundsException e) {
-             final String packetTypeStr;
-             if (packetTypeInfo instanceof Integer) {
-@@ -78,13 +85,15 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             // Waterfall start: Additional DoS mitigations
+             if(!DEBUG) {
+@@ -89,13 +96,15 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
              } else {
                  packetTypeStr = "unknown";
              }
@@ -55,4 +55,4 @@ index 1a647f2b935f122e5f8b0c6fa982b26183630abc..c3c1ba8083947c3011154acd5aa7a19c
 +             */ // IvanCord end
          }
      }
- }
+ 

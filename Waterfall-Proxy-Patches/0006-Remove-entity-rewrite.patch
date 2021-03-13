@@ -9,10 +9,10 @@ All score and team packets are not handled by the proxy in no way. They
 dont either register!
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index c42285e687438908d276512af18b08df8ea89eb8..074c6505e09babf1ae5a005aee5eb6032a59e850 100644
+index ffcfb67ebcd1d9af7328eaeabe433ed2ab64dfd2..1c0c16226a80525309e35c13684e3961956a4f52 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -398,6 +398,8 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -397,6 +397,8 @@ public interface ProxiedPlayer extends Connection, CommandSender
       * Get the {@link Scoreboard} that belongs to this player.
       *
       * @return this player's {@link Scoreboard}
@@ -276,10 +276,10 @@ index b5750e142b213e07159f31e39254707c906a95de..f67bfe349d2a63ccd6fec3efa0214314
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 74edd3481ca19f9f71fe3b1da5938dab8ac17ad3..240ea31aca8c9dbdbde27f9f7306243f240dc13a 100644
+index 7a13716a6a01a75ebba39b02431c6f77bb6377ea..9a5ed3a7f9d7dc1fa3ab8eff09aac7f31e1f817f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -228,10 +228,12 @@ public class ServerConnector extends PacketHandler
+@@ -230,10 +230,12 @@ public class ServerConnector extends PacketHandler
              ch.write( message );
          }
  
@@ -292,7 +292,7 @@ index 74edd3481ca19f9f71fe3b1da5938dab8ac17ad3..240ea31aca8c9dbdbde27f9f7306243f
  
          if ( user.getForgeClientHandler().getClientModList() == null && !user.getForgeClientHandler().isHandshakeComplete() ) // Vanilla
          {
-@@ -280,6 +282,8 @@ public class ServerConnector extends PacketHandler
+@@ -282,6 +284,8 @@ public class ServerConnector extends PacketHandler
              user.getServer().setObsolete( true );
              user.getTabListHandler().onServerChange();
  
@@ -301,7 +301,7 @@ index 74edd3481ca19f9f71fe3b1da5938dab8ac17ad3..240ea31aca8c9dbdbde27f9f7306243f
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
              if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
              for ( Objective objective : serverScoreboard.getObjectives() )
-@@ -296,6 +300,8 @@ public class ServerConnector extends PacketHandler
+@@ -298,6 +302,8 @@ public class ServerConnector extends PacketHandler
              }
              } // Waterfall
              serverScoreboard.clear();
@@ -310,7 +310,7 @@ index 74edd3481ca19f9f71fe3b1da5938dab8ac17ad3..240ea31aca8c9dbdbde27f9f7306243f
  
              for ( UUID bossbar : user.getSentBossBars() )
              {
-@@ -320,15 +326,19 @@ public class ServerConnector extends PacketHandler
+@@ -322,15 +328,19 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -331,7 +331,7 @@ index 74edd3481ca19f9f71fe3b1da5938dab8ac17ad3..240ea31aca8c9dbdbde27f9f7306243f
                  // Ensure that we maintain consistency
                  user.setClientEntityId( login.getEntityId() );
  
-@@ -347,7 +357,7 @@ public class ServerConnector extends PacketHandler
+@@ -349,7 +359,7 @@ public class ServerConnector extends PacketHandler
                  {
                      user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
                  }

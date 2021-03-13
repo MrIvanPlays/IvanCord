@@ -110,7 +110,7 @@ index 0000000000000000000000000000000000000000..cf92ce1221e8d7b19f7b4f12e6e1d639
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 074c6505e09babf1ae5a005aee5eb6032a59e850..0e479d51e9a2b869f88c7ffda901410d3262b1ed 100644
+index 1c0c16226a80525309e35c13684e3961956a4f52..c1e4b186cf2788aa5f182407dd2a26edfc75ae28 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -13,6 +13,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
@@ -121,7 +121,7 @@ index 074c6505e09babf1ae5a005aee5eb6032a59e850..0e479d51e9a2b869f88c7ffda901410d
  
  /**
   * Represents a player who's connection is being connected to somewhere else,
-@@ -284,6 +285,16 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -283,6 +284,16 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      byte getViewDistance();
  

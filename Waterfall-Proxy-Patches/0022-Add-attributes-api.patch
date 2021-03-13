@@ -162,7 +162,7 @@ index 0000000000000000000000000000000000000000..8c83c3172888a0f83960a380bdce1198
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index b034f5ad610a1eca0321bb35956f7a575cf67ebb..7b6b72b681cf174ce5e5da1a7d9b134b8b69137c 100644
+index 9d9ea7d5f090b6a97efea0595e568ce38a594157..fa0595b70f78c549fbff03f2209bd48230885a01 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -1,5 +1,9 @@
@@ -175,7 +175,7 @@ index b034f5ad610a1eca0321bb35956f7a575cf67ebb..7b6b72b681cf174ce5e5da1a7d9b134b
  import java.util.Locale;
  import java.util.Map;
  import java.util.UUID;
-@@ -447,4 +451,10 @@ public interface ProxiedPlayer extends Connection, CommandSender
+@@ -446,4 +450,10 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      void setGlobalOp(boolean globalOp);
      // IvanCord end
@@ -344,7 +344,7 @@ index 0000000000000000000000000000000000000000..1b476fa84a1a7383b692cbbcb58ea9f7
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index be490d126f634190b20e3fb779cd5bf3bd7b3a6a..0030e9ba992c02dd3ec2a07c6dc0af7ec50dd361 100644
+index eb666d9f87e05f38b2368fc434eaf54b62d3e310..6655f28fcc60019ebecf0c05f8a56a4f1a51f7e4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -1,6 +1,7 @@
@@ -355,7 +355,7 @@ index be490d126f634190b20e3fb779cd5bf3bd7b3a6a..0030e9ba992c02dd3ec2a07c6dc0af7e
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import java.net.InetSocketAddress;
-@@ -318,6 +319,10 @@ public class ServerConnector extends PacketHandler
+@@ -320,6 +321,10 @@ public class ServerConnector extends PacketHandler
              user.resetTabHeader();
              // IvanCord end
  
