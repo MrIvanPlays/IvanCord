@@ -81,10 +81,10 @@ index 980445556f91b11498a71a9a08755d6aee92e7a6..a8555de3637e7a884c5af015f98bd792
       * Called by the loader to initialize the fields in this plugin.
       *
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 0f8b5009bd1fa1a0d934b5bd15fb3f967dd90e95..7e1c5be8516bf342e99b46442489a03f7650488b 100644
+index b60c0960dae4a32eb942a5f4d0c66ea1d0d7bb0f..d298d2823bcc8bd4441ad9b01ff94967d719c9d5 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -23,12 +23,17 @@ import java.util.Set;
+@@ -25,12 +25,17 @@ import java.util.Set;
  import java.util.Stack;
  import java.util.jar.JarEntry;
  import java.util.jar.JarFile;
@@ -102,7 +102,7 @@ index 0f8b5009bd1fa1a0d934b5bd15fb3f967dd90e95..7e1c5be8516bf342e99b46442489a03f
  import lombok.RequiredArgsConstructor;
  import net.md_5.bungee.api.ChatColor;
  import net.md_5.bungee.api.CommandSender;
-@@ -302,6 +307,9 @@ public final class PluginManager
+@@ -317,6 +322,9 @@ public final class PluginManager
                  {
                      plugin.getDescription().getName(), plugin.getDescription().getVersion(), plugin.getDescription().getAuthor()
                  } );
@@ -112,9 +112,9 @@ index 0f8b5009bd1fa1a0d934b5bd15fb3f967dd90e95..7e1c5be8516bf342e99b46442489a03f
              } catch ( Throwable t )
              {
                  // Waterfall start - throw exception event
-@@ -527,4 +535,80 @@ public final class PluginManager
-     {
-         return Collections.unmodifiableCollection( commandMap.entrySet() );
+@@ -555,4 +563,80 @@ public final class PluginManager
+         }
+         return false;
      }
 +
 +    // IvanCord start - plugin disable api

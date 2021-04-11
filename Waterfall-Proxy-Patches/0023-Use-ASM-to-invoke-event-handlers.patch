@@ -5,19 +5,19 @@ Subject: [PATCH] Use ASM to invoke event handlers
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
-index 75c75e2db14b893dbe7fb5f41562a98f47763d38..755e9d8dc7539c72fb37e45e59dd70f3e7b33a96 100644
+index aa3888230df9dc274dd5de1dc2e342f88d7e0650..c6bb115c1cf11761373003216a5c2bfa224d316c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
-@@ -7,7 +7,7 @@ import java.util.Set;
- import java.util.concurrent.CopyOnWriteArraySet;
+@@ -18,7 +18,7 @@ import lombok.ToString;
  import net.md_5.bungee.api.ProxyServer;
  
+ @ToString(of = "desc")
 -final class PluginClassloader extends URLClassLoader
 +public final class PluginClassloader extends URLClassLoader implements com.mrivanplays.ivancord.event.DynamicClassLoader // IvanCord - changed
  {
  
      private static final Set<PluginClassloader> allLoaders = new CopyOnWriteArraySet<>();
-@@ -75,4 +75,12 @@ final class PluginClassloader extends URLClassLoader
+@@ -173,4 +173,12 @@ final class PluginClassloader extends URLClassLoader
          this.plugin = plugin;
          plugin.init( proxy, desc );
      }

@@ -56,10 +56,10 @@ index 3dc3280129256cb198848081f1b019af97db92e9..ffcfb67ebcd1d9af7328eaeabe433ed2
       * Gets whether this player is using a FML client.
       * <p>
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 969533dfbdb90bb0786d725327e343f3c5257ab9..0f8b5009bd1fa1a0d934b5bd15fb3f967dd90e95 100644
+index 90031156f29f83bf73d8c93152ca91298f40a89c..b60c0960dae4a32eb942a5f4d0c66ea1d0d7bb0f 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -407,9 +407,9 @@ public final class PluginManager
+@@ -420,9 +420,9 @@ public final class PluginManager
          Preconditions.checkNotNull( folder, "folder" );
          Preconditions.checkArgument( folder.isDirectory(), "Must load from a directory" );
  
@@ -71,7 +71,7 @@ index 969533dfbdb90bb0786d725327e343f3c5257ab9..0f8b5009bd1fa1a0d934b5bd15fb3f96
              {
                  try ( JarFile jar = new JarFile( file ) )
                  {
-@@ -482,11 +482,13 @@ public final class PluginManager
+@@ -495,11 +495,13 @@ public final class PluginManager
       */
      public void registerListener(Plugin plugin, Listener listener)
      {

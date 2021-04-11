@@ -123,7 +123,7 @@ index fde626b1ac777f14600eb052f36cb4b11fa8044c..e64ea66b1e7de49834bed0b7d195e084
      @Test
      public void doTest() throws DataFormatException
 diff --git a/pom.xml b/pom.xml
-index ec5190a2f19522e4ea3cd497d5193f21f2d3d23e..3f9569bd41cc8ec4a008dbd5ffeab1a2308cb53d 100644
+index c0d5240c1fadd21bb375e2c84172803207dbbb0d..2669199948c9505653f8c0248359cf4414395ced 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -45,6 +45,7 @@
@@ -283,10 +283,10 @@ index c0d371426a16565e735015b1f679278e0360ed1c..f33df1f37bda8327f12a55329b65f67d
      }
  }
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 00fac5e7556a47a4ad2400c433dc9f4806ae2fea..4669e9cbf281e991d446c57c764954cdfb881740 100644
+index 708c32f2353167c7c69d42bc6fcf301868867f2a..b597f25f91df39ba27b5521daaeafaa47df55b86 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -112,6 +112,14 @@
+@@ -136,6 +136,14 @@
              <scope>runtime</scope>
          </dependency>
          <!-- Waterfall end -->

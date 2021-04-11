@@ -5,7 +5,7 @@ Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index c2b55587d6d3f2807ea6c49fc92bc77edd228a2a..d7682a536af4aba01278f758889743fb98465450 100644
+index ca1ed88112bba88966b9419b2b7677c3c35d0a14..de17801f5bec09a3940807e43f34b0bbdefcbd33 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -308,7 +308,7 @@ index db15febbccb0f05fcc03f6eccd28523595df74e6..904eb55fa963d654ec593d33f8d22e98
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index bfec1abc2741187c4f0d98c74dcb45125e4aeb79..5228e426ea3e05fcf3d7b27e294a68634a0f51a4 100644
+index 56bb4a7aa92b618bac63d850335ed78aa73960b9..aef0a1c0befa2dd20c287a30a2b18ab2b1a7acdd 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -407,8 +407,8 @@ index bfec1abc2741187c4f0d98c74dcb45125e4aeb79..5228e426ea3e05fcf3d7b27e294a6863
 -
      <properties>
          <build.number>unknown</build.number>
-         <netty.version>4.1.58.Final</netty.version>
-@@ -103,7 +73,7 @@
+         <lombok.version>1.18.20</lombok.version>
+@@ -104,7 +74,7 @@
          <dependency>
              <groupId>com.google.guava</groupId>
              <artifactId>guava</artifactId>
@@ -458,7 +458,7 @@ index 402266ca13589be047361bf322ff2a8984926643..c680bde9cf314696dd05801f6658a052
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 7a872a5492e00c63c88d21c348cd51a715dcfca8..00fac5e7556a47a4ad2400c433dc9f4806ae2fea 100644
+index fef13cbfee7402245e6495b636359838606d021a..708c32f2353167c7c69d42bc6fcf301868867f2a 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
