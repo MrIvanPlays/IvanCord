@@ -204,7 +204,7 @@ index e2e34a34605e9168294b01362d1b46ecebbac80b..b3f96f82eaf2a994bbc267346d505caf
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 6d00c28a92cfec816890b35850d9aef150433271..04a8d3799acaa2b4c3f5dc9b0634fff65462bdc4 100644
+index 146a68b4022d4a0c3a32ff8a86c6f7b175a53453..99c19a07942e54699655d428cb4c73dc45aeaf12 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -54,6 +54,13 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -283,10 +283,10 @@ index c0d371426a16565e735015b1f679278e0360ed1c..f33df1f37bda8327f12a55329b65f67d
      }
  }
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 708c32f2353167c7c69d42bc6fcf301868867f2a..b597f25f91df39ba27b5521daaeafaa47df55b86 100644
+index bdf8569978dde46c3cccb905a8ae5eb571e721a4..4bd54f89927a26cea17998150f6baeea4c7f6c42 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -136,6 +136,14 @@
+@@ -142,6 +142,14 @@
              <scope>runtime</scope>
          </dependency>
          <!-- Waterfall end -->
@@ -565,7 +565,7 @@ index 989bfd87b9e6d62abba28d51984b8526d6298bfd..ed3261bdbff164ab00295035d88e38f7
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index e4f4b2f4e6f96c1a29cdc62df6e9f621439a2da0..a72e313dfac5d9a18eb3d98aeeab0ea165bec139 100644
+index 9e6af925a7a62f6506cafd14fc443312520c04a1..672ba15b98da0770147e9e0d005d61a0b52759d1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -63,14 +63,14 @@ public class PipelineUtils
@@ -644,15 +644,15 @@ index e4f4b2f4e6f96c1a29cdc62df6e9f621439a2da0..a72e313dfac5d9a18eb3d98aeeab0ea1
      public static Class<? extends DatagramChannel> getDatagramChannel()
      {
          return epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
-@@ -199,7 +237,7 @@ public class PipelineUtils
-             ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
+@@ -200,7 +238,7 @@ public class PipelineUtils
              ch.config().setWriteBufferWaterMark( MARK );
  
--            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
-+            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( 3000L, TimeUnit.MILLISECONDS ) ); // IvanCord
              ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
+-            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
++            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( 3000L, TimeUnit.MILLISECONDS ) );
              ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
  
+             ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/util/QuietException.java b/proxy/src/main/java/net/md_5/bungee/util/QuietException.java
 deleted file mode 100644
 index 3c958fde058dcde19bfdbf3d74d2325e32adaf76..0000000000000000000000000000000000000000

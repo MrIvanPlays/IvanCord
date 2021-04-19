@@ -458,7 +458,7 @@ index 402266ca13589be047361bf322ff2a8984926643..c680bde9cf314696dd05801f6658a052
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index fef13cbfee7402245e6495b636359838606d021a..708c32f2353167c7c69d42bc6fcf301868867f2a 100644
+index ca1fc13b9a1a01406da13f30939db045f057b094..bdf8569978dde46c3cccb905a8ae5eb571e721a4 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -484,7 +484,7 @@ index fef13cbfee7402245e6495b636359838606d021a..708c32f2353167c7c69d42bc6fcf3018
      <description>Proxy component of the Elastic Portal Suite</description>
  
      <properties>
-@@ -58,32 +57,32 @@
+@@ -64,32 +63,32 @@
              <scope>compile</scope>
          </dependency>
          <dependency>

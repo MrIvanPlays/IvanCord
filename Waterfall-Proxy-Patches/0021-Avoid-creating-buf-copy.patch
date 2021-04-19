@@ -5,7 +5,7 @@ Subject: [PATCH] Avoid creating buf copy
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index ac9f114d98f3798c367a43fbce7495ae666072f7..6d00c28a92cfec816890b35850d9aef150433271 100644
+index 01d35f41a075a907283ed3c75f1747ef402cbd07..146a68b4022d4a0c3a32ff8a86c6f7b175a53453 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -38,7 +38,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>

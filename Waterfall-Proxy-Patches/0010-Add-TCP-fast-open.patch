@@ -108,7 +108,7 @@ index 0000000000000000000000000000000000000000..ffa0e1f58e1750bbc3d2332a2c2ebaa7
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 4c12fffa22621169c3bfff9a7e5ed5b8b725f261..e4f4b2f4e6f96c1a29cdc62df6e9f621439a2da0 100644
+index c63f650ffac86b1a8d87206099d7c6e9cea7dbad..9e6af925a7a62f6506cafd14fc443312520c04a1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -11,6 +11,7 @@ import io.netty.channel.EventLoopGroup;
