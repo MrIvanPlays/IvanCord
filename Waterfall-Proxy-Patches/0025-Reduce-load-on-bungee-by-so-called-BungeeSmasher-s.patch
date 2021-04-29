@@ -462,9 +462,18 @@ index 887a073f79156ad426e2877bfca31a15d48d0ad8..ef811eb9e91f718b402ff05ddabe9fe3
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
-index 3733742927e88c0674644b6944a707ab16ba6939..528dcc155e4dd0dd7cb694793d99196ecb691a1a 100644
+index 3733742927e88c0674644b6944a707ab16ba6939..bbed9090237b8df7d770e18bf75d10f4a19bae98 100644
 --- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 +++ b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
+@@ -30,7 +30,7 @@ public class HttpClient
+     private static final Cache<String, InetAddress> addressCache = CacheBuilder.newBuilder().expireAfterWrite( 1, TimeUnit.MINUTES ).build();
+     // Waterfall Start - optionally use async resolver from Netty
+     private static final io.netty.resolver.dns.DnsAddressResolverGroup dnsResolverGroup =
+-            new io.netty.resolver.dns.DnsAddressResolverGroup(PipelineUtils.getDatagramChannel(), io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider.INSTANCE);
++            new io.netty.resolver.dns.DnsAddressResolverGroup(PipelineUtils.getDatagramChannelFactory(), io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider.INSTANCE); // IvanCord
+     // Waterfall End
+ 
+     @SuppressWarnings("UnusedAssignment")
 @@ -111,7 +111,7 @@ public class HttpClient
  
      private static void getWithNettyResolver(EventLoop eventLoop, URI uri, int port, ChannelFutureListener future, Callback<String> callback, boolean ssl) {
@@ -502,7 +511,7 @@ index d45a6140780f592d9f8c67cf2f7cb83496a14681..9d768f9bd262bb87e904f8b35a5d2978
      {
          if ( !closed && ch.isActive() ) // IvanCord
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 989bfd87b9e6d62abba28d51984b8526d6298bfd..ed3261bdbff164ab00295035d88e38f7d34c3687 100644
+index 270545f28e299ecd12e76213dbd2a11bcc9701e3..aae1fe508aa24b0b5a3fcd7643b1a50b3bc76009 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -27,6 +27,11 @@ import net.md_5.bungee.util.QuietException;
@@ -517,7 +526,7 @@ index 989bfd87b9e6d62abba28d51984b8526d6298bfd..ed3261bdbff164ab00295035d88e38f7
      private ChannelWrapper channel;
      private PacketHandler handler;
  
-@@ -124,6 +129,22 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -130,6 +135,22 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
      {
          if ( ctx.channel().isActive() )
          {
@@ -540,7 +549,7 @@ index 989bfd87b9e6d62abba28d51984b8526d6298bfd..ed3261bdbff164ab00295035d88e38f7
              boolean logExceptions = !( handler instanceof PingHandler );
  
              if ( logExceptions )
-@@ -151,6 +172,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -157,6 +178,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
                          {
                              handler, cause.getCause().getMessage()
                          } );
@@ -555,7 +564,7 @@ index 989bfd87b9e6d62abba28d51984b8526d6298bfd..ed3261bdbff164ab00295035d88e38f7
                      }
                  } else if ( cause instanceof IOException || ( cause instanceof IllegalStateException && handler instanceof InitialHandler ) )
                  {
-@@ -181,7 +210,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -187,7 +216,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
                  }
              }
  
