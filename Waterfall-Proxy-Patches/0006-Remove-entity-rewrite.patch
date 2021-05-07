@@ -103,7 +103,7 @@ index 849ba1cf93a234f71b363073904efa52ca6d7ce5..d4d7323a084ccae0444c428a266ead50
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index d372933d8e6eae0833b03bf6309ea8b604881c69..477499e8b0da4a2054168a50d6ad0e3009bf69b2 100644
+index 0dffc8d23f803c89e4b7e80b711e3b44e9df8f27..a5ef726b6896cad24a31cb6560b1ad5ca83d8013 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -32,15 +32,20 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
@@ -136,15 +136,15 @@ index d372933d8e6eae0833b03bf6309ea8b604881c69..477499e8b0da4a2054168a50d6ad0e30
              // Waterfall start
              TO_CLIENT.registerPacket(
                      EntityEffect.class,
-@@ -142,6 +149,7 @@ public enum Protocol
-                     map(ProtocolConstants.MINECRAFT_1_16_2, 0x37)
+@@ -128,6 +135,7 @@ public enum Protocol
+                     map(ProtocolConstants.MINECRAFT_1_9, Integer.MIN_VALUE)
              );
              // Waterfall end
 +            */ // IvanCord end
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      PlayerListItem::new, // Waterfall - speed up packet construction
-@@ -164,6 +172,8 @@ public enum Protocol
+@@ -150,6 +158,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_16, 0x10 ),
                      map( ProtocolConstants.MINECRAFT_1_16_2, 0x0F )
              );
@@ -153,7 +153,7 @@ index d372933d8e6eae0833b03bf6309ea8b604881c69..477499e8b0da4a2054168a50d6ad0e30
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
                      ScoreboardObjective::new, // Waterfall - speed up packet construction
-@@ -208,6 +218,8 @@ public enum Protocol
+@@ -194,6 +204,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_14, 0x4B ),
                      map( ProtocolConstants.MINECRAFT_1_15, 0x4C )
              );

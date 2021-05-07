@@ -5,7 +5,7 @@ Subject: [PATCH] Use ASM to invoke event handlers
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
-index aa3888230df9dc274dd5de1dc2e342f88d7e0650..c6bb115c1cf11761373003216a5c2bfa224d316c 100644
+index 75cf6e3339857aca698ae548d0d3f5668131a5d6..d0278251c48d9281c513a3cd2b3d26a90496a2b9 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
 @@ -18,7 +18,7 @@ import lombok.ToString;
