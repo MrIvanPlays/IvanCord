@@ -139,10 +139,10 @@ index 1c0c16226a80525309e35c13684e3961956a4f52..c1e4b186cf2788aa5f182407dd2a26ed
       * Gets this player's chat mode.
       *
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 252389bd1d21a35e12b4e48e523ab85abd367e52..e0e68ecabbda76bf83011b67de558e83e7f7b4a7 100644
+index ee2317e8402ee98da9456a9b43e4f6d53753cb64..89b3fdbd320871d41b2dfdc670e96bb5cae4a0a3 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -24,6 +24,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
+@@ -25,6 +25,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
  import net.md_5.bungee.protocol.packet.PingPacket;
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -150,7 +150,7 @@ index 252389bd1d21a35e12b4e48e523ab85abd367e52..e0e68ecabbda76bf83011b67de558e83
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-@@ -181,6 +182,12 @@ public abstract class AbstractPacketHandler
+@@ -196,6 +197,12 @@ public abstract class AbstractPacketHandler
      {
      }
  
@@ -164,10 +164,10 @@ index 252389bd1d21a35e12b4e48e523ab85abd367e52..e0e68ecabbda76bf83011b67de558e83
      public void handle(EntityEffect entityEffect) throws Exception
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index a5ef726b6896cad24a31cb6560b1ad5ca83d8013..5273b70f83cb5dbbc2e49d07e301fc41d4e92eb9 100644
+index 0357eec3d2b50b83f928b82531ba1e9dad53bc15..d1e97e2dc4445afeb514e5724c2679f0ffd3c99e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -30,6 +30,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
+@@ -31,6 +31,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
  import net.md_5.bungee.protocol.packet.PingPacket;
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -175,9 +175,9 @@ index a5ef726b6896cad24a31cb6560b1ad5ca83d8013..5273b70f83cb5dbbc2e49d07e301fc41
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  // IvanCord - comment these
-@@ -335,6 +336,19 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_13, 0x0A ),
-                     map( ProtocolConstants.MINECRAFT_1_14, 0x0B )
+@@ -369,6 +370,19 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_14, 0x0B ),
+                     map( ProtocolConstants.MINECRAFT_1_17, 0x0A )
              );
 +            // IvanCord start - add player position
 +            TO_SERVER.registerPacket(
@@ -256,10 +256,10 @@ index 0000000000000000000000000000000000000000..f23fe50e8c9a22ce934f5797f9e75fb2
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7e56d62f9c8467700bce88dd5bbe122513f5ebe9..e13b65664b536585b647c9495a412396cb503d89 100644
+index e479cda4b3683c06185b0b51a48ca30aeddb441b..f64f27dd02ec907dd3601cc5be7e1a37ba8ec8e0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -67,6 +67,7 @@ import net.md_5.bungee.tab.ServerUnique;
+@@ -65,6 +65,7 @@ import net.md_5.bungee.tab.ServerUnique;
  import net.md_5.bungee.tab.TabList;
  import net.md_5.bungee.util.CaseInsensitiveSet;
  import net.md_5.bungee.util.ChatComponentTransformer;
@@ -267,7 +267,7 @@ index 7e56d62f9c8467700bce88dd5bbe122513f5ebe9..e13b65664b536585b647c9495a412396
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -107,6 +108,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -105,6 +106,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      @Setter
      private int gamemode;
@@ -278,7 +278,7 @@ index 7e56d62f9c8467700bce88dd5bbe122513f5ebe9..e13b65664b536585b647c9495a412396
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -648,6 +653,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -649,6 +654,12 @@ public final class UserConnection implements ProxiedPlayer
      {
          return ( settings != null ) ? settings.getViewDistance() : 10;
      }

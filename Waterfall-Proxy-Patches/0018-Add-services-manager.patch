@@ -536,7 +536,7 @@ index 0000000000000000000000000000000000000000..96063a5982f7f403c3f26998542517e1
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2339f3517ec16ef7ece6ce8ffbaf00055996d1fd..b601b7d86e3738e8e62ab4b3fa6219ff5a6d64c7 100644
+index 85267cb71ff71ce6b6f5711538e77e88ced4ee32..3753c1d97a08d8f951a912a4ee9cc78d052bc1e0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -109,6 +109,8 @@ import com.mrivanplays.ivancord.commands.op.CommandOp;
@@ -560,7 +560,7 @@ index 2339f3517ec16ef7ece6ce8ffbaf00055996d1fd..b601b7d86e3738e8e62ab4b3fa6219ff
      {
          // TODO: Proper fallback when we interface the manager
          registerChannel( "BungeeCord" );
-@@ -314,6 +321,10 @@ public class BungeeCord extends ProxyServer
+@@ -315,6 +322,10 @@ public class BungeeCord extends ProxyServer
          pluginsFolder.mkdir();
          pluginManager.detectPlugins( pluginsFolder );
  

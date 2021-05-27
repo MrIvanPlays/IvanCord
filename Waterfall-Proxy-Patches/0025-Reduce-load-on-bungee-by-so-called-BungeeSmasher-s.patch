@@ -6,10 +6,10 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-index 77c8f73c95be78b8bd37134ce631072deb96cd64..10bcb39104cf61abc862b9c1fc4a278a4914d4d1 100644
+index dae1f037948ab658cfbb7a5eaeb208ade309700d..9b0332fe7774f2afa07bbf8d009b7f423e7b0784 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-@@ -191,6 +191,7 @@ public class EventBus
+@@ -193,6 +193,7 @@ public class EventBus
                      {
                          for ( Method method : listenerHandlers.getValue() )
                          {
@@ -123,12 +123,12 @@ index fde626b1ac777f14600eb052f36cb4b11fa8044c..e64ea66b1e7de49834bed0b7d195e084
      @Test
      public void doTest() throws DataFormatException
 diff --git a/pom.xml b/pom.xml
-index c0d5240c1fadd21bb375e2c84172803207dbbb0d..2669199948c9505653f8c0248359cf4414395ced 100644
+index 816fab2efa1e75e7155bd359867bb1ab4c14e6be..ee8c8ac50c11353feab943b6712532ca16a343cf 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -45,6 +45,7 @@
-         <module>proxy</module>
+@@ -46,6 +46,7 @@
          <module>query</module>
+         <!--<module>slf4j</module>-->
          <module>native</module>
 +        <module>shared</module> <!-- IvanCord -->
      </modules>
@@ -283,10 +283,10 @@ index c0d371426a16565e735015b1f679278e0360ed1c..f33df1f37bda8327f12a55329b65f67d
      }
  }
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index bdf8569978dde46c3cccb905a8ae5eb571e721a4..4bd54f89927a26cea17998150f6baeea4c7f6c42 100644
+index 4893701ee3dc6e94957af166092255ee9b09ed3a..701d224067fce725248ef6bdfaca64edc1ea4e11 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -142,6 +142,14 @@
+@@ -149,6 +149,14 @@
              <scope>runtime</scope>
          </dependency>
          <!-- Waterfall end -->
@@ -302,10 +302,10 @@ index bdf8569978dde46c3cccb905a8ae5eb571e721a4..4bd54f89927a26cea17998150f6baeea
  
      <build>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 75d894ed15e15495c443718567388667251f0644..fe461f6ce49badf4dc413c822f2f5347b801c320 100644
+index d7307d8308b280dd4936def18cce70b90d4225da..f8cadee99e3f3d4e1c38e36d8faad0ed220a2c81 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -420,7 +420,7 @@ public class BungeeCord extends ProxyServer
+@@ -421,7 +421,7 @@ public class BungeeCord extends ProxyServer
                  }
              };
              new ServerBootstrap()
@@ -314,7 +314,7 @@ index 75d894ed15e15495c443718567388667251f0644..fe461f6ce49badf4dc413c822f2f5347
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( PipelineUtils.SERVER_CHILD )
-@@ -447,7 +447,7 @@ public class BungeeCord extends ProxyServer
+@@ -448,7 +448,7 @@ public class BungeeCord extends ProxyServer
                          }
                      }
                  };
@@ -363,10 +363,10 @@ index ff6bb8c16d4c399cbbf933e4b706fd9bf17127b5..2f41e77085a11ca5004dafc78cc5f333
      static
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index f8a5e0a84f95c241e2b389251e2aaaa439e4c2df..b8445e75e1c0d0f4585afea6d523422077be64f8 100644
+index e35c1c29062c06939d9dc764775ab096e3032271..cbb9bd3db24500e59d50bd090e7aa3b04017625a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -416,7 +416,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -417,7 +417,7 @@ public final class UserConnection implements ProxiedPlayer
              }
          };
          Bootstrap b = new Bootstrap()
@@ -400,7 +400,7 @@ index 37fe6ac73504cee4ba7fc336d6623b5c833c6d1d..3185204d5b5499dd68fc9315f959f91e
          } else
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 887a073f79156ad426e2877bfca31a15d48d0ad8..ef811eb9e91f718b402ff05ddabe9fe3a9590d95 100644
+index ee1fcad3185cc9c0db40a2d58e28fdc07ab3b8ce..308e94db6233d593a60f0e4c23f75549db42ee54 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -140,9 +140,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection

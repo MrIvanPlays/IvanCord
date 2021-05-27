@@ -5,7 +5,7 @@ Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index aef0a1c0befa2dd20c287a30a2b18ab2b1a7acdd..c0d5240c1fadd21bb375e2c84172803207dbbb0d 100644
+index f177bc790449f63674a8cf7a738a5a30679c88b7..816fab2efa1e75e7155bd359867bb1ab4c14e6be 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -38,7 +38,9 @@
@@ -691,7 +691,7 @@ index 0000000000000000000000000000000000000000..4915d8d7b55c1f6d16ad55024ec807a2
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 0dd12b0058ba69328aa3bc91768950b900587f0c..069504dda7ea79b51acb46b61533693fa4b186af 100644
+index 91f04d85207fe5ac7f74a4d9f2c3470b1370601e..b4495e9b7646568cdf0f2065f61ab85f4b0ce9d6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -94,6 +94,15 @@ import net.md_5.bungee.query.RemoteQuery;
@@ -720,7 +720,7 @@ index 0dd12b0058ba69328aa3bc91768950b900587f0c..069504dda7ea79b51acb46b61533693f
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -230,6 +241,15 @@ public class BungeeCord extends ProxyServer
+@@ -231,6 +242,15 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandBungee() );
          getPluginManager().registerCommand( null, new CommandPerms() );
  
@@ -736,7 +736,7 @@ index 0dd12b0058ba69328aa3bc91768950b900587f0c..069504dda7ea79b51acb46b61533693f
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
              if ( EncryptionUtil.nativeFactory.load() )
-@@ -267,9 +287,11 @@ public class BungeeCord extends ProxyServer
+@@ -268,9 +288,11 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  

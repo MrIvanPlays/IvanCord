@@ -5,7 +5,7 @@ Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index ca1ed88112bba88966b9419b2b7677c3c35d0a14..de17801f5bec09a3940807e43f34b0bbdefcbd33 100644
+index 7f6da3e81c4525ef7fcb14e4e3a1e1edabc1fdd0..e0ff0afd7f52bf4880728b0d5371dc6f148dc657 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -308,7 +308,7 @@ index db15febbccb0f05fcc03f6eccd28523595df74e6..904eb55fa963d654ec593d33f8d22e98
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 56bb4a7aa92b618bac63d850335ed78aa73960b9..aef0a1c0befa2dd20c287a30a2b18ab2b1a7acdd 100644
+index 5e8499a71eb0aeaa952f14bcf4b430c01b67e813..f177bc790449f63674a8cf7a738a5a30679c88b7 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -377,7 +377,7 @@ index 56bb4a7aa92b618bac63d850335ed78aa73960b9..aef0a1c0befa2dd20c287a30a2b18ab2
          <module>log4j</module>
          <module>module</module>
          <module>protocol</module>
-@@ -65,26 +46,15 @@
+@@ -66,26 +47,15 @@
      </modules>
  
      <scm>
@@ -408,7 +408,7 @@ index 56bb4a7aa92b618bac63d850335ed78aa73960b9..aef0a1c0befa2dd20c287a30a2b18ab2
      <properties>
          <build.number>unknown</build.number>
          <lombok.version>1.18.20</lombok.version>
-@@ -104,7 +74,7 @@
+@@ -105,7 +75,7 @@
          <dependency>
              <groupId>com.google.guava</groupId>
              <artifactId>guava</artifactId>
@@ -458,7 +458,7 @@ index 402266ca13589be047361bf322ff2a8984926643..c680bde9cf314696dd05801f6658a052
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index ca1fc13b9a1a01406da13f30939db045f057b094..bdf8569978dde46c3cccb905a8ae5eb571e721a4 100644
+index e8670283f9f33f22bba6019b8c8f68d8f17ee591..4893701ee3dc6e94957af166092255ee9b09ed3a 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
@@ -528,7 +528,7 @@ index ca1fc13b9a1a01406da13f30939db045f057b094..bdf8569978dde46c3cccb905a8ae5eb5
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2938f2f1570c170d5a9b9034b3583b05576cee22..0dd12b0058ba69328aa3bc91768950b900587f0c 100644
+index c09f5b4c39b4e5514e77f815ec0299de753881da..91f04d85207fe5ac7f74a4d9f2c3470b1370601e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -188,7 +188,7 @@ public class BungeeCord extends ProxyServer
@@ -540,7 +540,7 @@ index 2938f2f1570c170d5a9b9034b3583b05576cee22..0dd12b0058ba69328aa3bc91768950b9
  
          try
          {
-@@ -538,7 +538,7 @@ public class BungeeCord extends ProxyServer
+@@ -539,7 +539,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {
@@ -550,10 +550,10 @@ index 2938f2f1570c170d5a9b9034b3583b05576cee22..0dd12b0058ba69328aa3bc91768950b9
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 771b372585daa9fab836fae56e37554b4ba2831c..c1351062e19e020fa51781e59f633323241bf693 100644
+index 35680528553b04097a714c9dc5de9d3484de5416..51615fed5d3f6d050390610f2283877b1a6419a3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -62,7 +62,7 @@ public class BungeeCordLauncher
+@@ -67,7 +67,7 @@ public class BungeeCordLauncher
              if ( buildDate.before( deadline.getTime() ) )
              {
                  System.err.println( "*** Hey! This build is potentially outdated :( ***" );
@@ -562,7 +562,7 @@ index 771b372585daa9fab836fae56e37554b4ba2831c..c1351062e19e020fa51781e59f633323
                  System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
                  System.err.println( "*** Server will start in 10 seconds ***" );
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
-@@ -71,8 +71,8 @@ public class BungeeCordLauncher
+@@ -76,8 +76,8 @@ public class BungeeCordLauncher
  
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );
@@ -601,7 +601,7 @@ index 720d0c3b5ef7107690757142a5ded0268a84270a..477c45ab5442e53956aa95c402adf424
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 65121ba2472c2b939d0de78880d14ea63f2dbc1d..994bc589f26adb06ffe28313679ba6299878a6c8 100644
+index 0644b8cd35d680b5e75452617cbaa9db8f3b6d6f..69000b1ee51231aba28a3a85166c50372ff0355f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -227,7 +227,7 @@ public class YamlConfig implements ConfigurationAdapter

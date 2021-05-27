@@ -189,10 +189,10 @@ index a42d63fa881628e4bb3f6ceae8c9676e9e614b47..e0c37b1ec429db823401a7e8ce338c0c
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %paperMinecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 069504dda7ea79b51acb46b61533693fa4b186af..06747505a700cd9b1aaac42e8c02c7599deb2e94 100644
+index b4495e9b7646568cdf0f2065f61ab85f4b0ce9d6..bd1192caa150156fd1832ff609f3d5874e7cb4a7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -510,8 +510,10 @@ public class BungeeCord extends ProxyServer
+@@ -511,8 +511,10 @@ public class BungeeCord extends ProxyServer
          }
  
          getLogger().info( "Closing IO threads" );
@@ -206,10 +206,10 @@ index 069504dda7ea79b51acb46b61533693fa4b186af..06747505a700cd9b1aaac42e8c02c759
                      try {
                          bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index c1351062e19e020fa51781e59f633323241bf693..55a0c815611329b62cee1837814a27b31f80ce0d 100644
+index 51615fed5d3f6d050390610f2283877b1a6419a3..0a19f6d7346f282e98bd4d5ac781bd6c5ef0be95 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -70,6 +70,19 @@ public class BungeeCordLauncher
+@@ -75,6 +75,19 @@ public class BungeeCordLauncher
          }
  
          BungeeCord bungee = new BungeeCord();
@@ -230,10 +230,10 @@ index c1351062e19e020fa51781e59f633323241bf693..55a0c815611329b62cee1837814a27b3
          bungee.start();
          bungee.getLogger().info( "Enabled IvanCord version " + bungee.getVersion() ); // IvanCord - rebranding
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 2d9c0cda5a502afc004b551ba971086ebab12f95..7a13716a6a01a75ebba39b02431c6f77bb6377ea 100644
+index a5efb0af281a39da79383b8bf7e3e86974212c5c..4ed248558c1549fdef2ba6bb687341a89a0bf1c7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -305,6 +305,13 @@ public class ServerConnector extends PacketHandler
+@@ -306,6 +306,13 @@ public class ServerConnector extends PacketHandler
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.BossBar( bossbar, 1 ) );
              }
              user.getSentBossBars().clear();
@@ -248,10 +248,10 @@ index 2d9c0cda5a502afc004b551ba971086ebab12f95..7a13716a6a01a75ebba39b02431c6f77
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7ec119ea0b8a6e5ec596b1e8957fbb610c91169c..d7ef01a5f96f82399bf42ed0b7fb441ef0f2e643 100644
+index 01075a85e3041e8f6445511beffe6a0f00b9ce7c..a0cff49d1108a16fb5d703fbe38cceb882c53275 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -319,7 +319,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -322,7 +322,7 @@ public final class UserConnection implements ProxiedPlayer
              {
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
              }
@@ -260,7 +260,7 @@ index 7ec119ea0b8a6e5ec596b1e8957fbb610c91169c..d7ef01a5f96f82399bf42ed0b7fb441e
              sendMessage( bungee.getTranslation( "already_connected" ) );
              return;
          }
-@@ -329,7 +329,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -332,7 +332,7 @@ public final class UserConnection implements ProxiedPlayer
              {
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
              }
@@ -269,7 +269,7 @@ index 7ec119ea0b8a6e5ec596b1e8957fbb610c91169c..d7ef01a5f96f82399bf42ed0b7fb441e
              sendMessage( bungee.getTranslation( "already_connecting" ) );
              return;
          }
-@@ -412,6 +412,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -415,6 +415,9 @@ public final class UserConnection implements ProxiedPlayer
  
      public void disconnect0(final BaseComponent... reason)
      {
@@ -279,7 +279,7 @@ index 7ec119ea0b8a6e5ec596b1e8957fbb610c91169c..d7ef01a5f96f82399bf42ed0b7fb441e
          if ( !ch.isClosing() )
          {
              bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
-@@ -727,6 +730,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -730,6 +733,14 @@ public final class UserConnection implements ProxiedPlayer
          title.send( this );
      }
  

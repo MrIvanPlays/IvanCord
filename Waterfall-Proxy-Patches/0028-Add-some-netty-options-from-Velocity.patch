@@ -5,10 +5,10 @@ Subject: [PATCH] Add some netty options from Velocity
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 55a0c815611329b62cee1837814a27b31f80ce0d..e55895d65616be8116b148cd804b1d08e3c2abc6 100644
+index 0a19f6d7346f282e98bd4d5ac781bd6c5ef0be95..0b1751e5879c8ec0e2dc6c930188a6ff84167d7e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -34,6 +34,15 @@ public class BungeeCordLauncher
+@@ -39,6 +39,15 @@ public class BungeeCordLauncher
          }
          // Waterfall end
  
