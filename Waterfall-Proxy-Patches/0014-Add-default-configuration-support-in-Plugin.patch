@@ -7,27 +7,23 @@ Including loading, reloading and saving a
 default config.(json, yml)
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-index 3d1e9a3a5d5c7b05e724434961eb1e5ebe8998c5..980445556f91b11498a71a9a08755d6aee92e7a6 100644
+index 3d1e9a3a5d5c7b05e724434961eb1e5ebe8998c5..5dcc75914a72b7130c0463befb540cfc888baf08 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-@@ -3,14 +3,21 @@ package net.md_5.bungee.api.plugin;
- import com.google.common.base.Preconditions;
- import com.google.common.util.concurrent.ThreadFactoryBuilder;
- import java.io.File;
-+import java.io.IOException;
+@@ -6,11 +6,18 @@ import java.io.File;
  import java.io.InputStream;
-+import java.nio.file.Files;
  import java.util.concurrent.ExecutorService;
  import java.util.concurrent.Executors;
 +import java.util.logging.Level;
  import java.util.logging.Logger;
  import lombok.Getter;
  import net.md_5.bungee.api.ProxyServer;
--import net.md_5.bungee.api.config.ConfigurationAdapter;
-+import net.md_5.bungee.api.config.ConfigurationAdapter; // IvanCord
+ import net.md_5.bungee.api.config.ConfigurationAdapter;
  import net.md_5.bungee.api.scheduler.GroupedThreadFactory;
 +// IvanCord start
 +import net.md_5.bungee.config.Configuration;
++import java.nio.file.Files;
++import java.io.IOException;
 +import net.md_5.bungee.config.ConfigurationProvider;
 +// IvanCord end
  

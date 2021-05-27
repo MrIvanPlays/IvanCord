@@ -164,7 +164,7 @@ index ee2317e8402ee98da9456a9b43e4f6d53753cb64..89b3fdbd320871d41b2dfdc670e96bb5
      public void handle(EntityEffect entityEffect) throws Exception
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 0357eec3d2b50b83f928b82531ba1e9dad53bc15..d1e97e2dc4445afeb514e5724c2679f0ffd3c99e 100644
+index fb02dfd1b15b68021da41d131d5ffc19664e2fd1..b31bd4be9fc3645e39e26cea2838d4a44dbdc162 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -31,6 +31,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
@@ -174,8 +174,8 @@ index 0357eec3d2b50b83f928b82531ba1e9dad53bc15..d1e97e2dc4445afeb514e5724c2679f0
 +import net.md_5.bungee.protocol.packet.PlayerPosition;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
- // IvanCord - comment these
-@@ -369,6 +370,19 @@ public enum Protocol
+ import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
+@@ -364,6 +365,19 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_14, 0x0B ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x0A )
              );
@@ -292,18 +292,27 @@ index e479cda4b3683c06185b0b51a48ca30aeddb441b..f64f27dd02ec907dd3601cc5be7e1a37
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index b233d3786372fbc4b20b54108a33eea442391dde..2e95f5f41082e67dda64f138e18ad08c67159f86 100644
+index 0b7a7b4d880449a95fe2a5cf99844b5e7bc67144..409878ec8c403062d61a50ef3cb0f03bd138bb13 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -67,6 +67,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
+@@ -43,7 +43,7 @@ import net.md_5.bungee.api.event.ServerKickEvent;
+ import net.md_5.bungee.api.event.TabCompleteResponseEvent;
+ import net.md_5.bungee.api.plugin.Command;
+ import net.md_5.bungee.api.score.Objective;
+-import net.md_5.bungee.api.score.Position;
++//import net.md_5.bungee.api.score.Position; // IvanCord - comment out for player positioning api
+ import net.md_5.bungee.api.score.Score;
+ import net.md_5.bungee.api.score.Scoreboard;
+ import net.md_5.bungee.api.score.Team;
+@@ -61,6 +61,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
 +import net.md_5.bungee.protocol.packet.PlayerPosition; // IvanCord
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
- // IvanCord - comment not needed imports
-@@ -78,6 +79,10 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
+ import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
+@@ -69,6 +70,10 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
  import net.md_5.bungee.protocol.packet.SetCompression;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
  import net.md_5.bungee.tab.TabList;
@@ -314,7 +323,7 @@ index b233d3786372fbc4b20b54108a33eea442391dde..2e95f5f41082e67dda64f138e18ad08c
  
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
-@@ -777,6 +782,39 @@ public class DownstreamBridge extends PacketHandler
+@@ -768,6 +773,39 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  

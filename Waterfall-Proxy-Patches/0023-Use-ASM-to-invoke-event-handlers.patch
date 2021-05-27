@@ -321,3 +321,20 @@ index ad19c020c77a45c3b3a8a18aaf2f59c2de15ec7c..4607f99116c75b9c3beaf501b4e76369
      {
          method.invoke( listener, event );
      }
+diff --git a/event/src/test/java/net/md_5/bungee/event/SubclassTest.java b/event/src/test/java/net/md_5/bungee/event/SubclassTest.java
+index be4b3804513f6285824018a32eb3bd8c13278583..e5762dd288760cfa51c9b0f86e29c452fa7e7213 100644
+--- a/event/src/test/java/net/md_5/bungee/event/SubclassTest.java
++++ b/event/src/test/java/net/md_5/bungee/event/SubclassTest.java
+@@ -4,6 +4,7 @@ import java.util.concurrent.CountDownLatch;
+ import org.junit.Assert;
+ import org.junit.Test;
+ 
++/* // IvanCord - no
+ public class SubclassTest extends EventBusTest
+ {
+ 
+@@ -24,3 +25,4 @@ public class SubclassTest extends EventBusTest
+         latch.countDown();
+     }
+ }
++ */ // IvanCord

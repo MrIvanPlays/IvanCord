@@ -85,41 +85,6 @@ index 90031156f29f83bf73d8c93152ca91298f40a89c..b60c0960dae4a32eb942a5f4d0c66ea1
          eventBus.register( listener );
          listenersByPlugin.put( plugin, listener );
      }
-diff --git a/api/src/main/java/net/md_5/bungee/command/PlayerCommand.java b/api/src/main/java/net/md_5/bungee/command/PlayerCommand.java
-index a92d30f98f46fd3480378daed325417ae38a4a8e..5a02cfe0399026aef5301c3c0d44f0940c2c1bc8 100644
---- a/api/src/main/java/net/md_5/bungee/command/PlayerCommand.java
-+++ b/api/src/main/java/net/md_5/bungee/command/PlayerCommand.java
-@@ -4,6 +4,8 @@ import com.google.common.base.Function;
- import com.google.common.base.Predicate;
- import com.google.common.collect.Iterables;
- import java.util.Locale;
-+import java.util.stream.Collectors;
-+
- import net.md_5.bungee.api.CommandSender;
- import net.md_5.bungee.api.ProxyServer;
- import net.md_5.bungee.api.connection.ProxiedPlayer;
-@@ -31,6 +33,8 @@ public abstract class PlayerCommand extends Command implements TabExecutor
-     public Iterable<String> onTabComplete(CommandSender sender, String[] args)
-     {
-         final String lastArg = ( args.length > 0 ) ? args[args.length - 1].toLowerCase( Locale.ROOT ) : "";
-+        // IvanCord start - use java 8 streams
-+        /*
-         return Iterables.transform( Iterables.filter( ProxyServer.getInstance().getPlayers(), new Predicate<ProxiedPlayer>()
-         {
-             @Override
-@@ -46,5 +50,12 @@ public abstract class PlayerCommand extends Command implements TabExecutor
-                 return player.getName();
-             }
-         } );
-+         */
-+        return ProxyServer.getInstance().getPlayers()
-+                .stream()
-+                .map( CommandSender::getName )
-+                .filter( name -> name.toLowerCase().startsWith( lastArg ) )
-+                .collect( Collectors.toList() );
-+        // IvanCord end
-     }
- }
 diff --git a/config/src/main/java/net/md_5/bungee/config/Configuration.java b/config/src/main/java/net/md_5/bungee/config/Configuration.java
 index d7ed3e1143745b91c6a98bf78f4be02b3bbf704b..209cb85988d005103ebc5529db43b16285baf667 100644
 --- a/config/src/main/java/net/md_5/bungee/config/Configuration.java

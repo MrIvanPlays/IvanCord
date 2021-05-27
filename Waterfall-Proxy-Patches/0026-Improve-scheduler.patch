@@ -5,7 +5,7 @@ Subject: [PATCH] Improve scheduler
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-index a8555de3637e7a884c5af015f98bd792982bd4fb..99dc5d13ce5bad13b1ef89af1bc348d4793d4026 100644
+index 8a2474878121c84b21c1d52112996b1e025f123c..271d0412a065283dae526b3931060aa90248ef77 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 @@ -212,11 +212,13 @@ public class Plugin
@@ -140,10 +140,10 @@ index 0000000000000000000000000000000000000000..00ff4769884de0b635144bc7ca134f35
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f8cadee99e3f3d4e1c38e36d8faad0ed220a2c81..e21c37b9ed8a510129dd89f4ae0f956e94546b46 100644
+index 432cfcf096a3c3ccb87b896fd9e55cbe1c89d87e..8f452d2cd5ce3512954bd6fac33b8c9ff7398ee7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -544,6 +544,17 @@ public class BungeeCord extends ProxyServer
+@@ -543,6 +543,17 @@ public class BungeeCord extends ProxyServer
          {
              pluginManager.disablePlugin( plugin );
          }

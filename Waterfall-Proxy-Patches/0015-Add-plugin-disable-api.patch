@@ -57,7 +57,7 @@ index 0000000000000000000000000000000000000000..ab7c3978a708ff47c48dc56804cbdd75
 +    private final Plugin plugin;
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
-index 980445556f91b11498a71a9a08755d6aee92e7a6..a8555de3637e7a884c5af015f98bd792982bd4fb 100644
+index 5dcc75914a72b7130c0463befb540cfc888baf08..8a2474878121c84b21c1d52112996b1e025f123c 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/Plugin.java
 @@ -184,6 +184,19 @@ public class Plugin
@@ -194,18 +194,10 @@ index b60c0960dae4a32eb942a5f4d0c66ea1d0d7bb0f..d298d2823bcc8bd4441ad9b01ff94967
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a6b50b1d64669159206d96d0ce7bf74cebcbc43c..85267cb71ff71ce6b6f5711538e77e88ced4ee32 100644
+index a6b50b1d64669159206d96d0ce7bf74cebcbc43c..c2b7ce3767c949de6c7015d8d7db427fbd6fd45b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -48,6 +48,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
- import java.util.logging.Handler;
- import java.util.logging.Level;
- import java.util.logging.Logger;
-+
- import lombok.Getter;
- import lombok.Setter;
- import lombok.Synchronized;
-@@ -523,26 +524,12 @@ public class BungeeCord extends ProxyServer
+@@ -523,26 +523,12 @@ public class BungeeCord extends ProxyServer
          //metricsThread.cancel(); // Waterfall: Disable Metrics
  
          getLogger().info( "Disabling plugins" );

@@ -302,10 +302,10 @@ index 4893701ee3dc6e94957af166092255ee9b09ed3a..701d224067fce725248ef6bdfaca64ed
  
      <build>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d7307d8308b280dd4936def18cce70b90d4225da..f8cadee99e3f3d4e1c38e36d8faad0ed220a2c81 100644
+index 115f81121e4bfed63217a525ba6090b3d3a35d18..432cfcf096a3c3ccb87b896fd9e55cbe1c89d87e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -421,7 +421,7 @@ public class BungeeCord extends ProxyServer
+@@ -420,7 +420,7 @@ public class BungeeCord extends ProxyServer
                  }
              };
              new ServerBootstrap()
@@ -314,7 +314,7 @@ index d7307d8308b280dd4936def18cce70b90d4225da..f8cadee99e3f3d4e1c38e36d8faad0ed
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( PipelineUtils.SERVER_CHILD )
-@@ -448,7 +448,7 @@ public class BungeeCord extends ProxyServer
+@@ -447,7 +447,7 @@ public class BungeeCord extends ProxyServer
                          }
                      }
                  };

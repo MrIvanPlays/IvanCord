@@ -209,7 +209,7 @@ index 9619cb26ee2a6aaf65fcc9863ba79168a3e1a830..c0ea1264af309878353fa7eaac8542e3
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 82b56e06b3ab316ff294517316e0d86b8ceeb231..b7c14a342baee3a44e0b9096c00c971b038eb79c 100644
+index 40b7639e013d8bfa54df98802947fbfe38c60876..14181c18937ad094ffe2e8ee5e1f70e6b8d5361b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,7 @@ import net.md_5.bungee.protocol.packet.ClientSettings;
@@ -220,7 +220,7 @@ index 82b56e06b3ab316ff294517316e0d86b8ceeb231..b7c14a342baee3a44e0b9096c00c971b
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
  import net.md_5.bungee.protocol.packet.EntityEffect;
-@@ -396,6 +397,21 @@ public enum Protocol
+@@ -391,6 +392,21 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_16_2, 0x18 ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x19 )
              );

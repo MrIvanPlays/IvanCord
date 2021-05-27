@@ -103,32 +103,10 @@ index 849ba1cf93a234f71b363073904efa52ca6d7ce5..d4d7323a084ccae0444c428a266ead50
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index d2a11a8269617a5540d23d3b53c562fe1b2d0d6f..0357eec3d2b50b83f928b82531ba1e9dad53bc15 100644
+index d2a11a8269617a5540d23d3b53c562fe1b2d0d6f..fb02dfd1b15b68021da41d131d5ffc19664e2fd1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -33,16 +33,21 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
- import net.md_5.bungee.protocol.packet.PlayerListItem;
- import net.md_5.bungee.protocol.packet.PluginMessage;
- import net.md_5.bungee.protocol.packet.Respawn;
-+// IvanCord - comment these
-+/*
- import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
- import net.md_5.bungee.protocol.packet.ScoreboardObjective;
- import net.md_5.bungee.protocol.packet.ScoreboardScore;
-+ */
- import net.md_5.bungee.protocol.packet.SetCompression;
- import net.md_5.bungee.protocol.packet.StatusRequest;
- import net.md_5.bungee.protocol.packet.StatusResponse;
- import net.md_5.bungee.protocol.packet.Subtitle;
- import net.md_5.bungee.protocol.packet.TabCompleteRequest;
- import net.md_5.bungee.protocol.packet.TabCompleteResponse;
-+/* IvanCord
- import net.md_5.bungee.protocol.packet.Team;
-+ */
- import net.md_5.bungee.protocol.packet.Title;
- import net.md_5.bungee.protocol.packet.TitleTimes;
- import net.md_5.bungee.protocol.packet.ViewDistance;
-@@ -122,6 +127,8 @@ public enum Protocol
+@@ -122,6 +122,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_16, 0x0C ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x0D )
              );
@@ -137,7 +115,7 @@ index d2a11a8269617a5540d23d3b53c562fe1b2d0d6f..0357eec3d2b50b83f928b82531ba1e9d
              // Waterfall start
              TO_CLIENT.registerPacket(
                      EntityEffect.class,
-@@ -136,6 +143,7 @@ public enum Protocol
+@@ -136,6 +138,7 @@ public enum Protocol
                      map(ProtocolConstants.MINECRAFT_1_9, Integer.MIN_VALUE)
              );
              // Waterfall end
@@ -145,7 +123,7 @@ index d2a11a8269617a5540d23d3b53c562fe1b2d0d6f..0357eec3d2b50b83f928b82531ba1e9d
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      PlayerListItem::new, // Waterfall - speed up packet construction
-@@ -160,6 +168,8 @@ public enum Protocol
+@@ -160,6 +163,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_16_2, 0x0F ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x11 )
              );
@@ -154,7 +132,7 @@ index d2a11a8269617a5540d23d3b53c562fe1b2d0d6f..0357eec3d2b50b83f928b82531ba1e9d
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
                      ScoreboardObjective::new, // Waterfall - speed up packet construction
-@@ -208,6 +218,8 @@ public enum Protocol
+@@ -208,6 +213,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_15, 0x4C ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x55 )
              );
@@ -404,48 +382,10 @@ index a0cff49d1108a16fb5d703fbe38cceb882c53275..e479cda4b3683c06185b0b51a48ca30a
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 2c2427a6c2acf037cbb84b3a440e92cb64519352..b233d3786372fbc4b20b54108a33eea442391dde 100644
+index 2c2427a6c2acf037cbb84b3a440e92cb64519352..0b7a7b4d880449a95fe2a5cf99844b5e7bc67144 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -42,11 +42,14 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
- import net.md_5.bungee.api.event.ServerKickEvent;
- import net.md_5.bungee.api.event.TabCompleteResponseEvent;
- import net.md_5.bungee.api.plugin.Command;
-+// IvanCord - comment not needed imports
-+/*
- import net.md_5.bungee.api.score.Objective;
- import net.md_5.bungee.api.score.Position;
- import net.md_5.bungee.api.score.Score;
- import net.md_5.bungee.api.score.Scoreboard;
- import net.md_5.bungee.api.score.Team;
-+ */
- import net.md_5.bungee.chat.ComponentSerializer;
- import net.md_5.bungee.entitymap.EntityMap;
- import net.md_5.bungee.netty.ChannelWrapper;
-@@ -56,16 +59,22 @@ import net.md_5.bungee.protocol.PacketWrapper;
- import net.md_5.bungee.protocol.ProtocolConstants;
- import net.md_5.bungee.protocol.packet.BossBar;
- import net.md_5.bungee.protocol.packet.Commands;
-+// IvanCord - comment not needed imports
-+/*
- import net.md_5.bungee.protocol.packet.EntityEffect;
- import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
-+ */
- import net.md_5.bungee.protocol.packet.KeepAlive;
- import net.md_5.bungee.protocol.packet.Kick;
- import net.md_5.bungee.protocol.packet.PlayerListItem;
- import net.md_5.bungee.protocol.packet.PluginMessage;
- import net.md_5.bungee.protocol.packet.Respawn;
-+// IvanCord - comment not needed imports
-+/*
- import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
- import net.md_5.bungee.protocol.packet.ScoreboardObjective;
- import net.md_5.bungee.protocol.packet.ScoreboardScore;
-+ */
- import net.md_5.bungee.protocol.packet.SetCompression;
- import net.md_5.bungee.protocol.packet.TabCompleteResponse;
- import net.md_5.bungee.tab.TabList;
-@@ -142,11 +151,13 @@ public class DownstreamBridge extends PacketHandler
+@@ -142,11 +142,13 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PacketWrapper packet) throws Exception
      {
@@ -459,7 +399,7 @@ index 2c2427a6c2acf037cbb84b3a440e92cb64519352..b233d3786372fbc4b20b54108a33eea4
          con.sendPacket( packet );
      }
  
-@@ -173,6 +184,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -173,6 +175,8 @@ public class DownstreamBridge extends PacketHandler
          // Waterfall end
      }
  
@@ -468,7 +408,7 @@ index 2c2427a6c2acf037cbb84b3a440e92cb64519352..b233d3786372fbc4b20b54108a33eea4
      @Override
      public void handle(ScoreboardObjective objective) throws Exception
      {
-@@ -274,6 +287,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -274,6 +278,8 @@ public class DownstreamBridge extends PacketHandler
              }
          }
      }
@@ -477,7 +417,7 @@ index 2c2427a6c2acf037cbb84b3a440e92cb64519352..b233d3786372fbc4b20b54108a33eea4
  
      @Override
      public void handle(PluginMessage pluginMessage) throws Exception
-@@ -683,6 +698,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -683,6 +689,8 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -486,7 +426,7 @@ index 2c2427a6c2acf037cbb84b3a440e92cb64519352..b233d3786372fbc4b20b54108a33eea4
      // Waterfall start
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
-@@ -710,6 +727,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -710,6 +718,7 @@ public class DownstreamBridge extends PacketHandler
          return entityId;
      }
      // Waterfall end
