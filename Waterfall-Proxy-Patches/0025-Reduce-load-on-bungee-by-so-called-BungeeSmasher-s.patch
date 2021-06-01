@@ -6,10 +6,10 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-index dae1f037948ab658cfbb7a5eaeb208ade309700d..9b0332fe7774f2afa07bbf8d009b7f423e7b0784 100644
+index 8f518af70806c3a43ec0dcfd94ea82ec19858130..69c7e2cf731465388a674f2ee554f493347422c2 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-@@ -193,6 +193,7 @@ public class EventBus
+@@ -192,6 +192,7 @@ public class EventBus
                      {
                          for ( Method method : listenerHandlers.getValue() )
                          {

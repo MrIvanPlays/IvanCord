@@ -264,7 +264,7 @@ index 0000000000000000000000000000000000000000..af98fbff282dc893fd96b560dc91a4b2
 +    }
 +}
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-index d28fd528bea2d06d2471e2b06b89f59ce7fba0e2..dae1f037948ab658cfbb7a5eaeb208ade309700d 100644
+index ac6b9758557e200127a3c03e0d3ef89912963fad..8f518af70806c3a43ec0dcfd94ea82ec19858130 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
 @@ -52,10 +52,10 @@ public class EventBus
@@ -280,16 +280,7 @@ index d28fd528bea2d06d2471e2b06b89f59ce7fba0e2..dae1f037948ab658cfbb7a5eaeb208ad
                      if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, ex ); //Waterfall - call passed exception handler
                  }
              }
-@@ -120,7 +120,7 @@ public class EventBus
-                         currentPriorityMap = new HashMap<>();
-                         prioritiesMap.put( entry.getKey(), currentPriorityMap );
-                     }
--                    Method[] baked = new Method[ entry.getValue().size() ];
-+                    Method[] baked = new Method[ 0 ]; // IvanCord - 0 is faster
-                     currentPriorityMap.put( listener, entry.getValue().toArray( baked ) );
-                 }
-                 bakeHandlers( e.getKey() );
-@@ -193,13 +193,13 @@ public class EventBus
+@@ -192,7 +192,7 @@ public class EventBus
                      {
                          for ( Method method : listenerHandlers.getValue() )
                          {
@@ -298,13 +289,6 @@ index d28fd528bea2d06d2471e2b06b89f59ce7fba0e2..dae1f037948ab658cfbb7a5eaeb208ad
                              handlersList.add( ehm );
                          }
                      }
-                 }
-             } while ( value++ < Byte.MAX_VALUE );
--            byEventBaked.put( eventClass, handlersList.toArray( new EventHandlerMethod[ handlersList.size() ] ) );
-+            byEventBaked.put( eventClass, handlersList.toArray( new EventHandlerMethod[ 0 ] ) ); // IvanCord - 0 is faster
-         } else
-         {
-             byEventBaked.remove( eventClass );
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
 index ad19c020c77a45c3b3a8a18aaf2f59c2de15ec7c..4607f99116c75b9c3beaf501b4e76369afab6d5d 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java

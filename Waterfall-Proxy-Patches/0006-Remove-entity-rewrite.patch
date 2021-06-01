@@ -103,7 +103,7 @@ index 849ba1cf93a234f71b363073904efa52ca6d7ce5..d4d7323a084ccae0444c428a266ead50
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index d2a11a8269617a5540d23d3b53c562fe1b2d0d6f..fb02dfd1b15b68021da41d131d5ffc19664e2fd1 100644
+index 91be38ea1bdee1bcc07f0189496a47a3c967a171..0e3c9667b94b4229684d631e268aaf12854c2a36 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -122,6 +122,8 @@ public enum Protocol
