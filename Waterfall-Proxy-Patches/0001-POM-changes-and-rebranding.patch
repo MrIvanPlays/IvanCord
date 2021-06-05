@@ -125,7 +125,7 @@ index a4516ed96a91e257e7beab1479b812b185099168..37402b0ecce3076744034234f6ea638f
              return;
          }
 diff --git a/chat/pom.xml b/chat/pom.xml
-index 853092339154e196f49247abc8efb9e2e4f7a24d..5c7dee96e5b09d9b3bc334a94212c686bfb24a37 100644
+index dffdddaf4b1be69f10b5529e99a6c30afca829e4..3e1652123fcbc8ebe19766599fc69e2d8b784680 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -4,19 +4,18 @@
