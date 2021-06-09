@@ -123,10 +123,10 @@ index fde626b1ac777f14600eb052f36cb4b11fa8044c..e64ea66b1e7de49834bed0b7d195e084
      @Test
      public void doTest() throws DataFormatException
 diff --git a/pom.xml b/pom.xml
-index 816fab2efa1e75e7155bd359867bb1ab4c14e6be..ee8c8ac50c11353feab943b6712532ca16a343cf 100644
+index 26fce2a6b386f3f3fa509c576e1fda431fe8b37c..fbce6a88386151cf69aa2a0e55a5054d6e0af1f5 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -46,6 +46,7 @@
+@@ -47,6 +47,7 @@
          <module>query</module>
          <!--<module>slf4j</module>-->
          <module>native</module>
@@ -135,7 +135,7 @@ index 816fab2efa1e75e7155bd359867bb1ab4c14e6be..ee8c8ac50c11353feab943b6712532ca
  
      <scm>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index c680bde9cf314696dd05801f6658a05269fd6aa2..2e756690b4db953ab5d88e7be2e66f800cd80d73 100644
+index 87659db455eec2938fe407a54bc1a8eb79a615c3..f26fce0817763c9f0bf4060a26e37ccce289479a 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -63,5 +63,13 @@
@@ -283,7 +283,7 @@ index c0d371426a16565e735015b1f679278e0360ed1c..f33df1f37bda8327f12a55329b65f67d
      }
  }
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 4893701ee3dc6e94957af166092255ee9b09ed3a..701d224067fce725248ef6bdfaca64edc1ea4e11 100644
+index aaca930c7838cb01f223f287391f52d41942a91d..51c517b56ef991308a727bb071f993dd7d6d1ba8 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -149,6 +149,14 @@
@@ -719,7 +719,7 @@ index 8becc26a5c6bcb3c8072bd9bd550e65c2c20b71b..f9e1cd5f2cd0d74440f0bc548dbff01e
          new Bootstrap()
 diff --git a/shared/pom.xml b/shared/pom.xml
 new file mode 100644
-index 0000000000000000000000000000000000000000..3cedd5fe74bb650b061dafec611f6cf1df0b0e54
+index 0000000000000000000000000000000000000000..3d4acd96aa64ea93a769d5f661ad1329868be9d7
 --- /dev/null
 +++ b/shared/pom.xml
 @@ -0,0 +1,34 @@
@@ -730,7 +730,7 @@ index 0000000000000000000000000000000000000000..3cedd5fe74bb650b061dafec611f6cf1
 +    <parent>
 +        <artifactId>ivancord-parent</artifactId>
 +        <groupId>com.github.mrivanplays</groupId>
-+        <version>1.16-R0.5-SNAPSHOT</version>
++        <version>1.17-R0.1-SNAPSHOT</version>
 +    </parent>
 +    <modelVersion>4.0.0</modelVersion>
 +

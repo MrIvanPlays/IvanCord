@@ -1014,10 +1014,143 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
-index 26edbca85b40fd0be24a5745f0361157131f45f1..95b88d7516b7f57adcbbf6fe15a799fbd043a208 100644
+index 26edbca85b40fd0be24a5745f0361157131f45f1..a565a8f21f2cc9a04682063de9cd84bacd204e81 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
-@@ -614,15 +614,28 @@ public class Commands extends DefinedPacket
+@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
+ import com.mojang.brigadier.Command;
+ import com.mojang.brigadier.StringReader;
+ import com.mojang.brigadier.arguments.ArgumentType;
++import com.mojang.brigadier.arguments.BoolArgumentType; // IvanCord
+ import com.mojang.brigadier.arguments.DoubleArgumentType;
+ import com.mojang.brigadier.arguments.FloatArgumentType;
+ import com.mojang.brigadier.arguments.IntegerArgumentType;
+@@ -323,7 +324,7 @@ public class Commands extends DefinedPacket
+             {
+             }
+         };
+-        private static final ArgumentSerializer<Boolean> BOOLEAN = new ArgumentSerializer<Boolean>()
++        private static final ProperArgumentSerializer<Boolean> BOOLEAN = new ProperArgumentSerializer<Boolean>() // IvanCord
+         {
+             @Override
+             protected Boolean read(ByteBuf buf)
+@@ -336,6 +337,14 @@ public class Commands extends DefinedPacket
+             {
+                 buf.writeBoolean( t );
+             }
++
++            // IvanCord start
++            @Override
++            protected String getKey()
++            {
++                return "brigadier:bool";
++            }
++            // IvanCord end
+         };
+         private static final ArgumentSerializer<Byte> BYTE = new ArgumentSerializer<Byte>()
+         {
+@@ -351,7 +360,7 @@ public class Commands extends DefinedPacket
+                 buf.writeByte( t );
+             }
+         };
+-        private static final ArgumentSerializer<FloatArgumentType> FLOAT = new ArgumentSerializer<FloatArgumentType>()
++        private static final ProperArgumentSerializer<FloatArgumentType> FLOAT = new ProperArgumentSerializer<FloatArgumentType>() // IvanCord
+         {
+             @Override
+             protected FloatArgumentType read(ByteBuf buf)
+@@ -379,8 +388,16 @@ public class Commands extends DefinedPacket
+                     buf.writeFloat( t.getMaximum() );
+                 }
+             }
++
++            // IvanCord start
++            @Override
++            protected String getKey()
++            {
++                return "brigadier:float";
++            }
++            // IvanCord end
+         };
+-        private static final ArgumentSerializer<DoubleArgumentType> DOUBLE = new ArgumentSerializer<DoubleArgumentType>()
++        private static final ProperArgumentSerializer<DoubleArgumentType> DOUBLE = new ProperArgumentSerializer<DoubleArgumentType>() // IvanCord
+         {
+             @Override
+             protected DoubleArgumentType read(ByteBuf buf)
+@@ -408,8 +425,16 @@ public class Commands extends DefinedPacket
+                     buf.writeDouble( t.getMaximum() );
+                 }
+             }
++
++            // IvanCord start
++            @Override
++            protected String getKey()
++            {
++                return "brigadier:double";
++            }
++            // IvanCord end
+         };
+-        private static final ArgumentSerializer<IntegerArgumentType> INTEGER = new ArgumentSerializer<IntegerArgumentType>()
++        private static final ProperArgumentSerializer<IntegerArgumentType> INTEGER = new ProperArgumentSerializer<IntegerArgumentType>() // IvanCord
+         {
+             @Override
+             protected IntegerArgumentType read(ByteBuf buf)
+@@ -437,8 +462,16 @@ public class Commands extends DefinedPacket
+                     buf.writeInt( t.getMaximum() );
+                 }
+             }
++
++            // IvanCord start
++            @Override
++            protected String getKey()
++            {
++                return "brigadier:integer";
++            }
++            // IvanCord end
+         };
+-        private static final ArgumentSerializer<LongArgumentType> LONG = new ArgumentSerializer<LongArgumentType>()
++        private static final ProperArgumentSerializer<LongArgumentType> LONG = new ProperArgumentSerializer<LongArgumentType>() // IvanCord
+         {
+             @Override
+             protected LongArgumentType read(ByteBuf buf)
+@@ -466,6 +499,14 @@ public class Commands extends DefinedPacket
+                     buf.writeLong( t.getMaximum() );
+                 }
+             }
++
++            // IvanCord start
++            @Override
++            protected String getKey()
++            {
++                return "brigadier:long";
++            }
++            // IvanCord end
+         };
+         private static final ProperArgumentSerializer<StringArgumentType> STRING = new ProperArgumentSerializer<StringArgumentType>()
+         {
+@@ -501,15 +542,21 @@ public class Commands extends DefinedPacket
+ 
+         static
+         {
+-            PROVIDERS.put( "brigadier:bool", VOID );
++            PROVIDERS.put( "brigadier:bool", BOOLEAN ); // IvanCord
++            PROPER_PROVIDERS.put( BoolArgumentType.class, BOOLEAN ); // IvanCord
+             PROVIDERS.put( "brigadier:float", FLOAT );
++            PROPER_PROVIDERS.put( FloatArgumentType.class, FLOAT ); // IvanCord
+             PROVIDERS.put( "brigadier:double", DOUBLE );
++            PROPER_PROVIDERS.put( DoubleArgumentType.class, DOUBLE ); // IvanCord
+             PROVIDERS.put( "brigadier:integer", INTEGER );
++            PROPER_PROVIDERS.put( IntegerArgumentType.class, INTEGER ); // IvanCord
+             PROVIDERS.put( "brigadier:long", LONG );
++            PROPER_PROVIDERS.put( LongArgumentType.class, LONG ); // IvanCord
+ 
+             PROVIDERS.put( "brigadier:string", STRING );
+             PROPER_PROVIDERS.put( StringArgumentType.class, STRING );
+ 
++            // IvanCord TODO: create serializers for the useful arguments down there
+             PROVIDERS.put( "minecraft:entity", BYTE );
+             PROVIDERS.put( "minecraft:game_profile", VOID );
+             PROVIDERS.put( "minecraft:block_pos", VOID );
+@@ -614,15 +661,28 @@ public class Commands extends DefinedPacket
      {
  
          public static final SuggestionProvider ASK_SERVER = new DummyProvider( "minecraft:ask_server" );
@@ -1046,7 +1179,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..95b88d7516b7f57adcbbf6fe15a799fb
          }
  
          private static void registerDummy(String name)
-@@ -640,9 +653,20 @@ public class Commands extends DefinedPacket
+@@ -640,9 +700,20 @@ public class Commands extends DefinedPacket
  
          private static String getKey(SuggestionProvider<DummyProvider> provider)
          {
