@@ -31,7 +31,7 @@ index 75cf6e3339857aca698ae548d0d3f5668131a5d6..d0278251c48d9281c513a3cd2b3d26a9
 +    // IvanCord end
  }
 diff --git a/event/pom.xml b/event/pom.xml
-index ed4a2c49cae1a0a43c4a754504d46824231a1c56..cdc0aa15da3a5a33069825bf1b09ef83e7e4f23e 100644
+index ed4a2c49cae1a0a43c4a754504d46824231a1c56..3ba4c397a0b14981c2ae9fc3254dec36da7aea95 100644
 --- a/event/pom.xml
 +++ b/event/pom.xml
 @@ -16,4 +16,13 @@
@@ -43,7 +43,7 @@ index ed4a2c49cae1a0a43c4a754504d46824231a1c56..cdc0aa15da3a5a33069825bf1b09ef83
 +        <dependency>
 +            <groupId>org.ow2.asm</groupId>
 +            <artifactId>asm</artifactId>
-+            <version>8.0.1</version>
++            <version>9.1</version>
 +            <scope>compile</scope>
 +        </dependency>
 +    </dependencies>

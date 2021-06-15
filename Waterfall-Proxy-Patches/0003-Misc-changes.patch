@@ -153,27 +153,6 @@ index a42d63fa881628e4bb3f6ceae8c9676e9e614b47..e0c37b1ec429db823401a7e8ce338c0c
                      <!-- Log root and BungeeCord loggers without prefix -->
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %paperMinecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
-diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index d2a11a8269617a5540d23d3b53c562fe1b2d0d6f..91be38ea1bdee1bcc07f0189496a47a3c967a171 100644
---- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-+++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -245,13 +245,16 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x59 )
-             );
-             TO_CLIENT.registerPacket( ClearTitles.class,
-+                    ClearTitles::new, // IvanCord
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x10 )
-             );
-             TO_CLIENT.registerPacket(
-                     Subtitle.class,
-+                    Subtitle::new, // IvanCord
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x57 )
-             );
-             TO_CLIENT.registerPacket( TitleTimes.class,
-+                    TitleTimes::new, // IvanCord
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x5A )
-             );
-             TO_CLIENT.registerPacket(
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index b4495e9b7646568cdf0f2065f61ab85f4b0ce9d6..bd1192caa150156fd1832ff609f3d5874e7cb4a7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
@@ -234,7 +213,7 @@ index a5efb0af281a39da79383b8bf7e3e86974212c5c..4ed248558c1549fdef2ba6bb687341a8
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 01075a85e3041e8f6445511beffe6a0f00b9ce7c..a0cff49d1108a16fb5d703fbe38cceb882c53275 100644
+index 6d974d7465a981db7c8cdbcff7d3252826d587cf..d515d401920e72400846b48a6c8e8548cb218e31 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -322,7 +322,7 @@ public final class UserConnection implements ProxiedPlayer

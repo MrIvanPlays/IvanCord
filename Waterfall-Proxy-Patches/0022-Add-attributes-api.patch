@@ -209,7 +209,7 @@ index 9619cb26ee2a6aaf65fcc9863ba79168a3e1a830..c0ea1264af309878353fa7eaac8542e3
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 5a3bea07f6d37f7ecca066de2c147aca54945d95..41e7a73ca145effa26a2be92b40fca2d592e1f28 100644
+index 44ad9234e809d0d5291a4da6bfe68921d682c597..9d47fdf46ccd62a9e9fdbdc03a5220887ee4de00 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,7 @@ import net.md_5.bungee.protocol.packet.ClientSettings;
@@ -220,7 +220,7 @@ index 5a3bea07f6d37f7ecca066de2c147aca54945d95..41e7a73ca145effa26a2be92b40fca2d
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
  import net.md_5.bungee.protocol.packet.EntityEffect;
-@@ -394,6 +395,21 @@ public enum Protocol
+@@ -396,6 +397,21 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_16_2, 0x18 ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x19 )
              );
@@ -368,7 +368,7 @@ index c23a7b0d786be236fafabbf795709c6685fad6df..2a8ddbdb2254d27419fce46d41c5bbbd
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
              // And immediate respawn
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b68937805868e069b58a70a3101d07109c3700a0..e35c1c29062c06939d9dc764775ab096e3032271 100644
+index 751508850249ea57cf93e3bc518e6edc3ab0274a..624ec8b9348e743003404b42cc376cd511e9c27b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;

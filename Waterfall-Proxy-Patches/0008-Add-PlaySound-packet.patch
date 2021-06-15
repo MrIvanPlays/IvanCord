@@ -174,7 +174,7 @@ index 89b3fdbd320871d41b2dfdc670e96bb5cae4a0a3..9619cb26ee2a6aaf65fcc9863ba79168
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index e455740d09420568499aa8d51cc62ecb907722bf..5a3bea07f6d37f7ecca066de2c147aca54945d95 100644
+index 6d3d5d23c3eb7933f7c886776db1e3379c4768e1..44ad9234e809d0d5291a4da6bfe68921d682c597 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -29,6 +29,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
@@ -185,7 +185,7 @@ index e455740d09420568499aa8d51cc62ecb907722bf..5a3bea07f6d37f7ecca066de2c147aca
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PlayerPosition;
-@@ -380,6 +381,19 @@ public enum Protocol
+@@ -382,6 +383,19 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_14, 0x12 ),
                      map( ProtocolConstants.MINECRAFT_1_16, 0x13 )
              );
@@ -372,7 +372,7 @@ index c7f7263e907e2d8c1737144dae9e0cc44dfa9964..eb435bec0d69ef86c7391565e2197a43
      public void handle(LoginPayloadRequest loginPayloadRequest)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index f64f27dd02ec907dd3601cc5be7e1a37ba8ec8e0..aec3fda318e812cf8e8f3ca9b091924d35913aaa 100644
+index d95cd1c011bad22612a1e65e890e23fc0afed4d2..b3810efbc4b22e9af74ba3e3a4fa88f16a743fee 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -58,6 +58,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;

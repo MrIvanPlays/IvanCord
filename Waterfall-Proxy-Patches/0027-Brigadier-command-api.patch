@@ -1014,7 +1014,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
-index 26edbca85b40fd0be24a5745f0361157131f45f1..a565a8f21f2cc9a04682063de9cd84bacd204e81 100644
+index 26edbca85b40fd0be24a5745f0361157131f45f1..72350f514212890d97713032c982f7eb75ba4224 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -1025,18 +1025,28 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..a565a8f21f2cc9a04682063de9cd84ba
  import com.mojang.brigadier.arguments.DoubleArgumentType;
  import com.mojang.brigadier.arguments.FloatArgumentType;
  import com.mojang.brigadier.arguments.IntegerArgumentType;
-@@ -323,7 +324,7 @@ public class Commands extends DefinedPacket
+@@ -323,19 +324,28 @@ public class Commands extends DefinedPacket
              {
              }
          };
 -        private static final ArgumentSerializer<Boolean> BOOLEAN = new ArgumentSerializer<Boolean>()
-+        private static final ProperArgumentSerializer<Boolean> BOOLEAN = new ProperArgumentSerializer<Boolean>() // IvanCord
++        private static final ProperArgumentSerializer<BoolArgumentType> BOOLEAN = new ProperArgumentSerializer<BoolArgumentType>() // IvanCord
          {
              @Override
-             protected Boolean read(ByteBuf buf)
-@@ -336,6 +337,14 @@ public class Commands extends DefinedPacket
+-            protected Boolean read(ByteBuf buf)
++            protected BoolArgumentType read(ByteBuf buf) // IvanCord
              {
-                 buf.writeBoolean( t );
+-                return buf.readBoolean();
++                return BoolArgumentType.bool(); // IvanCord
+             }
+ 
+             @Override
+-            protected void write(ByteBuf buf, Boolean t)
++            protected void write(ByteBuf buf, BoolArgumentType t) // IvanCord
+             {
+-                buf.writeBoolean( t );
++                // IvanCord - NOOP
++                //buf.writeBoolean( t );
              }
 +
 +            // IvanCord start
@@ -1049,7 +1059,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..a565a8f21f2cc9a04682063de9cd84ba
          };
          private static final ArgumentSerializer<Byte> BYTE = new ArgumentSerializer<Byte>()
          {
-@@ -351,7 +360,7 @@ public class Commands extends DefinedPacket
+@@ -351,7 +361,7 @@ public class Commands extends DefinedPacket
                  buf.writeByte( t );
              }
          };
@@ -1058,7 +1068,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..a565a8f21f2cc9a04682063de9cd84ba
          {
              @Override
              protected FloatArgumentType read(ByteBuf buf)
-@@ -379,8 +388,16 @@ public class Commands extends DefinedPacket
+@@ -379,8 +389,16 @@ public class Commands extends DefinedPacket
                      buf.writeFloat( t.getMaximum() );
                  }
              }
@@ -1076,7 +1086,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..a565a8f21f2cc9a04682063de9cd84ba
          {
              @Override
              protected DoubleArgumentType read(ByteBuf buf)
-@@ -408,8 +425,16 @@ public class Commands extends DefinedPacket
+@@ -408,8 +426,16 @@ public class Commands extends DefinedPacket
                      buf.writeDouble( t.getMaximum() );
                  }
              }
@@ -1094,7 +1104,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..a565a8f21f2cc9a04682063de9cd84ba
          {
              @Override
              protected IntegerArgumentType read(ByteBuf buf)
-@@ -437,8 +462,16 @@ public class Commands extends DefinedPacket
+@@ -437,8 +463,16 @@ public class Commands extends DefinedPacket
                      buf.writeInt( t.getMaximum() );
                  }
              }
@@ -1112,7 +1122,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..a565a8f21f2cc9a04682063de9cd84ba
          {
              @Override
              protected LongArgumentType read(ByteBuf buf)
-@@ -466,6 +499,14 @@ public class Commands extends DefinedPacket
+@@ -466,6 +500,14 @@ public class Commands extends DefinedPacket
                      buf.writeLong( t.getMaximum() );
                  }
              }
@@ -1127,12 +1137,10 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..a565a8f21f2cc9a04682063de9cd84ba
          };
          private static final ProperArgumentSerializer<StringArgumentType> STRING = new ProperArgumentSerializer<StringArgumentType>()
          {
-@@ -501,15 +542,21 @@ public class Commands extends DefinedPacket
- 
+@@ -502,14 +544,20 @@ public class Commands extends DefinedPacket
          static
          {
--            PROVIDERS.put( "brigadier:bool", VOID );
-+            PROVIDERS.put( "brigadier:bool", BOOLEAN ); // IvanCord
+             PROVIDERS.put( "brigadier:bool", VOID );
 +            PROPER_PROVIDERS.put( BoolArgumentType.class, BOOLEAN ); // IvanCord
              PROVIDERS.put( "brigadier:float", FLOAT );
 +            PROPER_PROVIDERS.put( FloatArgumentType.class, FLOAT ); // IvanCord
@@ -1150,7 +1158,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..a565a8f21f2cc9a04682063de9cd84ba
              PROVIDERS.put( "minecraft:entity", BYTE );
              PROVIDERS.put( "minecraft:game_profile", VOID );
              PROVIDERS.put( "minecraft:block_pos", VOID );
-@@ -614,15 +661,28 @@ public class Commands extends DefinedPacket
+@@ -614,15 +662,28 @@ public class Commands extends DefinedPacket
      {
  
          public static final SuggestionProvider ASK_SERVER = new DummyProvider( "minecraft:ask_server" );
@@ -1179,7 +1187,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..a565a8f21f2cc9a04682063de9cd84ba
          }
  
          private static void registerDummy(String name)
-@@ -640,9 +700,20 @@ public class Commands extends DefinedPacket
+@@ -640,9 +701,20 @@ public class Commands extends DefinedPacket
  
          private static String getKey(SuggestionProvider<DummyProvider> provider)
          {

@@ -123,7 +123,7 @@ index fde626b1ac777f14600eb052f36cb4b11fa8044c..e64ea66b1e7de49834bed0b7d195e084
      @Test
      public void doTest() throws DataFormatException
 diff --git a/pom.xml b/pom.xml
-index 26fce2a6b386f3f3fa509c576e1fda431fe8b37c..fbce6a88386151cf69aa2a0e55a5054d6e0af1f5 100644
+index 5c2aadee9d8619de0a9902568076a4d10676371c..b0a737b63677963c0b0db7746bae4e7b67c7f047 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -47,6 +47,7 @@
@@ -363,7 +363,7 @@ index ff6bb8c16d4c399cbbf933e4b706fd9bf17127b5..2f41e77085a11ca5004dafc78cc5f333
      static
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e35c1c29062c06939d9dc764775ab096e3032271..cbb9bd3db24500e59d50bd090e7aa3b04017625a 100644
+index 624ec8b9348e743003404b42cc376cd511e9c27b..309e70d1be8b7898eaf3619a7464ddb641173860 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -417,7 +417,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -386,19 +386,6 @@ index 1f2d5a70aa660d97aa95e28d35702efed3898eaa..0747afe9803977e53c43b208c69f5c0b
 -    public static final NativeCode<BungeeZlib> zlib = new NativeCode<>( "native-compress", JavaZlib.class, NativeZlib.class );
 +    public static final NativeCode<BungeeZlib> zlib = new NativeCode<>( "native-compress", JavaZlib::new, NativeZlib::new ); // IvanCord
  }
-diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
-index 37fe6ac73504cee4ba7fc336d6623b5c833c6d1d..3185204d5b5499dd68fc9315f959f91ead28458a 100644
---- a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
-+++ b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
-@@ -35,7 +35,7 @@ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
-         int size = DefinedPacket.readVarInt( in );
-         if ( size == 0 )
-         {
--            out.add( in.slice().retain() );
-+            out.add( in.retainedSlice() ); // IvanCord
-             in.skipBytes( in.readableBytes() );
-         } else
-         {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 index ee1fcad3185cc9c0db40a2d58e28fdc07ab3b8ce..308e94db6233d593a60f0e4c23f75549db42ee54 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java

@@ -103,7 +103,7 @@ index 849ba1cf93a234f71b363073904efa52ca6d7ce5..d4d7323a084ccae0444c428a266ead50
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 91be38ea1bdee1bcc07f0189496a47a3c967a171..0e3c9667b94b4229684d631e268aaf12854c2a36 100644
+index e95431a0f7105491471d45837687c2dad8178f20..416559c85140eb93c311f5b2c51c12699301cdba 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -122,6 +122,8 @@ public enum Protocol
@@ -122,7 +122,7 @@ index 91be38ea1bdee1bcc07f0189496a47a3c967a171..0e3c9667b94b4229684d631e268aaf12
 +            */ // IvanCord end
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
-                     PlayerListItem::new, // Waterfall - speed up packet construction
+                     PlayerListItem::new,
 @@ -160,6 +163,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_16_2, 0x0F ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x11 )
@@ -131,7 +131,7 @@ index 91be38ea1bdee1bcc07f0189496a47a3c967a171..0e3c9667b94b4229684d631e268aaf12
 +            /*
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
-                     ScoreboardObjective::new, // Waterfall - speed up packet construction
+                     ScoreboardObjective::new,
 @@ -208,6 +213,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_15, 0x4C ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x55 )
@@ -140,7 +140,7 @@ index 91be38ea1bdee1bcc07f0189496a47a3c967a171..0e3c9667b94b4229684d631e268aaf12
 +            // IvanCord end
              TO_CLIENT.registerPacket(
                      PluginMessage.class,
-                     PluginMessage::new, // Waterfall - speed up packet construction
+                     PluginMessage::new,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
 index d11a9ea9d663993e3af2c6250565af4b019a2dda..3b0c6f3da323cd6b8af028f01798126f7304936a 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityEffect.java
@@ -320,7 +320,7 @@ index 4ed248558c1549fdef2ba6bb687341a89a0bf1c7..c7f7263e907e2d8c1737144dae9e0cc4
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a0cff49d1108a16fb5d703fbe38cceb882c53275..e479cda4b3683c06185b0b51a48ca30aeddb441b 100644
+index d515d401920e72400846b48a6c8e8548cb218e31..efa74af492d8c88c13ca19de0d2b9757953ff2c7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -126,15 +126,22 @@ public final class UserConnection implements ProxiedPlayer

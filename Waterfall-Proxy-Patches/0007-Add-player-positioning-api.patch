@@ -164,7 +164,7 @@ index ee2317e8402ee98da9456a9b43e4f6d53753cb64..89b3fdbd320871d41b2dfdc670e96bb5
      public void handle(EntityEffect entityEffect) throws Exception
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 0e3c9667b94b4229684d631e268aaf12854c2a36..e455740d09420568499aa8d51cc62ecb907722bf 100644
+index 416559c85140eb93c311f5b2c51c12699301cdba..6d3d5d23c3eb7933f7c886776db1e3379c4768e1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -31,6 +31,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
@@ -175,7 +175,7 @@ index 0e3c9667b94b4229684d631e268aaf12854c2a36..e455740d09420568499aa8d51cc62ecb
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-@@ -367,6 +368,19 @@ public enum Protocol
+@@ -369,6 +370,19 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_14, 0x0B ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x0A )
              );
@@ -256,7 +256,7 @@ index 0000000000000000000000000000000000000000..f23fe50e8c9a22ce934f5797f9e75fb2
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index e479cda4b3683c06185b0b51a48ca30aeddb441b..f64f27dd02ec907dd3601cc5be7e1a37ba8ec8e0 100644
+index efa74af492d8c88c13ca19de0d2b9757953ff2c7..d95cd1c011bad22612a1e65e890e23fc0afed4d2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -65,6 +65,7 @@ import net.md_5.bungee.tab.ServerUnique;

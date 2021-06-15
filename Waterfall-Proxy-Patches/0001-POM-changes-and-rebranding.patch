@@ -154,7 +154,7 @@ index cfa0e16ee46fee38564b0d132489c91540616553..8c8201673aed763551e7e839d1a8e99c
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index d210e093bb7c225853e871517177c16e73b785f1..d9572ecf6f36f76137fed406d8c17e8b096194af 100644
+index 67e2500fa8d71be2bd938c4c66cf188d4667c4a7..022c371e3389b12b96db47d2ac10be3af9ee180f 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,18 @@
@@ -308,7 +308,7 @@ index 652a869d5bbc2d323fc84bd9f0dcf1d830f7757c..02d58625c9a4743a2700e87d2c58ed25
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 81ccc47a01c048c5ba22975d18f8a4e5f90b05a5..21ec40ed01275d5398610a986fc892af6b8a7acb 100644
+index fd71cdbddb95e31ededd4b85058f96995ec6fec1..e37a1b0d69fcdd4df1e2fd9b746232a29ae650fe 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,18 @@
