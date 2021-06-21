@@ -1,0 +1,122 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antoine L <antoine.l@erisium.com>
+Date: Tue, 15 Jun 2021 18:21:03 +0300
+Subject: [PATCH] Use the new ActionBar packet to send action bars for 1.17+
+ clients
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
+index c0ea1264af309878353fa7eaac8542e319413b4c..a0d906127f7f583194f523b89db079c1c7883d81 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
+@@ -1,5 +1,6 @@
+ package net.md_5.bungee.protocol;
+ 
++import net.md_5.bungee.protocol.packet.ActionBar; // IvanCord
+ import net.md_5.bungee.protocol.packet.BossBar;
+ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.ClearTitles;
+@@ -223,5 +224,9 @@ public abstract class AbstractPacketHandler
+     public void handle(EntityAttributes entityAttributes) throws Exception
+     {
+     }
++
++    public void handle(ActionBar actionBar) throws Exception
++    {
++    }
+     // IvanCord end
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+index 9d47fdf46ccd62a9e9fdbdc03a5220887ee4de00..db71e870632bb9d9efdf5d1e44e9f35fed5e33c4 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
+@@ -9,6 +9,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
+ import java.util.function.Supplier;
+ import lombok.Data;
+ import lombok.Getter;
++import net.md_5.bungee.protocol.packet.ActionBar;
+ import net.md_5.bungee.protocol.packet.BossBar;
+ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.ClearTitles;
+@@ -320,6 +321,13 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_16, 0x41 ),
+                     map( ProtocolConstants.MINECRAFT_1_17, 0x4A )
+             );
++            // IvanCord start
++            TO_CLIENT.registerPacket(
++                    ActionBar.class,
++                    ActionBar::new,
++                    map( ProtocolConstants.MINECRAFT_1_17, 0x41 )
++            );
++            // IvanCord end
+ 
+             TO_SERVER.registerPacket(
+                     KeepAlive.class,
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ActionBar.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ActionBar.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..07fbec5cf685bc24df5b3d485804f870d1dfd14d
+--- /dev/null
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ActionBar.java
+@@ -0,0 +1,39 @@
++// IvanCord start
++package net.md_5.bungee.protocol.packet;
++
++import io.netty.buffer.ByteBuf;
++import lombok.AllArgsConstructor;
++import lombok.Data;
++import lombok.EqualsAndHashCode;
++import lombok.NoArgsConstructor;
++import net.md_5.bungee.protocol.AbstractPacketHandler;
++import net.md_5.bungee.protocol.DefinedPacket;
++
++@Data
++@NoArgsConstructor
++@AllArgsConstructor
++@EqualsAndHashCode(callSuper = false)
++public class ActionBar extends DefinedPacket
++{
++
++    private String text;
++
++    @Override
++    public void read(ByteBuf buf)
++    {
++        text = readString( buf, 262144 );
++    }
++
++    @Override
++    public void write(ByteBuf buf)
++    {
++        writeString( text, buf );
++    }
++
++    @Override
++    public void handle(AbstractPacketHandler handler) throws Exception
++    {
++        handler.handle( this );
++    }
++}
++// IvanCord end
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 309e70d1be8b7898eaf3619a7464ddb641173860..235986985739b1cf3da5fa7ed1a4c4a688b12d8f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -538,13 +538,17 @@ public final class UserConnection implements ProxiedPlayer
+         // transform score components
+         message = ChatComponentTransformer.getInstance().transform( this, true, message );
+ 
+-        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_17 )
++        if ( position == ChatMessageType.ACTION_BAR ) // IvanCord - remove check
+         {
+             // Versions older than 1.11 cannot send the Action bar with the new JSON formattings
+             // Fix by converting to a legacy message, see https://bugs.mojang.com/browse/MC-119145
+             if ( getPendingConnection().getVersion() <= ProtocolConstants.MINECRAFT_1_10 )
+             {
+                 sendMessage( position, sender, ComponentSerializer.toString( new TextComponent( BaseComponent.toLegacyText( message ) ) ) );
++            } else if ( getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_17 ) // IvanCord start
++            {
++                unsafe.sendPacket( new net.md_5.bungee.protocol.packet.ActionBar( ComponentSerializer.toString( message ) ) );
++                // IvanCord end
+             } else
+             {
+                 net.md_5.bungee.protocol.packet.Title title = new net.md_5.bungee.protocol.packet.Title();
