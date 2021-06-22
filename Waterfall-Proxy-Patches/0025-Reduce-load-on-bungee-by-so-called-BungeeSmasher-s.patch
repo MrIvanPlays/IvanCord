@@ -387,7 +387,7 @@ index 1f2d5a70aa660d97aa95e28d35702efed3898eaa..0747afe9803977e53c43b208c69f5c0b
 +    public static final NativeCode<BungeeZlib> zlib = new NativeCode<>( "native-compress", JavaZlib::new, NativeZlib::new ); // IvanCord
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index ee1fcad3185cc9c0db40a2d58e28fdc07ab3b8ce..308e94db6233d593a60f0e4c23f75549db42ee54 100644
+index ee1fcad3185cc9c0db40a2d58e28fdc07ab3b8ce..2fc8bf6600f752aca94788dee2808c0a400de702 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -140,9 +140,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -428,15 +428,7 @@ index ee1fcad3185cc9c0db40a2d58e28fdc07ab3b8ce..308e94db6233d593a60f0e4c23f75549
          }
      }
  
-@@ -531,6 +534,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-         {
-             uniqueId = offlineId;
-         }
-+        ch.getHandle().pipeline().replace( PipelineUtils.TIMEOUT_HANDLER, PipelineUtils.TIMEOUT_HANDLER, new io.netty.handler.timeout.ReadTimeoutHandler( bungee.config.getTimeout(), java.util.concurrent.TimeUnit.MILLISECONDS ) ); // IvanCord
- 
-         Callback<LoginEvent> complete = new Callback<LoginEvent>()
-         {
-@@ -702,4 +706,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -702,4 +705,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          return !ch.isClosed();
      }
@@ -561,7 +553,7 @@ index 270545f28e299ecd12e76213dbd2a11bcc9701e3..aae1fe508aa24b0b5a3fcd7643b1a50b
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 9e6af925a7a62f6506cafd14fc443312520c04a1..672ba15b98da0770147e9e0d005d61a0b52759d1 100644
+index 9e6af925a7a62f6506cafd14fc443312520c04a1..5152916fcb917d9f877273b9e47cda85a90acdb8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -63,14 +63,14 @@ public class PipelineUtils
@@ -640,15 +632,6 @@ index 9e6af925a7a62f6506cafd14fc443312520c04a1..672ba15b98da0770147e9e0d005d61a0
      public static Class<? extends DatagramChannel> getDatagramChannel()
      {
          return epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
-@@ -200,7 +238,7 @@ public class PipelineUtils
-             ch.config().setWriteBufferWaterMark( MARK );
- 
-             ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
--            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
-+            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( 3000L, TimeUnit.MILLISECONDS ) );
-             ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
- 
-             ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/util/QuietException.java b/proxy/src/main/java/net/md_5/bungee/util/QuietException.java
 deleted file mode 100644
 index 3c958fde058dcde19bfdbf3d74d2325e32adaf76..0000000000000000000000000000000000000000

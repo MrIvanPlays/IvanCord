@@ -1014,10 +1014,10 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
  }
 diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/command/message/BungeeMessage.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/message/BungeeMessage.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..42f139c14ceaaca789023b62dde041d194cb85eb
+index 0000000000000000000000000000000000000000..b3a8c5e22860ab314553019f267be2bc5e3a16fc
 --- /dev/null
 +++ b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/message/BungeeMessage.java
-@@ -0,0 +1,126 @@
+@@ -0,0 +1,134 @@
 +package com.mrivanplays.ivancord.api.command.message;
 +
 +import com.google.gson.JsonSyntaxException;
@@ -1108,8 +1108,7 @@ index 0000000000000000000000000000000000000000..42f139c14ceaaca789023b62dde041d1
 +        return component;
 +    }
 +
-+    private static final String STRING_MESSAGE = "BungeeMessage. If you see this, something went wrong. Please report to IvanCord.";
-+
++    private final String legacyText;
 +    private final BaseComponent[] message;
 +
 +    /**
@@ -1120,6 +1119,13 @@ index 0000000000000000000000000000000000000000..42f139c14ceaaca789023b62dde041d1
 +    public BungeeMessage(BaseComponent... text)
 +    {
 +        this.message = text;
++        if ( this.message != null )
++        {
++            this.legacyText = BaseComponent.toLegacyText( text );
++        } else
++        {
++            this.legacyText = null;
++        }
 +    }
 +
 +    /**
@@ -1135,13 +1141,15 @@ index 0000000000000000000000000000000000000000..42f139c14ceaaca789023b62dde041d1
 +    @Override
 +    public String getString()
 +    {
-+        return STRING_MESSAGE;
++        return this.legacyText;
 +    }
 +
 +    @Override
 +    public String toString()
 +    {
-+        return STRING_MESSAGE;
++        return "BungeeMessage{" +
++            "message=" + this.legacyText +
++            '}';
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java

@@ -446,7 +446,7 @@ index 0000000000000000000000000000000000000000..bc67f15520e35694f53ae3aadaa3eb1d
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a52c612ebef5119363111bd3adc48dbc874cc84b
+index 0000000000000000000000000000000000000000..060c419f700dad08ace2fcad08404c3c5be553c9
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandServer.java
 @@ -0,0 +1,97 @@
@@ -502,7 +502,7 @@ index 0000000000000000000000000000000000000000..a52c612ebef5119363111bd3adc48dbc
 +                    serverTextComponent.setHoverEvent( new HoverEvent(
 +                            HoverEvent.Action.SHOW_TEXT,
 +                            new ComponentBuilder( count + ( count == 1 ? " player" : " players" ) + "\n" )
-+                                    .append( ProxyServer.getInstance().getTranslation( "click_to_connect" ) ).create() )
++                                    .append( ICUtil.translation( "click_to_connect" ) ).create() )
 +                    );
 +                    serverTextComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/server " + server.getName() ) );
 +                    serverList.append( serverTextComponent );
