@@ -209,7 +209,7 @@ index 9619cb26ee2a6aaf65fcc9863ba79168a3e1a830..c0ea1264af309878353fa7eaac8542e3
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 44ad9234e809d0d5291a4da6bfe68921d682c597..9d47fdf46ccd62a9e9fdbdc03a5220887ee4de00 100644
+index 44ad9234e809d0d5291a4da6bfe68921d682c597..93f834e3a0e55a7892835ced3ead32714e88ead9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,7 @@ import net.md_5.bungee.protocol.packet.ClientSettings;
@@ -237,7 +237,7 @@ index 44ad9234e809d0d5291a4da6bfe68921d682c597..9d47fdf46ccd62a9e9fdbdc03a522088
 +                    map( ProtocolConstants.MINECRAFT_1_14, 0x58 ),
 +                    map( ProtocolConstants.MINECRAFT_1_15, 0x59 ),
 +                    map( ProtocolConstants.MINECRAFT_1_16, 0x58 ),
-+                    map( ProtocolConstants.MINECRAFT_1_17, 0x62 )
++                    map( ProtocolConstants.MINECRAFT_1_17, 0x63 )
 +            );
              // IvanCord end
          }

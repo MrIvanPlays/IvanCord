@@ -107,10 +107,10 @@ index 0000000000000000000000000000000000000000..c4769518b0e957b5365983434adcfca8
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..0eb9e3e9113bb49356047abf70b502499e268b18
+index 0000000000000000000000000000000000000000..c6bb3fb31359d5bb73c18b1e3d0abc9671ff5327
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
-@@ -0,0 +1,513 @@
+@@ -0,0 +1,512 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.base.Preconditions;
@@ -125,6 +125,7 @@ index 0000000000000000000000000000000000000000..0eb9e3e9113bb49356047abf70b50249
 +import com.mojang.brigadier.suggestion.Suggestions;
 +import com.mojang.brigadier.tree.CommandNode;
 +import com.mojang.brigadier.tree.LiteralCommandNode;
++import com.mrivanplays.ivancord.api.command.message.BungeeMessage;
 +import com.mrivanplays.ivancord.api.util.Constants;
 +import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
 +import io.github.waterfallmc.waterfall.exception.ProxyCommandException;
@@ -140,10 +141,8 @@ index 0000000000000000000000000000000000000000..0eb9e3e9113bb49356047abf70b50249
 +import java.util.concurrent.locks.Lock;
 +import java.util.concurrent.locks.ReentrantLock;
 +import java.util.logging.Level;
-+import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.CommandSender;
 +import net.md_5.bungee.api.ProxyServer;
-+import net.md_5.bungee.api.chat.ComponentBuilder;
 +import net.md_5.bungee.api.chat.TextComponent;
 +import net.md_5.bungee.api.connection.ProxiedPlayer;
 +import net.md_5.bungee.api.plugin.Command;
@@ -432,7 +431,7 @@ index 0000000000000000000000000000000000000000..0eb9e3e9113bb49356047abf70b50249
 +                    }
 +                }
 +            }
-+            sender.sendMessage( new ComponentBuilder( e.getMessage() ).color( ChatColor.RED ).create() );
++            sender.sendMessage( BungeeMessage.convertSyntaxException( e ) );
 +            return 2;
 +        } catch ( Throwable e )
 +        {
@@ -1013,6 +1012,138 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
 +    }
 +    // IvanCord end
  }
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/command/message/BungeeMessage.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/message/BungeeMessage.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..42f139c14ceaaca789023b62dde041d194cb85eb
+--- /dev/null
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/message/BungeeMessage.java
+@@ -0,0 +1,126 @@
++package com.mrivanplays.ivancord.api.command.message;
++
++import com.google.gson.JsonSyntaxException;
++import com.mojang.brigadier.Message;
++import com.mojang.brigadier.exceptions.CommandSyntaxException;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.chat.TranslatableComponent;
++import net.md_5.bungee.chat.ComponentSerializer;
++
++/**
++ * Represents a BungeeCord implementation of the Brigadier's {@link Message} interface.
++ * With it, you are able to send custom messages to the command senders, using
++ * {@link com.mojang.brigadier.suggestion.SuggestionsBuilder#suggest(String, Message)}
++ */
++public final class BungeeMessage implements Message
++{
++
++    /**
++     * Converts the provided {@link CommandSyntaxException} into a BungeeCord style message.
++     *
++     * @param exception the exception provided
++     * @return a message that could be directly sent to a CommandExecutor
++     */
++    public static BaseComponent convertSyntaxException(CommandSyntaxException exception)
++    {
++        Message rawMessage = exception.getRawMessage();
++        TextComponent text;
++        if ( rawMessage instanceof BungeeMessage )
++        {
++            BungeeMessage bungeeMessage = (BungeeMessage) rawMessage;
++            text = new TextComponent( bungeeMessage.getMessage() );
++        } else
++        {
++            try
++            {
++                BaseComponent[] parsedJson = ComponentSerializer.parse( rawMessage.getString() );
++                text = new TextComponent( parsedJson );
++            } catch ( JsonSyntaxException e )
++            {
++                text = new TextComponent( rawMessage.getString() );
++                text.setColor( ChatColor.RED );
++            }
++        }
++
++        TextComponent context = convertContextOf( exception );
++
++        if ( context != null )
++        {
++            TranslatableComponent ret =
++                new TranslatableComponent( "command.context.parse_error", text, exception.getCursor(), context );
++            ret.setColor( ChatColor.RED );
++            return ret;
++        }
++
++        return text;
++    }
++
++    /**
++     * Converts {@link CommandSyntaxException#getContext()} to a component.
++     *
++     * @param exception the exception provided
++     * @return converted context, or null
++     */
++    public static TextComponent convertContextOf(CommandSyntaxException exception)
++    {
++        String input = exception.getInput();
++        int startingCursor = exception.getCursor();
++        if ( input == null || startingCursor < 0 )
++        {
++            return null;
++        }
++
++        TextComponent component = new TextComponent();
++        int cursor = Math.min( input.length(), startingCursor );
++        if ( cursor > CommandSyntaxException.CONTEXT_AMOUNT )
++        {
++            component.addExtra( "..." );
++        }
++        component.addExtra( input.substring( Math.max( 0, cursor - CommandSyntaxException.CONTEXT_AMOUNT ), cursor ) );
++        component.setColor( ChatColor.GRAY );
++
++        TranslatableComponent hereParam = new TranslatableComponent( "command.context.here" );
++        hereParam.setColor( ChatColor.RED );
++        component.addExtra( hereParam );
++
++        return component;
++    }
++
++    private static final String STRING_MESSAGE = "BungeeMessage. If you see this, something went wrong. Please report to IvanCord.";
++
++    private final BaseComponent[] message;
++
++    /**
++     * Creates a new {@link BungeeMessage}
++     *
++     * @param text components
++     */
++    public BungeeMessage(BaseComponent... text)
++    {
++        this.message = text;
++    }
++
++    /**
++     * Returns the message provided.
++     *
++     * @return message
++     */
++    public BaseComponent[] getMessage()
++    {
++        return message;
++    }
++
++    @Override
++    public String getString()
++    {
++        return STRING_MESSAGE;
++    }
++
++    @Override
++    public String toString()
++    {
++        return STRING_MESSAGE;
++    }
++}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
 index 26edbca85b40fd0be24a5745f0361157131f45f1..72350f514212890d97713032c982f7eb75ba4224 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
@@ -1208,6 +1339,104 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..72350f514212890d97713032c982f7eb
          }
  
          @Data
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java
+index ca7c6342bb678187432adb93aca7b20fbe71a200..3109f17ea0c38de32e31acaf9ae24b4e2eaca625 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java
+@@ -53,7 +53,39 @@ public class TabCompleteResponse extends DefinedPacket
+                 String match = readString( buf );
+                 String tooltip = buf.readBoolean() ? readString( buf ) : null;
+ 
++                // IvanCord start - replace
++                /*
+                 matches.add( new Suggestion( range, match, new LiteralMessage( tooltip ) ) );
++                 */
++                if ( tooltip != null )
++                {
++                    try
++                    {
++                        net.md_5.bungee.api.chat.BaseComponent[] message =
++                            net.md_5.bungee.chat.ComponentSerializer.parse( tooltip );
++                        matches.add(
++                            new Suggestion(
++                                range, match,
++                                new com.mrivanplays.ivancord.api.command.message.BungeeMessage( message )
++                            )
++                        );
++                    } catch ( com.google.gson.JsonSyntaxException e )
++                    {
++                        // convert to json
++                        matches.add(
++                            new Suggestion(
++                                range, match,
++                                new com.mrivanplays.ivancord.api.command.message.BungeeMessage(
++                                    net.md_5.bungee.api.chat.TextComponent.fromLegacyText( tooltip )
++                                )
++                            )
++                        );
++                    }
++                } else
++                {
++                    matches.add( new Suggestion( range, match ) );
++                }
++                // IvanCord end
+             }
+ 
+             suggestions = new Suggestions( range, matches );
+@@ -78,11 +110,53 @@ public class TabCompleteResponse extends DefinedPacket
+             for ( Suggestion suggestion : suggestions.getList() )
+             {
+                 writeString( suggestion.getText(), buf );
++                // IvanCord start - rewrite this
++                /*
+                 buf.writeBoolean( suggestion.getTooltip() != null && suggestion.getTooltip().getString() != null );
+                 if ( suggestion.getTooltip() != null && suggestion.getTooltip().getString() != null )
+                 {
+                     writeString( suggestion.getTooltip().getString(), buf );
+                 }
++                 */
++                if ( suggestion.getTooltip() != null )
++                {
++                    com.mojang.brigadier.Message tooltip = suggestion.getTooltip();
++                    if ( tooltip instanceof com.mrivanplays.ivancord.api.command.message.BungeeMessage )
++                    {
++                        com.mrivanplays.ivancord.api.command.message.BungeeMessage
++                            bungee = (com.mrivanplays.ivancord.api.command.message.BungeeMessage) tooltip;
++                        buf.writeBoolean( bungee.getMessage() != null );
++                        if ( bungee.getMessage() != null )
++                        {
++                            writeString( net.md_5.bungee.chat.ComponentSerializer.toString( bungee.getMessage() ), buf );
++                        }
++                    } else
++                    {
++                        buf.writeBoolean( tooltip.getString() != null );
++                        if ( tooltip.getString() != null )
++                        {
++                            // make sure this is json - otherwise we'll have some trouble
++                            try
++                            {
++                                net.md_5.bungee.chat.ComponentSerializer.parse( tooltip.getString() );
++                                writeString( tooltip.getString(), buf );
++                            } catch ( com.google.gson.JsonSyntaxException e )
++                            {
++                                // not json, have to use text components
++                                writeString(
++                                    net.md_5.bungee.chat.ComponentSerializer.toString(
++                                        new net.md_5.bungee.api.chat.TextComponent( tooltip.getString() )
++                                    ),
++                                    buf
++                                );
++                            }
++                        }
++                    }
++                } else
++                {
++                    buf.writeBoolean( false );
++                }
++                // IvanCord end
+             }
+         }
+ 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 index adcd895b423df476ad732c9c64e016f1f6baff4e..87122de04f0bf10a2382776cb575beeec6496a08 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
