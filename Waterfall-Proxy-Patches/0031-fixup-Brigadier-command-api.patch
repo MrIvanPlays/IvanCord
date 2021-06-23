@@ -1,0 +1,569 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ivan Pekov <ivan@mrivanplays.com>
+Date: Wed, 23 Jun 2021 09:58:50 +0300
+Subject: [PATCH] fixup! Brigadier command api
+
+
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
+index c6bb3fb31359d5bb73c18b1e3d0abc9671ff5327..1dd3ee19497b0f55c4398392d8dde53253a3afef 100644
+--- a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
+@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.Suggestion;
+ import com.mojang.brigadier.suggestion.Suggestions;
+ import com.mojang.brigadier.tree.CommandNode;
+ import com.mojang.brigadier.tree.LiteralCommandNode;
++import com.mrivanplays.ivancord.api.command.arguments.BungeeProtoPlayerProvider;
+ import com.mrivanplays.ivancord.api.command.message.BungeeMessage;
+ import com.mrivanplays.ivancord.api.util.Constants;
+ import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
+@@ -52,6 +53,7 @@ public final class CommandDispatcherProxy
+     {
+         this.pluginManager = pluginManager;
+         this.proxy = proxy;
++        BungeeProtoPlayerProvider.initialize( proxy );
+     }
+ 
+     public void register(Plugin plugin, Command command)
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/arguments/BungeeProtoPlayerProvider.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/arguments/BungeeProtoPlayerProvider.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..2b1eb51c12037b3f268cd978f3ddcb567a021a48
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/arguments/BungeeProtoPlayerProvider.java
+@@ -0,0 +1,95 @@
++package com.mrivanplays.ivancord.api.command.arguments;
++
++import com.mrivanplays.ivancord.api.util.Either;
++import java.util.List;
++import java.util.UUID;
++import java.util.stream.Collectors;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++
++public final class BungeeProtoPlayerProvider implements ProtoPlayerProvider
++{
++    
++    public static void initialize(ProxyServer proxy)
++    {
++        ProtoPlayerProviderI.set( new BungeeProtoPlayerProvider( proxy ) );
++    }
++    
++    private final ProxyServer proxy;
++    
++    private BungeeProtoPlayerProvider(ProxyServer proxy)
++    {
++        this.proxy = proxy;
++    }
++
++    @Override
++    public PlayerArgument.ProtoPlayer getProtoPlayer(String nameOrUUID)
++    {
++        try
++        {
++            ProxiedPlayer byUUID = proxy.getPlayer( UUID.fromString( nameOrUUID ) );
++            if ( byUUID == null )
++            {
++                return null;
++            }
++            return new PlayerArgument.ProtoPlayer( new Either<>( null, byUUID.getUniqueId() ) );
++        } catch ( IllegalArgumentException e )
++        {
++            ProxiedPlayer byName = proxy.getPlayer( nameOrUUID );
++            if ( byName == null )
++            {
++                return null;
++            }
++            return new PlayerArgument.ProtoPlayer( new Either<>( byName.getName(), null ) );
++        }
++    }
++
++    @Override
++    public double distanceToSq(PlayerArgument.ProtoPlayer protoPlayer1, PlayerArgument.ProtoPlayer protoPlayer2)
++    {
++        ProxiedPlayer player1 = getPlayer( protoPlayer1 );
++        ProxiedPlayer player2 = getPlayer( protoPlayer2 );
++        double x = player1.getPosition().getX() - player2.getPosition().getX();
++        double y = player1.getPosition().getY() - player2.getPosition().getY();
++        double z = player1.getPosition().getZ() - player2.getPosition().getZ();
++
++        return x * x + y * y + z * z;
++    }
++
++    private ProxiedPlayer getPlayer(PlayerArgument.ProtoPlayer protoPlayer)
++    {
++        Either<String, UUID> either = protoPlayer.getNameOrUUID();
++        switch ( either.getPresentDirection() )
++        {
++            case LEFT:
++                return proxy.getPlayer( either.getLeft().get() );
++            case RIGHT:
++                return proxy.getPlayer( either.getRight().get() );
++            case NONE:
++                return null;
++            default:
++                throw new RuntimeException( "Invalid Either#PresentDirection: " + either.getPresentDirection() );
++        }
++    }
++
++    @Override
++    public List<PlayerArgument.ProtoPlayer> players()
++    {
++        return proxy.getPlayers()
++            .stream()
++            .map( player ->
++                new PlayerArgument.ProtoPlayer(
++                    new Either<>( player.getName(), player.getUniqueId() )
++                ) )
++            .collect( Collectors.toList() );
++    }
++
++    @Override
++    public List<String> getPlayersByName()
++    {
++        return proxy.getPlayers()
++            .stream()
++            .map( ProxiedPlayer::getName )
++            .collect( Collectors.toList() );
++    }
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index 6ca9f8e4adb03e3974b9b8eca86aa7e8e75c4af8..1568ebe294c028eb380c10fb306c32b6f8ce5416 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -364,6 +364,14 @@ public abstract class ProxyServer
+      */
+     public abstract Collection<OfflinePlayer> getOfflinePlayers();
+ 
++    /**
++     * Returns a {@link ProxiedPlayer} from a {@link com.mrivanplays.ivancord.api.command.arguments.PlayerArgument.ProtoPlayer}
++     *
++     * @param protoPlayer proto player
++     * @return a player, or null if not present
++     */
++    public abstract ProxiedPlayer getPlayerFromProto(com.mrivanplays.ivancord.api.command.arguments.PlayerArgument.ProtoPlayer protoPlayer);
++
+     // IvanCord end
+ 
+ }
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/PlayerArgument.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/PlayerArgument.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d0eedf3b828d380fcf853a151d5ce497e863ea19
+--- /dev/null
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/PlayerArgument.java
+@@ -0,0 +1,198 @@
++package com.mrivanplays.ivancord.api.command.arguments;
++
++import com.mojang.brigadier.LiteralMessage;
++import com.mojang.brigadier.StringReader;
++import com.mojang.brigadier.arguments.ArgumentType;
++import com.mojang.brigadier.context.CommandContext;
++import com.mojang.brigadier.exceptions.CommandSyntaxException;
++import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
++import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
++import com.mojang.brigadier.suggestion.Suggestions;
++import com.mojang.brigadier.suggestion.SuggestionsBuilder;
++import com.mrivanplays.ivancord.api.command.message.BungeeMessage;
++import com.mrivanplays.ivancord.api.util.Either;
++import java.util.Arrays;
++import java.util.Collection;
++import java.util.Collections;
++import java.util.List;
++import java.util.Locale;
++import java.util.UUID;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ThreadLocalRandom;
++import java.util.stream.Collectors;
++import lombok.Getter;
++import lombok.RequiredArgsConstructor;
++
++/**
++ * A BungeeCord implementation of the {@code minecraft:game_profile}
++ * argument
++ * <p>
++ * Drawbacks:
++ * <ul>
++ *     <li>Selector {@code @e} returns all players rather than <i>all entities</i></li>
++ *     <li>Selector {@code @s} will return an empty list.</li>
++ *     <li>Selectors doesn't support options</li>
++ * </ul>
++ * <p>
++ * As all drawbacks are about the selector, so that's why we've added an option to disable parsing selectors.
++ */
++public class PlayerArgument implements ArgumentType<PlayerArgument.Result>
++{
++
++    private static final List<String> SELECTOR_VALUES =
++        Arrays.asList( "@p", "@a", "@r", "@s", "@e" );
++
++    private static final Collection<String> EXAMPLES = Arrays.asList( "Player", "0123", "dd12be42-52a9-4a91-a8a1-11c01849e498", "@e" );
++    public static final SimpleCommandExceptionType UNKNOWN_PLAYER =
++        new SimpleCommandExceptionType( BungeeMessage.createOfTranslatable( "argument.player.unknown" ) );
++    public static final DynamicCommandExceptionType SELECTOR_UNKNOWN =
++        new DynamicCommandExceptionType( object -> BungeeMessage.createOfTranslatable( "argument.entity.selector.unknown", object ) );
++    public static final SimpleCommandExceptionType SELECTOR_NOT_ENABLED =
++        new SimpleCommandExceptionType( new LiteralMessage( "Sorry, selectors cannot be used here." ) );
++
++    public static PlayerArgument player()
++    {
++        return player( true );
++    }
++
++    public static PlayerArgument disableSelectors()
++    {
++        return player( false );
++    }
++
++    public static PlayerArgument player(boolean allowSelectors)
++    {
++        return new PlayerArgument( allowSelectors );
++    }
++
++    public static Collection<ProtoPlayer> getPlayers(CommandContext<?> context, String name)
++    {
++        return context.getArgument( name, PlayerArgument.Result.class ).getPlayers();
++    }
++
++    private final boolean allowSelectors;
++
++    private PlayerArgument(boolean allowSelectors)
++    {
++        this.allowSelectors = allowSelectors;
++    }
++
++    @Override
++    public PlayerArgument.Result parse(StringReader reader) throws CommandSyntaxException
++    {
++        if ( reader.canRead() && reader.peek() == '@' )
++        {
++            if ( !allowSelectors )
++            {
++                throw SELECTOR_NOT_ENABLED.create();
++            }
++            reader.skip();
++            int cursor = reader.getCursor();
++            char selectorChar = reader.read();
++
++            ProtoPlayerProvider provider = ProtoPlayerProviderI.provide();
++            // todo: perhaps support options?
++            switch ( selectorChar )
++            {
++                case 'p':
++                    List<ProtoPlayer> players = provider.players();
++                    if ( players.isEmpty() )
++                    {
++                        return new PlayerArgument.Result( Collections.emptyList() );
++                    }
++                    List<ProtoPlayer> playerList =
++                        players.stream()
++                            .sorted( (o1, o2) -> Double.compare( 0, provider.distanceToSq( o1, o2 ) ) )
++                            .collect( Collectors.toList() );
++                    return new PlayerArgument.Result( Collections.singletonList( playerList.get( 0 ) ) );
++                case 'a':
++                    return new PlayerArgument.Result( provider.players() );
++                case 'r':
++                    List<ProtoPlayer> ps = provider.players();
++                    int random = ThreadLocalRandom.current().nextInt( 0, ps.size() - 1 );
++                    return new PlayerArgument.Result( Collections.singletonList( ps.get( random ) ) );
++                case 's':
++                    return new PlayerArgument.Result( Collections.emptyList() );
++                default:
++                    if ( selectorChar != 'e' )
++                    {
++                        reader.setCursor( cursor );
++                        throw SELECTOR_UNKNOWN.createWithContext( reader, "@" + selectorChar );
++                    }
++                    return new PlayerArgument.Result( provider.players() );
++            }
++        } else
++        {
++            int cursor = reader.getCursor();
++            while ( reader.canRead() && reader.peek() != ' ' )
++            {
++                reader.skip();
++            }
++
++            ProtoPlayerProvider provider = ProtoPlayerProviderI.provide();
++            String nameOrUuid = reader.getString().substring( cursor, reader.getCursor() );
++            ProtoPlayer player = provider.getProtoPlayer( nameOrUuid );
++            if ( player == null )
++            {
++                throw UNKNOWN_PLAYER.create();
++            } else
++            {
++                return new PlayerArgument.Result( Collections.singletonList( player ) );
++            }
++        }
++    }
++
++    @Override
++    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder)
++    {
++        String remaining = builder.getRemaining().toLowerCase( Locale.ROOT );
++        if ( allowSelectors )
++        {
++            if ( remaining.equalsIgnoreCase( "@" ) )
++            {
++                // these are the only reliable selectors, that's why we're going to suggest only these
++                builder.suggest( "@a" );
++                builder.suggest( "@r" );
++            } else
++            {
++                for ( String value : SELECTOR_VALUES )
++                {
++                    if ( remaining.equalsIgnoreCase( value ) )
++                    {
++                        builder.suggest( value );
++                    }
++                }
++            }
++        }
++        for ( String name : ProtoPlayerProviderI.provide().getPlayersByName() )
++        {
++            if ( name.toLowerCase( Locale.ROOT ).startsWith( remaining ) )
++            {
++                builder.suggest( name );
++            }
++        }
++        return builder.buildFuture();
++    }
++
++    @Override
++    public Collection<String> getExamples()
++    {
++        return EXAMPLES;
++    }
++
++    @Getter
++    @RequiredArgsConstructor
++    public static final class Result
++    {
++
++        private final Collection<ProtoPlayer> players;
++    }
++
++    @Getter
++    @RequiredArgsConstructor
++    public static final class ProtoPlayer
++    {
++
++        private final Either<String, UUID> nameOrUUID;
++    }
++}
+\ No newline at end of file
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ProtoPlayerProvider.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ProtoPlayerProvider.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..0fa22439cc0b642b8f3b8d8176d9e6920550570b
+--- /dev/null
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ProtoPlayerProvider.java
+@@ -0,0 +1,15 @@
++package com.mrivanplays.ivancord.api.command.arguments;
++
++import java.util.List;
++
++interface ProtoPlayerProvider
++{
++
++    PlayerArgument.ProtoPlayer getProtoPlayer(String nameOrUUID);
++
++    double distanceToSq(PlayerArgument.ProtoPlayer player1, PlayerArgument.ProtoPlayer player2);
++
++    List<PlayerArgument.ProtoPlayer> players();
++
++    List<String> getPlayersByName();
++}
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ProtoPlayerProviderI.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ProtoPlayerProviderI.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..a87508ad53e93d3530e4cbe5c57964163efcf451
+--- /dev/null
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ProtoPlayerProviderI.java
+@@ -0,0 +1,21 @@
++package com.mrivanplays.ivancord.api.command.arguments;
++
++import com.google.common.base.Preconditions;
++
++class ProtoPlayerProviderI
++{
++
++    private static ProtoPlayerProvider instance;
++
++    static ProtoPlayerProvider provide()
++    {
++        return instance;
++    }
++
++    static void set(ProtoPlayerProvider val)
++    {
++        Preconditions.checkNotNull( val, "val" );
++        Preconditions.checkState( instance == null, "Instance already set" );
++        instance = val;
++    }
++}
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/command/message/BungeeMessage.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/message/BungeeMessage.java
+index b3a8c5e22860ab314553019f267be2bc5e3a16fc..42fd9de600491c13f2eabda80165dad832e27276 100644
+--- a/protocol/src/main/java/com/mrivanplays/ivancord/api/command/message/BungeeMessage.java
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/message/BungeeMessage.java
+@@ -17,6 +17,19 @@ import net.md_5.bungee.chat.ComponentSerializer;
+ public final class BungeeMessage implements Message
+ {
+ 
++    /**
++     * A utility method to create a {@link BungeeMessage} with a message of {@link TranslatableComponent}
++     * with the appropriate translation {@code id}
++     *
++     * @param id the translation id
++     * @param with the {@link String}s and {@link BaseComponent}s to use in the translation
++     * @return new bungee message instance
++     */
++    public static BungeeMessage createOfTranslatable(String id, Object... with)
++    {
++        return new BungeeMessage( new TranslatableComponent( id, with ) );
++    }
++
+     /**
+      * Converts the provided {@link CommandSyntaxException} into a BungeeCord style message.
+      *
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/util/Either.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/util/Either.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4e547195237d85d9cb74d3f61d4990b588639947
+--- /dev/null
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/api/util/Either.java
+@@ -0,0 +1,64 @@
++package com.mrivanplays.ivancord.api.util;
++
++import java.util.Optional;
++
++/**
++ * A utility class, containing either 1 of the 2 types of data
++ *
++ * @param <T1> type 1
++ * @param <T2> type 2
++ */
++public final class Either<T1, T2>
++{
++
++    private final Optional<T1> value1;
++    private final Optional<T2> value2;
++    private final PresentDirection presentDirection;
++    private final boolean bothPresent;
++
++    public Either(T1 t1, T2 t2)
++    {
++        value1 = Optional.ofNullable( t1 );
++        value2 = Optional.ofNullable( t2 );
++
++        if ( value1.isPresent() )
++        {
++            presentDirection = PresentDirection.LEFT;
++        } else if ( value2.isPresent() )
++        {
++            presentDirection = PresentDirection.RIGHT;
++        } else
++        {
++            presentDirection = PresentDirection.NONE;
++        }
++
++        bothPresent = value1.isPresent() && value2.isPresent();
++    }
++
++    public PresentDirection getPresentDirection()
++    {
++        return presentDirection;
++    }
++
++    public boolean areBothPresent()
++    {
++        return bothPresent;
++    }
++
++    public Optional<T1> getLeft()
++    {
++        return value1;
++    }
++
++    public Optional<T2> getRight()
++    {
++        return value2;
++    }
++
++    public enum PresentDirection
++    {
++        LEFT,
++        RIGHT,
++        NONE
++    }
++}
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
+index 72350f514212890d97713032c982f7eb75ba4224..1cd45da3ed4d5ff283cb01b6c741f6131b421468 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
+@@ -22,6 +22,7 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
+ import com.mojang.brigadier.tree.CommandNode;
+ import com.mojang.brigadier.tree.LiteralCommandNode;
+ import com.mojang.brigadier.tree.RootCommandNode;
++import com.mrivanplays.ivancord.api.command.arguments.PlayerArgument; // IvanCord
+ import io.netty.buffer.ByteBuf;
+ import java.util.ArrayDeque;
+ import java.util.Collection;
+@@ -541,6 +542,28 @@ public class Commands extends DefinedPacket
+             }
+         };
+ 
++        // IvanCord start - minecraft:game_profile serializer
++        private static final ProperArgumentSerializer<PlayerArgument> GAME_PROFILE = new ProperArgumentSerializer<PlayerArgument>() {
++
++            @Override
++            protected String getKey()
++            {
++                return "minecraft:game_profile";
++            }
++
++            @Override
++            protected PlayerArgument read(ByteBuf buf)
++            {
++                return PlayerArgument.player();
++            }
++
++            @Override
++            protected void write(ByteBuf buf, PlayerArgument playerArgument)
++            {
++                // noop
++            }
++        };
++
+         static
+         {
+             PROVIDERS.put( "brigadier:bool", VOID );
+@@ -560,6 +583,7 @@ public class Commands extends DefinedPacket
+             // IvanCord TODO: create serializers for the useful arguments down there
+             PROVIDERS.put( "minecraft:entity", BYTE );
+             PROVIDERS.put( "minecraft:game_profile", VOID );
++            PROPER_PROVIDERS.put( PlayerArgument.class, GAME_PROFILE ); // IvanCord
+             PROVIDERS.put( "minecraft:block_pos", VOID );
+             PROVIDERS.put( "minecraft:column_pos", VOID );
+             PROVIDERS.put( "minecraft:vec3", VOID );
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 8f452d2cd5ce3512954bd6fac33b8c9ff7398ee7..e959aef1f4258c54e6084c45f51f5cee2e39478e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -897,5 +897,22 @@ public class BungeeCord extends ProxyServer
+     {
+         return playerdata.getOfflinePlayers();
+     }
++
++    @Override
++    public ProxiedPlayer getPlayerFromProto(com.mrivanplays.ivancord.api.command.arguments.PlayerArgument.ProtoPlayer protoPlayer)
++    {
++        com.mrivanplays.ivancord.api.util.Either<String, UUID> either = protoPlayer.getNameOrUUID();
++        switch ( either.getPresentDirection() )
++        {
++            case NONE:
++                return null;
++            case LEFT:
++                return getPlayer( either.getLeft().get() );
++            case RIGHT:
++                return getPlayer( either.getRight().get() );
++            default:
++                throw new RuntimeException( "Invalid Either#PresentDirection: " + either.getPresentDirection() );
++        }
++    }
+     // IvanCord end
+ }
