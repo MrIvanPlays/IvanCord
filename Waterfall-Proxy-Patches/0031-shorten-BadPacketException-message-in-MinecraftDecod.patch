@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Janmm14 <gitconfig1@janmm14.de>
+Date: Tue, 29 Jun 2021 19:08:06 +0300
+Subject: [PATCH] shorten BadPacketException message in MinecraftDecoder
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 99c19a07942e54699655d428cb4c73dc45aeaf12..aec12b5cebb573a108c08baac33bf58dce9c6b2b 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -89,12 +89,13 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                     }
+                     // Waterfall end
+                     // IvanCord start
++                    String errorMessage = "Packet " + protocol + ":" + prot.getDirection() + "/" + packetId + " (" + packet.getClass().getSimpleName() + ") larger than expected, extra bytes: " + in.readableBytes();
+                     if ( server )
+                     {
+-                        com.mrivanplays.ivancord.shared.ChannelUtil.shutdownChannel( ctx.channel(), new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot.getDirection() ) );
++                        com.mrivanplays.ivancord.shared.ChannelUtil.shutdownChannel( ctx.channel(), new BadPacketException( errorMessage ) );
+                     } else
+                     {
+-                    throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot.getDirection() );
++                    throw new BadPacketException( errorMessage );
+                     } // IvanCord end
+                 }
+                 /* IvanCord start - avoid creating buf copy

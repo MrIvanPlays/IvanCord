@@ -201,3 +201,6 @@ run/
 # Because Github lost their minds
 .idea/
 *.iml
+
+# run configuration for a test proxy
+test_proxy/

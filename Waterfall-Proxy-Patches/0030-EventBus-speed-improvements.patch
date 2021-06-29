@@ -1,0 +1,521 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Janmm14 <gitconfig1@janmm14.de>
+Date: Tue, 29 Jun 2021 18:40:05 +0300
+Subject: [PATCH] EventBus speed improvements
+
+Uses LambdaMetafactory for event BiConsumer creation
+
+LambdaMetafactory uses a lookup created by a special class,
+which is loaded by a custom class loader, which delegates to all PluginClassloader's.
+
+Other changes:
+ * Add NonVoidReturnTypeTest (Supported by the base EventBus implementation, prevents potential regression in future)
+ * Improve wording of listener wrong argument count log message
+ * Use Java 8 lambda map access in EventBus (Improves speed as HashMap doesn't have to calculate hash multiple times).
+
+Testing done:
+ * Compiles on Java 8 and 16
+ * Runs on Java 8 and 16 without additional startup parameters.
+ * Listening for events with a basic plugin is working
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
+index 75cf6e3339857aca698ae548d0d3f5668131a5d6..61cee2bb046b7ae6897ad749ed26f18ef8fca6a0 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
+@@ -21,7 +21,7 @@ import net.md_5.bungee.api.ProxyServer;
+ final class PluginClassloader extends URLClassLoader
+ {
+ 
+-    private static final Set<PluginClassloader> allLoaders = new CopyOnWriteArraySet<>();
++    static final Set<PluginClassloader> allLoaders = new CopyOnWriteArraySet<>(); // IvanCord
+     //
+     private final ProxyServer proxy;
+     private final PluginDescription desc;
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+index 3c896df72ed58c013a3d9645b21bf11bc9c3b339..968f1357d20ccb8f9795049ad7e03dff0e181f46 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
+@@ -75,9 +75,10 @@ public final class PluginManager
+     private Map<String, PluginDescription> toLoad = new HashMap<>();
+     //private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create(); // IvanCord
+     private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
++    private final java.lang.invoke.MethodHandles.Lookup lookup; // IvanCord
+ 
+     @SuppressWarnings("unchecked")
+-    public PluginManager(ProxyServer proxy)
++    public PluginManager(ProxyServer proxy, java.lang.invoke.MethodHandles.Lookup lookup) // IvanCord
+     {
+         this.proxy = proxy;
+ 
+@@ -101,6 +102,7 @@ public final class PluginManager
+         }
+         this.libraryLoader = libraryLoader;
+         commandDispatcher = new CommandDispatcherProxy( this, proxy ); // IvanCord
++        this.lookup = lookup; // IvanCord
+     }
+ 
+     /**
+@@ -598,7 +600,7 @@ public final class PluginManager
+                     "Listener %s has registered using deprecated subscribe annotation! Please update to @EventHandler.", listener );
+         }
+          */
+-        eventBus.register( listener );
++        eventBus.register( listener, lookup ); // IvanCord
+         listenersByPlugin.put( plugin, listener );
+     }
+ 
+diff --git a/event/pom.xml b/event/pom.xml
+index ed4a2c49cae1a0a43c4a754504d46824231a1c56..f9105558863d56449daa531f8ee9364ddc4242d7 100644
+--- a/event/pom.xml
++++ b/event/pom.xml
+@@ -16,4 +16,15 @@
+ 
+     <name>IvanCord-Event</name>
+     <description>Generic java event dispatching API intended for use with IvanCord</description>
++
++    <!-- IvanCord start -->
++    <dependencies>
++        <dependency>
++            <groupId>org.codehaus.mojo</groupId>
++            <artifactId>animal-sniffer-annotations</artifactId>
++            <version>1.20</version>
++            <scope>provided</scope>
++        </dependency>
++    </dependencies>
++    <!-- IvanCord end -->
+ </project>
+diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
+index ac6b9758557e200127a3c03e0d3ef89912963fad..b2d8efee343a4be1de58b8e6edfb8c1c507776b1 100644
+--- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
++++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
+@@ -19,7 +19,7 @@ import java.util.logging.Logger;
+ public class EventBus
+ {
+ 
+-    private final Map<Class<?>, Map<Byte, Map<Object, Method[]>>> byListenerAndPriority = new HashMap<>();
++    private final Map<Class<?>, Map<Byte, Map<Object, java.util.function.BiConsumer<Object, Object>[]>>> byListenerAndPriority = new HashMap<>(); // IvanCord
+     private final Map<Class<?>, EventHandlerMethod[]> byEventBaked = new ConcurrentHashMap<>();
+     private final Lock lock = new ReentrantLock();
+     private final Logger logger;
+@@ -46,6 +46,7 @@ public class EventBus
+                 try
+                 {
+                     method.invoke( event );
++                /* // IvanCord start - rework this
+                 } catch ( IllegalAccessException ex )
+                 {
+                     throw new Error( "Method became inaccessible: " + event, ex );
+@@ -58,6 +59,17 @@ public class EventBus
+                     logger.log( Level.WARNING, msg, ex.getCause() );
+                     if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, ex ); //Waterfall - call passed exception handler
+                 }
++                 */
++                } catch ( Throwable error )
++                {
++                    String msg = MessageFormat.format( "Error dispatching event {0} to listener {1}", event, method.getListener() );
++                    logger.log( Level.WARNING, msg, error );
++                    if ( exceptionHandler != null )
++                    {
++                        exceptionHandler.handleEventException( msg, event, method, error );
++                    }
++                }
++                // IvanCord end
+             }
+         }
+     }
+@@ -74,12 +86,14 @@ public class EventBus
+                 Class<?>[] params = m.getParameterTypes();
+                 if ( params.length != 1 )
+                 {
+-                    logger.log( Level.INFO, "Method {0} in class {1} annotated with {2} does not have single argument", new Object[]
++                    logger.log( Level.INFO, "Method {0} in class {1} annotated with {2} does not have exactly one argument", new Object[] // IvanCord - better specify message
+                     {
+                         m, listener.getClass(), annotation
+                     } );
+                     continue;
+                 }
++                // IvanCord start - rewrite this
++                /*
+                 Map<Byte, Set<Method>> prioritiesMap = handler.get( params[0] );
+                 if ( prioritiesMap == null )
+                 {
+@@ -93,12 +107,48 @@ public class EventBus
+                     prioritiesMap.put( annotation.priority(), priority );
+                 }
+                 priority.add( m );
++                 */
++                handler.computeIfAbsent( params[0], k -> new HashMap<>() )
++                    .computeIfAbsent( annotation.priority(), k -> new HashSet<>() )
++                    .add( m );
++                // IvanCord end
+             }
+         }
+         return handler;
+     }
+ 
++    // IvanCord start
++    private static final java.lang.invoke.MethodType INVOKED_TYPE = java.lang.invoke.MethodType.methodType( java.util.function.BiConsumer.class );
++    private static final java.lang.invoke.MethodType SAM_METHOD_TYPE = java.lang.invoke.MethodType.methodType( void.class, Object.class, Object.class );
++
++    @org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
++    @SuppressWarnings( "unchecked" )
++    private java.util.function.BiConsumer<Object, Object> createMethodInvoker(java.lang.invoke.MethodHandles.Lookup lookup, Object listener, Method method)
++    {
++        try
++        {
++            return (java.util.function.BiConsumer<Object, Object>) java.lang.invoke.LambdaMetafactory.metafactory(
++                lookup,
++                "accept",
++                INVOKED_TYPE,
++                SAM_METHOD_TYPE,
++                lookup.unreflect( method ),
++                java.lang.invoke.MethodType.methodType( void.class, listener.getClass(), method.getParameterTypes()[0] )
++            ).getTarget().invokeExact();
++        } catch ( Throwable t )
++        {
++            throw new RuntimeException( "Could not create invoker for method " + method + " of listener " + listener + " (" + listener.getClass() + ")", t );
++        }
++    }
++    // IvanCord end
++
+     public void register(Object listener)
++    {
++        // IvanCord start
++        register( listener, java.lang.invoke.MethodHandles.lookup() );
++    }
++    public void register(Object listener, java.lang.invoke.MethodHandles.Lookup lookup)
++        // IvanCord end
+     {
+         Map<Class<?>, Map<Byte, Set<Method>>> handler = findHandlers( listener );
+         lock.lock();
+@@ -106,14 +156,20 @@ public class EventBus
+         {
+             for ( Map.Entry<Class<?>, Map<Byte, Set<Method>>> e : handler.entrySet() )
+             {
++                /* // IvanCord start - rewrite this
+                 Map<Byte, Map<Object, Method[]>> prioritiesMap = byListenerAndPriority.get( e.getKey() );
+                 if ( prioritiesMap == null )
+                 {
+                     prioritiesMap = new HashMap<>();
+                     byListenerAndPriority.put( e.getKey(), prioritiesMap );
+                 }
++                 */
++                Map<Byte, Map<Object, java.util.function.BiConsumer<Object, Object>[]>> prioritiesMap = byListenerAndPriority
++                    .computeIfAbsent( e.getKey(), k -> new HashMap<>() );
++                // IvanCord end
+                 for ( Map.Entry<Byte, Set<Method>> entry : e.getValue().entrySet() )
+                 {
++                    /* // IvanCord start - rewrite this too
+                     Map<Object, Method[]> currentPriorityMap = prioritiesMap.get( entry.getKey() );
+                     if ( currentPriorityMap == null )
+                     {
+@@ -121,6 +177,13 @@ public class EventBus
+                         prioritiesMap.put( entry.getKey(), currentPriorityMap );
+                     }
+                     currentPriorityMap.put( listener, entry.getValue().toArray( new Method[ 0 ] ) );
++                     */
++                    java.util.function.BiConsumer<Object, Object>[] baked = entry.getValue()
++                        .stream().map( method -> createMethodInvoker( lookup, listener, method ) )
++                        .toArray( java.util.function.BiConsumer[]::new );
++                    prioritiesMap.computeIfAbsent( entry.getKey(), k -> new HashMap<>() )
++                        .put( listener, baked );
++                    // IvanCord end
+                 }
+                 bakeHandlers( e.getKey() );
+             }
+@@ -138,26 +201,34 @@ public class EventBus
+         {
+             for ( Map.Entry<Class<?>, Map<Byte, Set<Method>>> e : handler.entrySet() )
+             {
+-                Map<Byte, Map<Object, Method[]>> prioritiesMap = byListenerAndPriority.get( e.getKey() );
+-                if ( prioritiesMap != null )
++                //Map<Byte, Map<Object, Method[]>> prioritiesMap = byListenerAndPriority.get( e.getKey() ); // IvanCord
++                //if ( prioritiesMap != null ) // IvanCord
++                byListenerAndPriority.computeIfPresent( e.getKey(), ( clazz, prioritiesMap ) ->
+                 {
+                     for ( Byte priority : e.getValue().keySet() )
+                     {
+-                        Map<Object, Method[]> currentPriority = prioritiesMap.get( priority );
+-                        if ( currentPriority != null )
++                        //Map<Object, Method[]> currentPriority = prioritiesMap.get( priority ); // IvanCord
++                        //if ( currentPriority != null ) // IvanCord
++                        prioritiesMap.computeIfPresent( priority, ( prio, currentPriority ) -> // IvanCord
+                         {
+                             currentPriority.remove( listener );
++                            /* // IvanCord
+                             if ( currentPriority.isEmpty() )
+                             {
+                                 prioritiesMap.remove( priority );
+                             }
+-                        }
++                             */ // IvanCord
++                            return currentPriority.isEmpty() ? null : currentPriority; // IvanCord
++                        } ); // IvanCord
+                     }
++                    /* // IvanCord
+                     if ( prioritiesMap.isEmpty() )
+                     {
+                         byListenerAndPriority.remove( e.getKey() );
+                     }
+-                }
++                     */ // IvanCord
++                    return prioritiesMap.isEmpty() ? null : prioritiesMap; // IvanCord
++                } ); // IvanCord
+                 bakeHandlers( e.getKey() );
+             }
+         } finally
+@@ -175,7 +246,7 @@ public class EventBus
+      */
+     private void bakeHandlers(Class<?> eventClass)
+     {
+-        Map<Byte, Map<Object, Method[]>> handlersByPriority = byListenerAndPriority.get( eventClass );
++        Map<Byte, Map<Object, java.util.function.BiConsumer<Object, Object>[]>> handlersByPriority = byListenerAndPriority.get( eventClass ); // IvanCord
+         if ( handlersByPriority != null )
+         {
+             List<EventHandlerMethod> handlersList = new ArrayList<>( handlersByPriority.size() * 2 );
+@@ -185,12 +256,12 @@ public class EventBus
+             byte value = Byte.MIN_VALUE;
+             do
+             {
+-                Map<Object, Method[]> handlersByListener = handlersByPriority.get( value );
++                Map<Object, java.util.function.BiConsumer<Object, Object>[]> handlersByListener = handlersByPriority.get( value ); // IvanCord
+                 if ( handlersByListener != null )
+                 {
+-                    for ( Map.Entry<Object, Method[]> listenerHandlers : handlersByListener.entrySet() )
++                    for ( Map.Entry<Object, java.util.function.BiConsumer<Object, Object>[]> listenerHandlers : handlersByListener.entrySet() ) // IvanCord
+                     {
+-                        for ( Method method : listenerHandlers.getValue() )
++                        for ( java.util.function.BiConsumer<Object, Object> method : listenerHandlers.getValue() ) // IvanCord
+                         {
+                             EventHandlerMethod ehm = new EventHandlerMethod( listenerHandlers.getKey(), method );
+                             handlersList.add( ehm );
+diff --git a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
+index ad19c020c77a45c3b3a8a18aaf2f59c2de15ec7c..9b6977e4e60ee25f49779ba304631def0ca88b29 100644
+--- a/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
++++ b/event/src/main/java/net/md_5/bungee/event/EventHandlerMethod.java
+@@ -12,10 +12,10 @@ public class EventHandlerMethod
+     @Getter
+     private final Object listener;
+     @Getter
+-    private final Method method;
++    private final java.util.function.BiConsumer<Object, Object> method; // IvanCord
+ 
+-    public void invoke(Object event) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
++    public void invoke(Object event) // IvanCord
+     {
+-        method.invoke( listener, event );
++        method.accept( listener, event ); // IvanCord
+     }
+ }
+diff --git a/event/src/test/java/com/mrivanplays/ivancord/event/NonVoidReturnTypeTest.java b/event/src/test/java/com/mrivanplays/ivancord/event/NonVoidReturnTypeTest.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..aa05d38188d9867c8bc10a775e37be13c1e26bfd
+--- /dev/null
++++ b/event/src/test/java/com/mrivanplays/ivancord/event/NonVoidReturnTypeTest.java
+@@ -0,0 +1,46 @@
++package com.mrivanplays.ivancord.event;
++
++import java.util.concurrent.CountDownLatch;
++import net.md_5.bungee.event.EventBus;
++import net.md_5.bungee.event.EventHandler;
++import org.junit.Assert;
++import org.junit.Test;
++
++public class NonVoidReturnTypeTest
++{
++
++    private final EventBus bus = new EventBus();
++    private final CountDownLatch latch = new CountDownLatch( 2 );
++
++    @Test
++    public void test()
++    {
++        bus.register( this );
++        bus.post( new FirstEvent(), null );
++        Assert.assertEquals( 0, latch.getCount() );
++    }
++
++    @EventHandler
++    public FirstEvent firstListener(FirstEvent event)
++    {
++        bus.post( new SecondEvent(), null );
++        Assert.assertEquals( 1, latch.getCount() );
++        latch.countDown();
++        return event;
++    }
++
++    @EventHandler
++    public Object secondListener(SecondEvent event)
++    {
++        latch.countDown();
++        return null;
++    }
++
++    public static class FirstEvent
++    {
++    }
++
++    public static class SecondEvent
++    {
++    }
++}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/eventcaller/EventCaller.java b/proxy/src/main/java/com/mrivanplays/ivancord/eventcaller/EventCaller.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..86e9ac96b7448d607ff0c002b2e04ba432d17e8a
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/eventcaller/EventCaller.java
+@@ -0,0 +1,17 @@
++package com.mrivanplays.ivancord.eventcaller;
++
++import java.lang.invoke.MethodHandles;
++import net.md_5.bungee.api.plugin.EventCallerClassLoader;
++
++/**
++ * Class to be loaded by {@linkplain EventCallerClassLoader EventCallerClassLoader}, may not
++ * be referenced in other code directly<br>
++ * This class is string-referenced in EventCallerClassLoader; renaming or moving requires to
++ * update said string in said class.<br>
++ * The class is alone in this package to not be able to access other package-only things
++ */
++public final class EventCaller
++{
++
++    public static final MethodHandles.Lookup lookup = MethodHandles.lookup();
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index e959aef1f4258c54e6084c45f51f5cee2e39478e..3c389b409f9d879fc9e267e2620e9890afa463a3 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -257,7 +257,7 @@ public class BungeeCord extends ProxyServer
+         logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
+         // Waterfall end
+ 
+-        pluginManager = new PluginManager( this );
++        pluginManager = new PluginManager( this, net.md_5.bungee.api.plugin.EventCallerClassLoader.getEventCallerLookup() ); // IvanCord
+         getPluginManager().registerCommand( null, new CommandReload() );
+         getPluginManager().registerCommand( null, new CommandEnd() );
+         getPluginManager().registerCommand( null, new CommandIP() );
+diff --git a/proxy/src/main/java/net/md_5/bungee/api/plugin/EventCallerClassLoader.java b/proxy/src/main/java/net/md_5/bungee/api/plugin/EventCallerClassLoader.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d517c7df73e419b37a9aec333977fe00a727dd61
+--- /dev/null
++++ b/proxy/src/main/java/net/md_5/bungee/api/plugin/EventCallerClassLoader.java
+@@ -0,0 +1,118 @@
++// IvanCord start
++package net.md_5.bungee.api.plugin;
++
++import com.google.common.io.ByteStreams;
++import java.io.IOException;
++import java.lang.invoke.MethodHandles;
++import java.util.Set;
++
++/**
++ * Class loader which can delegate to all {@linkplain PluginClassloader PluginClassloader}
++ * so classes loaded by it can access all plugin classes.<br>
++ * <br>
++ * The class is in this package to be able to easily access PluginClassloader.allLoaders
++ */
++public class EventCallerClassLoader extends ClassLoader
++{
++
++    private static final String EVENT_CALLER_CLASS = "com.mrivanplays.ivancord.eventcaller.EventCaller";
++    private static final String EVENT_CALLER_CLASS_PATH = EVENT_CALLER_CLASS.replace( '.', '/' ).concat( ".class" );
++
++    static
++    {
++        ClassLoader.registerAsParallelCapable();
++    }
++
++    private static MethodHandles.Lookup lookup;
++
++    public static synchronized MethodHandles.Lookup getEventCallerLookup()
++    {
++        if ( lookup == null )
++        {
++            try
++            {
++                lookup = (MethodHandles.Lookup) new EventCallerClassLoader().loadEventCallerClass().getDeclaredField( "lookup" ).get( null );
++            } catch ( ReflectiveOperationException ex )
++            {
++                throw new RuntimeException( ex );
++            }
++        }
++        return lookup;
++    }
++
++    private final Set<PluginClassloader> classLoaders;
++    private final ClassLoader appClassLoader;
++
++    private EventCallerClassLoader()
++    {
++        this.classLoaders = PluginClassloader.allLoaders;
++        this.appClassLoader = getClass().getClassLoader();
++    }
++
++    private Class<?> eventCallerClass;
++
++    private Class<?> loadEventCallerClass()
++    {
++        if ( eventCallerClass == null )
++        {
++            try
++            {
++                return eventCallerClass = findClass( EVENT_CALLER_CLASS );
++            } catch ( ClassNotFoundException ex )
++            {
++                throw new RuntimeException( ex );
++            }
++        }
++        return eventCallerClass;
++    }
++
++    @Override
++    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
++    {
++        if ( EVENT_CALLER_CLASS.equals( name ) )
++        {
++            synchronized ( getClassLoadingLock( name ) )
++            {
++                Class<?> c = loadEventCallerClass();
++                if ( resolve )
++                {
++                    resolveClass( c );
++                }
++                return c;
++            }
++        }
++        return super.loadClass( name, resolve );
++    }
++
++    @Override
++    protected Class<?> findClass(String name) throws ClassNotFoundException
++    {
++        if ( EVENT_CALLER_CLASS.equals( name ) )
++        {
++            if ( eventCallerClass != null )
++            {
++                return eventCallerClass;
++            }
++            try
++            {
++                byte[] bytes = ByteStreams.toByteArray( appClassLoader.getResource( EVENT_CALLER_CLASS_PATH ).openStream() );
++                // use define class and don't delegate to app classloader so we are the classloader
++                return defineClass( EVENT_CALLER_CLASS, bytes, 0, bytes.length, getClass().getProtectionDomain() );
++            } catch ( NullPointerException | IOException ex )
++            {
++                throw new ClassNotFoundException( EVENT_CALLER_CLASS, ex );
++            }
++        }
++        for ( PluginClassloader classLoader : classLoaders )
++        {
++            try
++            {
++                return classLoader.loadClass( name );
++            } catch ( ClassNotFoundException ignored )
++            {
++            }
++        }
++        return appClassLoader.loadClass( name );
++    }
++}
++// IvanCord end

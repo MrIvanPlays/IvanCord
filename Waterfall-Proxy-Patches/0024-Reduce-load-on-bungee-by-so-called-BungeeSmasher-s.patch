@@ -5,18 +5,6 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
-diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-index 8f518af70806c3a43ec0dcfd94ea82ec19858130..69c7e2cf731465388a674f2ee554f493347422c2 100644
---- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
-+++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-@@ -192,6 +192,7 @@ public class EventBus
-                     {
-                         for ( Method method : listenerHandlers.getValue() )
-                         {
-+                            method.setAccessible( true ); // IvanCord
-                             EventHandlerMethod ehm = new EventHandlerMethod( listenerHandlers.getKey(), com.mrivanplays.ivancord.event.EventExecutor.create( method ) ); // IvanCord
-                             handlersList.add( ehm );
-                         }
 diff --git a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
 index a6d7cfb518420f18fd6466b892447b1462ee5201..67315501a343ffaeff2d7e87b6453a2dcb03d4b0 100644
 --- a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
@@ -553,10 +541,21 @@ index 270545f28e299ecd12e76213dbd2a11bcc9701e3..aae1fe508aa24b0b5a3fcd7643b1a50b
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 9e6af925a7a62f6506cafd14fc443312520c04a1..5152916fcb917d9f877273b9e47cda85a90acdb8 100644
+index 9e6af925a7a62f6506cafd14fc443312520c04a1..8fe39e31258bcaa140ec3ef66c4339cc71f87a8d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -63,14 +63,14 @@ public class PipelineUtils
+@@ -52,8 +52,10 @@ public class PipelineUtils
+ {
+ 
+     public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance("ListerInfo");
++    /* // IvanCord - remove these
+     public static final AttributeKey<UserConnection> USER = AttributeKey.newInstance("User");
+     public static final AttributeKey<BungeeServerInfo> TARGET = AttributeKey.newInstance("Target");
++     */
+     public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>()
+     {
+         @Override
+@@ -63,14 +65,14 @@ public class PipelineUtils
  
              if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
              {
@@ -573,7 +572,33 @@ index 9e6af925a7a62f6506cafd14fc443312520c04a1..5152916fcb917d9f877273b9e47cda85
                  return;
              }
  
-@@ -148,6 +148,21 @@ public class PipelineUtils
+@@ -124,6 +126,11 @@ public class PipelineUtils
+     public static final String FRAME_PREPENDER = "frame-prepender";
+     public static final String LEGACY_DECODER = "legacy-decoder";
+     public static final String LEGACY_KICKER = "legacy-kick";
++    // IvanCord start - channel factories
++    private static final io.netty.channel.ChannelFactory<? extends ServerChannel> serverChannelFactory, serverChannelDomainFactory;
++    private static final io.netty.channel.ChannelFactory<? extends Channel> channelFactory, channelDomainFactory;
++    private static final io.netty.channel.ChannelFactory<? extends DatagramChannel> datagramChannelFactory;
++    // IvanCord end
+ 
+     private static boolean epoll;
+ 
+@@ -141,6 +148,13 @@ public class PipelineUtils
+                 ProxyServer.getInstance().getLogger().log( Level.WARNING, "Epoll is not working, falling back to NIO: {0}", Util.exception( Epoll.unavailabilityCause() ) );
+             }
+         }
++        // IvanCord start
++        serverChannelFactory = epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
++        serverChannelDomainFactory = epoll ? EpollServerDomainSocketChannel::new : null;
++        channelFactory = epoll ? EpollSocketChannel::new : NioSocketChannel::new;
++        channelDomainFactory = epoll ? EpollDomainSocketChannel::new : null;
++        datagramChannelFactory = epoll ? EpollDatagramChannel::new : NioDatagramChannel::new;
++        // IvanCord end
+     }
+ 
+     public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
+@@ -148,6 +162,21 @@ public class PipelineUtils
          return epoll ? new EpollEventLoopGroup( threads, factory ) : new NioEventLoopGroup( threads, factory );
      }
  
@@ -584,10 +609,10 @@ index 9e6af925a7a62f6506cafd14fc443312520c04a1..5152916fcb917d9f877273b9e47cda85
 +        {
 +            Preconditions.checkState( epoll, "Epoll required to have UNIX sockets" );
 +
-+            return EpollServerDomainSocketChannel::new;
++            return serverChannelDomainFactory;
 +        }
 +
-+        return epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
++        return serverChannelFactory;
 +    }
 +
 +    @Deprecated
@@ -595,7 +620,7 @@ index 9e6af925a7a62f6506cafd14fc443312520c04a1..5152916fcb917d9f877273b9e47cda85
      public static Class<? extends ServerChannel> getServerChannel(SocketAddress address)
      {
          if ( address instanceof DomainSocketAddress )
-@@ -160,6 +175,21 @@ public class PipelineUtils
+@@ -160,6 +189,21 @@ public class PipelineUtils
          return epoll ? EpollServerSocketChannel.class : NioServerSocketChannel.class;
      }
  
@@ -606,10 +631,10 @@ index 9e6af925a7a62f6506cafd14fc443312520c04a1..5152916fcb917d9f877273b9e47cda85
 +        {
 +            Preconditions.checkState( epoll, "Epoll required to have UNIX sockets" );
 +
-+            return EpollServerDomainSocketChannel::new;
++            return channelDomainFactory;
 +        }
 +
-+        return epoll ? EpollSocketChannel::new : NioSocketChannel::new;
++        return channelFactory;
 +    }
 +
 +    @Deprecated
@@ -617,14 +642,14 @@ index 9e6af925a7a62f6506cafd14fc443312520c04a1..5152916fcb917d9f877273b9e47cda85
      public static Class<? extends Channel> getChannel(SocketAddress address)
      {
          if ( address instanceof DomainSocketAddress )
-@@ -172,6 +202,14 @@ public class PipelineUtils
+@@ -172,6 +216,14 @@ public class PipelineUtils
          return epoll ? EpollSocketChannel.class : NioSocketChannel.class;
      }
  
 +    // IvanCord start
 +    public static io.netty.channel.ChannelFactory<? extends DatagramChannel> getDatagramChannelFactory()
 +    {
-+        return epoll ? EpollDatagramChannel::new : NioDatagramChannel::new;
++        return datagramChannelFactory;
 +    }
 +
 +    @Deprecated
