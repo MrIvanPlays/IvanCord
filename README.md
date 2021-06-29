@@ -1,5 +1,42 @@
 # IvanCord
-Personal fork of Waterfall. Removes modules, which kinda boosts the performance of the fork, and does some misc changes to Waterfall.
+Personal fork of Waterfall.<br>
+You can review all changes [here](https://github.com/MrIvanPlays/IvanCord/tree/master/Waterfall-Proxy-Patches)
 
-# How to get jar
-Clone the repository, cd to the path where you have cloned it and run "./ivancord b". After everything is done, you get jar from "IvanCord-Proxy/bootstrap/target"
+# How To (Getting a jar)
+You can either build it manually using the `ivancord` tool and obtain a jar from IvanCord-Proxy/bootstrap/target,<br>
+or you can get it from ci.mrivanplays.com [here](https://ci.mrivanplays.com/job/IvanCord)
+
+# How To (Plugin developers)
+
+## Maven
+
+```xml
+<repositories>
+    <repository>
+        <id>ivan</id>
+        <url>https://repo.mrivanplays.com/repository/ivan/</url>
+    </repository>
+<repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>com.mrivanplays</groupId>
+        <artifactId>ivancord-api</artifactId>
+        <version>1.17-R0.1-SNAPSHOT</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+```
+
+## Gradle
+```groovy
+repositories {
+    maven {
+        url 'https://repo.mrivanplays.com/repository/ivan/'
+    }
+}
+
+dependencies {
+    compileOnly 'com.mrivanplays:ivancord-api:1.17-R0.1-SNAPSHOT'
+}
+```

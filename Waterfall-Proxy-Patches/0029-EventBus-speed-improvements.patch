@@ -65,7 +65,7 @@ index 3c896df72ed58c013a3d9645b21bf11bc9c3b339..968f1357d20ccb8f9795049ad7e03dff
      }
  
 diff --git a/event/pom.xml b/event/pom.xml
-index ed4a2c49cae1a0a43c4a754504d46824231a1c56..f9105558863d56449daa531f8ee9364ddc4242d7 100644
+index 2a5b2002346fae4c899f4a037b3b930b2d4e4b5b..aed69a16827b13e9c3745bbe1ed95f97de908859 100644
 --- a/event/pom.xml
 +++ b/event/pom.xml
 @@ -16,4 +16,15 @@
