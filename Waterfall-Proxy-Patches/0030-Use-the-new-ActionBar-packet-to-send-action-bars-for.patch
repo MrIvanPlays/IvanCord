@@ -54,7 +54,7 @@ index 93f834e3a0e55a7892835ced3ead32714e88ead9..b7dd12f1346c6c7739cf74ce7451f845
                      KeepAlive.class,
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ActionBar.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ActionBar.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..07fbec5cf685bc24df5b3d485804f870d1dfd14d
+index 0000000000000000000000000000000000000000..c553ba02d7f13c83f72f5e016bda828141630d97
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ActionBar.java
 @@ -0,0 +1,39 @@
