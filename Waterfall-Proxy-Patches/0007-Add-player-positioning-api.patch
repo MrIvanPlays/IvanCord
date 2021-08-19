@@ -256,10 +256,10 @@ index 0000000000000000000000000000000000000000..f23fe50e8c9a22ce934f5797f9e75fb2
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index efa74af492d8c88c13ca19de0d2b9757953ff2c7..d95cd1c011bad22612a1e65e890e23fc0afed4d2 100644
+index 4641de8796eebcaa81226c2a88cc08d2e35dbffb..a2a37ab133d9781e69bee98ac8ce03d70c541899 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -65,6 +65,7 @@ import net.md_5.bungee.tab.ServerUnique;
+@@ -66,6 +66,7 @@ import net.md_5.bungee.tab.ServerUnique;
  import net.md_5.bungee.tab.TabList;
  import net.md_5.bungee.util.CaseInsensitiveSet;
  import net.md_5.bungee.util.ChatComponentTransformer;
@@ -267,7 +267,7 @@ index efa74af492d8c88c13ca19de0d2b9757953ff2c7..d95cd1c011bad22612a1e65e890e23fc
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -105,6 +106,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -106,6 +107,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      @Setter
      private int gamemode;
@@ -278,7 +278,7 @@ index efa74af492d8c88c13ca19de0d2b9757953ff2c7..d95cd1c011bad22612a1e65e890e23fc
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -649,6 +654,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -661,6 +666,12 @@ public final class UserConnection implements ProxiedPlayer
      {
          return ( settings != null ) ? settings.getViewDistance() : 10;
      }
@@ -364,10 +364,10 @@ index 0b7a7b4d880449a95fe2a5cf99844b5e7bc67144..409878ec8c403062d61a50ef3cb0f03b
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 60ae4c0a8076fff4c86240083debda4427b17294..1efdc559d3c90063946fe38d1ad4e53a99eb198a 100644
+index 60512bd2f74e465f68dddd9bdc81a4a4302be633..30e6cc6552a134bc5358414cbc93368f9bf63ca0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -30,9 +30,11 @@ import net.md_5.bungee.protocol.packet.Chat;
+@@ -29,9 +29,11 @@ import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -379,7 +379,7 @@ index 60ae4c0a8076fff4c86240083debda4427b17294..1efdc559d3c90063946fe38d1ad4e53a
  
  public class UpstreamBridge extends PacketHandler
  {
-@@ -277,6 +279,14 @@ public class UpstreamBridge extends PacketHandler
+@@ -287,6 +289,14 @@ public class UpstreamBridge extends PacketHandler
          }
      }
  

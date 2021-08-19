@@ -309,7 +309,7 @@ index ad19c020c77a45c3b3a8a18aaf2f59c2de15ec7c..9b6977e4e60ee25f49779ba304631def
  }
 diff --git a/event/src/test/java/com/mrivanplays/ivancord/event/NonVoidReturnTypeTest.java b/event/src/test/java/com/mrivanplays/ivancord/event/NonVoidReturnTypeTest.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..aa05d38188d9867c8bc10a775e37be13c1e26bfd
+index 0000000000000000000000000000000000000000..5cb048ee2e4d9d4c6137f1e99312b83ee92d808c
 --- /dev/null
 +++ b/event/src/test/java/com/mrivanplays/ivancord/event/NonVoidReturnTypeTest.java
 @@ -0,0 +1,46 @@
@@ -361,7 +361,7 @@ index 0000000000000000000000000000000000000000..aa05d38188d9867c8bc10a775e37be13
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/eventcaller/EventCaller.java b/proxy/src/main/java/com/mrivanplays/ivancord/eventcaller/EventCaller.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..86e9ac96b7448d607ff0c002b2e04ba432d17e8a
+index 0000000000000000000000000000000000000000..6d0ebe536ffc49d48291ec7db68896ac872669f0
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/eventcaller/EventCaller.java
 @@ -0,0 +1,17 @@
@@ -383,7 +383,7 @@ index 0000000000000000000000000000000000000000..86e9ac96b7448d607ff0c002b2e04ba4
 +    public static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index e959aef1f4258c54e6084c45f51f5cee2e39478e..3c389b409f9d879fc9e267e2620e9890afa463a3 100644
+index d17dd9db174f8ace4344ad5415bcd42a7d923203..9e5bf43c95b562afdbb19f1410a59df7f0ef4ecb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -257,7 +257,7 @@ public class BungeeCord extends ProxyServer
@@ -397,7 +397,7 @@ index e959aef1f4258c54e6084c45f51f5cee2e39478e..3c389b409f9d879fc9e267e2620e9890
          getPluginManager().registerCommand( null, new CommandIP() );
 diff --git a/proxy/src/main/java/net/md_5/bungee/api/plugin/EventCallerClassLoader.java b/proxy/src/main/java/net/md_5/bungee/api/plugin/EventCallerClassLoader.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d517c7df73e419b37a9aec333977fe00a727dd61
+index 0000000000000000000000000000000000000000..1e56ef1d27ec59eaa8ada276d373badbca8751dd
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/api/plugin/EventCallerClassLoader.java
 @@ -0,0 +1,118 @@

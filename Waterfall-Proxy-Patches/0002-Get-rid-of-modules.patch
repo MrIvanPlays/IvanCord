@@ -5,7 +5,7 @@ Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index 91e48b3d7b7bf95cd884fb5c4809bd42f7ae51af..77dd0268ea2c9fa1fb8bb6344f358f93ce3c5e4c 100644
+index 0c070a36fe3725bb2f14c7aa570d3a0f46b36967..73fd6bbfee16bb9354e2e6bbb370d720ad946903 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -39,7 +39,9 @@
@@ -691,7 +691,7 @@ index 0000000000000000000000000000000000000000..4915d8d7b55c1f6d16ad55024ec807a2
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 91f04d85207fe5ac7f74a4d9f2c3470b1370601e..b4495e9b7646568cdf0f2065f61ab85f4b0ce9d6 100644
+index 7580209382665f30a7983fa23dd1890634555303..6248e7dd2d9c49ae24d35093d30690ddb8260bbf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -94,6 +94,15 @@ import net.md_5.bungee.query.RemoteQuery;

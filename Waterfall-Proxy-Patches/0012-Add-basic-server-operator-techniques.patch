@@ -253,7 +253,7 @@ index 0000000000000000000000000000000000000000..8a99463de283645730f4578eb4c38ba3
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 1455814e19fd9fec8a8ca99ccaadeb1a7fc9c610..b4f59a3047f9c90df6e35ed8c4797180dc9c94ed 100644
+index f5c364790be0cb7c36bb249d898385ffe47062c8..b451fcd6c1ef184a179be95e4c257516d7d24d45 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -102,6 +102,9 @@ import com.mrivanplays.ivancord.modules.CommandList;
@@ -287,10 +287,10 @@ index 1455814e19fd9fec8a8ca99ccaadeb1a7fc9c610..b4f59a3047f9c90df6e35ed8c4797180
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b3810efbc4b22e9af74ba3e3a4fa88f16a743fee..751508850249ea57cf93e3bc518e6edc3ab0274a 100644
+index 509ea05c22f1031e52230076ca1ff99fe19dc9a9..11eab5c03db9c25f34c19b8ce5e3e17555f79f19 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -113,6 +113,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -114,6 +114,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      private Position position;
      // IvanCord end
@@ -301,7 +301,7 @@ index b3810efbc4b22e9af74ba3e3a4fa88f16a743fee..751508850249ea57cf93e3bc518e6edc
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -198,6 +202,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -199,6 +203,9 @@ public final class UserConnection implements ProxiedPlayer
          {
              forgeClientHandler.setFmlTokenInHandshake( true );
          }
@@ -311,7 +311,7 @@ index b3810efbc4b22e9af74ba3e3a4fa88f16a743fee..751508850249ea57cf93e3bc518e6edc
      }
  
      public void sendPacket(PacketWrapper packet)
-@@ -595,7 +602,15 @@ public final class UserConnection implements ProxiedPlayer
+@@ -607,7 +614,15 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public boolean hasPermission(String permission)
      {
@@ -328,7 +328,7 @@ index b3810efbc4b22e9af74ba3e3a4fa88f16a743fee..751508850249ea57cf93e3bc518e6edc
      }
  
      @Override
-@@ -817,6 +832,13 @@ public final class UserConnection implements ProxiedPlayer
+@@ -829,6 +844,13 @@ public final class UserConnection implements ProxiedPlayer
          new SoundPlayedEvent( this, position,
                  PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category.ordinal() ).callEvent();
      }
