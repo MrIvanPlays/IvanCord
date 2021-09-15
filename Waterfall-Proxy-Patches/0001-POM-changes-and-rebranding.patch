@@ -322,7 +322,7 @@ index 652a869d5bbc2d323fc84bd9f0dcf1d830f7757c..b2aca1998b58ca53744862f2810a6213
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index fd71cdbddb95e31ededd4b85058f96995ec6fec1..91e48b3d7b7bf95cd884fb5c4809bd42f7ae51af 100644
+index 8d86e36c722fb25ef5c6ffca601b27eea89c8f5d..0c070a36fe3725bb2f14c7aa570d3a0f46b36967 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,18 @@
@@ -446,7 +446,7 @@ index fd71cdbddb95e31ededd4b85058f96995ec6fec1..91e48b3d7b7bf95cd884fb5c4809bd42
              <scope>compile</scope>
          </dependency>
          <dependency>
-@@ -355,7 +344,7 @@
+@@ -356,7 +345,7 @@
                      <plugin>
                          <groupId>org.projectlombok</groupId>
                          <artifactId>lombok-maven-plugin</artifactId>
@@ -455,7 +455,7 @@ index fd71cdbddb95e31ededd4b85058f96995ec6fec1..91e48b3d7b7bf95cd884fb5c4809bd42
                          <executions>
                              <execution>
                                  <id>delombok</id>
-@@ -373,9 +362,10 @@
+@@ -374,9 +363,10 @@
                      <plugin>
                          <groupId>org.apache.maven.plugins</groupId>
                          <artifactId>maven-javadoc-plugin</artifactId>
@@ -578,7 +578,7 @@ index c3a2eeb6fa11d47affc1b7d83c3cc847531ad955..4578ba40a4ca2e7ad0a7909e248221ff
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c09f5b4c39b4e5514e77f815ec0299de753881da..91f04d85207fe5ac7f74a4d9f2c3470b1370601e 100644
+index 07d74c67388d93a48a56d4d8554f194dd47c3104..7580209382665f30a7983fa23dd1890634555303 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -188,7 +188,7 @@ public class BungeeCord extends ProxyServer
@@ -600,10 +600,10 @@ index c09f5b4c39b4e5514e77f815ec0299de753881da..91f04d85207fe5ac7f74a4d9f2c3470b
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 35680528553b04097a714c9dc5de9d3484de5416..51615fed5d3f6d050390610f2283877b1a6419a3 100644
+index 0db3d76ae0676f2e5716c726eca4e042b34550ac..074fefc87a22fb4495dac9a2bb7e4a7c4d8fe6b5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-@@ -67,7 +67,7 @@ public class BungeeCordLauncher
+@@ -54,7 +54,7 @@ public class BungeeCordLauncher
              if ( buildDate.before( deadline.getTime() ) )
              {
                  System.err.println( "*** Hey! This build is potentially outdated :( ***" );
@@ -612,7 +612,7 @@ index 35680528553b04097a714c9dc5de9d3484de5416..51615fed5d3f6d050390610f2283877b
                  System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
                  System.err.println( "*** Server will start in 10 seconds ***" );
                  Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
-@@ -76,8 +76,8 @@ public class BungeeCordLauncher
+@@ -63,8 +63,8 @@ public class BungeeCordLauncher
  
          BungeeCord bungee = new BungeeCord();
          ProxyServer.setInstance( bungee );

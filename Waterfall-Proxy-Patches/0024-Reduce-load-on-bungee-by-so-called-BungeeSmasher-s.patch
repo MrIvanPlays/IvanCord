@@ -5,113 +5,8 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
-diff --git a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
-index a6d7cfb518420f18fd6466b892447b1462ee5201..67315501a343ffaeff2d7e87b6453a2dcb03d4b0 100644
---- a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
-+++ b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
-@@ -12,12 +12,21 @@ public final class NativeCode<T>
- {
- 
-     private final String name;
-+    /* // IvanCord start
-     private final Class<? extends T> javaImpl;
-     private final Class<? extends T> nativeImpl;
-+     */
-+    private final java.util.function.Supplier<? extends T> javaImpl;
-+    private final java.util.function.Supplier<? extends T> nativeImpl;
-+    // IvanCord end
-     //
-     private boolean loaded;
- 
-+    /* // IvanCord start
-     public NativeCode(String name, Class<? extends T> javaImpl, Class<? extends T> nativeImpl)
-+     */
-+    public NativeCode(String name, java.util.function.Supplier<? extends T> javaImpl, java.util.function.Supplier<? extends T> nativeImpl)
-+    // IvanCord end
-     {
-         if ("Mac OS X".equals( System.getProperty( "os.name" ))) name = "osx-" + name; // Waterfall
-         this.name = name;
-@@ -27,13 +36,21 @@ public final class NativeCode<T>
- 
-     public T newInstance()
-     {
-+        // IvanCord start
-+        /*
-         try
-         {
-+         */
-+            /*
-             return ( loaded ) ? nativeImpl.getDeclaredConstructor().newInstance() : javaImpl.getDeclaredConstructor().newInstance();
-+             */
-+            return ( loaded ) ? nativeImpl.get() : javaImpl.get();
-+            /*
-         } catch ( ReflectiveOperationException ex )
-         {
-             throw new RuntimeException( "Error getting instance", ex );
-         }
-+             */ // IvanCord end
-     }
- 
-     public boolean load()
-diff --git a/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java b/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java
-index d211cef6d592d7857f0ba828a78c547b7927f40b..f9b31f496c1839f56f7860f4fd548f8ad7f87f96 100644
---- a/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java
-+++ b/native/src/main/java/net/md_5/bungee/jni/cipher/JavaCipher.java
-@@ -11,7 +11,7 @@ import javax.crypto.spec.IvParameterSpec;
- public class JavaCipher implements BungeeCipher
- {
- 
--    private final Cipher cipher;
-+    private Cipher cipher; // IvanCord - final modifier removed
-     private static final ThreadLocal<byte[]> heapInLocal = new EmptyByteThreadLocal();
-     private static final ThreadLocal<byte[]> heapOutLocal = new EmptyByteThreadLocal();
- 
-@@ -25,14 +25,17 @@ public class JavaCipher implements BungeeCipher
-         }
-     }
- 
-+    /* // IvanCord start
-     public JavaCipher() throws GeneralSecurityException
-     {
-         this.cipher = Cipher.getInstance( "AES/CFB8/NoPadding" );
-     }
-+     */ // IvanCord end
- 
-     @Override
-     public void init(boolean forEncryption, SecretKey key) throws GeneralSecurityException
-     {
-+        Cipher cipher = this.cipher = Cipher.getInstance( "AES/CFB8/NoPadding" ); // IvanCord
-         int mode = forEncryption ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE;
-         cipher.init( mode, key, new IvParameterSpec( key.getEncoded() ) );
-     }
-diff --git a/native/src/test/java/net/md_5/bungee/NativeCipherTest.java b/native/src/test/java/net/md_5/bungee/NativeCipherTest.java
-index 72b81ab87ad600857dd625727449a45832e18f67..1b7ff35b0d6534bbf12a30c235319604f505f7c5 100644
---- a/native/src/test/java/net/md_5/bungee/NativeCipherTest.java
-+++ b/native/src/test/java/net/md_5/bungee/NativeCipherTest.java
-@@ -26,7 +26,7 @@ public class NativeCipherTest
-     private final SecretKey secret = new SecretKeySpec( new byte[ 16 ], "AES" );
-     private static final int BENCHMARK_COUNT = 4096;
-     //
--    private static final NativeCode<BungeeCipher> factory = new NativeCode<>( "native-cipher", JavaCipher.class, NativeCipher.class );
-+    private static final NativeCode<BungeeCipher> factory = new NativeCode<>( "native-cipher", JavaCipher::new, NativeCipher::new ); // IvanCord
- 
-     @Test
-     public void testNative() throws Exception
-diff --git a/native/src/test/java/net/md_5/bungee/NativeZlibTest.java b/native/src/test/java/net/md_5/bungee/NativeZlibTest.java
-index fde626b1ac777f14600eb052f36cb4b11fa8044c..e64ea66b1e7de49834bed0b7d195e084ec3f77ca 100644
---- a/native/src/test/java/net/md_5/bungee/NativeZlibTest.java
-+++ b/native/src/test/java/net/md_5/bungee/NativeZlibTest.java
-@@ -15,7 +15,7 @@ import org.junit.Test;
- public class NativeZlibTest
- {
- 
--    private final NativeCode<BungeeZlib> factory = new NativeCode<>( "native-compress", JavaZlib.class, NativeZlib.class );
-+    private final NativeCode<BungeeZlib> factory = new NativeCode<>( "native-compress", JavaZlib::new, NativeZlib::new ); // IvanCord
- 
-     @Test
-     public void doTest() throws DataFormatException
 diff --git a/pom.xml b/pom.xml
-index 77dd0268ea2c9fa1fb8bb6344f358f93ce3c5e4c..1df910903f5ce6076ea570c07dd18c156b6a6f17 100644
+index 73fd6bbfee16bb9354e2e6bbb370d720ad946903..72dc24400c4c45f9bc76e15c6af68298a39fa754 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -47,6 +47,7 @@
@@ -290,7 +185,7 @@ index 4578ba40a4ca2e7ad0a7909e248221ff8c7a9aa1..c4e00d9079d72cafdffeb50f91458288
  
      <build>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 115f81121e4bfed63217a525ba6090b3d3a35d18..432cfcf096a3c3ccb87b896fd9e55cbe1c89d87e 100644
+index fe63c5e1a13e54f0fb9af0a6baa7fdc007f25106..902d9986cf80fa351f4e953feefdca5d722d191f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -420,7 +420,7 @@ public class BungeeCord extends ProxyServer
@@ -337,24 +232,11 @@ index 35d533252b7009bd5f4c14b265cea0bc05f11b91..25c321a1bc62b969839cc0a2462fbbf4
                  .build( new CacheLoader<InetAddress, AtomicInteger>()
                  {
                      @Override
-diff --git a/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java b/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
-index ff6bb8c16d4c399cbbf933e4b706fd9bf17127b5..2f41e77085a11ca5004dafc78cc5f3333331d9c7 100644
---- a/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
-+++ b/proxy/src/main/java/net/md_5/bungee/EncryptionUtil.java
-@@ -31,7 +31,7 @@ public class EncryptionUtil
-     public static final KeyPair keys;
-     @Getter
-     private static final SecretKey secret = new SecretKeySpec( new byte[ 16 ], "AES" );
--    public static final NativeCode<BungeeCipher> nativeFactory = new NativeCode<>( "native-cipher", JavaCipher.class, NativeCipher.class );
-+    public static final NativeCode<BungeeCipher> nativeFactory = new NativeCode<>( "native-cipher", JavaCipher::new, NativeCipher::new ); // IvanCord
- 
-     static
-     {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 624ec8b9348e743003404b42cc376cd511e9c27b..309e70d1be8b7898eaf3619a7464ddb641173860 100644
+index 0c2480068e401a986dfd50d8e86faa0c48f249a8..6d6e12ecbf8d86fd88fbe0a549c04c09ad73c7d7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -417,7 +417,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -418,7 +418,7 @@ public final class UserConnection implements ProxiedPlayer
              }
          };
          Bootstrap b = new Bootstrap()
@@ -363,19 +245,8 @@ index 624ec8b9348e743003404b42cc376cd511e9c27b..309e70d1be8b7898eaf3619a7464ddb6
                  .group( ch.getHandle().eventLoop() )
                  .handler( initializer )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
-diff --git a/proxy/src/main/java/net/md_5/bungee/compress/CompressFactory.java b/proxy/src/main/java/net/md_5/bungee/compress/CompressFactory.java
-index 1f2d5a70aa660d97aa95e28d35702efed3898eaa..0747afe9803977e53c43b208c69f5c0bc95a636c 100644
---- a/proxy/src/main/java/net/md_5/bungee/compress/CompressFactory.java
-+++ b/proxy/src/main/java/net/md_5/bungee/compress/CompressFactory.java
-@@ -8,5 +8,5 @@ import net.md_5.bungee.jni.zlib.NativeZlib;
- public class CompressFactory
- {
- 
--    public static final NativeCode<BungeeZlib> zlib = new NativeCode<>( "native-compress", JavaZlib.class, NativeZlib.class );
-+    public static final NativeCode<BungeeZlib> zlib = new NativeCode<>( "native-compress", JavaZlib::new, NativeZlib::new ); // IvanCord
- }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index ee1fcad3185cc9c0db40a2d58e28fdc07ab3b8ce..2fc8bf6600f752aca94788dee2808c0a400de702 100644
+index f7331736e2cd604f35011a5ed8b0ab4cd8ba9374..fb6c7282ffe16f700fe2ab2ea714f92335dcd72e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -140,9 +140,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -416,7 +287,7 @@ index ee1fcad3185cc9c0db40a2d58e28fdc07ab3b8ce..2fc8bf6600f752aca94788dee2808c0a
          }
      }
  
-@@ -702,4 +705,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -696,4 +699,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          return !ch.isClosed();
      }
@@ -478,7 +349,7 @@ index d45a6140780f592d9f8c67cf2f7cb83496a14681..9d768f9bd262bb87e904f8b35a5d2978
      {
          if ( !closed && ch.isActive() ) // IvanCord
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 270545f28e299ecd12e76213dbd2a11bcc9701e3..aae1fe508aa24b0b5a3fcd7643b1a50b3bc76009 100644
+index f8d6becd6906554f1c4fa9e0aed785159e26394f..e110a1fbb1aa998cffa207cbd81a4ba079dbf15f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -27,6 +27,11 @@ import net.md_5.bungee.util.QuietException;
@@ -493,7 +364,7 @@ index 270545f28e299ecd12e76213dbd2a11bcc9701e3..aae1fe508aa24b0b5a3fcd7643b1a50b
      private ChannelWrapper channel;
      private PacketHandler handler;
  
-@@ -130,6 +135,22 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -133,6 +138,22 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
      {
          if ( ctx.channel().isActive() )
          {
@@ -516,7 +387,7 @@ index 270545f28e299ecd12e76213dbd2a11bcc9701e3..aae1fe508aa24b0b5a3fcd7643b1a50b
              boolean logExceptions = !( handler instanceof PingHandler );
  
              if ( logExceptions )
-@@ -157,6 +178,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -160,6 +181,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
                          {
                              handler, cause.getCause().getMessage()
                          } );
@@ -531,7 +402,7 @@ index 270545f28e299ecd12e76213dbd2a11bcc9701e3..aae1fe508aa24b0b5a3fcd7643b1a50b
                      }
                  } else if ( cause instanceof IOException || ( cause instanceof IllegalStateException && handler instanceof InitialHandler ) )
                  {
-@@ -187,7 +216,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -190,7 +219,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
                  }
              }
  

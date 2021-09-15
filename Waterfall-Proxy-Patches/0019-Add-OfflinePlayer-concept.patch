@@ -483,7 +483,7 @@ index 0000000000000000000000000000000000000000..6326bed99c7f5578e79a0f89ba5ea535
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index c8a2e9dc7aca2d92121c063e0fd856f2f46f1269..115f81121e4bfed63217a525ba6090b3d3a35d18 100644
+index f8e02050faf408392e9463443dd057b99da256af..fe63c5e1a13e54f0fb9af0a6baa7fdc007f25106 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -110,6 +110,8 @@ import com.mrivanplays.ivancord.ReconnectHandlerType;
@@ -504,7 +504,7 @@ index c8a2e9dc7aca2d92121c063e0fd856f2f46f1269..115f81121e4bfed63217a525ba6090b3
      // IvanCord end
  
      {
-@@ -863,4 +867,24 @@ public class BungeeCord extends ProxyServer
+@@ -868,4 +872,24 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
@@ -530,10 +530,10 @@ index c8a2e9dc7aca2d92121c063e0fd856f2f46f1269..115f81121e4bfed63217a525ba6090b3
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index d15adb3967bab45a2901618a80c14c2ae2500054..7e5eafbe822a320a6464afa360ba3f3a00afcf7a 100644
+index 73e174a1b0c26c978373afea7fe437b743f28899..e0fa14cfca0fc160851b9fd3054170a97ac5e65a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -69,6 +69,9 @@ public class UpstreamBridge extends PacketHandler
+@@ -68,6 +68,9 @@ public class UpstreamBridge extends PacketHandler
          bungee.getPluginManager().callEvent( event );
          con.getTabListHandler().onDisconnect();
          BungeeCord.getInstance().removeConnection( con );

@@ -6,7 +6,7 @@ Subject: [PATCH] Fix infinite relay message accumulation
 Co-authored-by: Ivan Pekov <ivan@mrivanplays.com>
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 2fc8bf6600f752aca94788dee2808c0a400de702..bbe59d7528dc68fbeac1b2b357a78204b5d31b46 100644
+index fb6c7282ffe16f700fe2ab2ea714f92335dcd72e..830504439884cb4901666c417420d3df999ba969 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -164,7 +164,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -19,10 +19,10 @@ index 2fc8bf6600f752aca94788dee2808c0a400de702..bbe59d7528dc68fbeac1b2b357a78204
              relayMessages.add( pluginMessage );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 4603408e1af16a2d8e71b08dbc294feb7cc8302a..4e8644e05f81dcd268ea245b11b3cd40d0455f87 100644
+index ef6aae345db8ee713729958193ff9ca64a79e263..cb0e59dea1771a65864b5e3cdcb0131f89eb617b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -364,7 +364,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -376,7 +376,7 @@ public class UpstreamBridge extends PacketHandler
          }
  
          // TODO: Unregister as well?

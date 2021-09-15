@@ -9,7 +9,7 @@ All score and team packets are not handled by the proxy in no way. They
 dont either register!
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index ffcfb67ebcd1d9af7328eaeabe433ed2ab64dfd2..1c0c16226a80525309e35c13684e3961956a4f52 100644
+index 22a73d471f251b119d1eb3ed3abfd975f13960b0..b14463bd6864054f38988d7bdaaa105635a3a263 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -397,6 +397,8 @@ public interface ProxiedPlayer extends Connection, CommandSender
@@ -320,10 +320,10 @@ index 4ed248558c1549fdef2ba6bb687341a89a0bf1c7..c7f7263e907e2d8c1737144dae9e0cc4
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index d515d401920e72400846b48a6c8e8548cb218e31..efa74af492d8c88c13ca19de0d2b9757953ff2c7 100644
+index aa7056dc3060fe7b70f3ffe28965522683b2f218..4641de8796eebcaa81226c2a88cc08d2e35dbffb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -126,15 +126,22 @@ public final class UserConnection implements ProxiedPlayer
+@@ -127,15 +127,22 @@ public final class UserConnection implements ProxiedPlayer
      private final Scoreboard serverSentScoreboard = new Scoreboard();
      @Getter
      private final Collection<UUID> sentBossBars = new HashSet<>();
@@ -346,7 +346,7 @@ index d515d401920e72400846b48a6c8e8548cb218e31..efa74af492d8c88c13ca19de0d2b9757
      private Locale locale;
      /*========================================================================*/
      @Getter
-@@ -155,10 +162,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -156,10 +163,14 @@ public final class UserConnection implements ProxiedPlayer
  
      public void init()
      {
@@ -361,7 +361,7 @@ index d515d401920e72400846b48a6c8e8548cb218e31..efa74af492d8c88c13ca19de0d2b9757
  
          this.displayName = name;
  
-@@ -763,14 +774,19 @@ public final class UserConnection implements ProxiedPlayer
+@@ -775,14 +786,19 @@ public final class UserConnection implements ProxiedPlayer
      }
  
      @Override
@@ -435,10 +435,10 @@ index 2c2427a6c2acf037cbb84b3a440e92cb64519352..0b7a7b4d880449a95fe2a5cf99844b5e
      @Override
      public void handle(Respawn respawn)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 4d7b1b23e6394ea6a198a957c91e66596d567dee..60ae4c0a8076fff4c86240083debda4427b17294 100644
+index d93d885191a4ba3e4e81b191b156123c894c88c4..60512bd2f74e465f68dddd9bdc81a4a4302be633 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -118,11 +118,13 @@ public class UpstreamBridge extends PacketHandler
+@@ -117,11 +117,13 @@ public class UpstreamBridge extends PacketHandler
      {
          if ( con.getServer() != null )
          {

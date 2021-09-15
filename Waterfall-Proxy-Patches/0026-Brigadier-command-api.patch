@@ -1847,7 +1847,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd12
  
          @Data
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java
-index ca7c6342bb678187432adb93aca7b20fbe71a200..3109f17ea0c38de32e31acaf9ae24b4e2eaca625 100644
+index 21aa9675081adf6213c37aba51a33b4fae39a859..31408d5506dfef5a0b6f22444746e94638272abc 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/TabCompleteResponse.java
 @@ -53,7 +53,39 @@ public class TabCompleteResponse extends DefinedPacket
@@ -1890,7 +1890,7 @@ index ca7c6342bb678187432adb93aca7b20fbe71a200..3109f17ea0c38de32e31acaf9ae24b4e
              }
  
              suggestions = new Suggestions( range, matches );
-@@ -78,11 +110,53 @@ public class TabCompleteResponse extends DefinedPacket
+@@ -76,11 +108,53 @@ public class TabCompleteResponse extends DefinedPacket
              for ( Suggestion suggestion : suggestions.getList() )
              {
                  writeString( suggestion.getText(), buf );
@@ -1942,13 +1942,13 @@ index ca7c6342bb678187432adb93aca7b20fbe71a200..3109f17ea0c38de32e31acaf9ae24b4e
 +                }
 +                // IvanCord end
              }
-         }
- 
+         } else
+         {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 8f452d2cd5ce3512954bd6fac33b8c9ff7398ee7..e959aef1f4258c54e6084c45f51f5cee2e39478e 100644
+index a7cba641f1833b80d85f5f251154f1b3f25419eb..d17dd9db174f8ace4344ad5415bcd42a7d923203 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -897,5 +897,22 @@ public class BungeeCord extends ProxyServer
+@@ -902,5 +902,22 @@ public class BungeeCord extends ProxyServer
      {
          return playerdata.getOfflinePlayers();
      }
@@ -2197,10 +2197,10 @@ index adcd895b423df476ad732c9c64e016f1f6baff4e..87122de04f0bf10a2382776cb575beee
      @Override
      public void handle(PlayerPosition pac)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 1d1c89b58beca05802d970f997484f82a1de2331..4603408e1af16a2d8e71b08dbc294feb7cc8302a 100644
+index 2d311a09d2231e027491df38cd898089d191fb66..ef6aae345db8ee713729958193ff9ca64a79e263 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -193,6 +193,87 @@ public class UpstreamBridge extends PacketHandler
+@@ -205,6 +205,87 @@ public class UpstreamBridge extends PacketHandler
          }
  
          // Waterfall end - tab limiter
@@ -2288,7 +2288,7 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..4603408e1af16a2d8e71b08dbc294feb
          List<String> suggestions = new ArrayList<>();
  
          if ( tabComplete.getCursor().startsWith( "/" ) )
-@@ -232,6 +313,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -244,6 +325,7 @@ public class UpstreamBridge extends PacketHandler
              }
              throw CancelSendSignal.INSTANCE;
          }
@@ -2297,11 +2297,11 @@ index 1d1c89b58beca05802d970f997484f82a1de2331..4603408e1af16a2d8e71b08dbc294feb
  
      @Override
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 55493ee39edcbd362ae43d7c748cadf80c98e7ab..f14b215e742b428cad5d7a087712244a7bbc0c74 100644
+index 35c2b9ff046eac2c20e5f66eb71b962a14ebda4a..31661e1831f611af0f404032372a4dfedeba4d8d 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -40,3 +40,5 @@ command_perms_permission=\u00a79- {0}
- command_ip=\u00a79IP of {0} is {1}
+@@ -41,3 +41,5 @@ command_ip=\u00a79IP of {0} is {1}
+ illegal_chat_characters=\u00a7cillegal characters in chat ({0})
  kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
  command_plugins_message=Plugins ({0}): {1}
 +internal_error_executing=\u00a7cAn internal error occurred whilst executing this command, please check the console log for details.

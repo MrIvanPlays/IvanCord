@@ -48,7 +48,7 @@ index 0000000000000000000000000000000000000000..5d6a1d0c22a94b049636c40fbbe3e9de
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index bae9b3ed575ce50fe8a6c8c7f0a589b14bb70231..1455814e19fd9fec8a8ca99ccaadeb1a7fc9c610 100644
+index 99b325f0955f123ec611d4faf479c164fd078f56..f5c364790be0cb7c36bb249d898385ffe47062c8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -101,6 +101,7 @@ import com.mrivanplays.ivancord.modules.CommandFind;
@@ -85,11 +85,11 @@ index 69000b1ee51231aba28a3a85166c50372ff0355f..c52688dd376927d648638d8c531176b9
          }
  
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index e838024539689e7ff1109d116434ddc64c9e088f..55493ee39edcbd362ae43d7c748cadf80c98e7ab 100644
+index d0aa1b4c3ceb2902a31f1351472282ed2ab8f71f..35c2b9ff046eac2c20e5f66eb71b962a14ebda4a 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -39,3 +39,4 @@ command_perms_groups=\u00a76You have the following groups: {0}
- command_perms_permission=\u00a79- {0}
+@@ -40,3 +40,4 @@ command_perms_permission=\u00a79- {0}
  command_ip=\u00a79IP of {0} is {1}
+ illegal_chat_characters=\u00a7cillegal characters in chat ({0})
  kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
 +command_plugins_message=Plugins ({0}): {1}
