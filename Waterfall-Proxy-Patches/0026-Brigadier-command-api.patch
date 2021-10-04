@@ -2197,7 +2197,7 @@ index adcd895b423df476ad732c9c64e016f1f6baff4e..87122de04f0bf10a2382776cb575beee
      @Override
      public void handle(PlayerPosition pac)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 2d311a09d2231e027491df38cd898089d191fb66..ef6aae345db8ee713729958193ff9ca64a79e263 100644
+index c9e242889b03b670c80faf004ce9f21ee7d02d6f..b5f95ae45eaf92693a196be0fbc669372fca4c84 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -205,6 +205,87 @@ public class UpstreamBridge extends PacketHandler
@@ -2297,10 +2297,10 @@ index 2d311a09d2231e027491df38cd898089d191fb66..ef6aae345db8ee713729958193ff9ca6
  
      @Override
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 35c2b9ff046eac2c20e5f66eb71b962a14ebda4a..31661e1831f611af0f404032372a4dfedeba4d8d 100644
+index 1b104a96b9cfa251fdaf5455b3f08951a1e26299..ae05c92119215dec7fec7a79b29958c2e0cdece5 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -41,3 +41,5 @@ command_ip=\u00a79IP of {0} is {1}
+@@ -39,3 +39,5 @@ command_ip=\u00a79IP of {0} is {1}
  illegal_chat_characters=\u00a7cillegal characters in chat ({0})
  kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
  command_plugins_message=Plugins ({0}): {1}

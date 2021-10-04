@@ -456,7 +456,7 @@ index 11eab5c03db9c25f34c19b8ce5e3e17555f79f19..0c2480068e401a986dfd50d8e86faa0c
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index e0fa14cfca0fc160851b9fd3054170a97ac5e65a..2d311a09d2231e027491df38cd898089d191fb66 100644
+index 3eeec9fb34307af14ef6b95b47ba5403e1047edd..c9e242889b03b670c80faf004ce9f21ee7d02d6f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -4,6 +4,11 @@ import com.google.common.base.Preconditions;

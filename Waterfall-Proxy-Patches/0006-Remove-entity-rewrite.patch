@@ -435,10 +435,10 @@ index 2c2427a6c2acf037cbb84b3a440e92cb64519352..0b7a7b4d880449a95fe2a5cf99844b5e
      @Override
      public void handle(Respawn respawn)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index d93d885191a4ba3e4e81b191b156123c894c88c4..60512bd2f74e465f68dddd9bdc81a4a4302be633 100644
+index c769976f392efdfd8dc632e9d83c7156b77ac303..ed5ee75a6b9ff5c20c191253e5c079574bf14b70 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -117,11 +117,13 @@ public class UpstreamBridge extends PacketHandler
+@@ -118,11 +118,13 @@ public class UpstreamBridge extends PacketHandler
      {
          if ( con.getServer() != null )
          {

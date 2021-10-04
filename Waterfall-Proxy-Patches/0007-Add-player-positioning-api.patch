@@ -364,10 +364,10 @@ index 0b7a7b4d880449a95fe2a5cf99844b5e7bc67144..409878ec8c403062d61a50ef3cb0f03b
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 60512bd2f74e465f68dddd9bdc81a4a4302be633..30e6cc6552a134bc5358414cbc93368f9bf63ca0 100644
+index ed5ee75a6b9ff5c20c191253e5c079574bf14b70..b451b5ff297bdfd2c1b0a4bc20f03ded77ba4603 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -29,9 +29,11 @@ import net.md_5.bungee.protocol.packet.Chat;
+@@ -29,10 +29,12 @@ import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -375,6 +375,7 @@ index 60512bd2f74e465f68dddd9bdc81a4a4302be633..30e6cc6552a134bc5358414cbc93368f
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.TabCompleteRequest;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
+ import net.md_5.bungee.util.AllowedCharacters;
 +import com.mrivanplays.ivancord.api.Position; // IvanCord
  
  public class UpstreamBridge extends PacketHandler

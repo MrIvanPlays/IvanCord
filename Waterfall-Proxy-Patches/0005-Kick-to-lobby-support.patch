@@ -114,10 +114,10 @@ index 9e180c30c05d946e892ae9fbd4d7d796e202d5d4..2c2427a6c2acf037cbb84b3a440e92cb
          throw CancelSendSignal.INSTANCE;
      }
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 0b7e74c967b271b037b8e5e7c90dbc881dcb4e9c..d0aa1b4c3ceb2902a31f1351472282ed2ab8f71f 100644
+index 5890e8c90944c3cbdc15975756de69d7e7ac96e6..48db529a5df8b38c8f7ba59d3f85f57ef173c6ed 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -39,3 +39,4 @@ command_perms_groups=\u00a76You have the following groups: {0}
+@@ -37,3 +37,4 @@ command_perms_groups=\u00a76You have the following groups: {0}
  command_perms_permission=\u00a79- {0}
  command_ip=\u00a79IP of {0} is {1}
  illegal_chat_characters=\u00a7cillegal characters in chat ({0})

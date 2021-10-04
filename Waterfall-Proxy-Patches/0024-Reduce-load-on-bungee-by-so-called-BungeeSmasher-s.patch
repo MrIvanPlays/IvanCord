@@ -48,7 +48,7 @@ index f20104a23600f34c10f020ab7c055a5ea371e254..951adc0d4298e4e2a6be06d8c9fd0865
      private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 31a954950de2f1bbb039b5d95de86df1c517d165..7aabffcd20768938972468bc4bd3cfd0e5e4c322 100644
+index a310844dcb26928ac61591a4284556c9f8807866..5b4fcc75b0721e704a73a62961ffb6de0422b914 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -153,8 +153,13 @@ public abstract class DefinedPacket
@@ -246,10 +246,10 @@ index 0c2480068e401a986dfd50d8e86faa0c48f249a8..6d6e12ecbf8d86fd88fbe0a549c04c09
                  .handler( initializer )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index f7331736e2cd604f35011a5ed8b0ab4cd8ba9374..fb6c7282ffe16f700fe2ab2ea714f92335dcd72e 100644
+index b7e37d47a4c4476b6c1d1b604db05835981d324a..6112ff552a789e3e2cdc68c3083b9c4919037e7c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -140,9 +140,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -141,9 +141,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          if ( canSendKickMessage() )
          {
              disconnect( ChatColor.RED + Util.exception( t ) );
@@ -261,7 +261,7 @@ index f7331736e2cd604f35011a5ed8b0ab4cd8ba9374..fb6c7282ffe16f700fe2ab2ea714f923
          }
          // IvanCord start - implement LoginCancelledEvent
          new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY_EXCEPTION ).callEvent();
-@@ -154,7 +156,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -155,7 +157,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -270,7 +270,7 @@ index f7331736e2cd604f35011a5ed8b0ab4cd8ba9374..fb6c7282ffe16f700fe2ab2ea714f923
          }
      }
  
-@@ -315,6 +317,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -316,6 +318,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              handshake.setHost( split[0] );
              extraDataInHandshake = "\0" + split[1];
          }
@@ -278,7 +278,7 @@ index f7331736e2cd604f35011a5ed8b0ab4cd8ba9374..fb6c7282ffe16f700fe2ab2ea714f923
  
          // SRV records can end with a . depending on DNS / client.
          if ( handshake.getHost().endsWith( "." ) )
-@@ -359,7 +362,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -360,7 +363,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  break;
              default:

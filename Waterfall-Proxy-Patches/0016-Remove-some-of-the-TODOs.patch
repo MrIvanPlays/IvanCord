@@ -104,18 +104,18 @@ index eb435bec0d69ef86c7391565e2197a439a1688cb..c23a7b0d786be236fafabbf795709c66
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 30e6cc6552a134bc5358414cbc93368f9bf63ca0..73e174a1b0c26c978373afea7fe437b743f28899 100644
+index b451b5ff297bdfd2c1b0a4bc20f03ded77ba4603..c4d70e32082f044dd7d294e44b2a47d402e75e1d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -34,6 +34,7 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
- import net.md_5.bungee.protocol.packet.TabCompleteRequest;
+@@ -35,6 +35,7 @@ import net.md_5.bungee.protocol.packet.TabCompleteRequest;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
+ import net.md_5.bungee.util.AllowedCharacters;
  import com.mrivanplays.ivancord.api.Position; // IvanCord
 +import net.md_5.bungee.tab.ServerUnique; // IvanCord
  
  public class UpstreamBridge extends PacketHandler
  {
-@@ -73,9 +74,9 @@ public class UpstreamBridge extends PacketHandler
+@@ -74,9 +75,9 @@ public class UpstreamBridge extends PacketHandler
              // Manually remove from everyone's tab list
              // since the packet from the server arrives
              // too late
@@ -128,7 +128,7 @@ index 30e6cc6552a134bc5358414cbc93368f9bf63ca0..73e174a1b0c26c978373afea7fe437b7
              PlayerListItem packet = new PlayerListItem();
              packet.setAction( PlayerListItem.Action.REMOVE_PLAYER );
              PlayerListItem.Item item = new PlayerListItem.Item();
-@@ -88,6 +89,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -89,6 +90,7 @@ public class UpstreamBridge extends PacketHandler
              {
                  player.unsafe().sendPacket( packet );
              }
