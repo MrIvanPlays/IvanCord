@@ -103,7 +103,7 @@ index 849ba1cf93a234f71b363073904efa52ca6d7ce5..d4d7323a084ccae0444c428a266ead50
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index e95431a0f7105491471d45837687c2dad8178f20..416559c85140eb93c311f5b2c51c12699301cdba 100644
+index 7f0b71c9db8d5a2c3c702b9d79ab5b3406eee27b..917c5114aa37e1ad1106e9f60428b4f3ea022a57 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -122,6 +122,8 @@ public enum Protocol
@@ -255,7 +255,7 @@ index b5750e142b213e07159f31e39254707c906a95de..f67bfe349d2a63ccd6fec3efa0214314
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 4ed248558c1549fdef2ba6bb687341a89a0bf1c7..c7f7263e907e2d8c1737144dae9e0cc44dfa9964 100644
+index 8827645a2d70692c2ce280aba5765e7689a5e6b3..258d9e2fcfca01e160cc3d3dadf46933b03168b7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -231,10 +231,12 @@ public class ServerConnector extends PacketHandler
@@ -382,7 +382,7 @@ index aa7056dc3060fe7b70f3ffe28965522683b2f218..4641de8796eebcaa81226c2a88cc08d2
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 2c2427a6c2acf037cbb84b3a440e92cb64519352..0b7a7b4d880449a95fe2a5cf99844b5e7bc67144 100644
+index 6861fd0102cbea139651da6c8d72dcb262849221..444320fec40200c5487db436735f24ea88f68905 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -142,11 +142,13 @@ public class DownstreamBridge extends PacketHandler
@@ -416,8 +416,8 @@ index 2c2427a6c2acf037cbb84b3a440e92cb64519352..0b7a7b4d880449a95fe2a5cf99844b5e
 +    // IvanCord end
  
      @Override
-     public void handle(PluginMessage pluginMessage) throws Exception
-@@ -683,6 +689,8 @@ public class DownstreamBridge extends PacketHandler
+     @SuppressWarnings("checkstyle:avoidnestedblocks")
+@@ -703,6 +709,8 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -426,7 +426,7 @@ index 2c2427a6c2acf037cbb84b3a440e92cb64519352..0b7a7b4d880449a95fe2a5cf99844b5e
      // Waterfall start
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
-@@ -710,6 +718,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -730,6 +738,7 @@ public class DownstreamBridge extends PacketHandler
          return entityId;
      }
      // Waterfall end

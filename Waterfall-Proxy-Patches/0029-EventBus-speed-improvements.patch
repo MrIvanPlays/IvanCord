@@ -19,7 +19,7 @@ Testing done:
  * Listening for events with a basic plugin is working
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
-index 75cf6e3339857aca698ae548d0d3f5668131a5d6..61cee2bb046b7ae6897ad749ed26f18ef8fca6a0 100644
+index 68157dd4b994ec15c7cbb70834821c7929117104..11b3f05ed0d06b7afca7287da6316c0288f517c3 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
 @@ -21,7 +21,7 @@ import net.md_5.bungee.api.ProxyServer;

@@ -174,7 +174,7 @@ index 89b3fdbd320871d41b2dfdc670e96bb5cae4a0a3..9619cb26ee2a6aaf65fcc9863ba79168
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 6d3d5d23c3eb7933f7c886776db1e3379c4768e1..44ad9234e809d0d5291a4da6bfe68921d682c597 100644
+index 835413387a42feb59e5d25d3d18921cab1c07824..de4a958b9dfe24d46f2056c512cdf22ef3f0c733 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -29,6 +29,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
@@ -185,9 +185,9 @@ index 6d3d5d23c3eb7933f7c886776db1e3379c4768e1..44ad9234e809d0d5291a4da6bfe68921
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PlayerPosition;
-@@ -382,6 +383,19 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_14, 0x12 ),
-                     map( ProtocolConstants.MINECRAFT_1_16, 0x13 )
+@@ -387,6 +388,19 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_16, 0x13 ),
+                     map( ProtocolConstants.MINECRAFT_1_17, 0x12 )
              );
 +            // play sound packet
 +            TO_CLIENT.registerPacket(
@@ -340,7 +340,7 @@ index 0000000000000000000000000000000000000000..6b8ef02070ddabb4edb23793901cd4d9
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index c7f7263e907e2d8c1737144dae9e0cc44dfa9964..eb435bec0d69ef86c7391565e2197a439a1688cb 100644
+index 258d9e2fcfca01e160cc3d3dadf46933b03168b7..7d30e28f7ac4b6d25b228120aa929d9d115c48d3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -48,6 +48,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadRequest;

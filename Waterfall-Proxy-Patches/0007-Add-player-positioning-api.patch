@@ -164,7 +164,7 @@ index ee2317e8402ee98da9456a9b43e4f6d53753cb64..89b3fdbd320871d41b2dfdc670e96bb5
      public void handle(EntityEffect entityEffect) throws Exception
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 416559c85140eb93c311f5b2c51c12699301cdba..6d3d5d23c3eb7933f7c886776db1e3379c4768e1 100644
+index 917c5114aa37e1ad1106e9f60428b4f3ea022a57..835413387a42feb59e5d25d3d18921cab1c07824 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -31,6 +31,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
@@ -175,7 +175,7 @@ index 416559c85140eb93c311f5b2c51c12699301cdba..6d3d5d23c3eb7933f7c886776db1e337
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-@@ -369,6 +370,19 @@ public enum Protocol
+@@ -373,6 +374,20 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_14, 0x0B ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x0A )
              );
@@ -189,7 +189,8 @@ index 416559c85140eb93c311f5b2c51c12699301cdba..6d3d5d23c3eb7933f7c886776db1e337
 +                    map( ProtocolConstants.MINECRAFT_1_12_1, 0x0E ),
 +                    map( ProtocolConstants.MINECRAFT_1_13, 0x11 ),
 +                    map( ProtocolConstants.MINECRAFT_1_14, 0x12 ),
-+                    map( ProtocolConstants.MINECRAFT_1_16, 0x13 )
++                    map( ProtocolConstants.MINECRAFT_1_16, 0x13 ),
++                    map( ProtocolConstants.MINECRAFT_1_17, 0x12 )
 +            );
 +            // IvanCord end
          }
@@ -292,7 +293,7 @@ index 4641de8796eebcaa81226c2a88cc08d2e35dbffb..a2a37ab133d9781e69bee98ac8ce03d7
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 0b7a7b4d880449a95fe2a5cf99844b5e7bc67144..409878ec8c403062d61a50ef3cb0f03bd138bb13 100644
+index 444320fec40200c5487db436735f24ea88f68905..4970c891112f93b6068a14fc9932fd709ef65321 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -43,7 +43,7 @@ import net.md_5.bungee.api.event.ServerKickEvent;
@@ -323,7 +324,7 @@ index 0b7a7b4d880449a95fe2a5cf99844b5e7bc67144..409878ec8c403062d61a50ef3cb0f03b
  
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
-@@ -768,6 +773,39 @@ public class DownstreamBridge extends PacketHandler
+@@ -788,6 +793,39 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  

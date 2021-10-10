@@ -27,7 +27,7 @@ index c0ea1264af309878353fa7eaac8542e319413b4c..a0d906127f7f583194f523b89db079c1
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 93f834e3a0e55a7892835ced3ead32714e88ead9..b7dd12f1346c6c7739cf74ce7451f845a435c2a8 100644
+index 42bdfd750bfe8fb837bb57eace0df326dc6af4f6..cdd8be22eb63680835d07af2a721ec7ef3caac4b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -9,6 +9,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
@@ -38,7 +38,7 @@ index 93f834e3a0e55a7892835ced3ead32714e88ead9..b7dd12f1346c6c7739cf74ce7451f845
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClearTitles;
-@@ -320,6 +321,13 @@ public enum Protocol
+@@ -324,6 +325,13 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_16, 0x41 ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x4A )
              );

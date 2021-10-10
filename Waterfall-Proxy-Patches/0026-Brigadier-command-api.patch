@@ -1972,7 +1972,7 @@ index a7cba641f1833b80d85f5f251154f1b3f25419eb..d17dd9db174f8ace4344ad5415bcd42a
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index adcd895b423df476ad732c9c64e016f1f6baff4e..87122de04f0bf10a2382776cb575beeec6496a08 100644
+index bafa99076eb12107d5c2c01b4c4cbc5910605b65..2a7e86918748cbee06d2c9a1f0873f7e5b410a6d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -6,13 +6,16 @@ import com.google.common.collect.Lists;
@@ -2000,7 +2000,7 @@ index adcd895b423df476ad732c9c64e016f1f6baff4e..87122de04f0bf10a2382776cb575beee
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.api.chat.ComponentBuilder; // IvanCord
  import net.md_5.bungee.api.chat.BaseComponent;
-@@ -634,6 +638,65 @@ public class DownstreamBridge extends PacketHandler
+@@ -654,6 +658,65 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(TabCompleteResponse tabCompleteResponse) throws Exception
      {
@@ -2066,7 +2066,7 @@ index adcd895b423df476ad732c9c64e016f1f6baff4e..87122de04f0bf10a2382776cb575beee
          List<String> commands = tabCompleteResponse.getCommands();
          if ( commands == null )
          {
-@@ -674,6 +737,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -694,6 +757,7 @@ public class DownstreamBridge extends PacketHandler
  
              con.unsafe().sendPacket( tabCompleteResponse );
          }
@@ -2074,7 +2074,7 @@ index adcd895b423df476ad732c9c64e016f1f6baff4e..87122de04f0bf10a2382776cb575beee
  
          throw CancelSendSignal.INSTANCE;
      }
-@@ -736,6 +800,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -756,6 +820,8 @@ public class DownstreamBridge extends PacketHandler
      {
          boolean modified = false;
  
@@ -2083,7 +2083,7 @@ index adcd895b423df476ad732c9c64e016f1f6baff4e..87122de04f0bf10a2382776cb575beee
          // Waterfall start
          Map<String, Command> commandMap = new HashMap<>();
          for ( Map.Entry<String, Command> commandEntry : bungee.getPluginManager().getCommands() ) {
-@@ -765,6 +831,43 @@ public class DownstreamBridge extends PacketHandler
+@@ -785,6 +851,43 @@ public class DownstreamBridge extends PacketHandler
                  modified = true;
              }
          }
@@ -2127,7 +2127,7 @@ index adcd895b423df476ad732c9c64e016f1f6baff4e..87122de04f0bf10a2382776cb575beee
  
          if ( modified )
          {
-@@ -773,6 +876,68 @@ public class DownstreamBridge extends PacketHandler
+@@ -793,6 +896,68 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
