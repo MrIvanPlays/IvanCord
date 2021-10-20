@@ -1,0 +1,99 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ivan Pekov <ivan@mrivanplays.com>
+Date: Wed, 20 Oct 2021 19:31:16 +0300
+Subject: [PATCH] Add HAProxyConnectionInitEvent
+
+
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/event/HAProxyConnectionInitEvent.java b/api/src/main/java/com/mrivanplays/ivancord/api/event/HAProxyConnectionInitEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d64e2885cc46a17f032b9602de8815f963a9884f
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/event/HAProxyConnectionInitEvent.java
+@@ -0,0 +1,56 @@
++package com.mrivanplays.ivancord.api.event;
++
++import java.net.SocketAddress;
++import lombok.Getter;
++import lombok.Setter;
++import lombok.ToString;
++import net.md_5.bungee.api.Callback;
++import net.md_5.bungee.api.config.ListenerInfo;
++import net.md_5.bungee.api.event.AsyncEvent;
++import net.md_5.bungee.api.plugin.Cancellable;
++
++/**
++ * Event, called when the HAProxy message for a connection has been decoded.
++ * This event is called even earlier than {@link net.md_5.bungee.api.event.ClientConnectEvent}
++ * and {@link io.github.waterfallmc.waterfall.event.ConnectionInitEvent}, be
++ * careful when handling it.
++ * <p>
++ * It is called <b>only and ONLY</b> if the proxy has received a HAProxy message
++ * about a specific client.
++ * <p>
++ * The reason this event exists is that both plain BungeeCord and Waterfall's
++ * events get called on a stage, where if the proxy is running behind a HAProxy,
++ * they will give the address of the HAProxy rather than the address of the
++ * client.
++ * <p>
++ * This event should <b>only and ONLY</b> be used for mitigating layer 7 DDoS
++ * attacks, and nothing else.
++ */
++@Getter
++@Setter
++@ToString
++public class HAProxyConnectionInitEvent extends AsyncEvent<HAProxyConnectionInitEvent> implements Cancellable
++{
++
++    /**
++     * Cancelled state
++     */
++    private boolean cancelled;
++
++    /**
++     * Remote address of the connection.
++     */
++    private final SocketAddress socketAddress;
++
++    /**
++     * The listener that accepted the connection.
++     */
++    private final ListenerInfo listener;
++
++    public HAProxyConnectionInitEvent(SocketAddress socketAddress, ListenerInfo listener, Callback<HAProxyConnectionInitEvent> done)
++    {
++        super( done );
++        this.socketAddress = socketAddress;
++        this.listener = listener;
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+index e110a1fbb1aa998cffa207cbd81a4ba079dbf15f..aab4daa2df2586c1cd89d19c2717d8d0253b3518 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
+@@ -90,6 +90,17 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+             {
+                 if ( proxy.sourceAddress() != null )
+                 {
++                    // IvanCord start - call an event on HAProxy message receive
++                    java.net.SocketAddress oldAddress = channel.getRemoteAddress();
++                    net.md_5.bungee.api.config.ListenerInfo listener = channel.getHandle().attr( net.md_5.bungee.netty.PipelineUtils.LISTENER ).get();
++                    com.mrivanplays.ivancord.api.event.HAProxyConnectionInitEvent event = new com.mrivanplays.ivancord.api.event.HAProxyConnectionInitEvent( oldAddress, listener, ( result, ex ) ->
++                    {
++                    if ( result.isCancelled() )
++                    {
++                        channel.close();
++                        return;
++                    }
++                    // IvanCord end
+                     InetSocketAddress newAddress = new InetSocketAddress( proxy.sourceAddress(), proxy.sourcePort() );
+ 
+                     ProxyServer.getInstance().getLogger().log( Level.FINE, "Set remote address via PROXY {0} -> {1}", new Object[]
+@@ -98,6 +109,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+                     } );
+ 
+                     channel.setRemoteAddress( newAddress );
++                    }); // IvanCord
++                    net.md_5.bungee.BungeeCord.getInstance().getPluginManager().callEvent( event ); // IvanCord
+                 }
+             } finally
+             {
