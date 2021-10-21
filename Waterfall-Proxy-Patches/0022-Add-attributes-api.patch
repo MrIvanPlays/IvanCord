@@ -209,7 +209,7 @@ index 9619cb26ee2a6aaf65fcc9863ba79168a3e1a830..c0ea1264af309878353fa7eaac8542e3
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index de4a958b9dfe24d46f2056c512cdf22ef3f0c733..8af17a9a11c79358b2a6f9c534cf469ba47b3f44 100644
+index de4a958b9dfe24d46f2056c512cdf22ef3f0c733..42bdfd750bfe8fb837bb57eace0df326dc6af4f6 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -16,6 +16,7 @@ import net.md_5.bungee.protocol.packet.ClientSettings;
@@ -220,12 +220,11 @@ index de4a958b9dfe24d46f2056c512cdf22ef3f0c733..8af17a9a11c79358b2a6f9c534cf469b
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
  import net.md_5.bungee.protocol.packet.EntityEffect;
-@@ -401,6 +402,23 @@ public enum Protocol
+@@ -401,6 +402,21 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_16_2, 0x18 ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x19 )
              );
 +            // entity attributes packet
-+            /*
 +            TO_CLIENT.registerPacket(
 +                    EntityAttributes.class,
 +                    EntityAttributes::new,
@@ -240,13 +239,12 @@ index de4a958b9dfe24d46f2056c512cdf22ef3f0c733..8af17a9a11c79358b2a6f9c534cf469b
 +                    map( ProtocolConstants.MINECRAFT_1_16, 0x58 ),
 +                    map( ProtocolConstants.MINECRAFT_1_17, 0x63 )
 +            );
-+             */
              // IvanCord end
          }
      },
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityAttributes.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityAttributes.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..63680588e1d4aa83214999347097408717d66175
+index 0000000000000000000000000000000000000000..fe62e1d86a0c8c65717f54e5cfc83eb9085e0e21
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/EntityAttributes.java
 @@ -0,0 +1,96 @@
@@ -279,12 +277,12 @@ index 0000000000000000000000000000000000000000..63680588e1d4aa832149993470974087
 +    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
 +    {
 +        entityId = readVarInt( buf );
-+        int count = buf.readInt();
++        int count = readVarInt( buf );
 +        attributes = new ArrayList<>( count );
 +        for ( int i = 0; i < count; i++ )
 +        {
 +            Attribute attribute = new Attribute();
-+            attribute.key = readString( buf, 30 );
++            attribute.key = readString( buf );
 +            attribute.value = buf.readDouble();
 +            int modifierCount = readVarInt( buf );
 +            attribute.modifierList = new ArrayList<>( modifierCount );
@@ -304,7 +302,7 @@ index 0000000000000000000000000000000000000000..63680588e1d4aa832149993470974087
 +    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
 +    {
 +        writeVarInt( entityId, buf );
-+        buf.writeInt( attributes.size() );
++        writeVarInt( attributes.size(), buf );
 +        for ( Attribute attribute : attributes )
 +        {
 +            writeString( attribute.key, buf );
@@ -347,7 +345,7 @@ index 0000000000000000000000000000000000000000..63680588e1d4aa832149993470974087
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index dc715b434b6f061b0a38d8b929ec957746cd2734..816357e161a140a5edb501abb2a85807fdb4d5c8 100644
+index dc715b434b6f061b0a38d8b929ec957746cd2734..9080b4de61ec39f6bed296842421659e8c7225d9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -1,6 +1,7 @@
@@ -363,14 +361,14 @@ index dc715b434b6f061b0a38d8b929ec957746cd2734..816357e161a140a5edb501abb2a85807
              // IvanCord end
  
 +            // IvanCord start - reset max health attribute on server switch
-+            //user.modifyAttribute( AttributeKey.GENERIC_MAX_HEALTH, AttributeKey.GENERIC_MAX_HEALTH.getDefaultValue() );
++            user.modifyAttribute( AttributeKey.GENERIC_MAX_HEALTH, AttributeKey.GENERIC_MAX_HEALTH.getDefaultValue() );
 +            // IvanCord end
 +
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
              // And immediate respawn
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 11eab5c03db9c25f34c19b8ce5e3e17555f79f19..d8380c3ab2c8025ddc2dbb78b8c689512c79e021 100644
+index 11eab5c03db9c25f34c19b8ce5e3e17555f79f19..0c2480068e401a986dfd50d8e86faa0c48f249a8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
@@ -414,7 +412,7 @@ index 11eab5c03db9c25f34c19b8ce5e3e17555f79f19..d8380c3ab2c8025ddc2dbb78b8c68951
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -851,6 +860,45 @@ public final class UserConnection implements ProxiedPlayer
+@@ -851,6 +860,42 @@ public final class UserConnection implements ProxiedPlayer
          BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
          this.globalOp = globalOp;
      }
@@ -428,8 +426,6 @@ index 11eab5c03db9c25f34c19b8ce5e3e17555f79f19..d8380c3ab2c8025ddc2dbb78b8c68951
 +    @Override
 +    public void modifyAttribute(AttributeKey key, double value)
 +    {
-+        throw new UnsupportedOperationException( "Temporarily unsupported" );
-+        /*
 +        if ( value > key.getMaxValue() )
 +        {
 +            value = key.getMaxValue();
@@ -455,13 +451,12 @@ index 11eab5c03db9c25f34c19b8ce5e3e17555f79f19..d8380c3ab2c8025ddc2dbb78b8c68951
 +            attributes = new ArrayList<>();
 +        }
 +        attributes.add( newAttribute );
-+         */
 +    }
      // IvanCord end
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 3eeec9fb34307af14ef6b95b47ba5403e1047edd..0d5955f03ca0162389d81cc56f8b0afe2bc1debb 100644
+index 3eeec9fb34307af14ef6b95b47ba5403e1047edd..c9e242889b03b670c80faf004ce9f21ee7d02d6f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -4,6 +4,11 @@ import com.google.common.base.Preconditions;
@@ -488,7 +483,7 @@ index 3eeec9fb34307af14ef6b95b47ba5403e1047edd..0d5955f03ca0162389d81cc56f8b0afe
      }
      // IvanCord end
  
-+    /* // IvanCord start
++    // IvanCord start
 +    @Override
 +    public void handle(EntityAttributes attributes)
 +    {
@@ -506,7 +501,7 @@ index 3eeec9fb34307af14ef6b95b47ba5403e1047edd..0d5955f03ca0162389d81cc56f8b0afe
 +        }
 +        con.setAttributes( attr );
 +    }
-+    */ // IvanCord end
++    // IvanCord end
 +
      @Override
      public String toString()

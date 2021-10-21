@@ -50,7 +50,7 @@ index 8da2ff6a2b590968422c23a456552223e2501ba7..3550470cff53c61c3aef1f3397cd9317
  
      private int setupTFO(int incoming)
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 816357e161a140a5edb501abb2a85807fdb4d5c8..d76e15347d9945c87104bb884058a39eb442cb30 100644
+index 9080b4de61ec39f6bed296842421659e8c7225d9..6ea153dd9f360781e3c0f3dd0475b906cde24506 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -276,7 +276,7 @@ public class ServerConnector extends PacketHandler

@@ -27,7 +27,7 @@ index c0ea1264af309878353fa7eaac8542e319413b4c..a0d906127f7f583194f523b89db079c1
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 8af17a9a11c79358b2a6f9c534cf469ba47b3f44..3011c69bad398fdab3a165824fedd1ab9d637fc4 100644
+index 42bdfd750bfe8fb837bb57eace0df326dc6af4f6..cdd8be22eb63680835d07af2a721ec7ef3caac4b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -9,6 +9,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
@@ -98,7 +98,7 @@ index 0000000000000000000000000000000000000000..c553ba02d7f13c83f72f5e016bda8281
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c69ceb739d97b0405a387d8b81ab85935c4196dc..396c189591fe689e516eaaa77f973dd1c2457d6b 100644
+index 6d6e12ecbf8d86fd88fbe0a549c04c09ad73c7d7..92670810fd5d8ae4dbbc60e794110b8cce089d6c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -550,13 +550,17 @@ public final class UserConnection implements ProxiedPlayer
