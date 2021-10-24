@@ -8,52 +8,8 @@ also updates from 21w40a to 21w41a, with also updating packet ids for
 the packets IvanCord adds. I cba to add them into their proper patches as of
 right now.
 
-diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index cdd8be22eb63680835d07af2a721ec7ef3caac4b..7508451f995c56379498643096333156282ca159 100644
---- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-+++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -329,7 +329,8 @@ public enum Protocol
-             TO_CLIENT.registerPacket(
-                     ActionBar.class,
-                     ActionBar::new,
--                    map( ProtocolConstants.MINECRAFT_1_17, 0x41 )
-+                    map( ProtocolConstants.MINECRAFT_1_17, 0x41 ),
-+                    map( ProtocolConstants.MINECRAFT_1_18, 0x42 )
-             );
-             // IvanCord end
- 
-@@ -395,7 +396,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_13, 0x11 ),
-                     map( ProtocolConstants.MINECRAFT_1_14, 0x12 ),
-                     map( ProtocolConstants.MINECRAFT_1_16, 0x13 ),
--                    map( ProtocolConstants.MINECRAFT_1_17, 0x12 )
-+                    map( ProtocolConstants.MINECRAFT_1_17, 0x12 ),
-+                    map( ProtocolConstants.MINECRAFT_1_18, 0x13 )
-             );
-             // play sound packet
-             TO_CLIENT.registerPacket(
-@@ -408,7 +410,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_15, 0x1A ),
-                     map( ProtocolConstants.MINECRAFT_1_16, 0x19 ),
-                     map( ProtocolConstants.MINECRAFT_1_16_2, 0x18 ),
--                    map( ProtocolConstants.MINECRAFT_1_17, 0x19 )
-+                    map( ProtocolConstants.MINECRAFT_1_17, 0x19 ),
-+                    map( ProtocolConstants.MINECRAFT_1_18, 0x1A )
-             );
-             // entity attributes packet
-             TO_CLIENT.registerPacket(
-@@ -423,7 +426,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_14, 0x58 ),
-                     map( ProtocolConstants.MINECRAFT_1_15, 0x59 ),
-                     map( ProtocolConstants.MINECRAFT_1_16, 0x58 ),
--                    map( ProtocolConstants.MINECRAFT_1_17, 0x63 )
-+                    map( ProtocolConstants.MINECRAFT_1_17, 0x63 ),
-+                    map( ProtocolConstants.MINECRAFT_1_18, 0x65 )
-             );
-             // IvanCord end
-         }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index bb37ba04fbc920e515251a4482f78a10993fcbab..c59eec2d392d66be1c6516cfa530da7753babdb1 100644
+index bb37ba04fbc920e515251a4482f78a10993fcbab..d473bbbecc7f0ae3d016f369d0c376251c322660 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 @@ -36,7 +36,7 @@ public class ProtocolConstants
@@ -61,7 +17,7 @@ index bb37ba04fbc920e515251a4482f78a10993fcbab..c59eec2d392d66be1c6516cfa530da77
      public static final int MINECRAFT_1_17 = 755;
      public static final int MINECRAFT_1_17_1 = 756;
 -    public static final int MINECRAFT_1_18 = 1073741868;
-+    public static final int MINECRAFT_1_18 = getProtocolFromSnapshotProtocol( 45 ); // IvanCord - 21w41a, future protocol: 757
++    public static final int MINECRAFT_1_18 = getProtocolFromSnapshotProtocol( 46 ); // IvanCord - 21w42a, future protocol: 757
      public static final List<String> SUPPORTED_VERSIONS;
      public static final List<Integer> SUPPORTED_VERSION_IDS;
  

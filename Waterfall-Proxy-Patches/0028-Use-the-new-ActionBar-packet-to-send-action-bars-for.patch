@@ -27,7 +27,7 @@ index c0ea1264af309878353fa7eaac8542e319413b4c..a0d906127f7f583194f523b89db079c1
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 42bdfd750bfe8fb837bb57eace0df326dc6af4f6..cdd8be22eb63680835d07af2a721ec7ef3caac4b 100644
+index f0eb9c5234bd284bb43b3ab36452117cbf0033d3..35d7ebdfd4c8f7de70d273fbebb91246bdd627a8 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -9,6 +9,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
