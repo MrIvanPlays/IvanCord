@@ -153,6 +153,19 @@ index a42d63fa881628e4bb3f6ceae8c9676e9e614b47..e0c37b1ec429db823401a7e8ce338c0c
                      <!-- Log root and BungeeCord loggers without prefix -->
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %paperMinecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+index bb37ba04fbc920e515251a4482f78a10993fcbab..2ecd16fb58415e6448cc4a5173a5abca5ce7e7b6 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
+@@ -36,7 +36,7 @@ public class ProtocolConstants
+     public static final int MINECRAFT_1_16_4 = 754;
+     public static final int MINECRAFT_1_17 = 755;
+     public static final int MINECRAFT_1_17_1 = 756;
+-    public static final int MINECRAFT_1_18 = 1073741868;
++    public static final int MINECRAFT_1_18 = ( 1 << 30 ) | 46; // IvanCord - 21w42a, future protocol: 757
+     public static final List<String> SUPPORTED_VERSIONS;
+     public static final List<Integer> SUPPORTED_VERSION_IDS;
+ 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index 6248e7dd2d9c49ae24d35093d30690ddb8260bbf..e41fff8a7dce59d0ea007abe1ba07de59a157f06 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
