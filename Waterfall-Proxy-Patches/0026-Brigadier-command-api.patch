@@ -2197,21 +2197,22 @@ index bafa99076eb12107d5c2c01b4c4cbc5910605b65..2a7e86918748cbee06d2c9a1f0873f7e
      @Override
      public void handle(PlayerPosition pac)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index c9e242889b03b670c80faf004ce9f21ee7d02d6f..b5f95ae45eaf92693a196be0fbc669372fca4c84 100644
+index c9e242889b03b670c80faf004ce9f21ee7d02d6f..f6dbefa99bd0d5ed41e5ef96ff021a438752414d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -205,6 +205,87 @@ public class UpstreamBridge extends PacketHandler
+@@ -205,6 +205,95 @@ public class UpstreamBridge extends PacketHandler
          }
  
          // Waterfall end - tab limiter
 +        // IvanCord start - ditch whole impl
 +        // reimplement this entirely
++        boolean isRegisteredCommand = false;
 +        if ( con.getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_13 )
 +        {
 +            List<String> suggestions = new ArrayList<>();
 +            if ( tabComplete.getCursor().startsWith( "/" ) )
 +            {
-+                bungee.getPluginManager().dispatchCommand( con, tabComplete.getCursor().substring( 1 ), suggestions );
++                isRegisteredCommand = bungee.getPluginManager().dispatchCommand( con, tabComplete.getCursor().substring( 1 ), suggestions );
 +            }
 +
 +            TabCompleteEvent event = bungee.getPluginManager().callEvent( new TabCompleteEvent( con, con.getServer(), tabComplete.getCursor(), suggestions ) );
@@ -2234,6 +2235,7 @@ index c9e242889b03b670c80faf004ce9f21ee7d02d6f..b5f95ae45eaf92693a196be0fbc66937
 +            {
 +                fromDispatcher = bungee.getPluginManager().getBrigadierCompletions( con, tabComplete.getCursor().substring( 1 ) ).join();
 +            }
++            isRegisteredCommand = !fromDispatcher.isEmpty();
 +            int start = tabComplete.getCursor().lastIndexOf( ' ' ) + 1;
 +            int end = tabComplete.getCursor().length();
 +            StringRange range = StringRange.between( start, end );
@@ -2284,11 +2286,17 @@ index c9e242889b03b670c80faf004ce9f21ee7d02d6f..b5f95ae45eaf92693a196be0fbc66937
 +                }
 +            }
 +        }
++
++        // Don't forward tab completions if the command is a registered bungee command
++        if ( isRegisteredCommand )
++        {
++            throw CancelSendSignal.INSTANCE;
++        }
 +        /*
          List<String> suggestions = new ArrayList<>();
  
          if ( tabComplete.getCursor().startsWith( "/" ) )
-@@ -244,6 +325,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -244,6 +333,7 @@ public class UpstreamBridge extends PacketHandler
              }
              throw CancelSendSignal.INSTANCE;
          }

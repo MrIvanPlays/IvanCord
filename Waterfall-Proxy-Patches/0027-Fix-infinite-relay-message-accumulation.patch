@@ -19,10 +19,10 @@ index 6112ff552a789e3e2cdc68c3083b9c4919037e7c..3a17cce5cd86437467ea188b9ebbc3b1
              relayMessages.add( pluginMessage );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index b5f95ae45eaf92693a196be0fbc669372fca4c84..6311ef0a8440c8b7a2b7d02f4826078627b0b574 100644
+index f6dbefa99bd0d5ed41e5ef96ff021a438752414d..08fd02b06a7ffd2a595153cfcc977f4bcdab280a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -376,7 +376,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -384,7 +384,7 @@ public class UpstreamBridge extends PacketHandler
          }
  
          // TODO: Unregister as well?
