@@ -19,7 +19,7 @@ index 6112ff552a789e3e2cdc68c3083b9c4919037e7c..3a17cce5cd86437467ea188b9ebbc3b1
              relayMessages.add( pluginMessage );
          }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index f6dbefa99bd0d5ed41e5ef96ff021a438752414d..08fd02b06a7ffd2a595153cfcc977f4bcdab280a 100644
+index 75f878e3b3dab639f5b3a204758373750c559854..dcedb46b827058ff5c11472e0f1bdbb5e253ddf6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -384,7 +384,7 @@ public class UpstreamBridge extends PacketHandler

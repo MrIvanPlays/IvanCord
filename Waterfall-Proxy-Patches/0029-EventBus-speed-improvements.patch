@@ -32,7 +32,7 @@ index 68157dd4b994ec15c7cbb70834821c7929117104..11b3f05ed0d06b7afca7287da6316c02
      private final ProxyServer proxy;
      private final PluginDescription desc;
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 3c896df72ed58c013a3d9645b21bf11bc9c3b339..968f1357d20ccb8f9795049ad7e03dff0e181f46 100644
+index 7ea5d8f345d768a7174e993a124b27339a3f17c0..923c23a3e10017e93cf46ac440105efb12129166 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -75,9 +75,10 @@ public final class PluginManager
@@ -55,7 +55,7 @@ index 3c896df72ed58c013a3d9645b21bf11bc9c3b339..968f1357d20ccb8f9795049ad7e03dff
      }
  
      /**
-@@ -598,7 +600,7 @@ public final class PluginManager
+@@ -615,7 +617,7 @@ public final class PluginManager
                      "Listener %s has registered using deprecated subscribe annotation! Please update to @EventHandler.", listener );
          }
           */

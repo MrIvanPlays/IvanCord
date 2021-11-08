@@ -107,10 +107,10 @@ index 0000000000000000000000000000000000000000..c4769518b0e957b5365983434adcfca8
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..1dd3ee19497b0f55c4398392d8dde53253a3afef
+index 0000000000000000000000000000000000000000..28379321f5c37eb151950eb2979b265bc07fa528
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
-@@ -0,0 +1,514 @@
+@@ -0,0 +1,529 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.base.Preconditions;
@@ -137,6 +137,7 @@ index 0000000000000000000000000000000000000000..1dd3ee19497b0f55c4398392d8dde532
 +import java.util.Collection;
 +import java.util.Collections;
 +import java.util.List;
++import java.util.Locale;
 +import java.util.Map;
 +import java.util.concurrent.CompletableFuture;
 +import java.util.concurrent.locks.Lock;
@@ -374,20 +375,17 @@ index 0000000000000000000000000000000000000000..1dd3ee19497b0f55c4398392d8dde532
 +        {
 +            return 0;
 +        }
++        String commandName;
 +        if ( input.indexOf( ' ' ) == -1 )
 +        {
-+            if ( !isExecutable( input.toLowerCase(), sender ) )
-+            {
-+                return 0;
-+            }
++            commandName = input.toLowerCase( Locale.ROOT );
 +        } else
 +        {
-+            int firstSpace = input.indexOf( ' ' );
-+            String commandName = input.substring( 0, firstSpace );
-+            if ( !isExecutable( commandName, sender ) )
-+            {
-+                return 0;
-+            }
++            commandName = input.substring( 0, input.indexOf( ' ' ) );
++        }
++        if ( !isExecutable( commandName, sender ) )
++        {
++            return 0;
 +        }
 +        try
 +        {
@@ -403,8 +401,6 @@ index 0000000000000000000000000000000000000000..1dd3ee19497b0f55c4398392d8dde532
 +        {
 +            if ( sender instanceof ProxiedPlayer )
 +            {
-+                int firstSpace = input.indexOf( ' ' );
-+                String commandName = firstSpace == -1 ? input.toLowerCase() : input.substring( 0, firstSpace );
 +                CommandNode<CommandSender> node = dispatcher.getRoot().getChild( commandName.toLowerCase() );
 +                Command legacyCommand = getCommand( commandName.toLowerCase() );
 +                if ( node != null && node.getRequirement() != null )
@@ -423,7 +419,7 @@ index 0000000000000000000000000000000000000000..1dd3ee19497b0f55c4398392d8dde532
 +                        proxy.getLogger().log( Level.WARNING, "Requirement test for command node " + node.getName() + " encountered an exception", e1 );
 +
 +                        String[] args = Constants.EMPTY_ARRAY;
-+                        if ( firstSpace != -1 )
++                        if ( input.indexOf( ' ' ) != -1 )
 +                        {
 +                            String[] inputSplit = input.split( " " );
 +                            args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
@@ -437,22 +433,25 @@ index 0000000000000000000000000000000000000000..1dd3ee19497b0f55c4398392d8dde532
 +            return 2;
 +        } catch ( Throwable e )
 +        {
-+            // plugins being plugins
-+            sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_executing" ) ) );
-+            proxy.getLogger().log( Level.WARNING, "Error in dispatching command", e );
-+
-+            String commandName = input.toLowerCase();
-+            String[] args = Constants.EMPTY_ARRAY;
-+            if ( input.indexOf( ' ' ) != -1 )
-+            {
-+                String[] inputSplit = input.split( " " );
-+                commandName = inputSplit[0].toLowerCase();
-+                args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
-+            }
-+            Command command = getCommand( commandName );
-+            pluginManager.callEvent( new ProxyExceptionEvent( new ProxyCommandException( e, command, sender, args ) ) );
++            handleError( sender, e, input, commandName );
 +            return 1;
 +        }
++    }
++
++    private void handleError(CommandSender sender, Throwable e, String input, String commandName)
++    {
++        // plugins being plugins
++        sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_executing" ) ) );
++        proxy.getLogger().log( Level.WARNING, "Error in dispatching command", e );
++
++        String[] args = Constants.EMPTY_ARRAY;
++        if ( input.indexOf( ' ' ) != -1 )
++        {
++            String[] inputSplit = input.split( " " );
++            args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++        }
++        Command command = getCommand( commandName );
++        pluginManager.callEvent( new ProxyExceptionEvent( new ProxyCommandException( e, command, sender, args ) ) );
 +    }
 +
 +    public Command getCommand(String commandName)
@@ -479,13 +478,21 @@ index 0000000000000000000000000000000000000000..1dd3ee19497b0f55c4398392d8dde532
 +    public List<String> complete(CommandSender sender, String input, boolean check)
 +    {
 +        Preconditions.checkNotNull( sender, "sender" );
++        String commandName = null;
 +        if ( check )
 +        {
-+            if ( input == null || input.isEmpty() || input.indexOf( ' ' ) == -1 )
++            if ( input == null || input.isEmpty() )
 +            {
 +                return Collections.emptyList();
 +            }
-+            if ( !isExecutable( input.substring( 0, input.indexOf( ' ' ) ), sender ) )
++            if ( input.indexOf( ' ' ) == -1 )
++            {
++                commandName = input.toLowerCase( Locale.ROOT );
++            } else
++            {
++                commandName = input.substring( 0, input.indexOf( ' ' ) );
++            }
++            if ( !isExecutable( commandName, sender ) )
 +            {
 +                return Collections.emptyList();
 +            }
@@ -500,10 +507,22 @@ index 0000000000000000000000000000000000000000..1dd3ee19497b0f55c4398392d8dde532
 +            // plugins being plugins
 +            sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_completing" ) ) );
 +            proxy.getLogger().log( Level.WARNING, "Error in dispatching command", e );
-+
-+            String[] inputSplit = input.split( " " );
-+            String commandName = inputSplit[0].toLowerCase();
-+            String[] args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++            String[] args = Constants.EMPTY_ARRAY;
++            if ( input.indexOf( ' ' ) != -1 )
++            {
++                String[] inputSplit = input.split( " " );
++                if ( commandName == null )
++                {
++                    commandName = inputSplit[0].toLowerCase( Locale.ROOT );
++                }
++                args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
++            } else
++            {
++                if ( commandName == null )
++                {
++                    commandName = input.toLowerCase( Locale.ROOT );
++                }
++            }
 +            Command command = getCommand( commandName );
 +            pluginManager.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( e, command, sender, args ) ) );
 +            return Collections.emptyList();
@@ -513,11 +532,18 @@ index 0000000000000000000000000000000000000000..1dd3ee19497b0f55c4398392d8dde532
 +    public CompletableFuture<Suggestions> complete(CommandSender sender, String input)
 +    {
 +        Preconditions.checkNotNull( sender, "sender" );
-+        if ( input == null || input.isEmpty() || input.indexOf( ' ' ) == -1 )
++        if ( input == null || input.isEmpty() )
 +        {
 +            return Suggestions.empty();
 +        }
-+        String commandName = input.substring( 0, input.indexOf( ' ' ) );
++        String commandName;
++        if ( input.indexOf( ' ' ) == -1 )
++        {
++            commandName = input.toLowerCase( Locale.ROOT );
++        } else
++        {
++            commandName = input.substring( 0, input.indexOf( ' ' ) ).toLowerCase( Locale.ROOT );
++        }
 +        if ( !isExecutable( commandName, sender ) )
 +        {
 +            return Suggestions.empty();
@@ -528,18 +554,7 @@ index 0000000000000000000000000000000000000000..1dd3ee19497b0f55c4398392d8dde532
 +            return dispatcher.getCompletionSuggestions( results );
 +        } catch ( Throwable e )
 +        {
-+            // plugins being plugins
-+            sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_completing" ) ) );
-+            proxy.getLogger().log( Level.WARNING, "Error in dispatching command", e );
-+
-+            String[] args = Constants.EMPTY_ARRAY;
-+            if ( input.indexOf( ' ' ) != -1 )
-+            {
-+                String[] inputSplit = input.split( " " );
-+                args = Arrays.copyOfRange( inputSplit, 1, inputSplit.length );
-+            }
-+            Command command = getCommand( commandName );
-+            pluginManager.callEvent( new ProxyExceptionEvent( new ProxyTabCompleteException( e, command, sender, args ) ) );
++            handleError( sender, e, input, commandName );
 +            return Suggestions.empty();
 +        }
 +    }
@@ -902,7 +917,7 @@ index 6ca9f8e4adb03e3974b9b8eca86aa7e8e75c4af8..1568ebe294c028eb380c10fb306c32b6
  
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11bc9c3b339 100644
+index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b27339a3f17c0 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -7,6 +7,12 @@ import com.google.common.eventbus.Subscribe;
@@ -939,7 +954,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
      }
  
      /**
-@@ -103,14 +111,30 @@ public final class PluginManager
+@@ -103,13 +111,29 @@ public final class PluginManager
       */
      public void registerCommand(Plugin plugin, Command command)
      {
@@ -959,17 +974,16 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
 +    public void registerCommand(BrigadierCommand command)
 +    {
 +        commandDispatcher.register( command );
-     }
- 
++    }
++
 +    public void unregisterCommand(BrigadierCommand command)
 +    {
 +        commandDispatcher.unregister( command );
-+    }
+     }
 +    // IvanCord end
-+
+ 
      /**
       * Unregister a command so it will no longer be executed.
-      *
 @@ -118,8 +142,12 @@ public final class PluginManager
       */
      public void unregisterCommand(Command command)
@@ -1013,14 +1027,14 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
  
      /**
       * Checks if the command is registered and can possibly be executed by the
-@@ -160,8 +196,24 @@ public final class PluginManager
+@@ -160,9 +196,25 @@ public final class PluginManager
       */
      public boolean isExecutableCommand(String commandName, CommandSender sender)
      {
 -        return getCommandIfEnabled( commandName, sender ) != null;
 +        return commandDispatcher.isExecutable( commandName, sender ); // IvanCord
-+    }
-+
+     }
+ 
 +    // IvanCord start
 +
 +    /**
@@ -1034,12 +1048,13 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
 +    public Command getCommand(String name)
 +    {
 +        return commandDispatcher.getCommand( name.toLowerCase() );
-     }
++    }
 +    // IvanCord end
- 
++
      public boolean dispatchCommand(CommandSender sender, String commandLine)
      {
-@@ -181,6 +233,30 @@ public final class PluginManager
+         return dispatchCommand( sender, commandLine, null );
+@@ -181,6 +233,47 @@ public final class PluginManager
       */
      public boolean dispatchCommand(CommandSender sender, String commandLine, List<String> tabResults)
      {
@@ -1063,14 +1078,31 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
 +            }
 +        } else
 +        {
-+            tabResults.addAll( commandDispatcher.complete( sender, commandLine, true ) );
++            // due to latest BungeeCord fix we have to check some stuff here for < 1.13 completions
++            if ( commandLine == null || commandLine.isEmpty() )
++            {
++                return false;
++            }
++            String commandName;
++            if ( commandLine.indexOf( ' ' ) == -1 )
++            {
++                commandName = commandLine.toLowerCase( Locale.ROOT );
++            } else
++            {
++                commandName = commandLine.substring( 0, commandLine.indexOf( ' ' ) );
++            }
++            if ( !commandDispatcher.isExecutable( commandName, sender ) )
++            {
++                return false;
++            }
++            tabResults.addAll( commandDispatcher.complete( sender, commandLine, false ) );
 +            return true;
 +        }
 +        /*
          String[] split = commandLine.split( " ", -1 );
          // Check for chat that only contains " "
          if ( split.length == 0 || split[0].isEmpty() )
-@@ -238,6 +314,7 @@ public final class PluginManager
+@@ -238,6 +331,7 @@ public final class PluginManager
          // Waterfall end
              }
          return true;
@@ -1078,7 +1110,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
      }
  
      // Waterfall start - Add method to tab-complete command names
-@@ -253,6 +330,9 @@ public final class PluginManager
+@@ -253,6 +347,9 @@ public final class PluginManager
       * @return The tab-complete suggestions
       */
      public List<String> tabCompleteCommand(CommandSender sender, String commandLine) {
@@ -1088,7 +1120,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
          List<String> suggestions = new java.util.ArrayList<>();
  
          if (commandLine.indexOf(' ') == -1) {
-@@ -272,9 +352,17 @@ public final class PluginManager
+@@ -272,9 +369,17 @@ public final class PluginManager
          }
  
          return suggestions;
@@ -1106,7 +1138,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
      /**
       * Returns the {@link Plugin} objects corresponding to all loaded plugins.
       *
-@@ -546,7 +634,8 @@ public final class PluginManager
+@@ -546,7 +651,8 @@ public final class PluginManager
       */
      public Collection<Map.Entry<String, Command>> getCommands()
      {
@@ -1116,7 +1148,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..3c896df72ed58c013a3d9645b21bf11b
      }
  
      boolean isTransitiveDepend(PluginDescription plugin, PluginDescription depend)
-@@ -640,4 +729,17 @@ public final class PluginManager
+@@ -640,4 +746,17 @@ public final class PluginManager
          return plugins.containsKey( plugin.getDescription().getName() );
      }
      // IvanCord end
@@ -2197,7 +2229,7 @@ index bafa99076eb12107d5c2c01b4c4cbc5910605b65..2a7e86918748cbee06d2c9a1f0873f7e
      @Override
      public void handle(PlayerPosition pac)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index c9e242889b03b670c80faf004ce9f21ee7d02d6f..f6dbefa99bd0d5ed41e5ef96ff021a438752414d 100644
+index c9e242889b03b670c80faf004ce9f21ee7d02d6f..75f878e3b3dab639f5b3a204758373750c559854 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -205,6 +205,95 @@ public class UpstreamBridge extends PacketHandler
@@ -2272,7 +2304,7 @@ index c9e242889b03b670c80faf004ce9f21ee7d02d6f..f6dbefa99bd0d5ed41e5ef96ff021a43
 +                        String suggestionText = suggestion.getText();
 +                        for ( String result : results )
 +                        {
-+                            if ( suggestionText.toLowerCase().equalsIgnoreCase( result.toLowerCase() ) )
++                            if ( suggestionText.equalsIgnoreCase( result.toLowerCase() ) )
 +                            {
 +                                suggestionList.add( suggestion );
 +                            }
