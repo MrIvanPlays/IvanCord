@@ -311,6 +311,29 @@ index 18422669106553a2e6555c47ef06a8eaf891a989..66747e0570c07e392c6133fe08b8f150
      }
  
      @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 0fd58e83a47b46e218d6bf49e4f5f27e6761a77a..99ab3453d2bb828669afe6947b3a5e015c7b4470 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -193,6 +193,18 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 }
+ 
+                 ServerPing legacy = result.getResponse();
++                // IvanCord start - handle null legacy.getPlayers()
++                // such behavior is handled by modern pinging, yet it is not for
++                // legacy pinging. This causes A NPE whenever a < 1.7 MC client
++                // pings the proxy ( for whatever reason someone is using such a
++                // version )
++                if ( legacy.getPlayers() == null )
++                {
++                    // see https://github.com/SpigotMC/BungeeCord/issues/3192#issuecomment-966553225
++                    // as the reason why we set max and online to -1
++                    legacy.setPlayers( new ServerPing.Players( -1, -1, null ) );
++                }
++                // IvanCord end
+                 String kickMessage;
+ 
+                 if ( v1_5 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 index 6dc5633f5241ad6a1619500d37790e5c24c67155..d45a6140780f592d9f8c67cf2f7cb83496a14681 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java

@@ -65,7 +65,7 @@ index 0000000000000000000000000000000000000000..f140b0195e9661e364dafab7c3aba7ec
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 0fd58e83a47b46e218d6bf49e4f5f27e6761a77a..b7e37d47a4c4476b6c1d1b604db05835981d324a 100644
+index 99ab3453d2bb828669afe6947b3a5e015c7b4470..36246febf50d59a18a233490c29fdb83a26d55d5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -68,6 +68,7 @@ import net.md_5.bungee.util.AllowedCharacters;
@@ -86,7 +86,7 @@ index 0fd58e83a47b46e218d6bf49e4f5f27e6761a77a..b7e37d47a4c4476b6c1d1b604db05835
      }
  
      @Override
-@@ -395,11 +399,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -407,11 +411,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
@@ -104,7 +104,7 @@ index 0fd58e83a47b46e218d6bf49e4f5f27e6761a77a..b7e37d47a4c4476b6c1d1b604db05835
                      return;
                  }
                  if ( onlineMode )
-@@ -525,11 +535,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -537,11 +547,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
@@ -122,7 +122,7 @@ index 0fd58e83a47b46e218d6bf49e4f5f27e6761a77a..b7e37d47a4c4476b6c1d1b604db05835
                      return;
                  }
  
-@@ -564,6 +580,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -576,6 +592,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
                              userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
                          }
