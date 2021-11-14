@@ -88,10 +88,10 @@ index 7b002089ef9dd9f365dc0f7db076976b8dc6260c..1ab5a0b3c175a39ad8ca6a39ce2568be
          return false;
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 7d30e28f7ac4b6d25b228120aa929d9d115c48d3..dc715b434b6f061b0a38d8b929ec957746cd2734 100644
+index 88edfed20d6c11b066a3dfde0570f39658714857..f488019745f80214ba5b75a6baf5e67d139e2355 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -384,7 +384,10 @@ public class ServerConnector extends PacketHandler
+@@ -393,7 +393,10 @@ public class ServerConnector extends PacketHandler
          }
  
          // Add to new server
@@ -104,7 +104,7 @@ index 7d30e28f7ac4b6d25b228120aa929d9d115c48d3..dc715b434b6f061b0a38d8b929ec9577
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index b451b5ff297bdfd2c1b0a4bc20f03ded77ba4603..c4d70e32082f044dd7d294e44b2a47d402e75e1d 100644
+index 416a7c713f9eafe02195cc047ba912c46b477ebd..1ac36c0de37b358029bf8ac0d08fb31b8bbd6194 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -35,6 +35,7 @@ import net.md_5.bungee.protocol.packet.TabCompleteRequest;

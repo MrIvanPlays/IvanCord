@@ -365,7 +365,7 @@ index 444320fec40200c5487db436735f24ea88f68905..4970c891112f93b6068a14fc9932fd70
      public String toString()
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index ed5ee75a6b9ff5c20c191253e5c079574bf14b70..b451b5ff297bdfd2c1b0a4bc20f03ded77ba4603 100644
+index 19845d1b82e779fa6e924ed270e5953e5282695b..416a7c713f9eafe02195cc047ba912c46b477ebd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -29,10 +29,12 @@ import net.md_5.bungee.protocol.packet.Chat;
@@ -381,8 +381,8 @@ index ed5ee75a6b9ff5c20c191253e5c079574bf14b70..b451b5ff297bdfd2c1b0a4bc20f03ded
  
  public class UpstreamBridge extends PacketHandler
  {
-@@ -287,6 +289,14 @@ public class UpstreamBridge extends PacketHandler
-         }
+@@ -290,6 +292,14 @@ public class UpstreamBridge extends PacketHandler
+         con.getPendingConnection().relayMessage( pluginMessage );
      }
  
 +    // IvanCord start

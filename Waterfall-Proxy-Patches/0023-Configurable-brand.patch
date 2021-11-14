@@ -50,10 +50,10 @@ index 8da2ff6a2b590968422c23a456552223e2501ba7..3550470cff53c61c3aef1f3397cd9317
  
      private int setupTFO(int incoming)
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 9080b4de61ec39f6bed296842421659e8c7225d9..6ea153dd9f360781e3c0f3dd0475b906cde24506 100644
+index e3bf67f76aaba70d7cccaf4dce7c4499cfdf4fa1..28c95e059d9dfab752c5b3bd91b866bb4f486593 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -276,7 +276,7 @@ public class ServerConnector extends PacketHandler
+@@ -285,7 +285,7 @@ public class ServerConnector extends PacketHandler
              } else
              {
                  ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();

@@ -153,19 +153,6 @@ index a42d63fa881628e4bb3f6ceae8c9676e9e614b47..e0c37b1ec429db823401a7e8ce338c0c
                      <!-- Log root and BungeeCord loggers without prefix -->
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %paperMinecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
-diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index bb37ba04fbc920e515251a4482f78a10993fcbab..2ecd16fb58415e6448cc4a5173a5abca5ce7e7b6 100644
---- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-+++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-@@ -36,7 +36,7 @@ public class ProtocolConstants
-     public static final int MINECRAFT_1_16_4 = 754;
-     public static final int MINECRAFT_1_17 = 755;
-     public static final int MINECRAFT_1_17_1 = 756;
--    public static final int MINECRAFT_1_18 = 1073741868;
-+    public static final int MINECRAFT_1_18 = ( 1 << 30 ) | 46; // IvanCord - 21w42a, future protocol: 757
-     public static final List<String> SUPPORTED_VERSIONS;
-     public static final List<Integer> SUPPORTED_VERSION_IDS;
- 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index 6248e7dd2d9c49ae24d35093d30690ddb8260bbf..e41fff8a7dce59d0ea007abe1ba07de59a157f06 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
@@ -208,10 +195,10 @@ index 074fefc87a22fb4495dac9a2bb7e4a7c4d8fe6b5..fdf32d89fdde0c2eb76a8d928e51c9ae
          bungee.start();
          bungee.getLogger().info( "Enabled IvanCord version " + bungee.getVersion() ); // IvanCord - rebranding
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 134d4356f6c6a2e2c3ff74c09b2be43a9a2ed85f..8827645a2d70692c2ce280aba5765e7689a5e6b3 100644
+index 9e74d158c39ca0131c673e752cf1297b5577b2f4..fb391fceddc4bae7e11b9c7fcf6c2d629161f3be 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -306,6 +306,13 @@ public class ServerConnector extends PacketHandler
+@@ -315,6 +315,13 @@ public class ServerConnector extends PacketHandler
                  user.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.BossBar( bossbar, 1 ) );
              }
              user.getSentBossBars().clear();
@@ -312,10 +299,10 @@ index 18422669106553a2e6555c47ef06a8eaf891a989..66747e0570c07e392c6133fe08b8f150
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 0fd58e83a47b46e218d6bf49e4f5f27e6761a77a..99ab3453d2bb828669afe6947b3a5e015c7b4470 100644
+index c3e60fa5029248610ed496d4da9aacee1a07c337..4aae70ef3eee567756dc501b22372c0ea1e04a23 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -193,6 +193,18 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -192,6 +192,18 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
  
                  ServerPing legacy = result.getResponse();

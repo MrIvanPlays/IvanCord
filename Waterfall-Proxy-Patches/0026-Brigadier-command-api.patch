@@ -2229,7 +2229,7 @@ index bafa99076eb12107d5c2c01b4c4cbc5910605b65..2a7e86918748cbee06d2c9a1f0873f7e
      @Override
      public void handle(PlayerPosition pac)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index c9e242889b03b670c80faf004ce9f21ee7d02d6f..75f878e3b3dab639f5b3a204758373750c559854 100644
+index 7b6bd07d13336d53fe8061183d04a0e5375e1afa..8dd43f68595c5d814959f488bfb503714a5e5933 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -205,6 +205,95 @@ public class UpstreamBridge extends PacketHandler
@@ -2326,10 +2326,10 @@ index c9e242889b03b670c80faf004ce9f21ee7d02d6f..75f878e3b3dab639f5b3a20475837375
 +        }
 +        /*
          List<String> suggestions = new ArrayList<>();
+         boolean isRegisteredCommand = false;
  
-         if ( tabComplete.getCursor().startsWith( "/" ) )
-@@ -244,6 +333,7 @@ public class UpstreamBridge extends PacketHandler
-             }
+@@ -251,6 +340,7 @@ public class UpstreamBridge extends PacketHandler
+         {
              throw CancelSendSignal.INSTANCE;
          }
 +         */ // IvanCord end

@@ -255,11 +255,11 @@ index b5750e142b213e07159f31e39254707c906a95de..f67bfe349d2a63ccd6fec3efa0214314
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 8827645a2d70692c2ce280aba5765e7689a5e6b3..258d9e2fcfca01e160cc3d3dadf46933b03168b7 100644
+index fb391fceddc4bae7e11b9c7fcf6c2d629161f3be..3bf6277e1b3cadb077bcf2f18891dbdb647de717 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -231,10 +231,12 @@ public class ServerConnector extends PacketHandler
-             ch.write( message );
+@@ -240,10 +240,12 @@ public class ServerConnector extends PacketHandler
+             ch.write( new PluginMessage( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_13 ? "minecraft:register" : "REGISTER", Joiner.on( "\0" ).join( registeredChannels ).getBytes( StandardCharsets.UTF_8 ), false ) );
          }
  
 +        /* IvanCord - comment this
@@ -271,7 +271,7 @@ index 8827645a2d70692c2ce280aba5765e7689a5e6b3..258d9e2fcfca01e160cc3d3dadf46933
  
          if ( user.getForgeClientHandler().getClientModList() == null && !user.getForgeClientHandler().isHandshakeComplete() ) // Vanilla
          {
-@@ -283,6 +285,8 @@ public class ServerConnector extends PacketHandler
+@@ -292,6 +294,8 @@ public class ServerConnector extends PacketHandler
              user.getServer().setObsolete( true );
              user.getTabListHandler().onServerChange();
  
@@ -280,7 +280,7 @@ index 8827645a2d70692c2ce280aba5765e7689a5e6b3..258d9e2fcfca01e160cc3d3dadf46933
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
              if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
              for ( Objective objective : serverScoreboard.getObjectives() )
-@@ -299,6 +303,8 @@ public class ServerConnector extends PacketHandler
+@@ -308,6 +312,8 @@ public class ServerConnector extends PacketHandler
              }
              } // Waterfall
              serverScoreboard.clear();
@@ -289,7 +289,7 @@ index 8827645a2d70692c2ce280aba5765e7689a5e6b3..258d9e2fcfca01e160cc3d3dadf46933
  
              for ( UUID bossbar : user.getSentBossBars() )
              {
-@@ -323,15 +329,19 @@ public class ServerConnector extends PacketHandler
+@@ -332,15 +338,19 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -310,7 +310,7 @@ index 8827645a2d70692c2ce280aba5765e7689a5e6b3..258d9e2fcfca01e160cc3d3dadf46933
                  // Ensure that we maintain consistency
                  user.setClientEntityId( login.getEntityId() );
  
-@@ -350,7 +360,7 @@ public class ServerConnector extends PacketHandler
+@@ -359,7 +369,7 @@ public class ServerConnector extends PacketHandler
                  {
                      user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
                  }
@@ -435,7 +435,7 @@ index 6861fd0102cbea139651da6c8d72dcb262849221..444320fec40200c5487db436735f24ea
      @Override
      public void handle(Respawn respawn)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index c769976f392efdfd8dc632e9d83c7156b77ac303..ed5ee75a6b9ff5c20c191253e5c079574bf14b70 100644
+index 9537208e0ddb362c8fe95b1693803efd33c8694a..19845d1b82e779fa6e924ed270e5953e5282695b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -118,11 +118,13 @@ public class UpstreamBridge extends PacketHandler

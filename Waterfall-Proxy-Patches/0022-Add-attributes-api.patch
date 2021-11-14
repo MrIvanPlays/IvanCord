@@ -346,18 +346,18 @@ index 0000000000000000000000000000000000000000..fe62e1d86a0c8c65717f54e5cfc83eb9
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index dc715b434b6f061b0a38d8b929ec957746cd2734..9080b4de61ec39f6bed296842421659e8c7225d9 100644
+index f488019745f80214ba5b75a6baf5e67d139e2355..e3bf67f76aaba70d7cccaf4dce7c4499cfdf4fa1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -1,6 +1,7 @@
- package net.md_5.bungee;
+@@ -2,6 +2,7 @@ package net.md_5.bungee;
  
+ import com.google.common.base.Joiner;
  import com.google.common.base.Preconditions;
 +import com.mrivanplays.ivancord.api.attributes.AttributeKey; // IvanCord
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
  import java.net.InetSocketAddress;
-@@ -321,6 +322,10 @@ public class ServerConnector extends PacketHandler
+@@ -330,6 +331,10 @@ public class ServerConnector extends PacketHandler
              user.resetTabHeader();
              // IvanCord end
  
@@ -457,7 +457,7 @@ index 11eab5c03db9c25f34c19b8ce5e3e17555f79f19..0c2480068e401a986dfd50d8e86faa0c
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 3eeec9fb34307af14ef6b95b47ba5403e1047edd..c9e242889b03b670c80faf004ce9f21ee7d02d6f 100644
+index ac274f6e45430ae92053de6689e0607e5f1d5e74..7b6bd07d13336d53fe8061183d04a0e5375e1afa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -4,6 +4,11 @@ import com.google.common.base.Preconditions;
@@ -480,7 +480,7 @@ index 3eeec9fb34307af14ef6b95b47ba5403e1047edd..c9e242889b03b670c80faf004ce9f21e
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PlayerPosition;
-@@ -302,6 +308,26 @@ public class UpstreamBridge extends PacketHandler
+@@ -305,6 +311,26 @@ public class UpstreamBridge extends PacketHandler
      }
      // IvanCord end
  

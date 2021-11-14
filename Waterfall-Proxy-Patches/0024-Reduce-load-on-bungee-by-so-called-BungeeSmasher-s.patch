@@ -246,10 +246,10 @@ index 0c2480068e401a986dfd50d8e86faa0c48f249a8..6d6e12ecbf8d86fd88fbe0a549c04c09
                  .handler( initializer )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 36246febf50d59a18a233490c29fdb83a26d55d5..c1ade83a60eb698fbd7e6aaeafc996921587b5e4 100644
+index 0413f70fa6d27ed9bceb54ae9c298ccdfd2f7fa9..24bc160e213cb16bdd76eb4454dc268b01a712f6 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -141,9 +141,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -144,9 +144,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          if ( canSendKickMessage() )
          {
              disconnect( ChatColor.RED + Util.exception( t ) );
@@ -261,7 +261,7 @@ index 36246febf50d59a18a233490c29fdb83a26d55d5..c1ade83a60eb698fbd7e6aaeafc99692
          }
          // IvanCord start - implement LoginCancelledEvent
          new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY_EXCEPTION ).callEvent();
-@@ -155,7 +157,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -158,7 +160,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -270,7 +270,7 @@ index 36246febf50d59a18a233490c29fdb83a26d55d5..c1ade83a60eb698fbd7e6aaeafc99692
          }
      }
  
-@@ -328,6 +330,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -327,6 +329,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              handshake.setHost( split[0] );
              extraDataInHandshake = "\0" + split[1];
          }
@@ -278,7 +278,7 @@ index 36246febf50d59a18a233490c29fdb83a26d55d5..c1ade83a60eb698fbd7e6aaeafc99692
  
          // SRV records can end with a . depending on DNS / client.
          if ( handshake.getHost().endsWith( "." ) )
-@@ -372,7 +375,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -371,7 +374,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  break;
              default:
@@ -287,9 +287,9 @@ index 36246febf50d59a18a233490c29fdb83a26d55d5..c1ade83a60eb698fbd7e6aaeafc99692
          }
      }
  
-@@ -708,4 +711,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
-     {
-         return !ch.isClosed();
+@@ -734,4 +737,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             brandMessage = input;
+         }
      }
 +
 +    // IvanCord start
