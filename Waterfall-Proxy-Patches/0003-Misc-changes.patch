@@ -5,6 +5,28 @@ Subject: [PATCH] Misc changes
 
 All small changes come here
 
+diff --git a/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java b/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java
+index ece5f7987d5a797bb48e44b6fb9793f30611bf03..d553a46c9816a88a255a3696eee97abda4ff2cb0 100644
+--- a/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java
++++ b/api/src/main/java/io/github/waterfallmc/waterfall/utils/Hex.java
+@@ -37,7 +37,7 @@ public class Hex {
+ 
+     public static void decode(CharSequence chars, int charOffset, byte[] dest, int offset, int length) {
+         Objects.requireNonNull(chars, "Null chars");
+-        Objects.requireNonNull(chars, "Null destination");
++        Objects.requireNonNull(dest, "Null destination"); // IvanCord - fix typo
+         final int numChars = chars.length();
+         if ((numChars & 0x01) != 0) {
+             throw new IllegalArgumentException("Odd number of characters: " + numChars);
+@@ -65,7 +65,7 @@ public class Hex {
+ 
+     public static void encode(char[] chars, int charOffset, byte[] source, int offset, int length) {
+         Objects.requireNonNull(chars, "Null chars");
+-        Objects.requireNonNull(chars, "Null bytes");
++        Objects.requireNonNull(source, "Null bytes"); // IvanCord - fix typo
+         if (offset < 0 || charOffset < 0 || length < 0 || length * 2 > chars.length - charOffset || length > source.length - offset) {
+             throw new IndexOutOfBoundsException();
+         } else if (length == 0) {
 diff --git a/api/src/main/java/net/md_5/bungee/api/AbstractReconnectHandler.java b/api/src/main/java/net/md_5/bungee/api/AbstractReconnectHandler.java
 index 2adcd5739b6af4e32389f69273386cb3cb861c66..b99fb0e074424ba128d468c0646a516dc2823628 100644
 --- a/api/src/main/java/net/md_5/bungee/api/AbstractReconnectHandler.java
@@ -299,7 +321,7 @@ index 18422669106553a2e6555c47ef06a8eaf891a989..66747e0570c07e392c6133fe08b8f150
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index c3e60fa5029248610ed496d4da9aacee1a07c337..4aae70ef3eee567756dc501b22372c0ea1e04a23 100644
+index 4afab05dabc3a290c9c213e4b44efc4028155210..a9ba11b685e9b68f5d62ae6f9f4784a82e99ca00 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -192,6 +192,18 @@ public class InitialHandler extends PacketHandler implements PendingConnection

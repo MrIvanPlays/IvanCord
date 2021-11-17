@@ -246,7 +246,7 @@ index 0c2480068e401a986dfd50d8e86faa0c48f249a8..6d6e12ecbf8d86fd88fbe0a549c04c09
                  .handler( initializer )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 0413f70fa6d27ed9bceb54ae9c298ccdfd2f7fa9..24bc160e213cb16bdd76eb4454dc268b01a712f6 100644
+index d124b67363b04ea71962e2098aaab7d943735caa..2439837e4066c37e870c009e2353d245ee8324ba 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -144,9 +144,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -287,7 +287,7 @@ index 0413f70fa6d27ed9bceb54ae9c298ccdfd2f7fa9..24bc160e213cb16bdd76eb4454dc268b
          }
      }
  
-@@ -734,4 +737,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -735,4 +738,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              brandMessage = input;
          }
      }

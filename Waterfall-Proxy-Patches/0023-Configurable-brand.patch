@@ -5,10 +5,10 @@ Subject: [PATCH] Configurable brand
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index a83d4b06d63beb5382823ed5675c8ff984eb8b03..33dd8e5c66ea9f5e0d9a24a972c436a08809983b 100644
+index 08c32f6ec3dfdc62102983067c47dd49466cf358..8c5eea299fa8c2de696384f61e36d758e04f957a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -299,5 +299,12 @@ public interface ProxyConfig
+@@ -313,5 +313,12 @@ public interface ProxyConfig
       * @return type of the reconnect handler
       */
      String getReconnectHandlerType();

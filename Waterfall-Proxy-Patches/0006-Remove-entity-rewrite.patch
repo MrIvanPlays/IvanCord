@@ -242,7 +242,7 @@ index a5555f6aff10b821c1648b52fb4abc827fd690a9..aeddabe2ee30057af6859d2e32b5a380
  {
  
 diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
-index b5750e142b213e07159f31e39254707c906a95de..f67bfe349d2a63ccd6fec3efa0214314e0b2f818 100644
+index 99a69f7d24464ee92aa8008ed3939f9f8897df26..4eb435f5c9bbb0089c2cbec4dce546a32030fa7d 100644
 --- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 +++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
 @@ -42,7 +42,7 @@ public abstract class WaterfallConfiguration extends Configuration { // IvanCord
@@ -253,7 +253,7 @@ index b5750e142b213e07159f31e39254707c906a95de..f67bfe349d2a63ccd6fec3efa0214314
 +    private boolean disableEntityMetadataRewrite = true; // IvanCord - default to true
      private boolean disableTabListRewrite = false;
  
-     @Override
+     /*
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 index fb391fceddc4bae7e11b9c7fcf6c2d629161f3be..3bf6277e1b3cadb077bcf2f18891dbdb647de717 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java

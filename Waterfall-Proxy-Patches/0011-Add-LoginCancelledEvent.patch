@@ -65,7 +65,7 @@ index 0000000000000000000000000000000000000000..f140b0195e9661e364dafab7c3aba7ec
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 4aae70ef3eee567756dc501b22372c0ea1e04a23..0413f70fa6d27ed9bceb54ae9c298ccdfd2f7fa9 100644
+index a9ba11b685e9b68f5d62ae6f9f4784a82e99ca00..d124b67363b04ea71962e2098aaab7d943735caa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -69,6 +69,7 @@ import net.md_5.bungee.protocol.packet.StatusResponse;

@@ -107,10 +107,10 @@ index 0000000000000000000000000000000000000000..c4769518b0e957b5365983434adcfca8
 +}
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..28379321f5c37eb151950eb2979b265bc07fa528
+index 0000000000000000000000000000000000000000..3668ab3e1f96189b78501855315230b9a82a2575
 --- /dev/null
 +++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
-@@ -0,0 +1,529 @@
+@@ -0,0 +1,540 @@
 +package com.mrivanplays.ivancord.api.command;
 +
 +import com.google.common.base.Preconditions;
@@ -433,16 +433,27 @@ index 0000000000000000000000000000000000000000..28379321f5c37eb151950eb2979b265b
 +            return 2;
 +        } catch ( Throwable e )
 +        {
-+            handleError( sender, e, input, commandName );
++            handleError( sender, e, input, commandName, true );
 +            return 1;
 +        }
 +    }
 +
-+    private void handleError(CommandSender sender, Throwable e, String input, String commandName)
++    private void handleError(CommandSender sender, Throwable e, String input, String commandName, boolean dispatchingError)
 +    {
 +        // plugins being plugins
-+        sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_executing" ) ) );
-+        proxy.getLogger().log( Level.WARNING, "Error in dispatching command", e );
++        String translation;
++        String errorMessage;
++        if ( dispatchingError )
++        {
++            translation = "internal_error_executing";
++            errorMessage = "Error in dispatching command";
++        } else
++        {
++            translation = "internal_error_completing";
++            errorMessage = "Error in completing command";
++        }
++        sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( translation ) ) );
++        proxy.getLogger().log( Level.WARNING, errorMessage, e );
 +
 +        String[] args = Constants.EMPTY_ARRAY;
 +        if ( input.indexOf( ' ' ) != -1 )
@@ -506,7 +517,7 @@ index 0000000000000000000000000000000000000000..28379321f5c37eb151950eb2979b265b
 +        {
 +            // plugins being plugins
 +            sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_completing" ) ) );
-+            proxy.getLogger().log( Level.WARNING, "Error in dispatching command", e );
++            proxy.getLogger().log( Level.WARNING, "Error in completing command", e );
 +            String[] args = Constants.EMPTY_ARRAY;
 +            if ( input.indexOf( ' ' ) != -1 )
 +            {
@@ -554,7 +565,7 @@ index 0000000000000000000000000000000000000000..28379321f5c37eb151950eb2979b265b
 +            return dispatcher.getCompletionSuggestions( results );
 +        } catch ( Throwable e )
 +        {
-+            handleError( sender, e, input, commandName );
++            handleError( sender, e, input, commandName, false );
 +            return Suggestions.empty();
 +        }
 +    }

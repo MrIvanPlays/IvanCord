@@ -5,10 +5,10 @@ Subject: [PATCH] Add TCP fast open
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 6f91deb32a5a9191340638431c1480dece5392a8..10cdb48e549bad465c27355b92309b08d6297bf5 100644
+index b913d0d2b3f48ca8357f45d15720c4d0c1fa53ec..151e4e97773d87d2b73e727f635e7140fc1a6a69 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -271,5 +271,19 @@ public interface ProxyConfig
+@@ -285,5 +285,19 @@ public interface ProxyConfig
       * @return should the player kicked be transferred to lobby
       */
      boolean isKickToLobby();

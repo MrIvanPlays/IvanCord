@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ivan Pekov <ivan@mrivanplays.com>
+Date: Mon, 15 Nov 2021 08:05:06 +0200
+Subject: [PATCH] Add isLegacy to ProxyPingEvent
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java b/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java
+index 4baa06a9c8d2ffa392d18fdeba3e80cd71ae23d0..493d33be23d3ee098cca975ec5a22a4fd54ffa8d 100644
+--- a/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java
++++ b/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java
+@@ -25,10 +25,25 @@ public class ProxyPingEvent extends AsyncEvent<ProxyPingEvent>
+      */
+     private ServerPing response;
+ 
++    // IvanCord start
++    /**
++     * Whether this event was called for a legacy ping
++     */
++    private boolean legacy;
++    // IvanCord end
++
+     public ProxyPingEvent(PendingConnection connection, ServerPing response, Callback<ProxyPingEvent> done)
++    // IvanCord start
++    {
++        this( connection, response, false, done );
++    }
++
++    public ProxyPingEvent(PendingConnection connection, ServerPing response, boolean legacy, Callback<ProxyPingEvent> done)
++    // IvanCord end
+     {
+         super( done );
+         this.connection = connection;
+         this.response = response;
++        this.legacy = legacy; // IvanCord
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 2439837e4066c37e870c009e2353d245ee8324ba..6d0018ee254c2722d247070a0681250db8e1dd4b 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -232,7 +232,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             }
+         };
+ 
+-        bungee.getPluginManager().callEvent( new ProxyPingEvent( this, legacy, callback ) );
++        bungee.getPluginManager().callEvent( new ProxyPingEvent( this, legacy, true, callback ) ); // IvanCord
+     }
+ 
+     private static String getFirstLine(String str)

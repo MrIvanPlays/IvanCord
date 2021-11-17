@@ -5,13 +5,13 @@ Subject: [PATCH] Kick to lobby support
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index d69463f07cc15a58bc5b6a6cf016595db95723ca..6f91deb32a5a9191340638431c1480dece5392a8 100644
+index 469fe0e12c27bfd60e9fb26f2147ef99d98e5f7c..b913d0d2b3f48ca8357f45d15720c4d0c1fa53ec 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -261,4 +261,15 @@ public interface ProxyConfig
-      * @return {@code true} if tablist rewriting is disabled, {@code false} otherwise
+@@ -275,4 +275,15 @@ public interface ProxyConfig
+      * @return the configured limit
       */
-     boolean isDisableTabListRewrite();
+     int getPluginChannelNameLimit();
 +
 +    // IvanCord start
 +
