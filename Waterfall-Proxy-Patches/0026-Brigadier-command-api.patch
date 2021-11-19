@@ -1177,6 +1177,241 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
 +    }
 +    // IvanCord end
  }
+diff --git a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
+index d7747deb3352b506ba2998253c7c9a55e045bb9b..ed960716cc21fa20893b7e1800cb0f9f70a0c6dc 100644
+--- a/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
++++ b/chat/src/main/java/net/md_5/bungee/api/ChatColor.java
+@@ -273,6 +273,19 @@ public final class ChatColor
+         throw new IllegalArgumentException( "Could not parse ChatColor " + string );
+     }
+ 
++    // IvanCord start - sorry md_5, but
++    /**
++     * Returns the named colors. A named color is a color which is present in minecraft from before hex colors were
++     * introduced.
++     *
++     * @return named colors. this also includes formatting
++     */
++    public static java.util.Collection<ChatColor> getNamedColors()
++    {
++        return java.util.Collections.unmodifiableCollection( BY_CHAR.values() );
++    }
++    // IvanCord
++
+     /**
+      * See {@link Enum#valueOf(java.lang.Class, java.lang.String)}.
+      *
+@@ -296,6 +309,7 @@ public final class ChatColor
+      *
+      * @return copied array of all colors and formats
+      * @deprecated holdover from when this class was an enum
++     * @see #getNamedColors()
+      */
+     @Deprecated
+     public static ChatColor[] values()
+diff --git a/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java b/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java
+index f1a38151cfb92488aaf54706caec429429e35ae3..22e8637159b8c115cfe1e39d39fc14a80e30dd6d 100644
+--- a/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java
++++ b/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java
+@@ -43,6 +43,23 @@ public class ComponentSerializer implements JsonDeserializer<BaseComponent>
+ 
+     public static final ThreadLocal<Set<BaseComponent>> serializedComponents = new ThreadLocal<Set<BaseComponent>>();
+ 
++    // IvanCord start
++    public static BaseComponent[] parse(com.google.gson.stream.JsonReader reader)
++    {
++        JsonElement element = JsonParser.parseReader( reader );
++        if ( element.isJsonArray() )
++        {
++            return gson.fromJson( element, BaseComponent[].class );
++        } else
++        {
++            return new BaseComponent[]
++            {
++                gson.fromJson( element, BaseComponent.class )
++            };
++        }
++    }
++    // IvanCord end
++
+     public static BaseComponent[] parse(String json)
+     {
+         JsonElement jsonElement = JSON_PARSER.parse( json );
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ColorArgument.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ColorArgument.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..65e127f69f69bea4d9606a7daaa7cb57b4c62b4e
+--- /dev/null
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ColorArgument.java
+@@ -0,0 +1,79 @@
++package com.mrivanplays.ivancord.api.command.arguments;
++
++import com.mojang.brigadier.StringReader;
++import com.mojang.brigadier.arguments.ArgumentType;
++import com.mojang.brigadier.context.CommandContext;
++import com.mojang.brigadier.exceptions.CommandSyntaxException;
++import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
++import com.mojang.brigadier.suggestion.Suggestions;
++import com.mojang.brigadier.suggestion.SuggestionsBuilder;
++import com.mrivanplays.ivancord.api.command.message.BungeeMessage;
++import java.util.Arrays;
++import java.util.Collection;
++import java.util.Locale;
++import java.util.concurrent.CompletableFuture;
++import net.md_5.bungee.api.ChatColor;
++
++/**
++ * A BungeeCord implementation of the {@code minecraft:color} argument
++ */
++public class ColorArgument implements ArgumentType<ChatColor>
++{
++
++    private static final Collection<String> EXAMPLES = Arrays.asList( "red", "RED", "reset", "green" );
++    public static final DynamicCommandExceptionType ERROR_INVALID_VALUE = new DynamicCommandExceptionType
++        ( ( arg ) -> BungeeMessage.createOfTranslatable( "argument.color.invalid", ChatColor.RED, arg ) );
++
++    private ColorArgument()
++    {
++    }
++
++    public static ColorArgument color()
++    {
++        return new ColorArgument();
++    }
++
++    @Override
++    public ChatColor parse(StringReader reader) throws CommandSyntaxException
++    {
++        String read = reader.readUnquotedString();
++        ChatColor color;
++        try
++        {
++            color = ChatColor.of( read );
++        } catch ( IllegalArgumentException e )
++        {
++            throw ERROR_INVALID_VALUE.create( read );
++        }
++        if ( color.getColor() == null )
++        {
++            throw ERROR_INVALID_VALUE.create( read );
++        }
++        return color;
++    }
++
++    @Override
++    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder)
++    {
++        String remainingLowercase = builder.getRemaining().toLowerCase( Locale.ROOT );
++        for ( ChatColor named : ChatColor.getNamedColors() )
++        {
++            if ( named.getColor() == null )
++            {
++                // formatting, no
++                continue;
++            }
++            if ( named.getName().toLowerCase( Locale.ROOT ).startsWith( remainingLowercase ) )
++            {
++                builder.suggest( named.getName() );
++            }
++        }
++        return builder.buildFuture();
++    }
++
++    @Override
++    public Collection<String> getExamples()
++    {
++        return EXAMPLES;
++    }
++}
+diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ComponentArgument.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ComponentArgument.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e2f878a04e4d43dc03fc550f844b6a4a04b099d4
+--- /dev/null
++++ b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/ComponentArgument.java
+@@ -0,0 +1,84 @@
++package com.mrivanplays.ivancord.api.command.arguments;
++
++import com.google.gson.stream.JsonReader;
++import com.mojang.brigadier.StringReader;
++import com.mojang.brigadier.arguments.ArgumentType;
++import com.mojang.brigadier.context.CommandContext;
++import com.mojang.brigadier.exceptions.CommandSyntaxException;
++import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
++import com.mrivanplays.ivancord.api.command.message.BungeeMessage;
++import java.lang.reflect.Field;
++import java.util.Arrays;
++import java.util.Collection;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.chat.ComponentSerializer;
++
++/**
++ * A BungeeCord implementation of the minecraft:component argument
++ */
++public class ComponentArgument implements ArgumentType<BaseComponent[]>
++{
++
++    private static final Collection<String> EXAMPLES = Arrays.asList( "\"hello world\"", "\"\"", "\"{\"text\":\"hello world\"}", "[\"\"]" );
++    public static final DynamicCommandExceptionType ERROR_INVALID_JSON = new DynamicCommandExceptionType
++        ( (arg) -> BungeeMessage.createOfTranslatable( "argument.component.invalid", ChatColor.RED, arg ) );
++
++    private ComponentArgument()
++    {
++    }
++
++    public static BaseComponent[] getComponent(CommandContext<?> context, String argName)
++    {
++        return context.getArgument( argName, BaseComponent[].class );
++    }
++
++    public static ComponentArgument component()
++    {
++        return new ComponentArgument();
++    }
++
++    @Override
++    public BaseComponent[] parse(StringReader reader) throws CommandSyntaxException
++    {
++        try
++        {
++            JsonReader jsonReader = new JsonReader( new java.io.StringReader( reader.getRemaining() ) );
++            jsonReader.setLenient( false );
++            BaseComponent[] component = ComponentSerializer.parse( jsonReader );
++            reader.setCursor( reader.getCursor() + getPos( jsonReader ) );
++            if ( component == null )
++            {
++                throw ERROR_INVALID_JSON.createWithContext( reader, "empty" );
++            }
++            return component;
++        } catch ( StackOverflowError e )
++        {
++            String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
++            throw ERROR_INVALID_JSON.createWithContext( reader, message );
++        }
++    }
++
++    private int getPos(JsonReader jsonReader)
++    {
++        try
++        {
++            Field pos = JsonReader.class.getDeclaredField( "pos" );
++            pos.setAccessible( true );
++
++            Field lineStart = JsonReader.class.getDeclaredField( "lineStart" );
++            lineStart.setAccessible( true );
++
++            return pos.getInt( jsonReader ) - lineStart.getInt( jsonReader ) + 1;
++        } catch ( NoSuchFieldException | IllegalAccessException e )
++        {
++            throw new IllegalStateException( "Couldn't read position of JsonReader", e );
++        }
++    }
++
++    @Override
++    public Collection<String> getExamples()
++    {
++        return EXAMPLES;
++    }
++}
 diff --git a/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/PlayerArgument.java b/protocol/src/main/java/com/mrivanplays/ivancord/api/command/arguments/PlayerArgument.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..08fb8bf5fad1f25c4d825011109fe111f0d26508
@@ -1658,7 +1893,7 @@ index 0000000000000000000000000000000000000000..2305506d309c9c671eb0492a61c00cc6
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
-index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd125c644f7e 100644
+index 26edbca85b40fd0be24a5745f0361157131f45f1..0a6c68a5763d808add42d36a7ac83e6c580d0ac5 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -1669,15 +1904,19 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd12
  import com.mojang.brigadier.arguments.DoubleArgumentType;
  import com.mojang.brigadier.arguments.FloatArgumentType;
  import com.mojang.brigadier.arguments.IntegerArgumentType;
-@@ -21,6 +22,7 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
+@@ -21,6 +22,11 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
  import com.mojang.brigadier.tree.CommandNode;
  import com.mojang.brigadier.tree.LiteralCommandNode;
  import com.mojang.brigadier.tree.RootCommandNode;
-+import com.mrivanplays.ivancord.api.command.arguments.PlayerArgument; // IvanCord
++// IvanCord start
++import com.mrivanplays.ivancord.api.command.arguments.ColorArgument;
++import com.mrivanplays.ivancord.api.command.arguments.ComponentArgument;
++import com.mrivanplays.ivancord.api.command.arguments.PlayerArgument;
++// IvanCord end
  import io.netty.buffer.ByteBuf;
  import java.util.ArrayDeque;
  import java.util.Collection;
-@@ -323,19 +325,28 @@ public class Commands extends DefinedPacket
+@@ -323,19 +329,28 @@ public class Commands extends DefinedPacket
              {
              }
          };
@@ -1711,7 +1950,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd12
          };
          private static final ArgumentSerializer<Byte> BYTE = new ArgumentSerializer<Byte>()
          {
-@@ -351,7 +362,7 @@ public class Commands extends DefinedPacket
+@@ -351,7 +366,7 @@ public class Commands extends DefinedPacket
                  buf.writeByte( t );
              }
          };
@@ -1720,7 +1959,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd12
          {
              @Override
              protected FloatArgumentType read(ByteBuf buf)
-@@ -379,8 +390,16 @@ public class Commands extends DefinedPacket
+@@ -379,8 +394,16 @@ public class Commands extends DefinedPacket
                      buf.writeFloat( t.getMaximum() );
                  }
              }
@@ -1738,7 +1977,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd12
          {
              @Override
              protected DoubleArgumentType read(ByteBuf buf)
-@@ -408,8 +427,16 @@ public class Commands extends DefinedPacket
+@@ -408,8 +431,16 @@ public class Commands extends DefinedPacket
                      buf.writeDouble( t.getMaximum() );
                  }
              }
@@ -1756,7 +1995,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd12
          {
              @Override
              protected IntegerArgumentType read(ByteBuf buf)
-@@ -437,8 +464,16 @@ public class Commands extends DefinedPacket
+@@ -437,8 +468,16 @@ public class Commands extends DefinedPacket
                      buf.writeInt( t.getMaximum() );
                  }
              }
@@ -1774,7 +2013,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd12
          {
              @Override
              protected LongArgumentType read(ByteBuf buf)
-@@ -466,6 +501,14 @@ public class Commands extends DefinedPacket
+@@ -466,6 +505,14 @@ public class Commands extends DefinedPacket
                      buf.writeLong( t.getMaximum() );
                  }
              }
@@ -1789,12 +2028,13 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd12
          };
          private static final ProperArgumentSerializer<StringArgumentType> STRING = new ProperArgumentSerializer<StringArgumentType>()
          {
-@@ -499,19 +542,49 @@ public class Commands extends DefinedPacket
+@@ -499,19 +546,94 @@ public class Commands extends DefinedPacket
              }
          };
  
 +        // IvanCord start - minecraft:game_profile serializer
-+        private static final ProperArgumentSerializer<PlayerArgument> GAME_PROFILE = new ProperArgumentSerializer<PlayerArgument>() {
++        private static final ProperArgumentSerializer<PlayerArgument> GAME_PROFILE = new ProperArgumentSerializer<PlayerArgument>()
++        {
 +
 +            @Override
 +            protected String getKey()
@@ -1810,6 +2050,50 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd12
 +
 +            @Override
 +            protected void write(ByteBuf buf, PlayerArgument playerArgument)
++            {
++                // noop
++            }
++        };
++        // minecraft:color serializer
++        private static final ProperArgumentSerializer<ColorArgument> COLOR = new ProperArgumentSerializer<ColorArgument>()
++        {
++
++            @Override
++            protected String getKey()
++            {
++                return "minecraft:color";
++            }
++
++            @Override
++            protected ColorArgument read(ByteBuf buf)
++            {
++                return ColorArgument.color();
++            }
++
++            @Override
++            protected void write(ByteBuf buf, ColorArgument colorArgument)
++            {
++                // noop
++            }
++        };
++        // minecraft:component serializer
++        private static final ProperArgumentSerializer<ComponentArgument> COMPONENT = new ProperArgumentSerializer<ComponentArgument>()
++        {
++
++            @Override
++            protected String getKey()
++            {
++                return "minecraft:component";
++            }
++
++            @Override
++            protected ComponentArgument read(ByteBuf buf)
++            {
++                return ComponentArgument.component();
++            }
++
++            @Override
++            protected void write(ByteBuf buf, ComponentArgument componentArgument)
 +            {
 +                // noop
 +            }
@@ -1839,7 +2123,17 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd12
              PROVIDERS.put( "minecraft:block_pos", VOID );
              PROVIDERS.put( "minecraft:column_pos", VOID );
              PROVIDERS.put( "minecraft:vec3", VOID );
-@@ -614,15 +687,28 @@ public class Commands extends DefinedPacket
+@@ -521,7 +643,9 @@ public class Commands extends DefinedPacket
+             PROVIDERS.put( "minecraft:item_stack", VOID );
+             PROVIDERS.put( "minecraft:item_predicate", VOID );
+             PROVIDERS.put( "minecraft:color", VOID );
++            PROPER_PROVIDERS.put( ColorArgument.class, COLOR ); // IvanCord
+             PROVIDERS.put( "minecraft:component", VOID );
++            PROPER_PROVIDERS.put( ComponentArgument.class, COMPONENT ); // IvanCord
+             PROVIDERS.put( "minecraft:message", VOID );
+             PROVIDERS.put( "minecraft:nbt_compound_tag", VOID ); // 1.14
+             PROVIDERS.put( "minecraft:nbt_tag", VOID ); // 1.14
+@@ -614,15 +738,28 @@ public class Commands extends DefinedPacket
      {
  
          public static final SuggestionProvider ASK_SERVER = new DummyProvider( "minecraft:ask_server" );
@@ -1868,7 +2162,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..d4a3a2c558004784fce463c4fd9afd12
          }
  
          private static void registerDummy(String name)
-@@ -640,9 +726,20 @@ public class Commands extends DefinedPacket
+@@ -640,9 +777,20 @@ public class Commands extends DefinedPacket
  
          private static String getKey(SuggestionProvider<DummyProvider> provider)
          {
