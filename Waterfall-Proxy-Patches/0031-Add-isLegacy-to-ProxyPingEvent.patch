@@ -5,7 +5,7 @@ Subject: [PATCH] Add isLegacy to ProxyPingEvent
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java b/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java
-index 4baa06a9c8d2ffa392d18fdeba3e80cd71ae23d0..493d33be23d3ee098cca975ec5a22a4fd54ffa8d 100644
+index 4baa06a9c8d2ffa392d18fdeba3e80cd71ae23d0..da6247837d021e0ec38688908fffcfca17a1851f 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java
 @@ -25,10 +25,25 @@ public class ProxyPingEvent extends AsyncEvent<ProxyPingEvent>
@@ -16,7 +16,7 @@ index 4baa06a9c8d2ffa392d18fdeba3e80cd71ae23d0..493d33be23d3ee098cca975ec5a22a4f
 +    /**
 +     * Whether this event was called for a legacy ping
 +     */
-+    private boolean legacy;
++    private final boolean legacy;
 +    // IvanCord end
 +
      public ProxyPingEvent(PendingConnection connection, ServerPing response, Callback<ProxyPingEvent> done)
