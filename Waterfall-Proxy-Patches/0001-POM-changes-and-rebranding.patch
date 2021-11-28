@@ -322,7 +322,7 @@ index 1eff2c938f914e0dea53f788df2670cb34ec69d9..4b0d2574eba5bcf28027c2b0bd8ff4b4
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 94fad2cc559a1dfaefb2f482d2cf572f4104a08c..274859daf4ead7ab6ddaf311975449bd5e28c311 100644
+index 94fad2cc559a1dfaefb2f482d2cf572f4104a08c..5603c29a787461c132e4f4b59dc32ea924e6da8d 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,18 @@
@@ -423,21 +423,20 @@ index 94fad2cc559a1dfaefb2f482d2cf572f4104a08c..274859daf4ead7ab6ddaf311975449bd
          </snapshotRepository>
      </distributionManagement>
  
-@@ -110,6 +92,13 @@
-         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-     </properties>
- 
-+    <repositories>
+@@ -99,6 +81,12 @@
+                 <enabled>true</enabled>
+             </snapshots>
+         </repository>
++        <!-- IvanCord start -->
 +        <repository>
 +            <id>ivan</id>
 +            <url>https://repo.mrivanplays.com/repository/ivan/</url>
 +        </repository>
-+    </repositories>
-+
-     <dependencies>
-         <dependency>
-             <groupId>junit</groupId>
-@@ -371,7 +360,7 @@
++        <!-- IvanCord end -->
+     </repositories>
+ 
+     <properties>
+@@ -371,7 +359,7 @@
                      <plugin>
                          <groupId>org.projectlombok</groupId>
                          <artifactId>lombok-maven-plugin</artifactId>
@@ -446,7 +445,7 @@ index 94fad2cc559a1dfaefb2f482d2cf572f4104a08c..274859daf4ead7ab6ddaf311975449bd
                          <executions>
                              <execution>
                                  <id>delombok</id>
-@@ -389,9 +378,10 @@
+@@ -389,9 +377,10 @@
                      <plugin>
                          <groupId>org.apache.maven.plugins</groupId>
                          <artifactId>maven-javadoc-plugin</artifactId>
