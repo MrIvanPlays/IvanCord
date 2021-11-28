@@ -6,7 +6,7 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
 diff --git a/pom.xml b/pom.xml
-index d7416bda675be4a7a6a97dcf1a8f92f015317480..0781cfb048d4f011d9c0111269c3b6554a2dd12f 100644
+index f67d97bbb7492d5b8a5513a6e35eaa0c0e75dd39..75fea26a5d721124eac33d99c0cd98fa041b48e8 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -47,6 +47,7 @@
@@ -18,10 +18,10 @@ index d7416bda675be4a7a6a97dcf1a8f92f015317480..0781cfb048d4f011d9c0111269c3b655
  
      <scm>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index d90c80eaad56438c36cd1cb80de3141e4ed04e03..4c2e61d87be1fb1b6aa63e74d0a1827b599f8251 100644
+index f931c380f660be74cb159707110e5908747c3ffa..8a966cead206ec5c848ea760b869a21c5490c627 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
-@@ -63,5 +63,13 @@
+@@ -48,5 +48,13 @@
              <version>1.3.0</version>
              <scope>compile</scope>
          </dependency>
@@ -233,10 +233,10 @@ index 35d533252b7009bd5f4c14b265cea0bc05f11b91..25c321a1bc62b969839cc0a2462fbbf4
                  {
                      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 0c2480068e401a986dfd50d8e86faa0c48f249a8..6d6e12ecbf8d86fd88fbe0a549c04c09ad73c7d7 100644
+index 89a983ea85d8a09ed0a9c26197dc2e5401b34972..c9355fd299c12ed237c524422bcbe4c1343f03e7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -418,7 +418,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -411,7 +411,7 @@ public final class UserConnection implements ProxiedPlayer
              }
          };
          Bootstrap b = new Bootstrap()

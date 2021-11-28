@@ -287,7 +287,7 @@ index f5c364790be0cb7c36bb249d898385ffe47062c8..b451fcd6c1ef184a179be95e4c257516
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 509ea05c22f1031e52230076ca1ff99fe19dc9a9..11eab5c03db9c25f34c19b8ce5e3e17555f79f19 100644
+index 3f5e0a2aee8ca418491649b6962292ed96691bec..a80a27523c5bffbd5201e77fb994e3550218dbc1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -114,6 +114,10 @@ public final class UserConnection implements ProxiedPlayer
@@ -301,7 +301,7 @@ index 509ea05c22f1031e52230076ca1ff99fe19dc9a9..11eab5c03db9c25f34c19b8ce5e3e175
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -199,6 +203,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -192,6 +196,9 @@ public final class UserConnection implements ProxiedPlayer
          {
              forgeClientHandler.setFmlTokenInHandshake( true );
          }
@@ -311,7 +311,7 @@ index 509ea05c22f1031e52230076ca1ff99fe19dc9a9..11eab5c03db9c25f34c19b8ce5e3e175
      }
  
      public void sendPacket(PacketWrapper packet)
-@@ -607,7 +614,15 @@ public final class UserConnection implements ProxiedPlayer
+@@ -600,7 +607,15 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public boolean hasPermission(String permission)
      {
@@ -328,7 +328,7 @@ index 509ea05c22f1031e52230076ca1ff99fe19dc9a9..11eab5c03db9c25f34c19b8ce5e3e175
      }
  
      @Override
-@@ -829,6 +844,13 @@ public final class UserConnection implements ProxiedPlayer
+@@ -822,6 +837,13 @@ public final class UserConnection implements ProxiedPlayer
          new SoundPlayedEvent( this, position,
                  PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category.ordinal() ).callEvent();
      }

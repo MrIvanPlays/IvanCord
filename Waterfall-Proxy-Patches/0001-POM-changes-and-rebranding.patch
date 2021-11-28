@@ -5,7 +5,7 @@ Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 0978c427abbf456d841392f947bd868bb4464099..d34073475fbb0fbda3b753767b4b328d843efb06 100644
+index 9b29dfcae1d4ad3334c989a92067388003e87157..4b2c980d3d2ac8cb2e47e778fbf0583d41cccae3 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -154,7 +154,7 @@ index 0ad5dd16bca0358175dcf761de99b97af5e089a1..57ac9a97540d092225a70dd9f3c72606
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 011d3ce79ee8165e98e240e67326f2a0ed3a7e17..c5239c3ed670b14aa91777685c2cf8684764861f 100644
+index 2caffc27d5260c5c673392f7060ca041d6cb4b4a..0d53752be0fc9cf9ac4479c7fab0729d9a3283ce 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,18 @@
@@ -322,7 +322,7 @@ index 1eff2c938f914e0dea53f788df2670cb34ec69d9..4b0d2574eba5bcf28027c2b0bd8ff4b4
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index cffe54fef2481e422921ca8f88a514969ce25f36..a51f089a4b1e48b3f5c7e0a4a4c82bd72f93aa32 100644
+index 94fad2cc559a1dfaefb2f482d2cf572f4104a08c..274859daf4ead7ab6ddaf311975449bd5e28c311 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,18 @@
@@ -423,7 +423,7 @@ index cffe54fef2481e422921ca8f88a514969ce25f36..a51f089a4b1e48b3f5c7e0a4a4c82bd7
          </snapshotRepository>
      </distributionManagement>
  
-@@ -95,6 +77,13 @@
+@@ -110,6 +92,13 @@
          <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
      </properties>
  
@@ -437,7 +437,7 @@ index cffe54fef2481e422921ca8f88a514969ce25f36..a51f089a4b1e48b3f5c7e0a4a4c82bd7
      <dependencies>
          <dependency>
              <groupId>junit</groupId>
-@@ -356,7 +345,7 @@
+@@ -371,7 +360,7 @@
                      <plugin>
                          <groupId>org.projectlombok</groupId>
                          <artifactId>lombok-maven-plugin</artifactId>
@@ -446,7 +446,7 @@ index cffe54fef2481e422921ca8f88a514969ce25f36..a51f089a4b1e48b3f5c7e0a4a4c82bd7
                          <executions>
                              <execution>
                                  <id>delombok</id>
-@@ -374,9 +363,10 @@
+@@ -389,9 +378,10 @@
                      <plugin>
                          <groupId>org.apache.maven.plugins</groupId>
                          <artifactId>maven-javadoc-plugin</artifactId>
@@ -459,7 +459,7 @@ index cffe54fef2481e422921ca8f88a514969ce25f36..a51f089a4b1e48b3f5c7e0a4a4c82bd7
                          <executions>
                              <execution>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index a783d9b0f4b7e9a469afcf27e0b6ff3c072c6cc3..d90c80eaad56438c36cd1cb80de3141e4ed04e03 100644
+index c62e0175b39da8be9222ab04fe34dff20e87b65f..f931c380f660be74cb159707110e5908747c3ffa 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,18 @@
@@ -485,9 +485,9 @@ index a783d9b0f4b7e9a469afcf27e0b6ff3c072c6cc3..d90c80eaad56438c36cd1cb80de3141e
 +    <name>IvanCord-Protocol</name>
 +    <description>Minimal implementation of the Minecraft protocol for use in IvanCord</description>
  
-     <!-- We really shouldn't depend on external repositories, but at least this is the Central staging one -->
-     <repositories>
-@@ -41,8 +40,8 @@
+     <dependencies>
+         <dependency>
+@@ -26,8 +25,8 @@
              <scope>compile</scope>
          </dependency>
          <dependency>

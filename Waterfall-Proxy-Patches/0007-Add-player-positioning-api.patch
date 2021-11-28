@@ -257,7 +257,7 @@ index 0000000000000000000000000000000000000000..f23fe50e8c9a22ce934f5797f9e75fb2
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 4641de8796eebcaa81226c2a88cc08d2e35dbffb..a2a37ab133d9781e69bee98ac8ce03d70c541899 100644
+index b4b4904301dfc8753a570d0ca9b312d271cf0f3a..add2b5c0e46cf9042b53f219041d230d94509bcb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -66,6 +66,7 @@ import net.md_5.bungee.tab.ServerUnique;
@@ -279,7 +279,7 @@ index 4641de8796eebcaa81226c2a88cc08d2e35dbffb..a2a37ab133d9781e69bee98ac8ce03d7
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -661,6 +666,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -654,6 +659,12 @@ public final class UserConnection implements ProxiedPlayer
      {
          return ( settings != null ) ? settings.getViewDistance() : 10;
      }

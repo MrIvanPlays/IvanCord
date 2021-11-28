@@ -320,7 +320,7 @@ index fb391fceddc4bae7e11b9c7fcf6c2d629161f3be..3bf6277e1b3cadb077bcf2f18891dbdb
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index aa7056dc3060fe7b70f3ffe28965522683b2f218..4641de8796eebcaa81226c2a88cc08d2e35dbffb 100644
+index a7b8a9c0d7cfa959f9fcb803280e2e09256fb488..b4b4904301dfc8753a570d0ca9b312d271cf0f3a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -127,15 +127,22 @@ public final class UserConnection implements ProxiedPlayer
@@ -346,22 +346,16 @@ index aa7056dc3060fe7b70f3ffe28965522683b2f218..4641de8796eebcaa81226c2a88cc08d2
      private Locale locale;
      /*========================================================================*/
      @Getter
-@@ -156,10 +163,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -156,7 +163,7 @@ public final class UserConnection implements ProxiedPlayer
  
      public void init()
      {
-+        // IvanCord start - comment this
-+        /*
-         if ( getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_16_2 || !bungee.getConfig().isIpForward() )
-         {
-             this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
-         }
-+         */
-+        // IvanCord end
+-        this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() );
++        //this.entityRewrite = EntityMap.getEntityMap( getPendingConnection().getVersion() ); // IvanCord
  
          this.displayName = name;
  
-@@ -775,14 +786,19 @@ public final class UserConnection implements ProxiedPlayer
+@@ -772,14 +779,19 @@ public final class UserConnection implements ProxiedPlayer
      }
  
      @Override
