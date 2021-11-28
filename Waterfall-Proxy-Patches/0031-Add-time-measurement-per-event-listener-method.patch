@@ -6,7 +6,7 @@ Subject: [PATCH] Add time measurement per event listener method
 Results in more useful warnings as listener class is mentioned
 
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-index b2d8efee343a4be1de58b8e6edfb8c1c507776b1..043799bc9a84c84ee2711703f38a0148b794bbaa 100644
+index ac6b9758557e200127a3c03e0d3ef89912963fad..cc0d5e5b9470bdaee8c7ff76c283ec33ecddccf3 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
 @@ -43,6 +43,7 @@ public class EventBus
@@ -17,11 +17,12 @@ index b2d8efee343a4be1de58b8e6edfb8c1c507776b1..043799bc9a84c84ee2711703f38a0148
                  try
                  {
                      method.invoke( event );
-@@ -69,6 +70,15 @@ public class EventBus
-                         exceptionHandler.handleEventException( msg, event, method, error );
-                     }
+@@ -58,6 +59,17 @@ public class EventBus
+                     logger.log( Level.WARNING, msg, ex.getCause() );
+                     if( exceptionHandler != null ) exceptionHandler.handleEventException( msg, event, method, ex ); //Waterfall - call passed exception handler
                  }
 +
++                // IvanCord start
 +                long elapsed = System.currentTimeMillis() - start;
 +                if ( elapsed > 200 )
 +                {
@@ -30,6 +31,7 @@ index b2d8efee343a4be1de58b8e6edfb8c1c507776b1..043799bc9a84c84ee2711703f38a0148
 +                            method.getListener().getClass().getName(), elapsed, event
 +                    } );
 +                }
-                 // IvanCord end
++                // IvanCord end
              }
          }
+     }
