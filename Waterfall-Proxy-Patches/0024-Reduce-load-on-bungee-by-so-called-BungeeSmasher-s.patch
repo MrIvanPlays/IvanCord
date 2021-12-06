@@ -207,7 +207,7 @@ index fe63c5e1a13e54f0fb9af0a6baa7fdc007f25106..902d9986cf80fa351f4e953feefdca5d
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 1ab5a0b3c175a39ad8ca6a39ce2568be1345fc83..bba59c3c1c2acaf310a7fa16ca8b1a06a2d9e6df 100644
+index 922e3cfc2e726f1aa95ea245aeea74be3ef0b5bc..35ae0791bc71d2db6fbc56352d83c92ef5cf252a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -205,7 +205,7 @@ public class BungeeServerInfo implements ServerInfo
