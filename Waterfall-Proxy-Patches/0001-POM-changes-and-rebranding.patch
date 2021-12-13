@@ -250,7 +250,7 @@ index 465ebbf26471d1f04270b6b290cd8073d54d8ed5..8167c54fd00d96d6dc02b0df36e8eaa9
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index 347406376e06f286ce5dc6d0f8aab9d61068b4a6..480ec4b4558d619aac978414f3ab0dea670e6e41 100644
+index 7dc322b2bc9ee8545d57017cfbd992dfb16f1244..682b5f46b7e54d6ed16e1e6fbe5c6b6dbc46408f 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -3,22 +3,25 @@
@@ -277,7 +277,7 @@ index 347406376e06f286ce5dc6d0f8aab9d61068b4a6..480ec4b4558d619aac978414f3ab0dea
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with IvanCord and Minecraft related applications.</description>
  
      <properties>
-         <log4j2.version>2.14.1</log4j2.version>
+         <log4j2.version>2.15.0</log4j2.version>
 +        <!-- IvanCord - skip deploying and generating javadocs for this module -->
 +        <maven.deploy.skip>true</maven.deploy.skip>
 +        <maven.javadoc.skip>true</maven.javadoc.skip>

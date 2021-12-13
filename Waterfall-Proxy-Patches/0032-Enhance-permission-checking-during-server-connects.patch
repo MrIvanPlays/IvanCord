@@ -1,0 +1,166 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mystiflow <mystiflow@gmail.com>
+Date: Thu, 9 Dec 2021 20:43:13 +0200
+Subject: [PATCH] Enhance permission checking during server connects
+
+Previously the only time server permissions were tested was using the
+/server command. This left a door for every ProxiedPlayer#connect(ServerInfo)
+invocation to ignore the ServerInfo#canAccess(CommandSender) check. This
+commit implements a few features:
+
+- A config option to always go through the canAccess check during any server
+connect attempt ; disabled by default as to retain current behavior and
+to not disrupt anyones current setups.
+- An option to override whatever setting had been set in the config by
+directly altering this on the ServerConnectRequest.
+- A new ServerConnectRequest reason field 'UNAUTHORISED'
+- Wildcard permission
+
+I feel like this is a feature needed for security purposes as to prevent
+accidental entrances to hidden servers. If needed of course plugins can
+bypass the flags.
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 8c5eea299fa8c2de696384f61e36d758e04f957a..3f7393287a0309642fe894cbc76c1d37367e5ab7 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -320,5 +320,14 @@ public interface ProxyConfig
+      * @return brand
+      */
+     String getBrand();
++
++    /**
++     * Should al plugin and proxy executed requests for a player to a server require
++     * direct access permission to a server. This is disabled by default, by setting to
++     * true; this will be enabled. This flag can also be toggled in the ServerConnectRequest instance
++     *
++     * @return true if players need authorisation for connections
++     */
++    boolean isRequireAccess();
+     // IvanCord end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java b/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
+index c81b0a4e12ba23da9d0bf9e09452fa0529ac3b8e..767b43d8c284cccf93c6ac519cb86b8cb24629ea 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
++++ b/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
+@@ -40,7 +40,13 @@ public class ServerConnectRequest
+         /**
+          * Connection failed, error can be accessed from callback method handle.
+          */
+-        FAIL
++        // IvanCord start
++        FAIL,
++        /**
++         * User has no access to this server.
++         */
++        UNAUTHORISED
++        // IvanCord end
+     }
+ 
+     /**
+@@ -68,6 +74,14 @@ public class ServerConnectRequest
+      */
+     @Setter
+     private boolean retry;
++    // IvanCord start
++    /**
++     * Disabled by default. Set to true if the permissions defined in the config
++     * to restrict servers to certain players should be respected for this request.
++     */
++    @Setter
++    private boolean requireAccess;
++    // IvanCord end
+ 
+     /**
+      * Class that sets default properties/adds methods to the lombok builder
+@@ -76,6 +90,7 @@ public class ServerConnectRequest
+     public static class Builder
+     {
+ 
++        private boolean requireAccess = ProxyServer.getInstance().getConfig().isRequireAccess(); // IvanCord
+         private int connectTimeout = ProxyServer.getInstance().getConfig().getServerConnectTimeout();
+     }
+ }
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+index 3550470cff53c61c3aef1f3397cd931767db3832..3884d1d35c81509608191ac3276aa7682344b8fa 100644
+--- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+@@ -18,6 +18,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+     private boolean kickToLobby = true;
+     private String reconnectHandlerType = ReconnectHandlerType.YAML.name();
+     private String brand = "IvanCord by MrIvanPlays";
++    private boolean requireAccess = false;
+ 
+     @Accessors(fluent = true)
+     private boolean isTCPFastOpenEnabled = true;
+@@ -38,6 +39,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+         shouldCheckForGlobalOpIndependently = config.getBoolean( "should_check_for_global_op_independently", shouldCheckForGlobalOpIndependently );
+         reconnectHandlerType = setupReconnectHandlerType( config.getString( "reconnect_handler_type", reconnectHandlerType ) );
+         brand = config.getString( "brand", brand );
++        requireAccess = config.getBoolean( "strict_permissions", requireAccess );
+     }
+ 
+     private int setupTFO(int incoming)
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
+index 35ae0791bc71d2db6fbc56352d83c92ef5cf252a..770a355959fee99271b7d509dcebe11d5a165921 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
+@@ -42,6 +42,13 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+ public class BungeeServerInfo implements ServerInfo
+ {
+ 
++    // IvanCord start
++    private static final String SERVER_PERMISSION = "bungeecord.server.%s";
++    private static final String SERVER_PERMISSION_WILDCARD = String.format( SERVER_PERMISSION, "*" );
++    @Getter
++    private final String permission = String.format( SERVER_PERMISSION, getName() );
++    // IvanCord end
++
+     @Getter
+     private final String name;
+     @Getter
+@@ -73,17 +80,19 @@ public class BungeeServerInfo implements ServerInfo
+         return Collections.unmodifiableCollection( new HashSet<>( players ) );
+     }
+ 
++    /* // IvanCord
+     @Override
+     public String getPermission()
+     {
+         return "bungeecord.server." + name;
+     }
++     */ // IvanCord
+ 
+     @Override
+     public boolean canAccess(CommandSender player)
+     {
+         Preconditions.checkNotNull( player, "player" );
+-        return !restricted || player.hasPermission( getPermission() );
++        return !restricted || ( player.hasPermission( SERVER_PERMISSION_WILDCARD ) || player.hasPermission( getPermission() ) ); // IvanCord
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 3709c27a6c3a398aaf26e0c26c784cb5c95fd534..1f414ff1bfd7c60a6b2697b1d1c3642f5195b154 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -365,6 +365,19 @@ public final class UserConnection implements ProxiedPlayer
+             sendMessage( bungee.getTranslation( "already_connecting" ) );
+             return;
+         }
++        // IvanCord start
++        if ( request.isRequireAccess() && !target.canAccess( this ) )
++        {
++            if ( callback != null )
++            {
++                callback.done( ServerConnectRequest.Result.UNAUTHORISED, null );
++            } else
++            {
++                sendMessage( bungee.getTranslation( "no_server_permission" ) );
++            }
++            return;
++        }
++        // IvanCord end
+ 
+         pendingConnects.add( target );
+ 
