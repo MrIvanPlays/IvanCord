@@ -91,7 +91,7 @@ index 2b425a3fc20242fdfb746aa5baa2c5835fcb45a8..862c281eefc4ef94f102e8c5640d1d8c
 +    <!-- IvanCord end -->
  </project>
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-index adb9f636f409c1407004bb97ed001585dff1208e..d0fbdc89860c4dbeeb6e65bdc81bcf95c710abcc 100644
+index c261d33aa4a57585d325140323ef1e37727b02b7..421124dbefc572b8d4d5a1b679d2bf6b4ac7a784 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
 @@ -19,7 +19,7 @@ import java.util.logging.Logger;
@@ -129,7 +129,7 @@ index adb9f636f409c1407004bb97ed001585dff1208e..d0fbdc89860c4dbeeb6e65bdc81bcf95
  
                  long elapsed = System.nanoTime() - start;
                  if ( elapsed > 20000000 )
-@@ -85,12 +97,13 @@ public class EventBus
+@@ -85,7 +97,7 @@ public class EventBus
                  Class<?>[] params = m.getParameterTypes();
                  if ( params.length != 1 )
                  {
@@ -138,23 +138,7 @@ index adb9f636f409c1407004bb97ed001585dff1208e..d0fbdc89860c4dbeeb6e65bdc81bcf95
                      {
                          m, listener.getClass(), annotation
                      } );
-                     continue;
-                 }
-+                /* // IvanCord start - rework this
-                 Map<Byte, Set<Method>> prioritiesMap = handler.get( params[0] );
-                 if ( prioritiesMap == null )
-                 {
-@@ -104,27 +117,70 @@ public class EventBus
-                     prioritiesMap.put( annotation.priority(), priority );
-                 }
-                 priority.add( m );
-+                 */
-+                handler.computeIfAbsent( params[0], k -> new HashMap<>() )
-+                    .computeIfAbsent( annotation.priority(), k -> new HashSet<>() )
-+                    .add( m );
-+                // IvanCord end
-             }
-         }
+@@ -99,19 +111,60 @@ public class EventBus
          return handler;
      }
  
@@ -199,25 +183,12 @@ index adb9f636f409c1407004bb97ed001585dff1208e..d0fbdc89860c4dbeeb6e65bdc81bcf95
          {
              for ( Map.Entry<Class<?>, Map<Byte, Set<Method>>> e : handler.entrySet() )
              {
-+                /* // IvanCord start
-                 Map<Byte, Map<Object, Method[]>> prioritiesMap = byListenerAndPriority.get( e.getKey() );
-                 if ( prioritiesMap == null )
-                 {
-                     prioritiesMap = new HashMap<>();
-                     byListenerAndPriority.put( e.getKey(), prioritiesMap );
-                 }
-+                 */
-+                Map<Byte, Map<Object, java.util.function.BiConsumer<Object, Object>[]>> prioritiesMap = byListenerAndPriority.computeIfAbsent( e.getKey(), k -> new HashMap<>() );
-+                // IvanCord end
+-                Map<Byte, Map<Object, Method[]>> prioritiesMap = byListenerAndPriority.computeIfAbsent( e.getKey(), k -> new HashMap<>() );
++                Map<Byte, Map<Object, java.util.function.BiConsumer<Object, Object>[]>> prioritiesMap = byListenerAndPriority.computeIfAbsent( e.getKey(), k -> new HashMap<>() ); // IvanCord
                  for ( Map.Entry<Byte, Set<Method>> entry : e.getValue().entrySet() )
                  {
 +                    /* // IvanCord start
-                     Map<Object, Method[]> currentPriorityMap = prioritiesMap.get( entry.getKey() );
-                     if ( currentPriorityMap == null )
-                     {
-@@ -132,6 +188,13 @@ public class EventBus
-                         prioritiesMap.put( entry.getKey(), currentPriorityMap );
-                     }
+                     Map<Object, Method[]> currentPriorityMap = prioritiesMap.computeIfAbsent( entry.getKey(), k -> new HashMap<>() );
                      currentPriorityMap.put( listener, entry.getValue().toArray( new Method[ 0 ] ) );
 +                     */
 +                    java.util.function.BiConsumer<Object, Object>[] baked = entry.getValue().stream()
@@ -229,7 +200,7 @@ index adb9f636f409c1407004bb97ed001585dff1208e..d0fbdc89860c4dbeeb6e65bdc81bcf95
                  }
                  bakeHandlers( e.getKey() );
              }
-@@ -149,26 +212,40 @@ public class EventBus
+@@ -129,26 +182,40 @@ public class EventBus
          {
              for ( Map.Entry<Class<?>, Map<Byte, Set<Method>>> e : handler.entrySet() )
              {
@@ -272,7 +243,7 @@ index adb9f636f409c1407004bb97ed001585dff1208e..d0fbdc89860c4dbeeb6e65bdc81bcf95
                  bakeHandlers( e.getKey() );
              }
          } finally
-@@ -186,7 +263,7 @@ public class EventBus
+@@ -166,7 +233,7 @@ public class EventBus
       */
      private void bakeHandlers(Class<?> eventClass)
      {
@@ -281,7 +252,7 @@ index adb9f636f409c1407004bb97ed001585dff1208e..d0fbdc89860c4dbeeb6e65bdc81bcf95
          if ( handlersByPriority != null )
          {
              List<EventHandlerMethod> handlersList = new ArrayList<>( handlersByPriority.size() * 2 );
-@@ -196,12 +273,12 @@ public class EventBus
+@@ -176,12 +243,12 @@ public class EventBus
              byte value = Byte.MIN_VALUE;
              do
              {

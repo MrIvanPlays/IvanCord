@@ -6,7 +6,7 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
 diff --git a/pom.xml b/pom.xml
-index 5181302fb09cfd968a2dcea3b4a2719ddeba33e5..c7b5b6d779d6891f5fcf5351eb9f511b02892d28 100644
+index f07d8e1349e9a471e5201cb5dd70b12870368771..893bfb25b01efc560e931acf9fee0b05996172db 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -47,6 +47,7 @@
@@ -18,10 +18,10 @@ index 5181302fb09cfd968a2dcea3b4a2719ddeba33e5..c7b5b6d779d6891f5fcf5351eb9f511b
  
      <scm>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index f931c380f660be74cb159707110e5908747c3ffa..8a966cead206ec5c848ea760b869a21c5490c627 100644
+index d90c80eaad56438c36cd1cb80de3141e4ed04e03..4c2e61d87be1fb1b6aa63e74d0a1827b599f8251 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
-@@ -48,5 +48,13 @@
+@@ -63,5 +63,13 @@
              <version>1.3.0</version>
              <scope>compile</scope>
          </dependency>
@@ -87,7 +87,7 @@ index e2e34a34605e9168294b01362d1b46ecebbac80b..b3f96f82eaf2a994bbc267346d505caf
      }
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 146a68b4022d4a0c3a32ff8a86c6f7b175a53453..99c19a07942e54699655d428cb4c73dc45aeaf12 100644
+index 6c76e729d46b7a9c93e9ba6a370205e0849c3829..3398d95734b5b072508cc4d2509a37478f56dee6 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -54,6 +54,13 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -133,7 +133,7 @@ index 146a68b4022d4a0c3a32ff8a86c6f7b175a53453..99c19a07942e54699655d428cb4c73dc
 +                        com.mrivanplays.ivancord.shared.ChannelUtil.shutdownChannel( ctx.channel(), new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot.getDirection() ) );
 +                    } else
 +                    {
-                     throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot.getDirection() );
+                     throw new BadPacketException( "Packet " + protocol + ":" + prot.getDirection() + "/" + packetId + " (" + packet.getClass().getSimpleName() + ") larger than expected, extra bytes: " + in.readableBytes() );
 +                    } // IvanCord end
                  }
                  /* IvanCord start - avoid creating buf copy
@@ -166,7 +166,7 @@ index c0d371426a16565e735015b1f679278e0360ed1c..f33df1f37bda8327f12a55329b65f67d
      }
  }
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 8a13522a0c2c1efaa41592c266a5955dd22679a1..0f97ecc4c8500e7a5c94da3f467bc85c33914c7b 100644
+index 80019d59be885ffdda4d40f477e851d4e3dbf474..d7843cc8fe074071bf51d142fecb23036d527bf6 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -149,6 +149,14 @@

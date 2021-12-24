@@ -5,7 +5,7 @@ Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 9b29dfcae1d4ad3334c989a92067388003e87157..4b2c980d3d2ac8cb2e47e778fbf0583d41cccae3 100644
+index 379b60230e3161b6a99962ccc0033ab3310bbed6..2c1e504e9324af7afcfddff0c1c706df88cec8e1 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,41 @@
@@ -154,7 +154,7 @@ index 0ad5dd16bca0358175dcf761de99b97af5e089a1..57ac9a97540d092225a70dd9f3c72606
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 2caffc27d5260c5c673392f7060ca041d6cb4b4a..0d53752be0fc9cf9ac4479c7fab0729d9a3283ce 100644
+index 7d32ea69d65748e3f898d799139843f938c69a88..72e5fdb36f865fa06c5663933c111084ec3a4885 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,18 @@
@@ -250,7 +250,7 @@ index 465ebbf26471d1f04270b6b290cd8073d54d8ed5..8167c54fd00d96d6dc02b0df36e8eaa9
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index d3512fca2cd8c6998f14ed40e75a69efa2a69920..528c961be5f056b35f2d5c7bfa24732a01b3b043 100644
+index 39e2fa42430a430950c339cb21ac63078159ba49..9247b35207bbb24e6a9bdad52f232900c57145b4 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -3,22 +3,25 @@
@@ -277,7 +277,7 @@ index d3512fca2cd8c6998f14ed40e75a69efa2a69920..528c961be5f056b35f2d5c7bfa24732a
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with IvanCord and Minecraft related applications.</description>
  
      <properties>
-         <log4j2.version>2.16.0</log4j2.version>
+         <log4j2.version>2.17.0</log4j2.version>
 +        <!-- IvanCord - skip deploying and generating javadocs for this module -->
 +        <maven.deploy.skip>true</maven.deploy.skip>
 +        <maven.javadoc.skip>true</maven.javadoc.skip>
@@ -322,7 +322,7 @@ index 1eff2c938f914e0dea53f788df2670cb34ec69d9..4b0d2574eba5bcf28027c2b0bd8ff4b4
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 94fad2cc559a1dfaefb2f482d2cf572f4104a08c..5603c29a787461c132e4f4b59dc32ea924e6da8d 100644
+index 505d1d14ad4ceeee48cf236e1a5332ea9197021b..1405ba00a69470a8c7d9a0ca7e20aa7e47777ab5 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,18 @@
@@ -391,7 +391,7 @@ index 94fad2cc559a1dfaefb2f482d2cf572f4104a08c..5603c29a787461c132e4f4b59dc32ea9
          <module>log4j</module>
          <module>module</module>
          <module>protocol</module>
-@@ -66,23 +48,23 @@
+@@ -66,26 +48,35 @@
      </modules>
  
      <scm>
@@ -423,20 +423,19 @@ index 94fad2cc559a1dfaefb2f482d2cf572f4104a08c..5603c29a787461c132e4f4b59dc32ea9
          </snapshotRepository>
      </distributionManagement>
  
-@@ -99,6 +81,12 @@
-                 <enabled>true</enabled>
-             </snapshots>
-         </repository>
-+        <!-- IvanCord start -->
++    <!-- IvanCord start -->
++    <repositories>
 +        <repository>
 +            <id>ivan</id>
 +            <url>https://repo.mrivanplays.com/repository/ivan/</url>
 +        </repository>
-+        <!-- IvanCord end -->
-     </repositories>
- 
++    </repositories>
++    <!-- IvanCord end -->
++
      <properties>
-@@ -371,7 +359,7 @@
+         <build.number>unknown</build.number>
+         <lombok.version>1.18.22</lombok.version>
+@@ -356,7 +347,7 @@
                      <plugin>
                          <groupId>org.projectlombok</groupId>
                          <artifactId>lombok-maven-plugin</artifactId>
@@ -445,7 +444,7 @@ index 94fad2cc559a1dfaefb2f482d2cf572f4104a08c..5603c29a787461c132e4f4b59dc32ea9
                          <executions>
                              <execution>
                                  <id>delombok</id>
-@@ -389,9 +377,10 @@
+@@ -374,9 +365,10 @@
                      <plugin>
                          <groupId>org.apache.maven.plugins</groupId>
                          <artifactId>maven-javadoc-plugin</artifactId>
@@ -458,7 +457,7 @@ index 94fad2cc559a1dfaefb2f482d2cf572f4104a08c..5603c29a787461c132e4f4b59dc32ea9
                          <executions>
                              <execution>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index c62e0175b39da8be9222ab04fe34dff20e87b65f..f931c380f660be74cb159707110e5908747c3ffa 100644
+index a783d9b0f4b7e9a469afcf27e0b6ff3c072c6cc3..d90c80eaad56438c36cd1cb80de3141e4ed04e03 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,18 @@
@@ -484,9 +483,9 @@ index c62e0175b39da8be9222ab04fe34dff20e87b65f..f931c380f660be74cb159707110e5908
 +    <name>IvanCord-Protocol</name>
 +    <description>Minimal implementation of the Minecraft protocol for use in IvanCord</description>
  
-     <dependencies>
-         <dependency>
-@@ -26,8 +25,8 @@
+     <!-- We really shouldn't depend on external repositories, but at least this is the Central staging one -->
+     <repositories>
+@@ -41,8 +40,8 @@
              <scope>compile</scope>
          </dependency>
          <dependency>
@@ -498,7 +497,7 @@ index c62e0175b39da8be9222ab04fe34dff20e87b65f..f931c380f660be74cb159707110e5908
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 22c4f71b17f1ad5f58f237c257fe1b0fbfcb763d..8a13522a0c2c1efaa41592c266a5955dd22679a1 100644
+index cca0ef95c190739a9061d28360d935bacf112aef..80019d59be885ffdda4d40f477e851d4e3dbf474 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@

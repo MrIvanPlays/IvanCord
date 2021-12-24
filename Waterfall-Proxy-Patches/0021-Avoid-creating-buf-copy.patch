@@ -5,7 +5,7 @@ Subject: [PATCH] Avoid creating buf copy
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
-index 01d35f41a075a907283ed3c75f1747ef402cbd07..146a68b4022d4a0c3a32ff8a86c6f7b175a53453 100644
+index ac83e3253b4b61e314cb406a09e8308b555fe483..6c76e729d46b7a9c93e9ba6a370205e0849c3829 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
 @@ -38,7 +38,11 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
@@ -22,7 +22,7 @@ index 01d35f41a075a907283ed3c75f1747ef402cbd07..146a68b4022d4a0c3a32ff8a86c6f7b1
          try
 @@ -68,13 +72,16 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
                      // Waterfall end
-                     throw new BadPacketException( "Did not read all bytes from packet " + packet.getClass() + " " + packetId + " Protocol " + protocol + " Direction " + prot.getDirection() );
+                     throw new BadPacketException( "Packet " + protocol + ":" + prot.getDirection() + "/" + packetId + " (" + packet.getClass().getSimpleName() + ") larger than expected, extra bytes: " + in.readableBytes() );
                  }
 +                /* IvanCord start - avoid creating buf copy
              } else
