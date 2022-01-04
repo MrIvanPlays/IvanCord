@@ -91,7 +91,7 @@ index 2b425a3fc20242fdfb746aa5baa2c5835fcb45a8..862c281eefc4ef94f102e8c5640d1d8c
 +    <!-- IvanCord end -->
  </project>
 diff --git a/event/src/main/java/net/md_5/bungee/event/EventBus.java b/event/src/main/java/net/md_5/bungee/event/EventBus.java
-index c261d33aa4a57585d325140323ef1e37727b02b7..421124dbefc572b8d4d5a1b679d2bf6b4ac7a784 100644
+index 1187acd09a595105e3b133ac1002b8ecf8d4486b..3b342644d88d2061608e9d2e4703efbc897b316a 100644
 --- a/event/src/main/java/net/md_5/bungee/event/EventBus.java
 +++ b/event/src/main/java/net/md_5/bungee/event/EventBus.java
 @@ -19,7 +19,7 @@ import java.util.logging.Logger;
@@ -128,7 +128,7 @@ index c261d33aa4a57585d325140323ef1e37727b02b7..421124dbefc572b8d4d5a1b679d2bf6b
 +                // IvanCord end
  
                  long elapsed = System.nanoTime() - start;
-                 if ( elapsed > 20000000 )
+                 if ( elapsed > 50000000 )
 @@ -85,7 +97,7 @@ public class EventBus
                  Class<?>[] params = m.getParameterTypes();
                  if ( params.length != 1 )
