@@ -32,61 +32,44 @@ index 9a262c8a11caeade95a084e5e5bc0be398917bbf..266a46e3abf3c4948477cb15c19a7e3b
 +    }
 +    // IvanCord end
  }
-diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 1ea654f18260c90143ff99b9273aa8a5fd965745..922e3cfc2e726f1aa95ea245aeea74be3ef0b5bc 100644
---- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-+++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-@@ -1,6 +1,7 @@
- package net.md_5.bungee;
- 
- import com.google.common.base.Preconditions;
-+import com.google.common.collect.Iterables;
- import io.netty.bootstrap.Bootstrap;
- import io.netty.channel.ChannelFuture;
- import io.netty.channel.ChannelFutureListener;
-@@ -103,13 +104,16 @@ public class BungeeServerInfo implements ServerInfo
-         sendData( channel, data, true );
-     }
- 
--    // TODO: Don't like this method
-+    // IvanCord start - remove to do "Don't like this method"
-+    // We're rewriting it fully
-     @Override
-     public boolean sendData(String channel, byte[] data, boolean queue)
-     {
-         Preconditions.checkNotNull( channel, "channel" );
-         Preconditions.checkNotNull( data, "data" );
- 
-+        // old code
-+        /*
-         Server server;
- 
-         synchronized (players) {
-@@ -124,6 +128,24 @@ public class BungeeServerInfo implements ServerInfo
-                 packetQueue.add(new PluginMessage(channel, data, false));
-             }
-         }
-+         */
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+index 08c32f6ec3dfdc62102983067c47dd49466cf358..5e0af575712120c46a06f9f393fd4566f99c575b 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
+@@ -313,5 +313,12 @@ public interface ProxyConfig
+      * @return type of the reconnect handler
+      */
+     String getReconnectHandlerType();
 +
-+        // here's ours
-+        if ( players.isEmpty() )
-+        {
-+            if ( queue )
-+            {
-+                synchronized ( packetQueue )
-+                {
-+                    packetQueue.add( new PluginMessage( channel, data, false ) );
-+                }
-+            }
-+        } else
-+        {
-+            Server server = Iterables.getFirst( players, null ).getServer();
-+            server.sendData( channel, data );
-+            return true;
-+        }
++    /**
++     * Returns whether IvanCord should populate with plugins a query.
++     *
++     * @return whether to populate query with plugins
++     */
++    boolean shouldPopulatePluginsWhenQuery();
+     // IvanCord end
+ }
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+index 8da2ff6a2b590968422c23a456552223e2501ba7..86dc461793e25b62999665b2ee881b07293ad5ae 100644
+--- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
+@@ -23,6 +23,8 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+     private int getTCPFastOpenMode = TCPFastOpenMode.CLIENT_ONLY.getValue();
+     @Accessors(fluent = true)
+     private boolean shouldCheckForGlobalOpIndependently = true;
++    @Accessors(fluent = true)
++    private boolean shouldPopulatePluginsWhenQuery = false;
  
-         return false;
+     @Override
+     public void load()
+@@ -35,6 +37,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+         getTCPFastOpenMode = setupTFO( config.getInt( "tcp_fast_open_mode", getTCPFastOpenMode ) );
+         shouldCheckForGlobalOpIndependently = config.getBoolean( "should_check_for_global_op_independently", shouldCheckForGlobalOpIndependently );
+         reconnectHandlerType = setupReconnectHandlerType( config.getString( "reconnect_handler_type", reconnectHandlerType ) );
++        shouldPopulatePluginsWhenQuery = config.getBoolean( "should_populate_plugins_when_query", shouldPopulatePluginsWhenQuery );
      }
+ 
+     private int setupTFO(int incoming)
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 index 88edfed20d6c11b066a3dfde0570f39658714857..f488019745f80214ba5b75a6baf5e67d139e2355 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
@@ -137,26 +120,10 @@ index 416a7c713f9eafe02195cc047ba912c46b477ebd..1ac36c0de37b358029bf8ac0d08fb31b
          }
      }
 diff --git a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-index 1b9f054bc4a7b87ac3531e4e49d5e93d15420d26..03c18c38edbe4f25d770c8405d2924a06dd553c6 100644
+index 1b9f054bc4a7b87ac3531e4e49d5e93d15420d26..b4f1b231c702f68fa0eeb1aa97f5f3e95e4939c3 100644
 --- a/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
 +++ b/query/src/main/java/net/md_5/bungee/query/QueryHandler.java
-@@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
- import io.netty.channel.SimpleChannelInboundHandler;
- import io.netty.channel.socket.DatagramPacket;
- import java.net.InetAddress;
-+import java.util.Iterator; // IvanCord
- import java.util.LinkedHashMap;
- import java.util.List;
- import java.util.Map;
-@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
- import net.md_5.bungee.api.ProxyServer;
- import net.md_5.bungee.api.config.ListenerInfo;
- import net.md_5.bungee.api.connection.ProxiedPlayer;
-+import net.md_5.bungee.api.plugin.PluginDescription;
- 
- @RequiredArgsConstructor
- public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
-@@ -33,6 +35,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+@@ -33,6 +33,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
      private final Random random = new Random();
      private final Cache<InetAddress, QuerySession> sessions = CacheBuilder.newBuilder().expireAfterWrite( 30, TimeUnit.SECONDS ).build();
      private static io.github.waterfallmc.waterfall.utils.FastException cachedNoSessionException = new io.github.waterfallmc.waterfall.utils.FastException("No Session!");
@@ -164,14 +131,15 @@ index 1b9f054bc4a7b87ac3531e4e49d5e93d15420d26..03c18c38edbe4f25d770c8405d2924a0
  
      private void writeShort(ByteBuf buf, int s)
      {
-@@ -99,13 +102,33 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+@@ -99,13 +100,39 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
              {
                  throw cachedNoSessionException; // Waterfall
              }
 -
 +            // IvanCord start
 +            List<QueryResult.PluginInfo> plugins = this.cachedPluginInfoList;
-+            if ( plugins == null )
++            boolean populateWithPlugins = bungee.getConfig().shouldPopulatePluginsWhenQuery();
++            if ( populateWithPlugins && plugins == null )
 +            {
 +                synchronized ( this )
 +                {
@@ -181,7 +149,7 @@ index 1b9f054bc4a7b87ac3531e4e49d5e93d15420d26..03c18c38edbe4f25d770c8405d2924a0
 +                                .parallelStream()
 +                                .map( plugin ->
 +                                {
-+                                    PluginDescription pluginDescription = plugin.getDescription();
++                                    net.md_5.bungee.api.plugin.PluginDescription pluginDescription = plugin.getDescription();
 +                                    return new QueryResult.PluginInfo( pluginDescription.getName(), pluginDescription.getVersion() );
 +                                } )
 +                                .collect( Collectors.toList() );
@@ -195,32 +163,41 @@ index 1b9f054bc4a7b87ac3531e4e49d5e93d15420d26..03c18c38edbe4f25d770c8405d2924a0
              ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(listener.getMotd(), "SMP", "IvanCord_Proxy", // IvanCord - rebranding
                      bungee.getOnlineCount(), listener.getMaxPlayers(), listener.getHost().getPort(),
                      listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
-+            event.getResult().getPlugins().addAll( plugins ); // IvanCord
++            // IvanCord start
++            if ( populateWithPlugins && plugins != null )
++            {
++                event.getResult().getPlugins().addAll( plugins );
++            }
++            // IvanCord end
              QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
              // Waterfall end
  
-@@ -139,7 +162,24 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
+@@ -139,7 +166,28 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
                  // Start Extra Info
                  data.put( "game_id", result.getGameId() );
                  data.put( "version", result.getVersion() );
 -                data.put( "plugins", "" ); // TODO: Allow population?
 +                // IvanCord start - remove to do "Allow population?"
-+                /*
-+                data.put( "plugins", "" );
-+                 */
-+                StringBuilder pluginsString = new StringBuilder();
-+                pluginsString.append( bungee.getName() ).append( ' ' ).append( bungee.getGameVersion() ).append( ':' ).append( ' ' );
-+                Iterator<QueryResult.PluginInfo> iterator = plugins.iterator();
-+                while ( iterator.hasNext() )
++                if ( !populateWithPlugins )
 +                {
-+                    QueryResult.PluginInfo pluginInfo = iterator.next();
-+                    pluginsString.append( pluginInfo.getName() ).append( ' ' ).append( pluginInfo.getVersion() );
-+                    if ( iterator.hasNext() )
++                data.put( "plugins", "" );
++                } else
++                {
++
++                    StringBuilder pluginsString = new StringBuilder();
++                    pluginsString.append( bungee.getName() ).append( ' ' ).append( bungee.getGameVersion() ).append( ':' ).append( ' ' );
++                    java.util.Iterator<QueryResult.PluginInfo> iterator = plugins.iterator();
++                    while ( iterator.hasNext() )
 +                    {
-+                        pluginsString.append( ';' ).append( ' ' );
++                        QueryResult.PluginInfo pluginInfo = iterator.next();
++                        pluginsString.append( pluginInfo.getName() ).append( ' ' ).append( pluginInfo.getVersion() );
++                        if ( iterator.hasNext() )
++                        {
++                            pluginsString.append( ';' ).append( ' ' );
++                        }
 +                    }
++                    data.put( "plugins", pluginsString.toString() );
 +                }
-+                data.put( "plugins", pluginsString.toString() );
 +                // IvanCord end
                  // End Extra Info
                  data.put( "map", result.getWorldName() );

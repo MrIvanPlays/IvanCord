@@ -207,10 +207,10 @@ index fe63c5e1a13e54f0fb9af0a6baa7fdc007f25106..902d9986cf80fa351f4e953feefdca5d
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 922e3cfc2e726f1aa95ea245aeea74be3ef0b5bc..35ae0791bc71d2db6fbc56352d83c92ef5cf252a 100644
+index 1ea654f18260c90143ff99b9273aa8a5fd965745..448c6caa4bc55f69805bc9664e942855caaff0f1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-@@ -205,7 +205,7 @@ public class BungeeServerInfo implements ServerInfo
+@@ -183,7 +183,7 @@ public class BungeeServerInfo implements ServerInfo
              }
          };
          new Bootstrap()

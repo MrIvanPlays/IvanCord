@@ -21,10 +21,10 @@ accidental entrances to hidden servers. If needed of course plugins can
 bypass the flags.
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-index 8c5eea299fa8c2de696384f61e36d758e04f957a..3f7393287a0309642fe894cbc76c1d37367e5ab7 100644
+index e5c113f5616c431affc596ea4c0db64c633c1760..3b06b962e2501cad422874a2b3ff6e7b87cf9532 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyConfig.java
-@@ -320,5 +320,14 @@ public interface ProxyConfig
+@@ -327,5 +327,14 @@ public interface ProxyConfig
       * @return brand
       */
      String getBrand();
@@ -82,10 +82,10 @@ index c81b0a4e12ba23da9d0bf9e09452fa0529ac3b8e..767b43d8c284cccf93c6ac519cb86b8c
      }
  }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-index 3550470cff53c61c3aef1f3397cd931767db3832..3884d1d35c81509608191ac3276aa7682344b8fa 100644
+index 8c91732f0701029dab1408f5b884e91cdfa8fd79..0c379f4c32c799d2ea559c9d9dca63d2dca74ea4 100644
 --- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
-@@ -18,6 +18,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
+@@ -17,6 +17,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
      private boolean kickToLobby = true;
      private String reconnectHandlerType = ReconnectHandlerType.YAML.name();
      private String brand = "IvanCord by MrIvanPlays";
@@ -93,19 +93,19 @@ index 3550470cff53c61c3aef1f3397cd931767db3832..3884d1d35c81509608191ac3276aa768
  
      @Accessors(fluent = true)
      private boolean isTCPFastOpenEnabled = true;
-@@ -38,6 +39,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
-         shouldCheckForGlobalOpIndependently = config.getBoolean( "should_check_for_global_op_independently", shouldCheckForGlobalOpIndependently );
+@@ -40,6 +41,7 @@ public class IvanCordConfiguration extends WaterfallConfiguration
          reconnectHandlerType = setupReconnectHandlerType( config.getString( "reconnect_handler_type", reconnectHandlerType ) );
+         shouldPopulatePluginsWhenQuery = config.getBoolean( "should_populate_plugins_when_query", shouldPopulatePluginsWhenQuery );
          brand = config.getString( "brand", brand );
 +        requireAccess = config.getBoolean( "strict_permissions", requireAccess );
      }
  
      private int setupTFO(int incoming)
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 35ae0791bc71d2db6fbc56352d83c92ef5cf252a..770a355959fee99271b7d509dcebe11d5a165921 100644
+index 448c6caa4bc55f69805bc9664e942855caaff0f1..fad67ed9bfc38e5deb29e6da428f32f004b484b8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-@@ -42,6 +42,13 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+@@ -41,6 +41,13 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
  public class BungeeServerInfo implements ServerInfo
  {
  
@@ -119,7 +119,7 @@ index 35ae0791bc71d2db6fbc56352d83c92ef5cf252a..770a355959fee99271b7d509dcebe11d
      @Getter
      private final String name;
      @Getter
-@@ -73,17 +80,19 @@ public class BungeeServerInfo implements ServerInfo
+@@ -72,17 +79,19 @@ public class BungeeServerInfo implements ServerInfo
          return Collections.unmodifiableCollection( new HashSet<>( players ) );
      }
  

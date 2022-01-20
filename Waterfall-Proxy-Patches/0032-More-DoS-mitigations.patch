@@ -1,0 +1,202 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Janmm14 <gitconfig1@janmm14.de>
+Date: Tue, 11 Jan 2022 16:21:16 +0200
+Subject: [PATCH] More DoS mitigations
+
+Check the first 4 packet lengths already in Varint21FrameDecoder, Handshake
+packet got minimum and maximum limits as well.
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+index f33df1f37bda8327f12a55329b65f67d783c653c..a913a04ac086af96bf189047e50e0ef64b5bdad0 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
+@@ -7,9 +7,20 @@ import io.netty.handler.codec.ByteToMessageDecoder;
+ import io.netty.handler.codec.CorruptedFrameException;
+ import java.util.List;
+ 
++@lombok.RequiredArgsConstructor // IvanCord
+ public class Varint21FrameDecoder extends ByteToMessageDecoder
+ {
+ 
++    // IvanCord start
++    private final boolean limited;
++    private int packetCount = 0;
++
++    public Varint21FrameDecoder()
++    {
++        this( false );
++    }
++    // IvanCord end
++
+     private static boolean DIRECT_WARNING;
+ 
+     @Override
+@@ -46,6 +57,39 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+                 {
+                     throw new CorruptedFrameException( "Empty Packet!" );
+                 }
++                // IvanCord - length sanity checks for first packets in client connection if limited
++                if ( limited && packetCount < 4 )
++                {
++                    int maxLength = 2097151; // max length of 21-bit varint
++                    switch ( packetCount )
++                    {
++                        case 0:
++                            maxLength = net.md_5.bungee.protocol.packet.Handshake.EXPECTED_MAX_LENGTH + 2;
++                            break;
++                        case 1:
++                            // in case of server list ping, the packets we get after handshake are always smaller
++                            // than any of these, so no need for special casing
++                            maxLength = net.md_5.bungee.protocol.packet.LoginRequest.EXPECTED_MAX_LENGTH + 1;
++                            break;
++                        case 2:
++                            // if offline mode we get minecraft:brand (bigger), otherwise we get EncryptionResponse
++                            // so we check for the bigger packet, we are still far below critical maximum sizes
++                            // minecraft:brand (16 bytes) followed by a 400 char long string should never be reached
++                            maxLength = 1619;
++                            break;
++                        case 3:
++                            // in offline mode we get either teleport confirm or player pos&look
++                            // otherwise we get minecraft:brand (bigger max size)
++                            maxLength = 1619;
++                            break;
++                    }
++                    if ( length > maxLength )
++                    {
++                        com.mrivanplays.ivancord.shared.Errors.oversizedPacket( packetCount, maxLength, length );
++                    }
++                    packetCount++;
++                }
++                // IvanCord end
+ 
+                 if ( in.readableBytes() < length )
+                 {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+index 7dbbfd3cd0212154ce27b1134e64b715d42e8096..1e5370117770a6daf7c22de2773c6ddd98f58ec7 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Handshake.java
+@@ -43,4 +43,20 @@ public class Handshake extends DefinedPacket
+     {
+         handler.handle( this );
+     }
++
++    // IvanCord start
++    public static int EXPECTED_MAX_LENGTH = 1292;
++
++    @Override
++    public int expectedMaxLength(ByteBuf buf, net.md_5.bungee.protocol.ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        return EXPECTED_MAX_LENGTH;
++    }
++
++    @Override
++    public int expectedMinLength(ByteBuf buf, net.md_5.bungee.protocol.ProtocolConstants.Direction direction, int protocolVersion)
++    {
++        return 5;
++    }
++    // IvanCord end
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
+index cfd8e64ef95df587ec5e376d9f8b6c3885a92cda..bb681e27af092fafd92579cb8333c9fa4bc978bc 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
+@@ -37,10 +37,13 @@ public class LoginRequest extends DefinedPacket
+     }
+ 
+     // Waterfall start: Additional DoS mitigations, courtesy of Velocity
++    // IvanCord start - make max length a field
++    public static int EXPECTED_MAX_LENGTH = 65;
++    @Override // IvanCord end
+     public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+         // Accommodate the rare (but likely malicious) use of UTF-8 usernames, since it is technically
+         // legal on the protocol level.
+-        return 1 + (16 * 4);
++        return EXPECTED_MAX_LENGTH; // IvanCord
+     }
+     // Waterfall end
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 8fe39e31258bcaa140ec3ef66c4339cc71f87a8d..548dade37870f2da3f76dd42694479149f7a8bdf 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -85,7 +85,7 @@ public class PipelineUtils
+ 
+ 
+             try {
+-            BASE.initChannel( ch );
++                LIMITED_BASE.initChannel( ch ); // IvanCord - Use LIMITED_BASE
+             } catch (Exception e) {
+                 e.printStackTrace();
+                 ch.close();
+@@ -114,6 +114,7 @@ public class PipelineUtils
+         }
+     };
+     public static final Base BASE = new Base();
++    public static final Base LIMITED_BASE = new Base( true ); // IvanCord - Add LIMITED_BASE for connections from clients
+     private static final KickStringWriter legacyKicker = new KickStringWriter();
+     private static final Varint21LengthFieldPrepender framePrepender = new Varint21LengthFieldPrepender();
+     public static final String TIMEOUT_HANDLER = "timeout";
+@@ -233,9 +234,18 @@ public class PipelineUtils
+     private static final int HIGH_MARK = Integer.getInteger( "net.md_5.bungee.high_mark", 2 << 20 ); // 2 mb
+     private static final WriteBufferWaterMark MARK = new WriteBufferWaterMark( LOW_MARK, HIGH_MARK );
+ 
++    @lombok.RequiredArgsConstructor // IvanCord
+     public static final class Base extends ChannelInitializer<Channel>
+     {
+ 
++        // IvanCord start
++        private final boolean fromClient;
++        public Base()
++        {
++            this( false );
++        }
++        // IvanCord end
++
+         @Override
+         public void initChannel(Channel ch) throws Exception
+         {
+@@ -251,7 +261,7 @@ public class PipelineUtils
+             ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
+             ch.config().setWriteBufferWaterMark( MARK );
+ 
+-            ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
++            ch.pipeline().addLast( FRAME_DECODER, fromClient ? new Varint21FrameDecoder( true ) : new Varint21FrameDecoder() ); // IvanCord - limit decoding length for client packets
+             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
+             ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
+ 
+diff --git a/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java b/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java
+index 15d4214c05eb4b83aa17665c909560d4c318f29c..2e1efdac12f01879816aa79bbcbd764a20f5030a 100644
+--- a/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java
++++ b/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java
+@@ -3,18 +3,30 @@ package com.mrivanplays.ivancord.shared;
+ import io.netty.buffer.ByteBuf;
+ import io.netty.handler.codec.CorruptedFrameException;
+ import lombok.experimental.UtilityClass;
+-import net.md_5.bungee.util.QuietException;
+ import net.md_5.bungee.util.BufUtil;
++import net.md_5.bungee.util.QuietException;
+ 
+ @UtilityClass
+ public class Errors
+ {
++
+     private final boolean DEBUG = Boolean.getBoolean( "net.md_5.bungee.debug" );
+     private final QuietException INVALID_PROTOCOL = newError( "Invalid protocol requested" );
+     private final QuietException UNEXPECTED_LOGIN_PACKET = newError( "Invalid packet received during login process" );
+     private final QuietException UNEXPECTED_BUFFER_END = newError( "Buffer end reached unexpectedly" );
+     private final QuietException BAD_FRAME_LENGTH = newError( "length wider than 21-bit" );
+     private final QuietException DISCARD = newError( "Discard handler is added to the pipeline" );
++    private final QuietException OVERSIZED_PACKET = newError( "A packet could not be framed because it was too large" );
++
++    public void oversizedPacket(int packetCount, int expected, int actual)
++    {
++        if ( DEBUG )
++        {
++            throw new CorruptedFrameException( "Packet #" + packetCount + " could not be framed because it was too large (expected "
++                + expected + " bytes, got " + actual + " bytes." );
++        }
++        throw OVERSIZED_PACKET;
++    }
+ 
+     public void invalidProtocol(int protocol)
+     {

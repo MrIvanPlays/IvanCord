@@ -1,0 +1,81 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: foss-mc <69294560+foss-mc@users.noreply.github.com>
+Date: Tue, 11 Jan 2022 16:30:55 +0200
+Subject: [PATCH] Ping and close changes
+
+close on exception whenever a channel is initializing and close without
+response on proxy ping if result is null.
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 6d0018ee254c2722d247070a0681250db8e1dd4b..2680be706afb343d7fe552ad8079e54b1b9a11f2 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -198,6 +198,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 }
+ 
+                 ServerPing legacy = result.getResponse();
++                // IvanCord start - do not send ping if result is null
++                if ( legacy == null )
++                {
++                    ch.close();
++                    return;
++                }
++                // IvanCord end
+                 // IvanCord start - handle null legacy.getPlayers()
+                 // such behavior is handled by modern pinging, yet it is not for
+                 // legacy pinging. This causes A NPE whenever a < 1.7 MC client
+@@ -275,6 +282,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                     @Override
+                     public void done(ProxyPingEvent pingResult, Throwable error)
+                     {
++                        // IvanCord start - close if response is null and do not do any action if channel got closed
++                        if ( ch.isClosed() )
++                        {
++                            return;
++                        }
++                        if ( pingResult.getResponse() == null )
++                        {
++                            ch.close();
++                            return;
++                        }
++                        // IvanCord end
+                         Gson gson = BungeeCord.getInstance().gson;
+                         unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
+                         if ( bungee.getConnectionThrottle() != null )
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 548dade37870f2da3f76dd42694479149f7a8bdf..319e3a86add54c24a252abb2317e8e5a5958e019 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -112,6 +112,16 @@ public class PipelineUtils
+ 
+             BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
+         }
++
++        // IvanCord start - close on exception caught
++        @Override
++        public void exceptionCaught(final io.netty.channel.ChannelHandlerContext ctx, final Throwable cause) throws Exception
++        {
++            BungeeCord.getInstance().getLogger().log( Level.SEVERE, "An error encountered whilst initializing channel for a connection", cause );
++
++            ctx.close();
++        }
++        // IvanCord end
+     };
+     public static final Base BASE = new Base();
+     public static final Base LIMITED_BASE = new Base( true ); // IvanCord - Add LIMITED_BASE for connections from clients
+@@ -267,5 +277,15 @@ public class PipelineUtils
+ 
+             ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
+         }
++
++        // IvanCord start - close on exception caught
++        @Override
++        public void exceptionCaught(final io.netty.channel.ChannelHandlerContext ctx, final Throwable cause) throws Exception
++        {
++            BungeeCord.getInstance().getLogger().log( Level.SEVERE, "An error encountered whilst initializing channel for a connection", cause );
++
++            ctx.close();
++        }
++        // IvanCord end
+     }
+ }
