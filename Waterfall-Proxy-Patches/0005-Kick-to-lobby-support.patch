@@ -51,10 +51,10 @@ index 06d74844fe24fb7bdc33dc81c8ec28280e7a1c12..238bc3c1f43aa5bd6de34f4355ede2de
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index d3650ff8bac214c300fe14951ab9a5c95c2691a4..6861fd0102cbea139651da6c8d72dcb262849221 100644
+index 97c4b210e1ea6e52f8ab7273ba5111fbe0651aac..31ac791d12b3edf1ac1ed9cffa3f5f209d5a3488 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -31,6 +31,7 @@ import net.md_5.bungee.ServerConnection.KeepAliveData;
+@@ -29,6 +29,7 @@ import net.md_5.bungee.ServerConnection.KeepAliveData;
  import net.md_5.bungee.UserConnection;
  import net.md_5.bungee.Util;
  import net.md_5.bungee.api.ProxyServer;
@@ -62,7 +62,7 @@ index d3650ff8bac214c300fe14951ab9a5c95c2691a4..6861fd0102cbea139651da6c8d72dcb2
  import net.md_5.bungee.api.chat.BaseComponent;
  import net.md_5.bungee.api.chat.TextComponent;
  import net.md_5.bungee.api.config.ServerInfo;
-@@ -589,14 +590,46 @@ public class DownstreamBridge extends PacketHandler
+@@ -594,14 +595,46 @@ public class DownstreamBridge extends PacketHandler
          {
              def = null;
          }
@@ -114,10 +114,10 @@ index d3650ff8bac214c300fe14951ab9a5c95c2691a4..6861fd0102cbea139651da6c8d72dcb2
          throw CancelSendSignal.INSTANCE;
      }
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 5890e8c90944c3cbdc15975756de69d7e7ac96e6..48db529a5df8b38c8f7ba59d3f85f57ef173c6ed 100644
+index e16cf0a816e42a25998048b6670562e02a7c3ddc..6a60e8d54b3a11974e412cd41934087b6500894f 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -37,3 +37,4 @@ command_perms_groups=\u00a76You have the following groups: {0}
+@@ -36,3 +36,4 @@ command_perms_groups=\u00a76You have the following groups: {0}
  command_perms_permission=\u00a79- {0}
  command_ip=\u00a79IP of {0} is {1}
  illegal_chat_characters=\u00a7cillegal characters in chat ({0})

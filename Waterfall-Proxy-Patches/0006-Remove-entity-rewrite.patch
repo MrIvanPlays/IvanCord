@@ -320,10 +320,10 @@ index fb391fceddc4bae7e11b9c7fcf6c2d629161f3be..3bf6277e1b3cadb077bcf2f18891dbdb
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a7b8a9c0d7cfa959f9fcb803280e2e09256fb488..b4b4904301dfc8753a570d0ca9b312d271cf0f3a 100644
+index c51dbab74c4c1b3d49cccbb7120012711296bf0a..3c1d5504c18c523900140fff8da19b084653289f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -127,15 +127,22 @@ public final class UserConnection implements ProxiedPlayer
+@@ -126,15 +126,22 @@ public final class UserConnection implements ProxiedPlayer
      private final Scoreboard serverSentScoreboard = new Scoreboard();
      @Getter
      private final Collection<UUID> sentBossBars = new HashSet<>();
@@ -346,7 +346,7 @@ index a7b8a9c0d7cfa959f9fcb803280e2e09256fb488..b4b4904301dfc8753a570d0ca9b312d2
      private Locale locale;
      /*========================================================================*/
      @Getter
-@@ -156,7 +163,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -155,7 +162,7 @@ public final class UserConnection implements ProxiedPlayer
  
      public void init()
      {
@@ -355,7 +355,7 @@ index a7b8a9c0d7cfa959f9fcb803280e2e09256fb488..b4b4904301dfc8753a570d0ca9b312d2
  
          this.displayName = name;
  
-@@ -772,14 +779,19 @@ public final class UserConnection implements ProxiedPlayer
+@@ -769,14 +776,19 @@ public final class UserConnection implements ProxiedPlayer
      }
  
      @Override
@@ -376,10 +376,10 @@ index a7b8a9c0d7cfa959f9fcb803280e2e09256fb488..b4b4904301dfc8753a570d0ca9b312d2
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 6861fd0102cbea139651da6c8d72dcb262849221..444320fec40200c5487db436735f24ea88f68905 100644
+index 31ac791d12b3edf1ac1ed9cffa3f5f209d5a3488..a3ffa5fd91691f615af674e4ff40720063b17867 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -142,11 +142,13 @@ public class DownstreamBridge extends PacketHandler
+@@ -147,11 +147,13 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(PacketWrapper packet) throws Exception
      {
@@ -393,7 +393,7 @@ index 6861fd0102cbea139651da6c8d72dcb262849221..444320fec40200c5487db436735f24ea
          con.sendPacket( packet );
      }
  
-@@ -173,6 +175,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -178,6 +180,8 @@ public class DownstreamBridge extends PacketHandler
          // Waterfall end
      }
  
@@ -402,7 +402,7 @@ index 6861fd0102cbea139651da6c8d72dcb262849221..444320fec40200c5487db436735f24ea
      @Override
      public void handle(ScoreboardObjective objective) throws Exception
      {
-@@ -274,6 +278,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -279,6 +283,8 @@ public class DownstreamBridge extends PacketHandler
              }
          }
      }
@@ -411,7 +411,7 @@ index 6861fd0102cbea139651da6c8d72dcb262849221..444320fec40200c5487db436735f24ea
  
      @Override
      @SuppressWarnings("checkstyle:avoidnestedblocks")
-@@ -703,6 +709,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -708,6 +714,8 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -420,7 +420,7 @@ index 6861fd0102cbea139651da6c8d72dcb262849221..444320fec40200c5487db436735f24ea
      // Waterfall start
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
-@@ -730,6 +738,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -735,6 +743,7 @@ public class DownstreamBridge extends PacketHandler
          return entityId;
      }
      // Waterfall end

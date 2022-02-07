@@ -213,28 +213,28 @@ index 9e74d158c39ca0131c673e752cf1297b5577b2f4..fb391fceddc4bae7e11b9c7fcf6c2d62
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 871a299062a6fae474fcaf7fd7856ce3354d566e..a7b8a9c0d7cfa959f9fcb803280e2e09256fb488 100644
+index 4a858f31dba2d207a6982e8131b065103a772124..c51dbab74c4c1b3d49cccbb7120012711296bf0a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -320,7 +320,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -323,7 +323,7 @@ public final class UserConnection implements ProxiedPlayer
              {
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
              }
 -
 +            else // IvanCord - fix dumb connection message behaviour
-             sendMessage( bungee.getTranslation( "already_connected" ) );
+             if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connected" ) ); // Waterfall
              return;
          }
-@@ -330,7 +330,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -333,7 +333,7 @@ public final class UserConnection implements ProxiedPlayer
              {
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
              }
 -
 +            else // IvanCord - fix dumb connection message behaviour
-             sendMessage( bungee.getTranslation( "already_connecting" ) );
+             if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connecting" ) ); // Waterfall
              return;
          }
-@@ -424,6 +424,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -421,6 +421,9 @@ public final class UserConnection implements ProxiedPlayer
  
      public void disconnect0(final BaseComponent... reason)
      {
@@ -244,7 +244,7 @@ index 871a299062a6fae474fcaf7fd7856ce3354d566e..a7b8a9c0d7cfa959f9fcb803280e2e09
          if ( !ch.isClosing() )
          {
              bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
-@@ -739,6 +742,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -736,6 +739,14 @@ public final class UserConnection implements ProxiedPlayer
          title.send( this );
      }
  

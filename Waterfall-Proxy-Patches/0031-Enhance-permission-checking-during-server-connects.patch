@@ -40,7 +40,7 @@ index e5c113f5616c431affc596ea4c0db64c633c1760..3b06b962e2501cad422874a2b3ff6e7b
      // IvanCord end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java b/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
-index c81b0a4e12ba23da9d0bf9e09452fa0529ac3b8e..767b43d8c284cccf93c6ac519cb86b8cb24629ea 100644
+index d21370bebf41487a15ef65dbc3af8c7e3a2ad159..d1cae44e1d8412bfb85643a6e03eaaee136ede60 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ServerConnectRequest.java
 @@ -40,7 +40,13 @@ public class ServerConnectRequest
@@ -58,10 +58,10 @@ index c81b0a4e12ba23da9d0bf9e09452fa0529ac3b8e..767b43d8c284cccf93c6ac519cb86b8c
      }
  
      /**
-@@ -68,6 +74,14 @@ public class ServerConnectRequest
-      */
+@@ -76,6 +82,14 @@ public class ServerConnectRequest
      @Setter
-     private boolean retry;
+     private boolean sendFeedback;
+     // Waterfall end
 +    // IvanCord start
 +    /**
 +     * Disabled by default. Set to true if the permissions defined in the config
@@ -73,14 +73,14 @@ index c81b0a4e12ba23da9d0bf9e09452fa0529ac3b8e..767b43d8c284cccf93c6ac519cb86b8c
  
      /**
       * Class that sets default properties/adds methods to the lombok builder
-@@ -76,6 +90,7 @@ public class ServerConnectRequest
+@@ -84,6 +98,7 @@ public class ServerConnectRequest
      public static class Builder
      {
  
 +        private boolean requireAccess = ProxyServer.getInstance().getConfig().isRequireAccess(); // IvanCord
          private int connectTimeout = ProxyServer.getInstance().getConfig().getServerConnectTimeout();
+         private boolean isSendFeedback = true; // Waterfall # God. f##king. lombok.
      }
- }
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java b/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
 index 8c91732f0701029dab1408f5b884e91cdfa8fd79..0c379f4c32c799d2ea559c9d9dca63d2dca74ea4 100644
 --- a/proxy/src/main/java/com/mrivanplays/ivancord/conf/IvanCordConfiguration.java
@@ -141,11 +141,11 @@ index 448c6caa4bc55f69805bc9664e942855caaff0f1..fad67ed9bfc38e5deb29e6da428f32f0
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 3709c27a6c3a398aaf26e0c26c784cb5c95fd534..1f414ff1bfd7c60a6b2697b1d1c3642f5195b154 100644
+index 9533677d51a68ed31ad07df978d47e3dd5c58e43..23dc52f263b6a0b8f5f276ea4675c67f7aa47626 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -365,6 +365,19 @@ public final class UserConnection implements ProxiedPlayer
-             sendMessage( bungee.getTranslation( "already_connecting" ) );
+@@ -368,6 +368,19 @@ public final class UserConnection implements ProxiedPlayer
+             if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connecting" ) ); // Waterfall
              return;
          }
 +        // IvanCord start

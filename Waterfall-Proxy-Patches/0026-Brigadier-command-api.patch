@@ -2309,10 +2309,10 @@ index a7cba641f1833b80d85f5f251154f1b3f25419eb..d17dd9db174f8ace4344ad5415bcd42a
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index bafa99076eb12107d5c2c01b4c4cbc5910605b65..2a7e86918748cbee06d2c9a1f0873f7e5b410a6d 100644
+index cbaaccac3c56168eae2cf2272fb8ff05acf80081..5be365a715d4f0ef1a85175e22533a4dee37ce71 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -6,13 +6,16 @@ import com.google.common.collect.Lists;
+@@ -6,12 +6,15 @@ import com.google.common.collect.Lists;
  import com.google.common.io.ByteArrayDataOutput;
  import com.google.common.io.ByteStreams;
  import com.mojang.brigadier.arguments.StringArgumentType;
@@ -2322,14 +2322,13 @@ index bafa99076eb12107d5c2c01b4c4cbc5910605b65..2a7e86918748cbee06d2c9a1f0873f7e
  import com.mojang.brigadier.context.StringRange;
  import com.mojang.brigadier.suggestion.Suggestion;
  import com.mojang.brigadier.suggestion.Suggestions;
-+import com.mojang.brigadier.tree.CommandNode; // IvanCord
- import com.mojang.brigadier.tree.LiteralCommandNode;
- 
+ import com.mojang.brigadier.tree.CommandNode;
 +import com.mojang.brigadier.tree.RootCommandNode; // IvanCord
- import io.github.waterfallmc.waterfall.event.ProxyDefineCommandsEvent; // Waterfall
++import io.github.waterfallmc.waterfall.event.ProxyDefineCommandsEvent; // Waterfall
  import io.netty.buffer.ByteBuf;
  import io.netty.buffer.ByteBufAllocator;
-@@ -30,6 +33,7 @@ import net.md_5.bungee.ServerConnection;
+ import io.netty.buffer.Unpooled;
+@@ -28,6 +31,7 @@ import net.md_5.bungee.ServerConnection;
  import net.md_5.bungee.ServerConnection.KeepAliveData;
  import net.md_5.bungee.UserConnection;
  import net.md_5.bungee.Util;
@@ -2337,7 +2336,7 @@ index bafa99076eb12107d5c2c01b4c4cbc5910605b65..2a7e86918748cbee06d2c9a1f0873f7e
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.api.chat.ComponentBuilder; // IvanCord
  import net.md_5.bungee.api.chat.BaseComponent;
-@@ -654,6 +658,65 @@ public class DownstreamBridge extends PacketHandler
+@@ -659,6 +663,65 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(TabCompleteResponse tabCompleteResponse) throws Exception
      {
@@ -2403,7 +2402,7 @@ index bafa99076eb12107d5c2c01b4c4cbc5910605b65..2a7e86918748cbee06d2c9a1f0873f7e
          List<String> commands = tabCompleteResponse.getCommands();
          if ( commands == null )
          {
-@@ -694,6 +757,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -699,6 +762,7 @@ public class DownstreamBridge extends PacketHandler
  
              con.unsafe().sendPacket( tabCompleteResponse );
          }
@@ -2411,7 +2410,7 @@ index bafa99076eb12107d5c2c01b4c4cbc5910605b65..2a7e86918748cbee06d2c9a1f0873f7e
  
          throw CancelSendSignal.INSTANCE;
      }
-@@ -756,6 +820,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -761,6 +825,8 @@ public class DownstreamBridge extends PacketHandler
      {
          boolean modified = false;
  
@@ -2420,7 +2419,7 @@ index bafa99076eb12107d5c2c01b4c4cbc5910605b65..2a7e86918748cbee06d2c9a1f0873f7e
          // Waterfall start
          Map<String, Command> commandMap = new HashMap<>();
          for ( Map.Entry<String, Command> commandEntry : bungee.getPluginManager().getCommands() ) {
-@@ -785,6 +851,43 @@ public class DownstreamBridge extends PacketHandler
+@@ -790,6 +856,43 @@ public class DownstreamBridge extends PacketHandler
                  modified = true;
              }
          }
@@ -2464,7 +2463,7 @@ index bafa99076eb12107d5c2c01b4c4cbc5910605b65..2a7e86918748cbee06d2c9a1f0873f7e
  
          if ( modified )
          {
-@@ -793,6 +896,68 @@ public class DownstreamBridge extends PacketHandler
+@@ -798,6 +901,68 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -2642,10 +2641,10 @@ index 7b6bd07d13336d53fe8061183d04a0e5375e1afa..8dd43f68595c5d814959f488bfb50371
  
      @Override
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 1b104a96b9cfa251fdaf5455b3f08951a1e26299..ae05c92119215dec7fec7a79b29958c2e0cdece5 100644
+index 02a59298a735703182c120da5a6390fc694c4fe9..8f35c41a0ce99af51b9ec923dbf114ce8a452491 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -39,3 +39,5 @@ command_ip=\u00a79IP of {0} is {1}
+@@ -38,3 +38,5 @@ command_ip=\u00a79IP of {0} is {1}
  illegal_chat_characters=\u00a7cillegal characters in chat ({0})
  kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
  command_plugins_message=Plugins ({0}): {1}

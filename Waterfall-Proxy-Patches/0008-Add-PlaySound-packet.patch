@@ -372,10 +372,10 @@ index 3bf6277e1b3cadb077bcf2f18891dbdb647de717..88edfed20d6c11b066a3dfde0570f396
      public void handle(LoginPayloadRequest loginPayloadRequest)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index add2b5c0e46cf9042b53f219041d230d94509bcb..3f5e0a2aee8ca418491649b6962292ed96691bec 100644
+index 7b481593415926ff668f2133f1bbba925c85d0b2..2fc70bc36c442080bd28f35769842dc0094253b5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -59,6 +59,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
+@@ -58,6 +58,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Kick;
@@ -383,7 +383,7 @@ index add2b5c0e46cf9042b53f219041d230d94509bcb..3f5e0a2aee8ca418491649b6962292ed
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.SetCompression;
-@@ -67,6 +68,8 @@ import net.md_5.bungee.tab.TabList;
+@@ -66,6 +67,8 @@ import net.md_5.bungee.tab.TabList;
  import net.md_5.bungee.util.CaseInsensitiveSet;
  import net.md_5.bungee.util.ChatComponentTransformer;
  import com.mrivanplays.ivancord.api.Position; // IvanCord
@@ -392,7 +392,7 @@ index add2b5c0e46cf9042b53f219041d230d94509bcb..3f5e0a2aee8ca418491649b6962292ed
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -796,6 +799,31 @@ public final class UserConnection implements ProxiedPlayer
+@@ -793,6 +796,31 @@ public final class UserConnection implements ProxiedPlayer
          return serverSentScoreboard;
      }
  

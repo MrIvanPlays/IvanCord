@@ -369,7 +369,7 @@ index f488019745f80214ba5b75a6baf5e67d139e2355..e3bf67f76aaba70d7cccaf4dce7c4499
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
              // And immediate respawn
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a80a27523c5bffbd5201e77fb994e3550218dbc1..89a983ea85d8a09ed0a9c26197dc2e5401b34972 100644
+index df64ddaaa7566445e9e18cd12c6f07b8741e4fae..6622c9020fa5061fe80ae8962376f9b23eee9552 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
@@ -381,7 +381,7 @@ index a80a27523c5bffbd5201e77fb994e3550218dbc1..89a983ea85d8a09ed0a9c26197dc2e54
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.Channel;
  import io.netty.channel.ChannelFuture;
-@@ -14,10 +16,12 @@ import io.netty.channel.ConnectTimeoutException;
+@@ -13,10 +15,12 @@ import io.netty.channel.ChannelOption;
  import io.netty.util.internal.PlatformDependent;
  import java.net.InetSocketAddress;
  import java.net.SocketAddress;
@@ -394,7 +394,7 @@ index a80a27523c5bffbd5201e77fb994e3550218dbc1..89a983ea85d8a09ed0a9c26197dc2e54
  import java.util.Locale;
  import java.util.Map;
  import java.util.Objects;
-@@ -58,6 +62,7 @@ import net.md_5.bungee.protocol.Protocol;
+@@ -57,6 +61,7 @@ import net.md_5.bungee.protocol.Protocol;
  import net.md_5.bungee.protocol.ProtocolConstants;
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClientSettings;
@@ -402,7 +402,7 @@ index a80a27523c5bffbd5201e77fb994e3550218dbc1..89a983ea85d8a09ed0a9c26197dc2e54
  import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlaySound; // IvanCord
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
-@@ -118,6 +123,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -117,6 +122,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      private boolean globalOp;
      // IvanCord end
@@ -413,7 +413,7 @@ index a80a27523c5bffbd5201e77fb994e3550218dbc1..89a983ea85d8a09ed0a9c26197dc2e54
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -844,6 +853,42 @@ public final class UserConnection implements ProxiedPlayer
+@@ -841,6 +850,42 @@ public final class UserConnection implements ProxiedPlayer
          BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
          this.globalOp = globalOp;
      }

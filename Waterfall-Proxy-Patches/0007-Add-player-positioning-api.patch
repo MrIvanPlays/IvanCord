@@ -257,10 +257,10 @@ index 0000000000000000000000000000000000000000..f23fe50e8c9a22ce934f5797f9e75fb2
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b4b4904301dfc8753a570d0ca9b312d271cf0f3a..add2b5c0e46cf9042b53f219041d230d94509bcb 100644
+index 3c1d5504c18c523900140fff8da19b084653289f..7b481593415926ff668f2133f1bbba925c85d0b2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -66,6 +66,7 @@ import net.md_5.bungee.tab.ServerUnique;
+@@ -65,6 +65,7 @@ import net.md_5.bungee.tab.ServerUnique;
  import net.md_5.bungee.tab.TabList;
  import net.md_5.bungee.util.CaseInsensitiveSet;
  import net.md_5.bungee.util.ChatComponentTransformer;
@@ -268,7 +268,7 @@ index b4b4904301dfc8753a570d0ca9b312d271cf0f3a..add2b5c0e46cf9042b53f219041d230d
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -106,6 +107,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -105,6 +106,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      @Setter
      private int gamemode;
@@ -279,7 +279,7 @@ index b4b4904301dfc8753a570d0ca9b312d271cf0f3a..add2b5c0e46cf9042b53f219041d230d
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -654,6 +659,12 @@ public final class UserConnection implements ProxiedPlayer
+@@ -651,6 +656,12 @@ public final class UserConnection implements ProxiedPlayer
      {
          return ( settings != null ) ? settings.getViewDistance() : 10;
      }
@@ -293,10 +293,10 @@ index b4b4904301dfc8753a570d0ca9b312d271cf0f3a..add2b5c0e46cf9042b53f219041d230d
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 444320fec40200c5487db436735f24ea88f68905..4970c891112f93b6068a14fc9932fd709ef65321 100644
+index a3ffa5fd91691f615af674e4ff40720063b17867..9f4a18cd5a94963a58dccfbc79f6fefe702da17f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -43,7 +43,7 @@ import net.md_5.bungee.api.event.ServerKickEvent;
+@@ -41,7 +41,7 @@ import net.md_5.bungee.api.event.ServerKickEvent;
  import net.md_5.bungee.api.event.TabCompleteResponseEvent;
  import net.md_5.bungee.api.plugin.Command;
  import net.md_5.bungee.api.score.Objective;
@@ -305,7 +305,7 @@ index 444320fec40200c5487db436735f24ea88f68905..4970c891112f93b6068a14fc9932fd70
  import net.md_5.bungee.api.score.Score;
  import net.md_5.bungee.api.score.Scoreboard;
  import net.md_5.bungee.api.score.Team;
-@@ -61,6 +61,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
+@@ -59,6 +59,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -313,7 +313,7 @@ index 444320fec40200c5487db436735f24ea88f68905..4970c891112f93b6068a14fc9932fd70
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-@@ -69,6 +70,10 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
+@@ -67,6 +68,10 @@ import net.md_5.bungee.protocol.packet.ScoreboardScore;
  import net.md_5.bungee.protocol.packet.SetCompression;
  import net.md_5.bungee.protocol.packet.TabCompleteResponse;
  import net.md_5.bungee.tab.TabList;
@@ -324,7 +324,7 @@ index 444320fec40200c5487db436735f24ea88f68905..4970c891112f93b6068a14fc9932fd70
  
  @RequiredArgsConstructor
  public class DownstreamBridge extends PacketHandler
-@@ -788,6 +793,39 @@ public class DownstreamBridge extends PacketHandler
+@@ -793,6 +798,39 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  

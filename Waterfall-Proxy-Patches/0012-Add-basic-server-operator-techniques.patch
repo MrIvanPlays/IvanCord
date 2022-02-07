@@ -287,10 +287,10 @@ index f5c364790be0cb7c36bb249d898385ffe47062c8..b451fcd6c1ef184a179be95e4c257516
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 3f5e0a2aee8ca418491649b6962292ed96691bec..a80a27523c5bffbd5201e77fb994e3550218dbc1 100644
+index 2fc70bc36c442080bd28f35769842dc0094253b5..df64ddaaa7566445e9e18cd12c6f07b8741e4fae 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -114,6 +114,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -113,6 +113,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      private Position position;
      // IvanCord end
@@ -301,7 +301,7 @@ index 3f5e0a2aee8ca418491649b6962292ed96691bec..a80a27523c5bffbd5201e77fb994e355
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -192,6 +196,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -191,6 +195,9 @@ public final class UserConnection implements ProxiedPlayer
          {
              forgeClientHandler.setFmlTokenInHandshake( true );
          }
@@ -311,7 +311,7 @@ index 3f5e0a2aee8ca418491649b6962292ed96691bec..a80a27523c5bffbd5201e77fb994e355
      }
  
      public void sendPacket(PacketWrapper packet)
-@@ -600,7 +607,15 @@ public final class UserConnection implements ProxiedPlayer
+@@ -597,7 +604,15 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public boolean hasPermission(String permission)
      {
@@ -328,7 +328,7 @@ index 3f5e0a2aee8ca418491649b6962292ed96691bec..a80a27523c5bffbd5201e77fb994e355
      }
  
      @Override
-@@ -822,6 +837,13 @@ public final class UserConnection implements ProxiedPlayer
+@@ -819,6 +834,13 @@ public final class UserConnection implements ProxiedPlayer
          new SoundPlayedEvent( this, position,
                  PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category.ordinal() ).callEvent();
      }
