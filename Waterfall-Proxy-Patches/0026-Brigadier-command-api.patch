@@ -1893,7 +1893,7 @@ index 0000000000000000000000000000000000000000..2305506d309c9c671eb0492a61c00cc6
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
-index 26edbca85b40fd0be24a5745f0361157131f45f1..0a6c68a5763d808add42d36a7ac83e6c580d0ac5 100644
+index 633e557cd342c8b924ad46b43f86c1332d55aec7..bab6949fb70ab7219bee1fc2ff006f4599afc5ee 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -2028,7 +2028,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..0a6c68a5763d808add42d36a7ac83e6c
          };
          private static final ProperArgumentSerializer<StringArgumentType> STRING = new ProperArgumentSerializer<StringArgumentType>()
          {
-@@ -499,19 +546,94 @@ public class Commands extends DefinedPacket
+@@ -513,19 +560,94 @@ public class Commands extends DefinedPacket
              }
          };
  
@@ -2123,7 +2123,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..0a6c68a5763d808add42d36a7ac83e6c
              PROVIDERS.put( "minecraft:block_pos", VOID );
              PROVIDERS.put( "minecraft:column_pos", VOID );
              PROVIDERS.put( "minecraft:vec3", VOID );
-@@ -521,7 +643,9 @@ public class Commands extends DefinedPacket
+@@ -535,7 +657,9 @@ public class Commands extends DefinedPacket
              PROVIDERS.put( "minecraft:item_stack", VOID );
              PROVIDERS.put( "minecraft:item_predicate", VOID );
              PROVIDERS.put( "minecraft:color", VOID );
@@ -2133,7 +2133,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..0a6c68a5763d808add42d36a7ac83e6c
              PROVIDERS.put( "minecraft:message", VOID );
              PROVIDERS.put( "minecraft:nbt_compound_tag", VOID ); // 1.14
              PROVIDERS.put( "minecraft:nbt_tag", VOID ); // 1.14
-@@ -614,15 +738,28 @@ public class Commands extends DefinedPacket
+@@ -630,15 +754,28 @@ public class Commands extends DefinedPacket
      {
  
          public static final SuggestionProvider ASK_SERVER = new DummyProvider( "minecraft:ask_server" );
@@ -2162,7 +2162,7 @@ index 26edbca85b40fd0be24a5745f0361157131f45f1..0a6c68a5763d808add42d36a7ac83e6c
          }
  
          private static void registerDummy(String name)
-@@ -640,9 +777,20 @@ public class Commands extends DefinedPacket
+@@ -656,9 +793,20 @@ public class Commands extends DefinedPacket
  
          private static String getKey(SuggestionProvider<DummyProvider> provider)
          {
