@@ -1,0 +1,301 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Janmm14 <gitconfig1@janmm14.de>
+Date: Thu, 3 Mar 2022 09:08:37 +0200
+Subject: [PATCH] Don't recompress unchanged packets
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index 3398d95734b5b072508cc4d2509a37478f56dee6..f64f9c6e7dc140f876d8e19a1d3f46d95284aab3 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
+ import lombok.Setter;
+ 
+ @AllArgsConstructor
+-public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
++public class MinecraftDecoder extends MessageToMessageDecoder<Object> // IvanCord
+ {
+ 
+     @Setter
+@@ -27,15 +27,24 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+         this.protocolVersion = protocolVersion;
+     }
+ 
++    // IvanCord start
+     @Override
+-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
++    public boolean acceptInboundMessage(Object msg)
+     {
++        return msg instanceof ByteBuf || msg instanceof PacketWrapper;
++    }
++
++    @Override
++    protected void decode(ChannelHandlerContext ctx, Object inObj, List<Object> out) throws Exception
++    {
++        // IvanCord end
+         // See Varint21FrameDecoder for the general reasoning. We add this here as ByteToMessageDecoder#handlerRemoved()
+         // will fire any cumulated data through the pipeline, so we want to try and stop it here.
+         if ( !ctx.channel().isActive() )
+         {
+             return;
+         }
++        boolean isByteBuf = inObj instanceof ByteBuf; ByteBuf in = isByteBuf ? (ByteBuf) inObj : ( (PacketWrapper) inObj ).buf; // IvanCord
+ 
+         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
+         /* IvanCord start - avoid creating buf copy
+@@ -105,7 +114,22 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+             }
+ 
+             in.readerIndex( readIrx ); // IvanCord
++            // IvanCord start - don't recompress unchanged packets
++            if ( isByteBuf )
++            {
+             out.add( new PacketWrapper( packet, /* slice */ in.retain() ) ); // IvanCord
++            } else
++            {
++                PacketWrapper wrapper = (PacketWrapper) inObj;
++                if ( packet != null )
++                {
++                    wrapper.destroyCompressed();
++                }
++                wrapper.packet = packet;
++                wrapper.buf = in.retain();
++                out.add( wrapper );
++            }
++            // IvanCord end
+             //slice = null; // IvanCord
+         } catch (BadPacketException | IndexOutOfBoundsException e) {
+             // Waterfall start: Additional DoS mitigations
+@@ -130,6 +154,15 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
+                 slice.release();
+             }
+              */ // IvanCord end
++        // IvanCord start - don't recompress unchanged packets
++        } finally
++        {
++            if ( !isByteBuf )
++            {
++                // manual release required (if in instanceof ReferenceCounted like ByteBuf, MessagesToMessageDecoder releases for us)
++                in.release();
++            }
++            // IvanCord end
+         }
+     }
+ 
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/PacketWrapper.java b/protocol/src/main/java/net/md_5/bungee/protocol/PacketWrapper.java
+index 8eba797b5454ddb5d313dadfbc6d368771189a81..15de569fadca626721145a174e8c7a2dbceff650 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/PacketWrapper.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/PacketWrapper.java
+@@ -4,12 +4,36 @@ import io.netty.buffer.ByteBuf;
+ import lombok.RequiredArgsConstructor;
+ import lombok.Setter;
+ 
+-@RequiredArgsConstructor
++//@RequiredArgsConstructor // IvanCord
+ public class PacketWrapper
+ {
+ 
+-    public final DefinedPacket packet;
+-    public final ByteBuf buf;
++    // IvanCord start
++    @javax.annotation.Nullable
++    public DefinedPacket packet;
++    public ByteBuf buf;
++    @javax.annotation.Nullable
++    public ByteBuf compressed;
++    public PacketWrapper(@javax.annotation.Nullable DefinedPacket packet, ByteBuf buf)
++    {
++        this.packet = packet;
++        this.buf = buf;
++    }
++    public PacketWrapper(DefinedPacket packet, ByteBuf buf, ByteBuf compressed)
++    {
++        this.packet = packet;
++        this.buf = buf;
++        this.compressed = compressed;
++    }
++    public void destroyCompressed()
++    {
++        if ( compressed != null )
++        {
++            compressed.release();
++            compressed = null;
++        }
++    }
++    // IvanCord end
+     @Setter
+     private boolean released;
+ 
+@@ -18,6 +42,7 @@ public class PacketWrapper
+         if ( !released )
+         {
+             buf.release();
++            destroyCompressed(); // IvanCord
+             released = true;
+         }
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
+index d4c3df44a79d6bccdf05b92ecaa8baffc863fbd4..71b5abc429630d9a03f7af3e08809f4847300202 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
+@@ -6,18 +6,34 @@ import io.netty.channel.ChannelHandlerContext;
+ import io.netty.handler.codec.MessageToByteEncoder;
+ 
+ @ChannelHandler.Sharable
+-public class Varint21LengthFieldPrepender extends MessageToByteEncoder<ByteBuf>
++public class Varint21LengthFieldPrepender extends MessageToByteEncoder<Object> // IvanCord
+ {
+ 
++    // IvanCord start
+     @Override
+-    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception
++    public boolean acceptOutboundMessage(Object msg)
+     {
++        return msg instanceof ByteBuf || msg instanceof PacketWrapper;
++    }
++
++    @Override
++    protected void encode(ChannelHandlerContext ctx, Object msgObj, ByteBuf out) throws Exception
++    {
++        boolean isPacketWrapper = msgObj instanceof PacketWrapper;
++        ByteBuf msg = isPacketWrapper ? ( (PacketWrapper) msgObj ).buf : (ByteBuf) msgObj;
++        // IvanCord end
+         int bodyLen = msg.readableBytes();
+         int headerLen = varintSize( bodyLen );
+         out.ensureWritable( headerLen + bodyLen );
+ 
+         DefinedPacket.writeVarInt( bodyLen, out );
+         out.writeBytes( msg );
++        // IvanCord start
++        if ( isPacketWrapper )
++        {
++            msg.release();
++        }
++        // IvanCord end
+     }
+ 
+     private static int varintSize(int paramInt)
+diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java
+index d07cf46274f12b89bfc17b0cf46776009c4b7406..677474876145571ffba932331545124cf43447c0 100644
+--- a/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java
++++ b/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java
+@@ -8,7 +8,7 @@ import lombok.Setter;
+ import net.md_5.bungee.jni.zlib.BungeeZlib;
+ import net.md_5.bungee.protocol.DefinedPacket;
+ 
+-public class PacketCompressor extends MessageToByteEncoder<ByteBuf>
++public class PacketCompressor extends MessageToByteEncoder<Object> // IvanCord
+ {
+ 
+     private final BungeeZlib zlib = CompressFactory.zlib.newInstance();
+@@ -27,9 +27,21 @@ public class PacketCompressor extends MessageToByteEncoder<ByteBuf>
+         zlib.free();
+     }
+ 
++    // IvanCord start
+     @Override
+-    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception
++    public boolean acceptOutboundMessage(Object msg)
+     {
++        return msg instanceof ByteBuf || msg instanceof net.md_5.bungee.protocol.PacketWrapper;
++    }
++
++    @Override
++    protected void encode(ChannelHandlerContext ctx, Object msgObj, ByteBuf out) throws Exception
++    {
++        boolean isByteBuf = msgObj instanceof ByteBuf;
++        if ( isByteBuf )
++        {
++        ByteBuf msg = (ByteBuf) msgObj;
++        // IvanCord end
+         int origSize = msg.readableBytes();
+         if ( origSize < threshold )
+         {
+@@ -41,5 +53,35 @@ public class PacketCompressor extends MessageToByteEncoder<ByteBuf>
+ 
+             zlib.process( msg, out );
+         }
++        // IvanCord start
++        } else
++        {
++            net.md_5.bungee.protocol.PacketWrapper wrapper = (net.md_5.bungee.protocol.PacketWrapper) msgObj;
++            ByteBuf msg = wrapper.buf;
++            try
++            {
++                int origSize = msg.readableBytes();
++                if ( origSize < threshold )
++                {
++                    DefinedPacket.writeVarInt( 0, out );
++                    out.writeBytes( msg );
++                } else
++                {
++                    DefinedPacket.writeVarInt( origSize, out );
++                    if ( wrapper.packet == null && wrapper.compressed != null )
++                    {
++                        out.writeBytes( wrapper.compressed );
++                    } else
++                    {
++                        zlib.process( msg, out );
++                    }
++                }
++            } finally
++            {
++                msg.release();
++                wrapper.destroyCompressed();
++            }
++        }
++        // IvanCord end
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
+index eaedf4bc4bb1f5f82833e918bf85e28792e0a0c3..95dc8dd44a7952b48db81985df31bfb0383bb4cb 100644
+--- a/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
++++ b/proxy/src/main/java/net/md_5/bungee/compress/PacketDecompressor.java
+@@ -9,6 +9,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
+ import java.util.List;
+ import net.md_5.bungee.jni.zlib.BungeeZlib;
+ import net.md_5.bungee.protocol.DefinedPacket;
++import net.md_5.bungee.protocol.PacketWrapper;
+ 
+ @RequiredArgsConstructor
+ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
+@@ -43,10 +44,11 @@ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
+ 
+             try
+             {
++                ByteBuf slice = in.slice(); // IvanCord
+                 zlib.process( in, decompressed );
+                 Preconditions.checkArgument( decompressed.readableBytes() == size, "Decompressed size %s is not equal to actual decompressed bytes", size, decompressed.readableBytes());
+ 
+-                out.add( decompressed );
++                out.add( new PacketWrapper( null, decompressed, slice.retain() ) ); // IvanCord - since waterfall makes sure that size is not < compressionThreshold we shall retain compressed data
+                 decompressed = null;
+             } finally
+             {
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+index 9d768f9bd262bb87e904f8b35a5d2978e2a86c9c..c6d36cdbae92f3c483d390a6e971fff301f50a8a 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+@@ -58,6 +58,8 @@ public class ChannelWrapper
+     {
+         if ( !closed && ch.isActive() ) // IvanCord
+         {
++            // IvanCord start - don't recompress unchanged packets - simplify
++            /*
+             if ( packet instanceof PacketWrapper )
+             {
+                 ( (PacketWrapper) packet ).setReleased( true );
+@@ -66,6 +68,13 @@ public class ChannelWrapper
+             {
+                 ch.writeAndFlush( packet, ch.voidPromise() );
+             }
++             */
++            if ( packet instanceof PacketWrapper )
++            {
++                ( (PacketWrapper) packet ).setReleased( true );
++            }
++            ch.writeAndFlush( packet, ch.voidPromise() );
++            // IvanCord end
+         }
+     }
+ 
