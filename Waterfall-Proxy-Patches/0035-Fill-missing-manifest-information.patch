@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Janmm14 <gitconfig1@janmm14.de>
+Date: Mon, 7 Mar 2022 21:48:45 +0200
+Subject: [PATCH] Fill missing manifest information
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
+index 11b3f05ed0d06b7afca7287da6316c0288f517c3..eb73dcc733d7caf56a79370e9a0f26df2b79eabe 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginClassloader.java
+@@ -131,6 +131,16 @@ final class PluginClassloader extends URLClassLoader
+                     {
+                         if ( manifest != null )
+                         {
++                            // IvanCord start - fill missing manifest information
++                            String manifestSectionName = pkgName.replace( '.', '/' );
++                            java.util.jar.Attributes attributes = manifest.getEntries().computeIfAbsent( manifestSectionName, k -> new java.util.jar.Attributes() );
++                            putIfAbsent( attributes, "Specification-Title", desc.getName() );
++                            putIfAbsent( attributes, "Specification-Version", desc.getVersion() );
++                            putIfAbsent( attributes, "Specification-Vendor", desc.getAuthor() );
++                            putIfAbsent( attributes, "Implementation-Title", jar.getName() );
++                            putIfAbsent( attributes, "Specification-Version", desc.getVersion() );
++                            putIfAbsent( attributes, "Specification-Vendor", desc.getAuthor() );
++                            // IvanCord end
+                             definePackage( pkgName, manifest, url );
+                         } else
+                         {
+@@ -155,6 +165,16 @@ final class PluginClassloader extends URLClassLoader
+         return super.findClass( name );
+     }
+ 
++    // IvanCord start
++    private static void putIfAbsent(java.util.jar.Attributes attributes, String key, String value)
++    {
++        if ( !attributes.containsKey( key ) )
++        {
++            attributes.putValue( key, value );
++        }
++    }
++    // IvanCord end
++
+     @Override
+     public void close() throws IOException
+     {
