@@ -213,7 +213,7 @@ index 9e74d158c39ca0131c673e752cf1297b5577b2f4..fb391fceddc4bae7e11b9c7fcf6c2d62
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 4a858f31dba2d207a6982e8131b065103a772124..c51dbab74c4c1b3d49cccbb7120012711296bf0a 100644
+index 0d6aff64f77239197809efab9e7f54f525e8ad6c..d353b830260a183b13990173155be0f6def87003 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -323,7 +323,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -234,7 +234,7 @@ index 4a858f31dba2d207a6982e8131b065103a772124..c51dbab74c4c1b3d49cccbb712001271
              if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connecting" ) ); // Waterfall
              return;
          }
-@@ -421,6 +421,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -425,6 +425,9 @@ public final class UserConnection implements ProxiedPlayer
  
      public void disconnect0(final BaseComponent... reason)
      {
@@ -244,7 +244,7 @@ index 4a858f31dba2d207a6982e8131b065103a772124..c51dbab74c4c1b3d49cccbb712001271
          if ( !ch.isClosing() )
          {
              bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
-@@ -736,6 +739,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -740,6 +743,14 @@ public final class UserConnection implements ProxiedPlayer
          title.send( this );
      }
  
@@ -335,10 +335,10 @@ index 6dc5633f5241ad6a1619500d37790e5c24c67155..d45a6140780f592d9f8c67cf2f7cb834
              if ( packet instanceof PacketWrapper )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 96704d5ebfe4bb8f4448e758b3961761e427c86f..c63f650ffac86b1a8d87206099d7c6e9cea7dbad 100644
+index 2a21243b99600efc0cb65ffd1fe08d1b946ecebc..302bcbb0f04468e7466e77e283e6d814af3ad0f4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -187,6 +187,7 @@ public class PipelineUtils
+@@ -183,6 +183,7 @@ public class PipelineUtils
                  // IP_TOS is not supported (Windows XP / Windows Server 2003)
              }
              ch.config().setOption( ChannelOption.TCP_NODELAY, true );

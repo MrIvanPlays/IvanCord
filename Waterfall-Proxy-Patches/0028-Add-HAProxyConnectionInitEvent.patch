@@ -67,7 +67,7 @@ index 0000000000000000000000000000000000000000..d64e2885cc46a17f032b9602de8815f9
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index e110a1fbb1aa998cffa207cbd81a4ba079dbf15f..aab4daa2df2586c1cd89d19c2717d8d0253b3518 100644
+index 9d641bf563ce1c409305d37cf23aba5c3cacd077..2ec2d6d4b5b12244c7e2ecc18eb76a099124b11f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -90,6 +90,17 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter

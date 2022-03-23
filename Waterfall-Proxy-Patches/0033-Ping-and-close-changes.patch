@@ -43,10 +43,10 @@ index 6d0018ee254c2722d247070a0681250db8e1dd4b..2680be706afb343d7fe552ad8079e54b
                          unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
                          if ( bungee.getConnectionThrottle() != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 548dade37870f2da3f76dd42694479149f7a8bdf..319e3a86add54c24a252abb2317e8e5a5958e019 100644
+index 00dfdb9bc1999175a5a18111d2879233b92b4bc1..47ea350a4904ba8816e77a0b01f806bdaa024ecf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -112,6 +112,16 @@ public class PipelineUtils
+@@ -106,6 +106,16 @@ public class PipelineUtils
  
              BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
          }
@@ -63,7 +63,7 @@ index 548dade37870f2da3f76dd42694479149f7a8bdf..319e3a86add54c24a252abb2317e8e5a
      };
      public static final Base BASE = new Base();
      public static final Base LIMITED_BASE = new Base( true ); // IvanCord - Add LIMITED_BASE for connections from clients
-@@ -267,5 +277,15 @@ public class PipelineUtils
+@@ -261,5 +271,15 @@ public class PipelineUtils
  
              ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
          }

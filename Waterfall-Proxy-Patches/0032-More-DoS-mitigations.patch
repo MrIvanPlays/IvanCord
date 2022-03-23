@@ -116,10 +116,10 @@ index cfd8e64ef95df587ec5e376d9f8b6c3885a92cda..bb681e27af092fafd92579cb8333c9fa
      // Waterfall end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 8fe39e31258bcaa140ec3ef66c4339cc71f87a8d..548dade37870f2da3f76dd42694479149f7a8bdf 100644
+index 8afe70bc0f893f61de2e9a856aa4d505074fe3b2..00dfdb9bc1999175a5a18111d2879233b92b4bc1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -85,7 +85,7 @@ public class PipelineUtils
+@@ -79,7 +79,7 @@ public class PipelineUtils
  
  
              try {
@@ -128,7 +128,7 @@ index 8fe39e31258bcaa140ec3ef66c4339cc71f87a8d..548dade37870f2da3f76dd4269447914
              } catch (Exception e) {
                  e.printStackTrace();
                  ch.close();
-@@ -114,6 +114,7 @@ public class PipelineUtils
+@@ -108,6 +108,7 @@ public class PipelineUtils
          }
      };
      public static final Base BASE = new Base();
@@ -136,7 +136,7 @@ index 8fe39e31258bcaa140ec3ef66c4339cc71f87a8d..548dade37870f2da3f76dd4269447914
      private static final KickStringWriter legacyKicker = new KickStringWriter();
      private static final Varint21LengthFieldPrepender framePrepender = new Varint21LengthFieldPrepender();
      public static final String TIMEOUT_HANDLER = "timeout";
-@@ -233,9 +234,18 @@ public class PipelineUtils
+@@ -227,9 +228,18 @@ public class PipelineUtils
      private static final int HIGH_MARK = Integer.getInteger( "net.md_5.bungee.high_mark", 2 << 20 ); // 2 mb
      private static final WriteBufferWaterMark MARK = new WriteBufferWaterMark( LOW_MARK, HIGH_MARK );
  
@@ -155,7 +155,7 @@ index 8fe39e31258bcaa140ec3ef66c4339cc71f87a8d..548dade37870f2da3f76dd4269447914
          @Override
          public void initChannel(Channel ch) throws Exception
          {
-@@ -251,7 +261,7 @@ public class PipelineUtils
+@@ -245,7 +255,7 @@ public class PipelineUtils
              ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
              ch.config().setWriteBufferWaterMark( MARK );
  

@@ -108,7 +108,7 @@ index 0000000000000000000000000000000000000000..ffa0e1f58e1750bbc3d2332a2c2ebaa7
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index c63f650ffac86b1a8d87206099d7c6e9cea7dbad..9e6af925a7a62f6506cafd14fc443312520c04a1 100644
+index 302bcbb0f04468e7466e77e283e6d814af3ad0f4..c23c1106b51134a4bad5ad589aa28990b5182cfe 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -11,6 +11,7 @@ import io.netty.channel.EventLoopGroup;
@@ -119,7 +119,7 @@ index c63f650ffac86b1a8d87206099d7c6e9cea7dbad..9e6af925a7a62f6506cafd14fc443312
  import io.netty.channel.epoll.EpollDatagramChannel;
  import io.netty.channel.epoll.EpollDomainSocketChannel;
  import io.netty.channel.epoll.EpollEventLoopGroup;
-@@ -88,6 +89,13 @@ public class PipelineUtils
+@@ -84,6 +85,13 @@ public class PipelineUtils
                  ch.close();
                  return;
              }

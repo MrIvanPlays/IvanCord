@@ -287,7 +287,7 @@ index f5c364790be0cb7c36bb249d898385ffe47062c8..b451fcd6c1ef184a179be95e4c257516
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 2fc70bc36c442080bd28f35769842dc0094253b5..df64ddaaa7566445e9e18cd12c6f07b8741e4fae 100644
+index dbac3d105fc1f52468a331eea8a0d60c984a21ea..75c94e4ac9b65e5099fa355bb27c6e87b514129c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -113,6 +113,10 @@ public final class UserConnection implements ProxiedPlayer
@@ -311,7 +311,7 @@ index 2fc70bc36c442080bd28f35769842dc0094253b5..df64ddaaa7566445e9e18cd12c6f07b8
      }
  
      public void sendPacket(PacketWrapper packet)
-@@ -597,7 +604,15 @@ public final class UserConnection implements ProxiedPlayer
+@@ -601,7 +608,15 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public boolean hasPermission(String permission)
      {
@@ -328,7 +328,7 @@ index 2fc70bc36c442080bd28f35769842dc0094253b5..df64ddaaa7566445e9e18cd12c6f07b8
      }
  
      @Override
-@@ -819,6 +834,13 @@ public final class UserConnection implements ProxiedPlayer
+@@ -823,6 +838,13 @@ public final class UserConnection implements ProxiedPlayer
          new SoundPlayedEvent( this, position,
                  PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category.ordinal() ).callEvent();
      }

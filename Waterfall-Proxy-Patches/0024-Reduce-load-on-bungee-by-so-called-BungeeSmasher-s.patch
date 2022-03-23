@@ -233,7 +233,7 @@ index 35d533252b7009bd5f4c14b265cea0bc05f11b91..25c321a1bc62b969839cc0a2462fbbf4
                  {
                      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 6622c9020fa5061fe80ae8962376f9b23eee9552..35486697757f5294b6d8045b290617db00cfb5e1 100644
+index c5fe7ee796bb6b8fc6075c124d714c3684b51de4..79f73dc5bf7c4ee3d06dace862a013ec7392fe4b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -414,7 +414,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -349,7 +349,7 @@ index d45a6140780f592d9f8c67cf2f7cb83496a14681..9d768f9bd262bb87e904f8b35a5d2978
      {
          if ( !closed && ch.isActive() ) // IvanCord
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index f8d6becd6906554f1c4fa9e0aed785159e26394f..e110a1fbb1aa998cffa207cbd81a4ba079dbf15f 100644
+index 3349423720023870b1e1b5a127da7e154e53139f..9d641bf563ce1c409305d37cf23aba5c3cacd077 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -27,6 +27,11 @@ import net.md_5.bungee.util.QuietException;
@@ -399,10 +399,10 @@ index f8d6becd6906554f1c4fa9e0aed785159e26394f..e110a1fbb1aa998cffa207cbd81a4ba0
 +                             handler, cause.getCause().getMessage()
 +                        } );
 +                        // IvanCord end
-                     }
-                 } else if ( cause instanceof IOException || ( cause instanceof IllegalStateException && handler instanceof InitialHandler ) )
-                 {
-@@ -190,7 +219,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+                     } else
+                     {
+                         ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - could not decode packet! {1}", new Object[]
+@@ -196,7 +225,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
                  }
              }
  
@@ -412,21 +412,10 @@ index f8d6becd6906554f1c4fa9e0aed785159e26394f..e110a1fbb1aa998cffa207cbd81a4ba0
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 9e6af925a7a62f6506cafd14fc443312520c04a1..8fe39e31258bcaa140ec3ef66c4339cc71f87a8d 100644
+index c23c1106b51134a4bad5ad589aa28990b5182cfe..8afe70bc0f893f61de2e9a856aa4d505074fe3b2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -52,8 +52,10 @@ public class PipelineUtils
- {
- 
-     public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance("ListerInfo");
-+    /* // IvanCord - remove these
-     public static final AttributeKey<UserConnection> USER = AttributeKey.newInstance("User");
-     public static final AttributeKey<BungeeServerInfo> TARGET = AttributeKey.newInstance("Target");
-+     */
-     public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>()
-     {
-         @Override
-@@ -63,14 +65,14 @@ public class PipelineUtils
+@@ -59,14 +59,14 @@ public class PipelineUtils
  
              if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
              {
@@ -443,7 +432,7 @@ index 9e6af925a7a62f6506cafd14fc443312520c04a1..8fe39e31258bcaa140ec3ef66c4339cc
                  return;
              }
  
-@@ -124,6 +126,11 @@ public class PipelineUtils
+@@ -120,6 +120,11 @@ public class PipelineUtils
      public static final String FRAME_PREPENDER = "frame-prepender";
      public static final String LEGACY_DECODER = "legacy-decoder";
      public static final String LEGACY_KICKER = "legacy-kick";
@@ -455,7 +444,7 @@ index 9e6af925a7a62f6506cafd14fc443312520c04a1..8fe39e31258bcaa140ec3ef66c4339cc
  
      private static boolean epoll;
  
-@@ -141,6 +148,13 @@ public class PipelineUtils
+@@ -137,6 +142,13 @@ public class PipelineUtils
                  ProxyServer.getInstance().getLogger().log( Level.WARNING, "Epoll is not working, falling back to NIO: {0}", Util.exception( Epoll.unavailabilityCause() ) );
              }
          }
@@ -469,7 +458,7 @@ index 9e6af925a7a62f6506cafd14fc443312520c04a1..8fe39e31258bcaa140ec3ef66c4339cc
      }
  
      public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
-@@ -148,6 +162,21 @@ public class PipelineUtils
+@@ -144,6 +156,21 @@ public class PipelineUtils
          return epoll ? new EpollEventLoopGroup( threads, factory ) : new NioEventLoopGroup( threads, factory );
      }
  
@@ -491,7 +480,7 @@ index 9e6af925a7a62f6506cafd14fc443312520c04a1..8fe39e31258bcaa140ec3ef66c4339cc
      public static Class<? extends ServerChannel> getServerChannel(SocketAddress address)
      {
          if ( address instanceof DomainSocketAddress )
-@@ -160,6 +189,21 @@ public class PipelineUtils
+@@ -156,6 +183,21 @@ public class PipelineUtils
          return epoll ? EpollServerSocketChannel.class : NioServerSocketChannel.class;
      }
  
@@ -513,7 +502,7 @@ index 9e6af925a7a62f6506cafd14fc443312520c04a1..8fe39e31258bcaa140ec3ef66c4339cc
      public static Class<? extends Channel> getChannel(SocketAddress address)
      {
          if ( address instanceof DomainSocketAddress )
-@@ -172,6 +216,14 @@ public class PipelineUtils
+@@ -168,6 +210,14 @@ public class PipelineUtils
          return epoll ? EpollSocketChannel.class : NioSocketChannel.class;
      }
  

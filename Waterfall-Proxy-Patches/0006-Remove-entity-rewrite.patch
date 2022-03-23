@@ -320,7 +320,7 @@ index fb391fceddc4bae7e11b9c7fcf6c2d629161f3be..3bf6277e1b3cadb077bcf2f18891dbdb
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false ) );
              if ( user.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_14 )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index c51dbab74c4c1b3d49cccbb7120012711296bf0a..3c1d5504c18c523900140fff8da19b084653289f 100644
+index d353b830260a183b13990173155be0f6def87003..08ca9b1a751411081462fcc5062c414fcc1ba748 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -126,15 +126,22 @@ public final class UserConnection implements ProxiedPlayer
@@ -355,7 +355,7 @@ index c51dbab74c4c1b3d49cccbb7120012711296bf0a..3c1d5504c18c523900140fff8da19b08
  
          this.displayName = name;
  
-@@ -769,14 +776,19 @@ public final class UserConnection implements ProxiedPlayer
+@@ -773,14 +780,19 @@ public final class UserConnection implements ProxiedPlayer
      }
  
      @Override
