@@ -1,19 +1,21 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Ivan Pekov <ivan@mrivanplays.com>
-Date: Wed, 23 Mar 2022 08:42:39 +0200
+Date: Wed, 23 Mar 2022 11:31:05 +0200
 Subject: [PATCH] Revert upstream "Don't send exceptions to the client during
  kicks"
 
+Replaced by janmm14's original implementation, found here:
+https://github.com/SpigotMC/BungeeCord/commit/f9583a7652c04e42b6b6a43268750d4a31a256b6
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 49fe00f07caef64998f2e0f05ed03750f4ff6d22..b3fa11dceccc629232ec4225ca8420c21d12d044 100644
+index 49fe00f07caef64998f2e0f05ed03750f4ff6d22..62939ad781a1c74ed3e59f1e0685de1ef0f014b3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -442,11 +442,16 @@ public final class UserConnection implements ProxiedPlayer
+@@ -442,11 +442,22 @@ public final class UserConnection implements ProxiedPlayer
  
      private String connectionFailMessage(Throwable cause)
      {
-+        // IvanCord start - revert waterfall
++        // IvanCord start - revert to original Janmm14's impl
 +        /*
          // Waterfall start
          cause.printStackTrace();
@@ -21,8 +23,23 @@ index 49fe00f07caef64998f2e0f05ed03750f4ff6d22..b3fa11dceccc629232ec4225ca8420c2
          //return Util.exception( cause, false );
          // Waterfall end
 +         */
-+        return Util.exception( cause, false );
++        if ( cause instanceof io.netty.channel.ConnectTimeoutException )
++        {
++            return bungee.getTranslation( "timeout" );
++        } else
++        {
++            return Util.exception( cause, false );
++        }
 +        // IvanCord end
      }
  
      @Override
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+index 8f35c41a0ce99af51b9ec923dbf114ce8a452491..2537a07e69e551c265bcb04fb79cfd8714046c76 100644
+--- a/proxy/src/main/resources/messages.properties
++++ b/proxy/src/main/resources/messages.properties
+@@ -40,3 +40,4 @@ kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sen
+ command_plugins_message=Plugins ({0}): {1}
+ internal_error_executing=\u00a7cAn internal error occurred whilst executing this command, please check the console log for details.
+ internal_error_completing=\u00a7cAn internal error occurred whilst tab completing this command, please check the console log for details.
++timeout=Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?
