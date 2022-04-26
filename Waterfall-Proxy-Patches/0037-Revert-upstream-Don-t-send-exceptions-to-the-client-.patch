@@ -8,20 +8,17 @@ Replaced by janmm14's original implementation, found here:
 https://github.com/SpigotMC/BungeeCord/commit/f9583a7652c04e42b6b6a43268750d4a31a256b6
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 49fe00f07caef64998f2e0f05ed03750f4ff6d22..62939ad781a1c74ed3e59f1e0685de1ef0f014b3 100644
+index 0507addcc9f8fd3fe75b75a877ff42224743a49c..2e0db3dd4a6cb982a5e8df8bb73cbf57fee46f4b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -442,11 +442,22 @@ public final class UserConnection implements ProxiedPlayer
+@@ -442,8 +442,19 @@ public final class UserConnection implements ProxiedPlayer
  
      private String connectionFailMessage(Throwable cause)
      {
 +        // IvanCord start - revert to original Janmm14's impl
 +        /*
-         // Waterfall start
-         cause.printStackTrace();
-         return "";
-         //return Util.exception( cause, false );
-         // Waterfall end
+         bungee.getLogger().log(Level.WARNING, "Error occurred processing connection for " + this.name + " " + Util.exception( cause, false )); // Waterfall
+         return ""; // Waterfall
 +         */
 +        if ( cause instanceof io.netty.channel.ConnectTimeoutException )
 +        {

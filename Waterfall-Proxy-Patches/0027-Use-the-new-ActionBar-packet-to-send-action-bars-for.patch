@@ -98,10 +98,10 @@ index 0000000000000000000000000000000000000000..c553ba02d7f13c83f72f5e016bda8281
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 79f73dc5bf7c4ee3d06dace862a013ec7392fe4b..785b7358277918ff82bf2b851236ae1f305d4e1f 100644
+index f65aaddc9f89f20eea83019fd25e85263e6a2b10..56443ad937819c3db54fbc7fe5fc2071c66b1396 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -544,13 +544,17 @@ public final class UserConnection implements ProxiedPlayer
+@@ -541,13 +541,17 @@ public final class UserConnection implements ProxiedPlayer
          // transform score components
          message = ChatComponentTransformer.getInstance().transform( this, true, message );
  

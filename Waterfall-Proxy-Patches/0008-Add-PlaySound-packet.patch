@@ -372,7 +372,7 @@ index 3bf6277e1b3cadb077bcf2f18891dbdb647de717..88edfed20d6c11b066a3dfde0570f396
      public void handle(LoginPayloadRequest loginPayloadRequest)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 4a1af697ced1ced55359ab8c40eac9db8ced671a..dbac3d105fc1f52468a331eea8a0d60c984a21ea 100644
+index 76505975908482b8e0468924824959b6510b6271..c67b0f05590f1f05b9ea67519b92e5bb17906322 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -58,6 +58,7 @@ import net.md_5.bungee.protocol.ProtocolConstants;
@@ -392,7 +392,7 @@ index 4a1af697ced1ced55359ab8c40eac9db8ced671a..dbac3d105fc1f52468a331eea8a0d60c
  
  @RequiredArgsConstructor
  public final class UserConnection implements ProxiedPlayer
-@@ -797,6 +800,31 @@ public final class UserConnection implements ProxiedPlayer
+@@ -794,6 +797,31 @@ public final class UserConnection implements ProxiedPlayer
          return serverSentScoreboard;
      }
  

@@ -131,7 +131,7 @@ index 0118fca2c08f2e4482058ead860a8c4c239489ac..9f3496232960da55ecd6f8b198662d8b
      public abstract void save(Configuration config, File file) throws IOException;
  
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
-index a42d63fa881628e4bb3f6ceae8c9676e9e614b47..e0c37b1ec429db823401a7e8ce338c0ce51520d4 100644
+index 663bddec7386ccb909a39b81101a9b0292d297ca..9e5d3f2b20eae64fdc68231216753718aa5a4da6 100644
 --- a/log4j/src/main/resources/log4j2.xml
 +++ b/log4j/src/main/resources/log4j2.xml
 @@ -3,15 +3,15 @@
@@ -154,7 +154,7 @@ index a42d63fa881628e4bb3f6ceae8c9676e9e614b47..e0c37b1ec429db823401a7e8ce338c0c
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %paperMinecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 6248e7dd2d9c49ae24d35093d30690ddb8260bbf..e41fff8a7dce59d0ea007abe1ba07de59a157f06 100644
+index a29754e062a4eee33598937fe57fbd19ab402bc1..2988448ba1534c9f819bd7a4c7b644dce8cc7e4d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -511,8 +511,10 @@ public class BungeeCord extends ProxyServer
@@ -213,7 +213,7 @@ index 9e74d158c39ca0131c673e752cf1297b5577b2f4..fb391fceddc4bae7e11b9c7fcf6c2d62
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 0d6aff64f77239197809efab9e7f54f525e8ad6c..d353b830260a183b13990173155be0f6def87003 100644
+index 7c52ee9a1ce726b88860ae32d7196625086b2aa9..f05f13c350eaf477ae41c8ff8a820f85d00f549e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -323,7 +323,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -234,7 +234,7 @@ index 0d6aff64f77239197809efab9e7f54f525e8ad6c..d353b830260a183b13990173155be0f6
              if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connecting" ) ); // Waterfall
              return;
          }
-@@ -425,6 +425,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -422,6 +422,9 @@ public final class UserConnection implements ProxiedPlayer
  
      public void disconnect0(final BaseComponent... reason)
      {
@@ -244,7 +244,7 @@ index 0d6aff64f77239197809efab9e7f54f525e8ad6c..d353b830260a183b13990173155be0f6
          if ( !ch.isClosing() )
          {
              bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
-@@ -740,6 +743,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -737,6 +740,14 @@ public final class UserConnection implements ProxiedPlayer
          title.send( this );
      }
  

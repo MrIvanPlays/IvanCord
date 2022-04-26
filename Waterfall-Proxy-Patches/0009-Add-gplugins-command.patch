@@ -48,7 +48,7 @@ index 0000000000000000000000000000000000000000..5d6a1d0c22a94b049636c40fbbe3e9de
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 99b325f0955f123ec611d4faf479c164fd078f56..f5c364790be0cb7c36bb249d898385ffe47062c8 100644
+index 083c7f81cae68c0c578dcb7797b8e67a966b8733..f9c131b339eb6816848bea76c4b1e2ce6513b741 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -101,6 +101,7 @@ import com.mrivanplays.ivancord.modules.CommandFind;

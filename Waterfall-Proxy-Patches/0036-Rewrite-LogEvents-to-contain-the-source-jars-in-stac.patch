@@ -25,7 +25,7 @@ index eb73dcc733d7caf56a79370e9a0f26df2b79eabe..e4a5d23fc2ca9df67e593830cb21bdf6
          allLoaders.add( this );
      }
 diff --git a/log4j/src/main/resources/log4j2.xml b/log4j/src/main/resources/log4j2.xml
-index e0c37b1ec429db823401a7e8ce338c0ce51520d4..4149faa38956c359e87637ee929a2446de721995 100644
+index 9e5d3f2b20eae64fdc68231216753718aa5a4da6..3c97f3216909ca28dfb3ac0ed96e0b63946f6a30 100644
 --- a/log4j/src/main/resources/log4j2.xml
 +++ b/log4j/src/main/resources/log4j2.xml
 @@ -21,12 +21,23 @@
