@@ -166,7 +166,7 @@ index c0d371426a16565e735015b1f679278e0360ed1c..f33df1f37bda8327f12a55329b65f67d
      }
  }
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 80019d59be885ffdda4d40f477e851d4e3dbf474..d7843cc8fe074071bf51d142fecb23036d527bf6 100644
+index c8dee598e18255feb6164f7cbfa43dd46a60bed6..c60002bceb698c01d20d0b9a7f7fb3d279fa4cbf 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -149,6 +149,14 @@

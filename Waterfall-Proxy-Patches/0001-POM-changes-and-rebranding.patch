@@ -250,7 +250,7 @@ index 465ebbf26471d1f04270b6b290cd8073d54d8ed5..8167c54fd00d96d6dc02b0df36e8eaa9
              <scope>compile</scope>
          </dependency>
 diff --git a/log4j/pom.xml b/log4j/pom.xml
-index 127d0c14805fea7278f8f17862418f2d504bfd12..cdef298ec06e7df72c22cd7f54c62e87b6865dd2 100644
+index 24a5f780b000308722a033eba1c18f15cf254d70..dfbdd432d247b41ae949ac2c5a6b6da9cf084736 100644
 --- a/log4j/pom.xml
 +++ b/log4j/pom.xml
 @@ -3,22 +3,25 @@
@@ -277,7 +277,7 @@ index 127d0c14805fea7278f8f17862418f2d504bfd12..cdef298ec06e7df72c22cd7f54c62e87
 +    <description>Simplistic and performant Log4j2 based logger and console API designed for use with IvanCord and Minecraft related applications.</description>
  
      <properties>
-         <log4j2.version>2.17.1</log4j2.version>
+         <log4j2.version>2.17.2</log4j2.version>
 +        <!-- IvanCord - skip deploying and generating javadocs for this module -->
 +        <maven.deploy.skip>true</maven.deploy.skip>
 +        <maven.javadoc.skip>true</maven.javadoc.skip>
@@ -497,7 +497,7 @@ index a783d9b0f4b7e9a469afcf27e0b6ff3c072c6cc3..d90c80eaad56438c36cd1cb80de3141e
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index cca0ef95c190739a9061d28360d935bacf112aef..80019d59be885ffdda4d40f477e851d4e3dbf474 100644
+index 23bfa61d2c36dfabe2b396fa79800d8ebb509fd4..c8dee598e18255feb6164f7cbfa43dd46a60bed6 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,17 @@
