@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Outfluencer <48880402+Outfluencer@users.noreply.github.com>
+Date: Mon, 16 May 2022 21:29:27 +0300
+Subject: [PATCH] Fix HttpHandler calls "done" twice
+
+This happens (for example) for invalid reason. In this case first a
+DefaultHttpResponse(decodeResult: success, version:HTTP/1.1) has read and that is calling "done"
+and after that a EmptyLastHttpContent had read which also calls "done", making "done" call twice.
+To fix this we remove the handler after the first time "done" is called.
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java b/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java
+index b91981e6c7533a3a94902645dc4adc10d5418c7d..87293ec190feadb29b0a6b34e1cc1c393e4d89cf 100644
+--- a/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/http/HttpHandler.java
+@@ -26,6 +26,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<HttpObject>
+             callback.done( null, cause );
+         } finally
+         {
++            ctx.channel().pipeline().remove( this ); // IvanCord
+             ctx.channel().close();
+         }
+     }
+@@ -68,6 +69,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<HttpObject>
+             callback.done( buffer.toString(), null );
+         } finally
+         {
++            ctx.channel().pipeline().remove( this ); // IvanCord
+             ctx.channel().close();
+         }
+     }

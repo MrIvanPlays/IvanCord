@@ -1,0 +1,79 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Outfluencer <48880402+Outfluencer@users.noreply.github.com>
+Date: Mon, 16 May 2022 21:24:55 +0300
+Subject: [PATCH] Fix protocol state machine with async event intents
+
+We must take into account the registered intentions of the asynchronous events.
+As you can register intents for async event it is possible to let the server handle packets that
+should not been handled.
+
+For example if your register an intent for the ProxyPingEvent that delays the channel close at the
+legacy ping you could send the legacy ping twice which is really funny. Send a handshake and a
+login to the same connection and login to the server.
+
+Also vanilla clients wait for the servers status response before sending a ping request so I
+implemented the hasRequestedStatus boolean to make it impossible to send status requests twice and
+make it impossible to request the ping before the server finished the ProxyPingEvent.
+
+It is also possible to send the LoginRequest packet twice if an intent is registered for the
+PreLoginEvent so I checked if we already got a LoginRequest.
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 04ecb087f50439372859d932dcb3fe4799a20732..eeb4d591f7f7fb3a00d7863f14eef31be0789ad5 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -86,6 +86,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Getter
+     private LoginRequest loginRequest;
+     private EncryptionRequest request;
++    private boolean hasRequestedStatus; // IvanCord
+     @Getter
+     private PluginMessage brandMessage;
+     @Getter
+@@ -118,7 +119,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public boolean shouldHandle(PacketWrapper packet) throws Exception
+     {
+-        return !ch.isClosing();
++        return !ch.isClosing() && !legacy; // IvanCord
+     }
+ 
+     private enum State
+@@ -260,8 +261,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public void handle(StatusRequest statusRequest) throws Exception
+     {
+-        Preconditions.checkState( thisState == State.STATUS, "Not expecting STATUS" );
++        Preconditions.checkState( thisState == State.STATUS && !hasRequestedStatus, "Not expecting STATUS" ); // IvanCord
+ 
++        hasRequestedStatus = true; // IvanCord
+         ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
+         final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
+         final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
+@@ -299,6 +301,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                         {
+                             bungee.getConnectionThrottle().unthrottle( getSocketAddress() );
+                         }
++                        thisState = State.PING; // IvanCord
+                     }
+                 };
+ 
+@@ -313,8 +316,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         {
+             pingBack.done( getPingInfo( motd, protocol ), null );
+         }
+-
+-        thisState = State.PING;
++        // IvanCord - moved up
+     }
+ 
+     private static final boolean ACCEPT_INVALID_PACKETS = Boolean.parseBoolean(System.getProperty("waterfall.acceptInvalidPackets", "false"));
+@@ -399,7 +401,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public void handle(LoginRequest loginRequest) throws Exception
+     {
+-        Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
++        Preconditions.checkState( thisState == State.USERNAME && this.loginRequest == null, "Not expecting USERNAME" ); // IvanCord
+ 
+         if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
+         {

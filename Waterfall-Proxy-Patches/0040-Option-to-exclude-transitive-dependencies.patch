@@ -1,0 +1,88 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ivan Pekov <ivan@mrivanplays.com>
+Date: Tue, 24 May 2022 18:45:53 +0300
+Subject: [PATCH] Option to exclude transitive dependencies
+
+
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/LibraryLoader.java b/api/src/main/java/net/md_5/bungee/api/plugin/LibraryLoader.java
+index 55e166c8f0c545a49a8c54ea1fda94bfe6bcc3e8..f7e063828ff5fc4c232e1301d9cc91da856420cf 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/LibraryLoader.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/LibraryLoader.java
+@@ -86,10 +86,35 @@ class LibraryLoader
+             dependencies.add( dependency );
+         }
+ 
++        // IvanCord start
++        List<Artifact> excludedArtifacts = new ArrayList<>();
++        if ( !desc.getExcludedTransitiveLibraries().isEmpty() )
++        {
++            for ( String library : desc.getExcludedTransitiveLibraries() )
++            {
++                excludedArtifacts.add( new DefaultArtifact( library ) );
++            }
++        }
++        org.eclipse.aether.graph.DependencyFilter filter = (node, parents) ->
++        {
++            if ( excludedArtifacts.isEmpty() || node.getArtifact() == null )
++            {
++                return true;
++            }
++            for ( Artifact artifact : excludedArtifacts )
++            {
++                if ( artifactsMatching( artifact, node.getArtifact() ) )
++                {
++                    return false;
++                }
++            }
++            return true;
++        };
++        // IvanCord end
+         DependencyResult result;
+         try
+         {
+-            result = repository.resolveDependencies( session, new DependencyRequest( new CollectRequest( (Dependency) null, dependencies, repositories ), null ) );
++            result = repository.resolveDependencies( session, new DependencyRequest( new CollectRequest( (Dependency) null, dependencies, repositories ), filter ) ); // IvanCord
+         } catch ( DependencyResolutionException ex )
+         {
+             throw new RuntimeException( "Error resolving libraries", ex );
+@@ -120,4 +145,19 @@ class LibraryLoader
+ 
+         return loader;
+     }
++
++    // IvanCord start
++    private boolean artifactsMatching(Artifact artifact1, Artifact artifact2)
++    {
++        if ( !artifact1.getGroupId().equalsIgnoreCase( artifact2.getGroupId() ) )
++        {
++            return false;
++        }
++        if ( !artifact1.getArtifactId().equalsIgnoreCase( artifact2.getArtifactId() ) )
++        {
++            return false;
++        }
++        return artifact1.getVersion().equalsIgnoreCase( artifact2.getVersion() );
++    }
++    // IvanCord end
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java
+index ea5c0d375e297540f2dee6b92ffad213cface583..734da685d9c89e4d49cbecef7d5375e78e15cd2c 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginDescription.java
+@@ -54,4 +54,16 @@ public class PluginDescription
+      * Optional libraries.
+      */
+     private List<String> libraries = new LinkedList<>();
++    // IvanCord start
++    /**
++     * Optional: libraries to be excluded from download. A clear example is having
++     * 2 versions of the same library. This can be achieved by having a library
++     * which packs a library the plugin already packs via {@link #getLibraries()}
++     * and suddenly, BungeeCord ends up with 2 different versions of the same library,
++     * when there can be 1! Or another hilarious case: having a download of a library,
++     * already packed in the BungeeCord jar!
++     * <p>Syntax is the same as in {@link #getLibraries()}
++     */
++    private List<String> excludedTransitiveLibraries = new LinkedList<>();
++    // IvanCord end
+ }
