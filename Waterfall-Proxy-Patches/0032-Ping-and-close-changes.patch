@@ -7,10 +7,10 @@ close on exception whenever a channel is initializing and close without
 response on proxy ping if result is null.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3004860a6320b09f10abff306a116194fbe6f546..04ecb087f50439372859d932dcb3fe4799a20732 100644
+index ccabd84dfd3cee30179701dcd58029e80a52abf1..4c98ef9a62d417c47bcc970502c8d6a01846ccd5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -198,6 +198,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -200,6 +200,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
  
                  ServerPing legacy = result.getResponse();
@@ -24,7 +24,7 @@ index 3004860a6320b09f10abff306a116194fbe6f546..04ecb087f50439372859d932dcb3fe47
                  // IvanCord start - handle null legacy.getPlayers()
                  // such behavior is handled by modern pinging, yet it is not for
                  // legacy pinging. This causes A NPE whenever a < 1.7 MC client
-@@ -275,6 +282,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -277,6 +284,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -43,7 +43,7 @@ index 3004860a6320b09f10abff306a116194fbe6f546..04ecb087f50439372859d932dcb3fe47
                          unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
                          if ( bungee.getConnectionThrottle() != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 00dfdb9bc1999175a5a18111d2879233b92b4bc1..47ea350a4904ba8816e77a0b01f806bdaa024ecf 100644
+index 8afe70bc0f893f61de2e9a856aa4d505074fe3b2..d4f27a5dba93817753beae73b5b0be0b87b7eef2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 @@ -106,6 +106,16 @@ public class PipelineUtils
@@ -62,8 +62,8 @@ index 00dfdb9bc1999175a5a18111d2879233b92b4bc1..47ea350a4904ba8816e77a0b01f806bd
 +        // IvanCord end
      };
      public static final Base BASE = new Base();
-     public static final Base LIMITED_BASE = new Base( true ); // IvanCord - Add LIMITED_BASE for connections from clients
-@@ -261,5 +271,15 @@ public class PipelineUtils
+     private static final KickStringWriter legacyKicker = new KickStringWriter();
+@@ -251,5 +261,15 @@ public class PipelineUtils
  
              ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
          }

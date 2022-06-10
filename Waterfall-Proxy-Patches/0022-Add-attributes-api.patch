@@ -187,10 +187,10 @@ index 07e3960d18a47b04f2a6e82140ae6fc4e117edde..5462e6e9e6a2ea43771d339d63173b22
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 9619cb26ee2a6aaf65fcc9863ba79168a3e1a830..c0ea1264af309878353fa7eaac8542e319413b4c 100644
+index 3852bf08609f3a60a7da06541f4d3b5ed162da09..1aec33ccb03c64775e43c7f03ba35a24ab6708f7 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -8,6 +8,7 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
+@@ -10,6 +10,7 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
  import net.md_5.bungee.protocol.packet.Commands;
  import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
@@ -198,7 +198,7 @@ index 9619cb26ee2a6aaf65fcc9863ba79168a3e1a830..c0ea1264af309878353fa7eaac8542e3
  import net.md_5.bungee.protocol.packet.EntityEffect; // Waterfall
  import net.md_5.bungee.protocol.packet.EntityRemoveEffect; // Waterfall
  import net.md_5.bungee.protocol.packet.EntityStatus;
-@@ -218,5 +219,9 @@ public abstract class AbstractPacketHandler
+@@ -238,5 +239,9 @@ public abstract class AbstractPacketHandler
      public void handle(PlaySound playSound) throws Exception
      {
      }
@@ -209,10 +209,10 @@ index 9619cb26ee2a6aaf65fcc9863ba79168a3e1a830..c0ea1264af309878353fa7eaac8542e3
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index de4a958b9dfe24d46f2056c512cdf22ef3f0c733..f0eb9c5234bd284bb43b3ab36452117cbf0033d3 100644
+index 8036a106204fa0cc410301ba7a810341ce83e548..3ad6e250f6bd208927c2b3e514b3382e17b7e94f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -16,6 +16,7 @@ import net.md_5.bungee.protocol.packet.ClientSettings;
+@@ -18,6 +18,7 @@ import net.md_5.bungee.protocol.packet.ClientSettings;
  import net.md_5.bungee.protocol.packet.Commands;
  import net.md_5.bungee.protocol.packet.EncryptionRequest;
  import net.md_5.bungee.protocol.packet.EncryptionResponse;
@@ -220,9 +220,9 @@ index de4a958b9dfe24d46f2056c512cdf22ef3f0c733..f0eb9c5234bd284bb43b3ab36452117c
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
  import net.md_5.bungee.protocol.packet.EntityEffect;
-@@ -401,6 +402,22 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_16_2, 0x18 ),
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x19 )
+@@ -445,6 +446,23 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_17, 0x19 ),
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x16 )
              );
 +            // entity attributes packet
 +            TO_CLIENT.registerPacket(
@@ -238,7 +238,8 @@ index de4a958b9dfe24d46f2056c512cdf22ef3f0c733..f0eb9c5234bd284bb43b3ab36452117c
 +                    map( ProtocolConstants.MINECRAFT_1_15, 0x59 ),
 +                    map( ProtocolConstants.MINECRAFT_1_16, 0x58 ),
 +                    map( ProtocolConstants.MINECRAFT_1_17, 0x63 ),
-+                    map( ProtocolConstants.MINECRAFT_1_18, 0x64 )
++                    map( ProtocolConstants.MINECRAFT_1_18, 0x64 ),
++                    map( ProtocolConstants.MINECRAFT_1_19, 0x65 )
 +            );
              // IvanCord end
          }
@@ -346,7 +347,7 @@ index 0000000000000000000000000000000000000000..fe62e1d86a0c8c65717f54e5cfc83eb9
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index f488019745f80214ba5b75a6baf5e67d139e2355..e3bf67f76aaba70d7cccaf4dce7c4499cfdf4fa1 100644
+index a416fccba6866958a2bfb60696d3f8677436bd11..8c0726b8cbb18d781e730bf508c51d31f26ed682 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -2,6 +2,7 @@ package net.md_5.bungee;
@@ -369,7 +370,7 @@ index f488019745f80214ba5b75a6baf5e67d139e2355..e3bf67f76aaba70d7cccaf4dce7c4499
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
              // And immediate respawn
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 324114e5198e19ba62d79ac8adef5e2546164b5d..a1ed1e02995cfc17315e68c4171683c943ee832a 100644
+index 90d99a85844a7a31d02c2ffbd4a458d785ef9d9d..67548b7e6cbb3db009335a796a16b11c9a7de29d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
@@ -402,7 +403,7 @@ index 324114e5198e19ba62d79ac8adef5e2546164b5d..a1ed1e02995cfc17315e68c4171683c9
  import net.md_5.bungee.protocol.packet.Kick;
  import net.md_5.bungee.protocol.packet.PlaySound; // IvanCord
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
-@@ -117,6 +122,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -118,6 +123,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      private boolean globalOp;
      // IvanCord end
@@ -413,7 +414,7 @@ index 324114e5198e19ba62d79ac8adef5e2546164b5d..a1ed1e02995cfc17315e68c4171683c9
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -842,6 +851,42 @@ public final class UserConnection implements ProxiedPlayer
+@@ -859,6 +868,42 @@ public final class UserConnection implements ProxiedPlayer
          BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
          this.globalOp = globalOp;
      }
@@ -457,7 +458,7 @@ index 324114e5198e19ba62d79ac8adef5e2546164b5d..a1ed1e02995cfc17315e68c4171683c9
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index ac274f6e45430ae92053de6689e0607e5f1d5e74..7b6bd07d13336d53fe8061183d04a0e5375e1afa 100644
+index ed70925d3c9c50029c36805056090084c7de0e7e..28165d97190823b29a7ed91b393b1e71bfef406e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -4,6 +4,11 @@ import com.google.common.base.Preconditions;
@@ -472,15 +473,15 @@ index ac274f6e45430ae92053de6689e0607e5f1d5e74..7b6bd07d13336d53fe8061183d04a0e5
  import io.netty.channel.Channel;
  import java.util.ArrayList;
  import java.util.LinkedList;
-@@ -27,6 +32,7 @@ import net.md_5.bungee.protocol.PacketWrapper;
- import net.md_5.bungee.protocol.ProtocolConstants;
- import net.md_5.bungee.protocol.packet.Chat;
+@@ -29,6 +34,7 @@ import net.md_5.bungee.protocol.packet.Chat;
+ import net.md_5.bungee.protocol.packet.ClientChat;
+ import net.md_5.bungee.protocol.packet.ClientCommand;
  import net.md_5.bungee.protocol.packet.ClientSettings;
 +import net.md_5.bungee.protocol.packet.EntityAttributes;
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PlayerPosition;
-@@ -305,6 +311,26 @@ public class UpstreamBridge extends PacketHandler
+@@ -331,6 +337,26 @@ public class UpstreamBridge extends PacketHandler
      }
      // IvanCord end
  

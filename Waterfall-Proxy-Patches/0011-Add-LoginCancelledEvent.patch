@@ -65,10 +65,10 @@ index 0000000000000000000000000000000000000000..f140b0195e9661e364dafab7c3aba7ec
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e76c59c7ba92221ab9f9ee7883b19ae311b3a3e3..a9b8e2f2fc9707a15bf0d5946965e94b54763036 100644
+index 4b4ba66b3e8c043ef788a8110514cda3a03696ea..dcf2e13e6ad059fff7b5a75fffe447adf561b783 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -69,6 +69,7 @@ import net.md_5.bungee.protocol.packet.StatusResponse;
+@@ -71,6 +71,7 @@ import net.md_5.bungee.protocol.packet.StatusResponse;
  import net.md_5.bungee.util.AllowedCharacters;
  import net.md_5.bungee.util.BufUtil;
  import net.md_5.bungee.util.QuietException;
@@ -76,7 +76,7 @@ index e76c59c7ba92221ab9f9ee7883b19ae311b3a3e3..a9b8e2f2fc9707a15bf0d5946965e94b
  
  @RequiredArgsConstructor
  public class InitialHandler extends PacketHandler implements PendingConnection
-@@ -147,6 +148,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -149,6 +150,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              ch.close();
          }
@@ -86,7 +86,7 @@ index e76c59c7ba92221ab9f9ee7883b19ae311b3a3e3..a9b8e2f2fc9707a15bf0d5946965e94b
      }
  
      @Override
-@@ -406,11 +410,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -431,11 +435,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
@@ -104,7 +104,7 @@ index e76c59c7ba92221ab9f9ee7883b19ae311b3a3e3..a9b8e2f2fc9707a15bf0d5946965e94b
                      return;
                  }
                  if ( onlineMode )
-@@ -537,11 +547,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -563,11 +573,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
@@ -122,7 +122,7 @@ index e76c59c7ba92221ab9f9ee7883b19ae311b3a3e3..a9b8e2f2fc9707a15bf0d5946965e94b
                      return;
                  }
  
-@@ -576,6 +592,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -602,6 +618,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
                              userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
                          }

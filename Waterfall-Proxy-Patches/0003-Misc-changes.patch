@@ -195,7 +195,7 @@ index 074fefc87a22fb4495dac9a2bb7e4a7c4d8fe6b5..fdf32d89fdde0c2eb76a8d928e51c9ae
          bungee.start();
          bungee.getLogger().info( "Enabled IvanCord version " + bungee.getVersion() ); // IvanCord - rebranding
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 9e74d158c39ca0131c673e752cf1297b5577b2f4..fb391fceddc4bae7e11b9c7fcf6c2d629161f3be 100644
+index ba7fc59cb2a8a1cc6cf50c2e964d61b308ef0162..e218b14ecf886b5db5d6a6df9ece79657fbbf25e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -315,6 +315,13 @@ public class ServerConnector extends PacketHandler
@@ -213,10 +213,10 @@ index 9e74d158c39ca0131c673e752cf1297b5577b2f4..fb391fceddc4bae7e11b9c7fcf6c2d62
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7c52ee9a1ce726b88860ae32d7196625086b2aa9..f05f13c350eaf477ae41c8ff8a820f85d00f549e 100644
+index b44d13e59ada151a4e444f9a5e82737e4f426d36..052829bff45f992a0a9246ca419234e57ad2a405 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -323,7 +323,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -324,7 +324,7 @@ public final class UserConnection implements ProxiedPlayer
              {
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
              }
@@ -225,7 +225,7 @@ index 7c52ee9a1ce726b88860ae32d7196625086b2aa9..f05f13c350eaf477ae41c8ff8a820f85
              if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connected" ) ); // Waterfall
              return;
          }
-@@ -333,7 +333,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -334,7 +334,7 @@ public final class UserConnection implements ProxiedPlayer
              {
                  callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
              }
@@ -234,7 +234,7 @@ index 7c52ee9a1ce726b88860ae32d7196625086b2aa9..f05f13c350eaf477ae41c8ff8a820f85
              if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connecting" ) ); // Waterfall
              return;
          }
-@@ -422,6 +422,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -423,6 +423,9 @@ public final class UserConnection implements ProxiedPlayer
  
      public void disconnect0(final BaseComponent... reason)
      {
@@ -244,7 +244,7 @@ index 7c52ee9a1ce726b88860ae32d7196625086b2aa9..f05f13c350eaf477ae41c8ff8a820f85
          if ( !ch.isClosing() )
          {
              bungee.getLogger().log( Level.INFO, "[{0}] disconnected with: {1}", new Object[]
-@@ -737,6 +740,14 @@ public final class UserConnection implements ProxiedPlayer
+@@ -754,6 +757,14 @@ public final class UserConnection implements ProxiedPlayer
          title.send( this );
      }
  
@@ -299,10 +299,10 @@ index 18422669106553a2e6555c47ef06a8eaf891a989..66747e0570c07e392c6133fe08b8f150
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index bba6d3242223cd5c5bea9facd10d48b60bed006d..e76c59c7ba92221ab9f9ee7883b19ae311b3a3e3 100644
+index ed1fe41adf3ab4de3282ebc431ff59606f30cb8c..4b4ba66b3e8c043ef788a8110514cda3a03696ea 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -192,6 +192,18 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -194,6 +194,18 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
  
                  ServerPing legacy = result.getResponse();

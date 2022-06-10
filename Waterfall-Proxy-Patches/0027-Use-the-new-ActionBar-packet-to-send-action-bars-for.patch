@@ -6,7 +6,7 @@ Subject: [PATCH] Use the new ActionBar packet to send action bars for 1.17+
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index c0ea1264af309878353fa7eaac8542e319413b4c..a0d906127f7f583194f523b89db079c1c7883d81 100644
+index 1aec33ccb03c64775e43c7f03ba35a24ab6708f7..4bd37a26cbc4de69c33d7272876261763d224c54 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -1,5 +1,6 @@
@@ -16,7 +16,7 @@ index c0ea1264af309878353fa7eaac8542e319413b4c..a0d906127f7f583194f523b89db079c1
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClearTitles;
-@@ -223,5 +224,9 @@ public abstract class AbstractPacketHandler
+@@ -243,5 +244,9 @@ public abstract class AbstractPacketHandler
      public void handle(EntityAttributes entityAttributes) throws Exception
      {
      }
@@ -27,7 +27,7 @@ index c0ea1264af309878353fa7eaac8542e319413b4c..a0d906127f7f583194f523b89db079c1
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index f0eb9c5234bd284bb43b3ab36452117cbf0033d3..35d7ebdfd4c8f7de70d273fbebb91246bdd627a8 100644
+index 3ad6e250f6bd208927c2b3e514b3382e17b7e94f..fb2ed58cead2e71f2b636de3de1452f06773b1ce 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -9,6 +9,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
@@ -38,15 +38,16 @@ index f0eb9c5234bd284bb43b3ab36452117cbf0033d3..35d7ebdfd4c8f7de70d273fbebb91246
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClearTitles;
-@@ -324,6 +325,13 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_16, 0x41 ),
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x4A )
+@@ -352,6 +353,14 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_17, 0x4A ),
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x49 )
              );
 +            // IvanCord start
 +            TO_CLIENT.registerPacket(
 +                    ActionBar.class,
 +                    ActionBar::new,
-+                    map( ProtocolConstants.MINECRAFT_1_17, 0x41 )
++                    map( ProtocolConstants.MINECRAFT_1_17, 0x41 ),
++                    map( ProtocolConstants.MINECRAFT_1_19, 0x40 )
 +            );
 +            // IvanCord end
  
@@ -98,10 +99,10 @@ index 0000000000000000000000000000000000000000..c553ba02d7f13c83f72f5e016bda8281
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index f65aaddc9f89f20eea83019fd25e85263e6a2b10..56443ad937819c3db54fbc7fe5fc2071c66b1396 100644
+index 50d85372adfee814cd8ee434070d8e97c685494f..09507335275c306e148b68cdc348621a21fbb6c0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -541,13 +541,17 @@ public final class UserConnection implements ProxiedPlayer
+@@ -558,13 +558,17 @@ public final class UserConnection implements ProxiedPlayer
          // transform score components
          message = ChatComponentTransformer.getInstance().transform( this, true, message );
  

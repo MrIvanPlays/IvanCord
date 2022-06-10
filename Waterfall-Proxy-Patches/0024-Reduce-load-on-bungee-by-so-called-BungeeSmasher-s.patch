@@ -6,10 +6,10 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
 diff --git a/pom.xml b/pom.xml
-index f07d8e1349e9a471e5201cb5dd70b12870368771..893bfb25b01efc560e931acf9fee0b05996172db 100644
+index cc7deb801fa86362c59bb91e75bfe158174a4bce..97937dd3c98f544a805aed5b6c4d7eec493beede 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -47,6 +47,7 @@
+@@ -46,6 +46,7 @@
          <module>query</module>
          <!--<module>slf4j</module>-->
          <module>native</module>
@@ -18,10 +18,10 @@ index f07d8e1349e9a471e5201cb5dd70b12870368771..893bfb25b01efc560e931acf9fee0b05
  
      <scm>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index d90c80eaad56438c36cd1cb80de3141e4ed04e03..4c2e61d87be1fb1b6aa63e74d0a1827b599f8251 100644
+index 64be26fac7635701e8cefd0ce76a34f81f94e7a2..425a0e8aca822541ae3f7ab42dcc66c098d7db9e 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
-@@ -63,5 +63,13 @@
+@@ -62,5 +62,13 @@
              <version>1.3.0</version>
              <scope>compile</scope>
          </dependency>
@@ -48,7 +48,7 @@ index f20104a23600f34c10f020ab7c055a5ea371e254..951adc0d4298e4e2a6be06d8c9fd0865
      private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index a310844dcb26928ac61591a4284556c9f8807866..5b4fcc75b0721e704a73a62961ffb6de0422b914 100644
+index bafef27c6934a9f0604737d244a118c634a96455..adace29451b75b67bc5e828b1cbd29f1c76ee3db 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 @@ -153,8 +153,13 @@ public abstract class DefinedPacket
@@ -166,10 +166,10 @@ index c0d371426a16565e735015b1f679278e0360ed1c..f33df1f37bda8327f12a55329b65f67d
      }
  }
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index c8dee598e18255feb6164f7cbfa43dd46a60bed6..c60002bceb698c01d20d0b9a7f7fb3d279fa4cbf 100644
+index ade7a2602645306116762f961662407bf1e08863..5e7410ed81ea00f2ac36990277abf8f72a7120cb 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -149,6 +149,14 @@
+@@ -148,6 +148,14 @@
              <scope>runtime</scope>
          </dependency>
          <!-- Waterfall end -->
@@ -183,7 +183,7 @@ index c8dee598e18255feb6164f7cbfa43dd46a60bed6..c60002bceb698c01d20d0b9a7f7fb3d2
 +        <!-- IvanCord end -->
      </dependencies>
  
-     <build>
+     <!-- Waterfall start - copy license files into jar -->
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index 9074c4c6c41a54d31ea359d5eccafc64e168c22e..a5e447ac60935fe97e0e450b77c2ef64aa26d2db 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
@@ -233,10 +233,10 @@ index 35d533252b7009bd5f4c14b265cea0bc05f11b91..25c321a1bc62b969839cc0a2462fbbf4
                  {
                      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a1ed1e02995cfc17315e68c4171683c943ee832a..f65aaddc9f89f20eea83019fd25e85263e6a2b10 100644
+index 67548b7e6cbb3db009335a796a16b11c9a7de29d..50d85372adfee814cd8ee434070d8e97c685494f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -414,7 +414,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -415,7 +415,7 @@ public final class UserConnection implements ProxiedPlayer
              }
          };
          Bootstrap b = new Bootstrap()
@@ -246,10 +246,10 @@ index a1ed1e02995cfc17315e68c4171683c943ee832a..f65aaddc9f89f20eea83019fd25e8526
                  .handler( initializer )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index a9b8e2f2fc9707a15bf0d5946965e94b54763036..e361329cd787b99fb152ad0a9122916a806dfe3c 100644
+index dcf2e13e6ad059fff7b5a75fffe447adf561b783..e1b8b2813973a09d1b5c87cc1e94714c8f4abd9b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -144,9 +144,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -146,9 +146,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          if ( canSendKickMessage() )
          {
              disconnect( ChatColor.RED + Util.exception( t ) );
@@ -261,7 +261,7 @@ index a9b8e2f2fc9707a15bf0d5946965e94b54763036..e361329cd787b99fb152ad0a9122916a
          }
          // IvanCord start - implement LoginCancelledEvent
          new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY_EXCEPTION ).callEvent();
-@@ -158,7 +160,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -160,7 +162,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -270,7 +270,7 @@ index a9b8e2f2fc9707a15bf0d5946965e94b54763036..e361329cd787b99fb152ad0a9122916a
          }
      }
  
-@@ -327,6 +329,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -329,6 +331,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              handshake.setHost( split[0] );
              extraDataInHandshake = "\0" + split[1];
          }
@@ -278,7 +278,7 @@ index a9b8e2f2fc9707a15bf0d5946965e94b54763036..e361329cd787b99fb152ad0a9122916a
  
          // SRV records can end with a . depending on DNS / client.
          if ( handshake.getHost().endsWith( "." ) )
-@@ -371,7 +374,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -373,7 +376,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  break;
              default:
@@ -287,7 +287,7 @@ index a9b8e2f2fc9707a15bf0d5946965e94b54763036..e361329cd787b99fb152ad0a9122916a
          }
      }
  
-@@ -736,4 +739,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -762,4 +765,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              brandMessage = input;
          }
      }
@@ -574,7 +574,7 @@ index 8becc26a5c6bcb3c8072bd9bd550e65c2c20b71b..f9e1cd5f2cd0d74440f0bc548dbff01e
          new Bootstrap()
 diff --git a/shared/pom.xml b/shared/pom.xml
 new file mode 100644
-index 0000000000000000000000000000000000000000..42bcfc4c7657748ec04b24638467182857875a02
+index 0000000000000000000000000000000000000000..b55861d7cce658414994672b0b86dd4b0949c722
 --- /dev/null
 +++ b/shared/pom.xml
 @@ -0,0 +1,34 @@
@@ -585,7 +585,7 @@ index 0000000000000000000000000000000000000000..42bcfc4c7657748ec04b246384671828
 +    <parent>
 +        <artifactId>ivancord-parent</artifactId>
 +        <groupId>com.mrivanplays</groupId>
-+        <version>1.18-R0.1-SNAPSHOT</version>
++        <version>1.19-R0.1-SNAPSHOT</version>
 +    </parent>
 +    <modelVersion>4.0.0</modelVersion>
 +

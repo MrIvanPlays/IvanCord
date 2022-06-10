@@ -5,10 +5,10 @@ Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index 1405ba00a69470a8c7d9a0ca7e20aa7e47777ab5..f07d8e1349e9a471e5201cb5dd70b12870368771 100644
+index 38f4cdc1e58ac092bf11de792b6b0079748e967f..cc7deb801fa86362c59bb91e75bfe158174a4bce 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -39,7 +39,9 @@
+@@ -38,7 +38,9 @@
          <module>log</module>
          -->
          <module>log4j</module>

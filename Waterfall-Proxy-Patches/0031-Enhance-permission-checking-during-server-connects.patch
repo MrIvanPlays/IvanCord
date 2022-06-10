@@ -141,10 +141,10 @@ index 448c6caa4bc55f69805bc9664e942855caaff0f1..fad67ed9bfc38e5deb29e6da428f32f0
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 56443ad937819c3db54fbc7fe5fc2071c66b1396..0507addcc9f8fd3fe75b75a877ff42224743a49c 100644
+index 09507335275c306e148b68cdc348621a21fbb6c0..fb3df35b2a0b9099d2bc2c9f9d870f32cdb89398 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -368,6 +368,19 @@ public final class UserConnection implements ProxiedPlayer
+@@ -369,6 +369,19 @@ public final class UserConnection implements ProxiedPlayer
              if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connecting" ) ); // Waterfall
              return;
          }

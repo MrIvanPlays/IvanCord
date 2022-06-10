@@ -6,10 +6,10 @@ Subject: [PATCH] Add gplugins command
 
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java b/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5d6a1d0c22a94b049636c40fbbe3e9de6b9704f1
+index 0000000000000000000000000000000000000000..d2433ea6a0020faf337703308d245c742d2045d6
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/commands/CommandPlugins.java
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,42 @@
 +package com.mrivanplays.ivancord.commands;
 +
 +import java.util.Collection;
@@ -36,6 +36,11 @@ index 0000000000000000000000000000000000000000..5d6a1d0c22a94b049636c40fbbe3e9de
 +    {
 +        ProxyServer proxy = ProxyServer.getInstance();
 +        Collection<Plugin> pluginsCol = proxy.getPluginManager().getPlugins();
++        if ( pluginsCol.isEmpty() )
++        {
++            sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "command_plugins_message", 0 ," " ) ) );
++            return;
++        }
 +        StringBuilder pluginsList = new StringBuilder();
 +        for ( Plugin plugin : pluginsCol )
 +        {
@@ -85,10 +90,10 @@ index 69000b1ee51231aba28a3a85166c50372ff0355f..c52688dd376927d648638d8c531176b9
          }
  
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 6a60e8d54b3a11974e412cd41934087b6500894f..02a59298a735703182c120da5a6390fc694c4fe9 100644
+index 0ba2426ebb6adfac92c981269a3956a4d48869bb..7da917b69f08dcbd941c87b98e090e8ea0324cfd 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -37,3 +37,4 @@ command_perms_permission=\u00a79- {0}
+@@ -40,3 +40,4 @@ command_perms_permission=\u00a79- {0}
  command_ip=\u00a79IP of {0} is {1}
  illegal_chat_characters=\u00a7cillegal characters in chat ({0})
  kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}

@@ -8,10 +8,10 @@ Replaced by janmm14's original implementation, found here:
 https://github.com/SpigotMC/BungeeCord/commit/f9583a7652c04e42b6b6a43268750d4a31a256b6
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 0507addcc9f8fd3fe75b75a877ff42224743a49c..2e0db3dd4a6cb982a5e8df8bb73cbf57fee46f4b 100644
+index fb3df35b2a0b9099d2bc2c9f9d870f32cdb89398..a4d58bcf738c639a474401f1a4fb0654f8b8caec 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -442,8 +442,19 @@ public final class UserConnection implements ProxiedPlayer
+@@ -443,8 +443,19 @@ public final class UserConnection implements ProxiedPlayer
  
      private String connectionFailMessage(Throwable cause)
      {
@@ -32,10 +32,10 @@ index 0507addcc9f8fd3fe75b75a877ff42224743a49c..2e0db3dd4a6cb982a5e8df8bb73cbf57
  
      @Override
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 8f35c41a0ce99af51b9ec923dbf114ce8a452491..2537a07e69e551c265bcb04fb79cfd8714046c76 100644
+index dc57b050c15dafb16a0e7e6fef0a17c65ee05059..301b8309330ac4d41ec914d31a03a97e5ea4509e 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -40,3 +40,4 @@ kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sen
+@@ -43,3 +43,4 @@ kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sen
  command_plugins_message=Plugins ({0}): {1}
  internal_error_executing=\u00a7cAn internal error occurred whilst executing this command, please check the console log for details.
  internal_error_completing=\u00a7cAn internal error occurred whilst tab completing this command, please check the console log for details.

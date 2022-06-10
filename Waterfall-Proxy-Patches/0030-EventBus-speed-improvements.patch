@@ -71,10 +71,10 @@ index 7ea5d8f345d768a7174e993a124b27339a3f17c0..8b958d760d28bd03496071889d73ba70
      }
  
 diff --git a/event/pom.xml b/event/pom.xml
-index 2b425a3fc20242fdfb746aa5baa2c5835fcb45a8..862c281eefc4ef94f102e8c5640d1d8cb2179f39 100644
+index 62f8beaba887ddb870632fa1ab87864bb9bedd68..b062ab3dcc543696cb266da719dd6bc2a9bdc5c1 100644
 --- a/event/pom.xml
 +++ b/event/pom.xml
-@@ -16,4 +16,15 @@
+@@ -15,4 +15,15 @@
  
      <name>IvanCord-Event</name>
      <description>Generic java event dispatching API intended for use with IvanCord</description>
