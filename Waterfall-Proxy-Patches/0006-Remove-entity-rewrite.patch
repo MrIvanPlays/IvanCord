@@ -103,10 +103,10 @@ index 849ba1cf93a234f71b363073904efa52ca6d7ce5..d4d7323a084ccae0444c428a266ead50
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 014383b33067ebbf3604c94aed499343360ef09c..eb80424f4967989dfe548837fb72c16afb158b6b 100644
+index f5a675a9edf05722bb5d1ff4ee3b415d2f631ae2..feeef3a8cde34c477e83c0784dd00ea637149e83 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -135,6 +135,8 @@ public enum Protocol
+@@ -137,6 +137,8 @@ public enum Protocol
                      PlayerChat::new,
                      map( ProtocolConstants.MINECRAFT_1_19, 0x30 )
              );
@@ -115,15 +115,15 @@ index 014383b33067ebbf3604c94aed499343360ef09c..eb80424f4967989dfe548837fb72c16a
              // Waterfall start
              TO_CLIENT.registerPacket(
                      EntityEffect.class,
-@@ -149,6 +151,7 @@ public enum Protocol
-                     map(ProtocolConstants.MINECRAFT_1_9, Integer.MIN_VALUE)
+@@ -151,6 +153,7 @@ public enum Protocol
+                     map(ProtocolConstants.MINECRAFT_1_9, -1)
              );
              // Waterfall end
 +            */ // IvanCord end
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      PlayerListItem::new,
-@@ -175,6 +178,8 @@ public enum Protocol
+@@ -177,6 +180,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_17, 0x11 ),
                      map( ProtocolConstants.MINECRAFT_1_19, 0x0E )
              );
@@ -132,7 +132,7 @@ index 014383b33067ebbf3604c94aed499343360ef09c..eb80424f4967989dfe548837fb72c16a
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
                      ScoreboardObjective::new,
-@@ -223,6 +228,8 @@ public enum Protocol
+@@ -225,6 +230,8 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_15, 0x4C ),
                      map( ProtocolConstants.MINECRAFT_1_17, 0x55 )
              );

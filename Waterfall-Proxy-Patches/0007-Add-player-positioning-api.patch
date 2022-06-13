@@ -164,10 +164,10 @@ index 558d0dbb4c7b7b41c840241d9023001739133ddf..5e7cbc944007ac883bc1b5e6f2077e24
      public void handle(EntityEffect entityEffect) throws Exception
      {
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index eb80424f4967989dfe548837fb72c16afb158b6b..32b87b42acd3d3bd566488416dfc5fc182febbbf 100644
+index feeef3a8cde34c477e83c0784dd00ea637149e83..c1455f909d14486d49291931fdefe4187a428963 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -34,6 +34,7 @@ import net.md_5.bungee.protocol.packet.PingPacket;
+@@ -36,6 +36,7 @@ import net.md_5.bungee.protocol.packet.PingPacket;
  import net.md_5.bungee.protocol.packet.PlayerChat;
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
@@ -175,7 +175,7 @@ index eb80424f4967989dfe548837fb72c16afb158b6b..32b87b42acd3d3bd566488416dfc5fc1
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-@@ -415,6 +416,21 @@ public enum Protocol
+@@ -417,6 +418,21 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_17, 0x0A ),
                      map( ProtocolConstants.MINECRAFT_1_19, 0x0C )
              );
