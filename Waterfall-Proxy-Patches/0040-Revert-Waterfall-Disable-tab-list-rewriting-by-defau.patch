@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ivan Pekov <ivan@mrivanplays.com>
+Date: Tue, 21 Jun 2022 08:27:57 +0300
+Subject: [PATCH] Revert Waterfall "Disable tab list rewriting by default"
+
+Breaks skin plugins
+Skin API coming soon:tm:
+
+diff --git a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+index 551258c294955e75916cdef3e93f418a9ea9ba79..2ac56858fdc107a194c0fd6c8894a5da778a0a93 100644
+--- a/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
++++ b/proxy/src/main/java/io/github/waterfallmc/waterfall/conf/WaterfallConfiguration.java
+@@ -43,7 +43,7 @@ public abstract class WaterfallConfiguration extends Configuration { // IvanCord
+     private boolean disableModernTabLimiter = true;
+ 
+     private boolean disableEntityMetadataRewrite = true; // IvanCord - default to true
+-    private boolean disableTabListRewrite = true;
++    private boolean disableTabListRewrite = false; // IvanCord - revert waterfall change
+ 
+     /*
+      * Plugin Message limiting options

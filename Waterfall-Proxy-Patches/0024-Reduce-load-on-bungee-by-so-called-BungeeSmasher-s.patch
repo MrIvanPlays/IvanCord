@@ -349,7 +349,7 @@ index d45a6140780f592d9f8c67cf2f7cb83496a14681..9d768f9bd262bb87e904f8b35a5d2978
      {
          if ( !closed && ch.isActive() ) // IvanCord
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
-index 3349423720023870b1e1b5a127da7e154e53139f..9d641bf563ce1c409305d37cf23aba5c3cacd077 100644
+index 29cf4b4fc6f954c16bf41a7818bc1ae67b0cbcdd..3470aad02d79a5666e9a158036156c7a158070e7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/HandlerBoss.java
 @@ -27,6 +27,11 @@ import net.md_5.bungee.util.QuietException;
@@ -387,7 +387,7 @@ index 3349423720023870b1e1b5a127da7e154e53139f..9d641bf563ce1c409305d37cf23aba5c
              boolean logExceptions = !( handler instanceof PingHandler );
  
              if ( logExceptions )
-@@ -160,6 +181,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -168,6 +189,14 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
                          {
                              handler, cause.getCause().getMessage()
                          } );
@@ -402,7 +402,7 @@ index 3349423720023870b1e1b5a127da7e154e53139f..9d641bf563ce1c409305d37cf23aba5c
                      } else
                      {
                          ProxyServer.getInstance().getLogger().log( Level.WARNING, "{0} - could not decode packet! {1}", new Object[]
-@@ -196,7 +225,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
+@@ -204,7 +233,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter
                  }
              }
  
