@@ -536,10 +536,10 @@ index 0000000000000000000000000000000000000000..96063a5982f7f403c3f26998542517e1
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 052fca4b0208b1e9f9846bce2cc70dd43e5705fd..ded4615dd87dbf01127e74b468909de4212dc2f7 100644
+index 2f3a886807f160b2ba27a6ba157d7227db193866..bd77392969aa1a6ff690109ab459e191c1703fde 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -108,6 +108,8 @@ import com.mrivanplays.ivancord.commands.op.CommandOp;
+@@ -98,6 +98,8 @@ import net.md_5.bungee.util.CaseInsensitiveMap;
  import com.mrivanplays.ivancord.JsonReconnectHandler;
  import com.mrivanplays.ivancord.ReconnectHandlerType;
  import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
@@ -548,7 +548,7 @@ index 052fca4b0208b1e9f9846bce2cc70dd43e5705fd..ded4615dd87dbf01127e74b468909de4
  // IvanCord end
  
  /**
-@@ -196,6 +198,11 @@ public class BungeeCord extends ProxyServer
+@@ -183,6 +185,11 @@ public class BungeeCord extends ProxyServer
      private final ModuleManager moduleManager = new ModuleManager();
       */
  
@@ -560,7 +560,7 @@ index 052fca4b0208b1e9f9846bce2cc70dd43e5705fd..ded4615dd87dbf01127e74b468909de4
      {
          // TODO: Proper fallback when we interface the manager
          registerChannel( "BungeeCord" );
-@@ -314,6 +321,10 @@ public class BungeeCord extends ProxyServer
+@@ -302,6 +309,10 @@ public class BungeeCord extends ProxyServer
          pluginsFolder.mkdir();
          pluginManager.detectPlugins( pluginsFolder );
  

@@ -2330,10 +2330,10 @@ index 21aa9675081adf6213c37aba51a33b4fae39a859..31408d5506dfef5a0b6f22444746e946
          } else
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7c3b2680956cf361e569a1d772e50d177a06b7c7..0ac34fd7ddf4f08abc5bf7f3c54585bdf2ba9d92 100644
+index 57e235666c7af0a9982cc05e2667b5d2ab929810..edd43f8232dd1947833381375546dcad110922d7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -899,5 +899,22 @@ public class BungeeCord extends ProxyServer
+@@ -887,5 +887,22 @@ public class BungeeCord extends ProxyServer
      {
          return playerdata.getOfflinePlayers();
      }
@@ -2689,11 +2689,11 @@ index 28165d97190823b29a7ed91b393b1e71bfef406e..5b804c3247edcfa186e270499061730d
  
      @Override
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 7da917b69f08dcbd941c87b98e090e8ea0324cfd..dc57b050c15dafb16a0e7e6fef0a17c65ee05059 100644
+index eefe6010a1c68a78f407527b55e28b36a00f6790..b93e3fc161542b0adc457ee679df1567cd2738ea 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -41,3 +41,5 @@ command_ip=\u00a79IP of {0} is {1}
- illegal_chat_characters=\u00a7cillegal characters in chat ({0})
+@@ -42,3 +42,5 @@ illegal_chat_characters=\u00a7cillegal characters in chat ({0})
+ kick_message=\u00a7cYou have been kicked off the proxy.
  kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
  command_plugins_message=Plugins ({0}): {1}
 +internal_error_executing=\u00a7cAn internal error occurred whilst executing this command, please check the console log for details.

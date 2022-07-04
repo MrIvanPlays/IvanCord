@@ -42,10 +42,10 @@ index da0efa36f4fdb5bcfa652d67b9526a3d88dc92fa..8977aaf3836f18cea4f2f585363470ee
      /**
       * Whether we log InitialHandler connections
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 2988448ba1534c9f819bd7a4c7b644dce8cc7e4d..083c7f81cae68c0c578dcb7797b8e67a966b8733 100644
+index 7b3c91b66ab7ad21852c70f410ec7707e87fbd7f..dc1514ff31a2990678f6ca0dac91ce94248372d3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -117,7 +117,7 @@ public class BungeeCord extends ProxyServer
+@@ -108,7 +108,7 @@ public class BungeeCord extends ProxyServer
       * Configuration.
       */
      @Getter

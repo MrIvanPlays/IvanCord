@@ -53,48 +53,40 @@ index 0000000000000000000000000000000000000000..d2433ea6a0020faf337703308d245c74
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 083c7f81cae68c0c578dcb7797b8e67a966b8733..f9c131b339eb6816848bea76c4b1e2ce6513b741 100644
+index dc1514ff31a2990678f6ca0dac91ce94248372d3..03792b62d89ae7fca96e52fab4bb44705c39d4a5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -101,6 +101,7 @@ import com.mrivanplays.ivancord.modules.CommandFind;
- import com.mrivanplays.ivancord.modules.CommandList;
- import com.mrivanplays.ivancord.modules.CommandSend;
- import com.mrivanplays.ivancord.modules.CommandServer;
-+import com.mrivanplays.ivancord.commands.CommandPlugins;
- // IvanCord end
- 
- /**
-@@ -251,6 +252,10 @@ public class BungeeCord extends ProxyServer
-         getPluginManager().registerCommand( null, new CommandServer() );
+@@ -243,6 +243,10 @@ public class BungeeCord extends ProxyServer
+         getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.modules.CommandKick() );
          // IvanCord end
  
 +        // IvanCord start - specific commands to IvanCord
-+        getPluginManager().registerCommand( null, new CommandPlugins() );
++        getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.commands.CommandPlugins() );
 +        // IvanCord end
 +
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
              if ( EncryptionUtil.nativeFactory.load() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 69000b1ee51231aba28a3a85166c50372ff0355f..c52688dd376927d648638d8c531176b9ca3681a7 100644
+index 30672e8c39b5590a9ba356a9d66bc52f9446ff7c..da9b8701c60709441fed6e02345734940935ef4d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -106,7 +106,8 @@ public class YamlConfig implements ConfigurationAdapter
              } ) );
              set( "permissions.admin", Arrays.asList( new String[]
              {
--                "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload"
-+                "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload",
+-                "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload", "bungeecord.command.kick"
++                "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload", "bungeecord.command.kick",
 +                    "ivancord.command.plugins" // IvanCord - plugins command
              } ) );
          }
  
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 0ba2426ebb6adfac92c981269a3956a4d48869bb..7da917b69f08dcbd941c87b98e090e8ea0324cfd 100644
+index a96e9209a361892560a1c0c2573d882c5b7fdd33..eefe6010a1c68a78f407527b55e28b36a00f6790 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -40,3 +40,4 @@ command_perms_permission=\u00a79- {0}
- command_ip=\u00a79IP of {0} is {1}
+@@ -41,3 +41,4 @@ command_ip=\u00a79IP of {0} is {1}
  illegal_chat_characters=\u00a7cillegal characters in chat ({0})
+ kick_message=\u00a7cYou have been kicked off the proxy.
  kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
 +command_plugins_message=Plugins ({0}): {1}

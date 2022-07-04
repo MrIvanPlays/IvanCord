@@ -114,11 +114,11 @@ index 97c4b210e1ea6e52f8ab7273ba5111fbe0651aac..31ac791d12b3edf1ac1ed9cffa3f5f20
          throw CancelSendSignal.INSTANCE;
      }
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 2b05a2ddb5a322b29b8a535f94a06d2f9aac458b..0ba2426ebb6adfac92c981269a3956a4d48869bb 100644
+index 58380d4a9f612538bed3076565cda2b46a349567..a96e9209a361892560a1c0c2573d882c5b7fdd33 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -39,3 +39,4 @@ command_perms_groups=\u00a76You have the following groups: {0}
- command_perms_permission=\u00a79- {0}
+@@ -40,3 +40,4 @@ command_perms_permission=\u00a79- {0}
  command_ip=\u00a79IP of {0} is {1}
  illegal_chat_characters=\u00a7cillegal characters in chat ({0})
+ kick_message=\u00a7cYou have been kicked off the proxy.
 +kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}

@@ -183,20 +183,23 @@ index 6de414ca098ea7335e63b6c672f90e4e7240ca58..8da2ff6a2b590968422c23a456552223
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index aad19a00092e3d3abd4cf76b2e28305b9b7beed7..12f1a195e85c4133918f162661dbc0dabac05dd2 100644
+index 9681e3ef7572eea094f9859c288e38d0c139f3bf..1f442865684aacfa7de5faf70a5f74edaf2a552d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -105,6 +105,9 @@ import com.mrivanplays.ivancord.commands.CommandPlugins;
- import com.mrivanplays.ivancord.conf.OpsConfiguration;
- import com.mrivanplays.ivancord.commands.op.CommandDeop;
- import com.mrivanplays.ivancord.commands.op.CommandOp;
+@@ -94,6 +94,12 @@ import net.md_5.bungee.query.RemoteQuery;
+ import net.md_5.bungee.scheduler.BungeeScheduler;
+ import net.md_5.bungee.util.CaseInsensitiveMap;
+ 
++// IvanCord start
 +import com.mrivanplays.ivancord.JsonReconnectHandler;
 +import com.mrivanplays.ivancord.ReconnectHandlerType;
 +import com.mrivanplays.ivancord.modules.YamlReconnectHandler;
- // IvanCord end
- 
++// IvanCord end
++
  /**
-@@ -323,6 +326,23 @@ public class BungeeCord extends ProxyServer
+  * Main BungeeCord proxy class.
+  */
+@@ -308,6 +314,23 @@ public class BungeeCord extends ProxyServer
  
          isRunning = true;
  

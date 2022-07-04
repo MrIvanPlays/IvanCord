@@ -35,15 +35,15 @@ index 4baa06a9c8d2ffa392d18fdeba3e80cd71ae23d0..da6247837d021e0ec38688908fffcfca
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index e1b8b2813973a09d1b5c87cc1e94714c8f4abd9b..ccabd84dfd3cee30179701dcd58029e80a52abf1 100644
+index 58b8380fbd3ff3c3bddfc8d3d958f6417f912752..60101d2e135a97429f5a6ee3ebf2cd8e48235f5b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -234,7 +234,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -232,7 +232,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                     }
+                 };
+ 
+-                bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandler.this, result, callback ) );
++                bungee.getPluginManager().callEvent( new ProxyPingEvent( InitialHandler.this, result, legacy, callback ) ); // IvanCord
              }
          };
  
--        bungee.getPluginManager().callEvent( new ProxyPingEvent( this, legacy, callback ) );
-+        bungee.getPluginManager().callEvent( new ProxyPingEvent( this, legacy, true, callback ) ); // IvanCord
-     }
- 
-     private static String getFirstLine(String str)

@@ -253,36 +253,23 @@ index 0000000000000000000000000000000000000000..8a99463de283645730f4578eb4c38ba3
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f9c131b339eb6816848bea76c4b1e2ce6513b741..aad19a00092e3d3abd4cf76b2e28305b9b7beed7 100644
+index 03792b62d89ae7fca96e52fab4bb44705c39d4a5..9681e3ef7572eea094f9859c288e38d0c139f3bf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -102,6 +102,9 @@ import com.mrivanplays.ivancord.modules.CommandList;
- import com.mrivanplays.ivancord.modules.CommandSend;
- import com.mrivanplays.ivancord.modules.CommandServer;
- import com.mrivanplays.ivancord.commands.CommandPlugins;
-+import com.mrivanplays.ivancord.conf.OpsConfiguration;
-+import com.mrivanplays.ivancord.commands.op.CommandDeop;
-+import com.mrivanplays.ivancord.commands.op.CommandOp;
- // IvanCord end
- 
- /**
-@@ -119,6 +122,10 @@ public class BungeeCord extends ProxyServer
+@@ -109,6 +109,7 @@ public class BungeeCord extends ProxyServer
       */
      @Getter
      public final Configuration config = new com.mrivanplays.ivancord.conf.IvanCordConfiguration(); // IvanCord - ivancord specific configuration
-+    // IvanCord start
-+    @Getter
-+    private OpsConfiguration opsConfiguration = new OpsConfiguration();
-+    // IvanCord end
++    @Getter private com.mrivanplays.ivancord.conf.OpsConfiguration opsConfiguration = new com.mrivanplays.ivancord.conf.OpsConfiguration(); // IvanCord
      /**
       * Localization bundle.
       */
-@@ -254,6 +261,8 @@ public class BungeeCord extends ProxyServer
+@@ -245,6 +246,8 @@ public class BungeeCord extends ProxyServer
  
          // IvanCord start - specific commands to IvanCord
-         getPluginManager().registerCommand( null, new CommandPlugins() );
-+        getPluginManager().registerCommand( null, new CommandOp() );
-+        getPluginManager().registerCommand( null, new CommandDeop() );
+         getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.commands.CommandPlugins() );
++        getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.commands.op.CommandOp() );
++        getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.commands.op.CommandDeop() );
          // IvanCord end
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
@@ -343,13 +330,13 @@ index 1fcdbb9e150b5730485d7f7c21fc98ab3c9fe46b..90d99a85844a7a31d02c2ffbd4a458d7
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index c52688dd376927d648638d8c531176b9ca3681a7..6fd9f00016f547bab91174a5e252cc19721d9795 100644
+index da9b8701c60709441fed6e02345734940935ef4d..57b0bc776f76a8c6a444e68458fffff65197036d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -107,7 +107,7 @@ public class YamlConfig implements ConfigurationAdapter
              set( "permissions.admin", Arrays.asList( new String[]
              {
-                 "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload",
+                 "bungeecord.command.alert", "bungeecord.command.end", "bungeecord.command.ip", "bungeecord.command.reload", "bungeecord.command.kick",
 -                    "ivancord.command.plugins" // IvanCord - plugins command
 +                    "ivancord.command.plugins", "ivancord.command.op", "ivancord.command.deop" // IvanCord - specific commands
              } ) );

@@ -179,6 +179,85 @@ index 0000000000000000000000000000000000000000..f8cd072326c78518f6b2dec796fc3eaa
 +    }
 +}
 \ No newline at end of file
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandKick.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandKick.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d3a273d4ada5f2807861c49a744a94e4dbb66fec
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandKick.java
+@@ -0,0 +1,73 @@
++package com.mrivanplays.ivancord.modules;
++
++import com.google.common.base.Joiner;
++import com.google.common.collect.ImmutableSet;
++import java.util.HashSet;
++import java.util.Locale;
++import java.util.Set;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.CommandSender;
++import net.md_5.bungee.api.ProxyServer;
++import net.md_5.bungee.api.chat.TextComponent;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.TabExecutor;
++
++// copied from module/cmd-kick
++public class CommandKick extends Command implements TabExecutor
++{
++
++    public CommandKick()
++    {
++        super( "gkick", "bungeecord.command.kick" );
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args)
++    {
++        if ( args.length == 0 )
++        {
++            sender.sendMessage( ProxyServer.getInstance().getTranslation( "username_needed" ) );
++        } else
++        {
++            ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
++
++            if ( player == null )
++            {
++                sender.sendMessage( TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "user_not_online" ) ) );
++                return;
++            }
++
++            if ( args.length == 1 )
++            {
++                player.disconnect( TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "kick_message" ) ) );
++            } else
++            {
++                String[] reason = new String[ args.length - 1 ];
++                System.arraycopy( args, 1, reason, 0, reason.length );
++                player.disconnect( TextComponent.fromLegacyText( ChatColor.translateAlternateColorCodes( '&', Joiner.on( ' ' ).join( reason ) ) ) );
++            }
++        }
++    }
++
++    @Override
++    public Iterable<String> onTabComplete(CommandSender sender, String[] args)
++    {
++        if ( args.length == 1 )
++        {
++            Set<String> matches = new HashSet<>();
++            String search = args[0].toLowerCase( Locale.ROOT );
++            for ( ProxiedPlayer player : ProxyServer.getInstance().getPlayers() )
++            {
++                if ( player.getName().toLowerCase( Locale.ROOT ).startsWith( search ) )
++                {
++                    matches.add( player.getName() );
++                }
++            }
++            return matches;
++        } else
++        {
++            return ImmutableSet.of();
++        }
++    }
++}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..71a6d808da8fe2e01bc6c67f415ac90179578d3e
@@ -691,26 +770,10 @@ index 0000000000000000000000000000000000000000..4915d8d7b55c1f6d16ad55024ec807a2
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d3b769f59d618096423714dfdcbd08e4b81e6e4e..a29754e062a4eee33598937fe57fbd19ab402bc1 100644
+index d3b769f59d618096423714dfdcbd08e4b81e6e4e..fe3f83cf4c9b58bff909ffe292e9916d82e56177 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -94,6 +94,15 @@ import net.md_5.bungee.query.RemoteQuery;
- import net.md_5.bungee.scheduler.BungeeScheduler;
- import net.md_5.bungee.util.CaseInsensitiveMap;
- 
-+// IvanCord start
-+import com.mrivanplays.ivancord.modules.CommandAlert;
-+import com.mrivanplays.ivancord.modules.CommandAlertRaw;
-+import com.mrivanplays.ivancord.modules.CommandFind;
-+import com.mrivanplays.ivancord.modules.CommandList;
-+import com.mrivanplays.ivancord.modules.CommandSend;
-+import com.mrivanplays.ivancord.modules.CommandServer;
-+// IvanCord end
-+
- /**
-  * Main BungeeCord proxy class.
-  */
-@@ -172,7 +181,9 @@ public class BungeeCord extends ProxyServer
+@@ -172,7 +172,9 @@ public class BungeeCord extends ProxyServer
              .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
      @Getter
      private ConnectionThrottle connectionThrottle;
@@ -720,23 +783,24 @@ index d3b769f59d618096423714dfdcbd08e4b81e6e4e..a29754e062a4eee33598937fe57fbd19
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -231,6 +242,15 @@ public class BungeeCord extends ProxyServer
+@@ -231,6 +233,16 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandBungee() );
          getPluginManager().registerCommand( null, new CommandPerms() );
  
 +        // IvanCord start - register module commands
-+        getPluginManager().registerCommand( null, new CommandAlert() );
-+        getPluginManager().registerCommand( null, new CommandAlertRaw() );
-+        getPluginManager().registerCommand( null, new CommandFind() );
-+        getPluginManager().registerCommand( null, new CommandList() );
-+        getPluginManager().registerCommand( null, new CommandSend() );
-+        getPluginManager().registerCommand( null, new CommandServer() );
++        getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.modules.CommandAlert() );
++        getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.modules.CommandAlertRaw() );
++        getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.modules.CommandFind() );
++        getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.modules.CommandList() );
++        getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.modules.CommandSend() );
++        getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.modules.CommandServer() );
++        getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.modules.CommandKick() );
 +        // IvanCord end
 +
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
              if ( EncryptionUtil.nativeFactory.load() )
-@@ -268,9 +288,11 @@ public class BungeeCord extends ProxyServer
+@@ -268,9 +280,11 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  

@@ -125,7 +125,7 @@ index a4516ed96a91e257e7beab1479b812b185099168..37402b0ecce3076744034234f6ea638f
              return;
          }
 diff --git a/chat/pom.xml b/chat/pom.xml
-index 3ac27114e192fe60c2df090754d4aba3411ec6b9..856ae37ee79608f89966b5b9f247e05fe2e743e9 100644
+index 1a8b097db7f589cef292d99c38a69cdbd80dc680..255306d23e8fed3085e5d3d8cd8a36f6cdd2c0df 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -4,19 +4,17 @@
@@ -154,7 +154,7 @@ index 3ac27114e192fe60c2df090754d4aba3411ec6b9..856ae37ee79608f89966b5b9f247e05f
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index ac721ee36c338eaa9f4700fa0614e306e4c9f7a2..8f8f3f317873d2bb0934dc82f9e45b4c061b05ee 100644
+index 0b48084a74eb1451b589ebe9843124378b53cc26..80d88e6f42c14058225a0d3f0b99b3cc0d78a4fd 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,17 @@
@@ -640,7 +640,7 @@ index 720d0c3b5ef7107690757142a5ded0268a84270a..477c45ab5442e53956aa95c402adf424
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
-index 0644b8cd35d680b5e75452617cbaa9db8f3b6d6f..69000b1ee51231aba28a3a85166c50372ff0355f 100644
+index 0dd69778bd9132a26267a9200697ec721bc3b178..30672e8c39b5590a9ba356a9d66bc52f9446ff7c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 @@ -227,7 +227,7 @@ public class YamlConfig implements ConfigurationAdapter

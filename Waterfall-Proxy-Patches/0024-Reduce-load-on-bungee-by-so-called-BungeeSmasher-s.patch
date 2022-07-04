@@ -185,10 +185,10 @@ index ade7a2602645306116762f961662407bf1e08863..5e7410ed81ea00f2ac36990277abf8f7
  
      <!-- Waterfall start - copy license files into jar -->
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 9074c4c6c41a54d31ea359d5eccafc64e168c22e..a5e447ac60935fe97e0e450b77c2ef64aa26d2db 100644
+index da7dc8e4bda0b86641e5c1e782f26795f2796529..53a1fb1f1c427bd0d5d3bfc9ef71311d44ee88aa 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -420,7 +420,7 @@ public class BungeeCord extends ProxyServer
+@@ -408,7 +408,7 @@ public class BungeeCord extends ProxyServer
                  }
              };
              new ServerBootstrap()
@@ -197,7 +197,7 @@ index 9074c4c6c41a54d31ea359d5eccafc64e168c22e..a5e447ac60935fe97e0e450b77c2ef64
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( PipelineUtils.SERVER_CHILD )
-@@ -447,7 +447,7 @@ public class BungeeCord extends ProxyServer
+@@ -435,7 +435,7 @@ public class BungeeCord extends ProxyServer
                          }
                      }
                  };
@@ -246,10 +246,10 @@ index 67548b7e6cbb3db009335a796a16b11c9a7de29d..50d85372adfee814cd8ee434070d8e97
                  .handler( initializer )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index dcf2e13e6ad059fff7b5a75fffe447adf561b783..e1b8b2813973a09d1b5c87cc1e94714c8f4abd9b 100644
+index b688029296955d6bd1d54f88910476a36c4517a2..58b8380fbd3ff3c3bddfc8d3d958f6417f912752 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -146,9 +146,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -145,9 +145,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          if ( canSendKickMessage() )
          {
              disconnect( ChatColor.RED + Util.exception( t ) );
@@ -261,7 +261,7 @@ index dcf2e13e6ad059fff7b5a75fffe447adf561b783..e1b8b2813973a09d1b5c87cc1e94714c
          }
          // IvanCord start - implement LoginCancelledEvent
          new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY_EXCEPTION ).callEvent();
-@@ -160,7 +162,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -159,7 +161,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -270,7 +270,7 @@ index dcf2e13e6ad059fff7b5a75fffe447adf561b783..e1b8b2813973a09d1b5c87cc1e94714c
          }
      }
  
-@@ -329,6 +331,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -337,6 +339,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              handshake.setHost( split[0] );
              extraDataInHandshake = "\0" + split[1];
          }
@@ -278,7 +278,7 @@ index dcf2e13e6ad059fff7b5a75fffe447adf561b783..e1b8b2813973a09d1b5c87cc1e94714c
  
          // SRV records can end with a . depending on DNS / client.
          if ( handshake.getHost().endsWith( "." ) )
-@@ -373,7 +376,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -381,7 +384,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  break;
              default:
@@ -287,7 +287,7 @@ index dcf2e13e6ad059fff7b5a75fffe447adf561b783..e1b8b2813973a09d1b5c87cc1e94714c
          }
      }
  
-@@ -762,4 +765,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -770,4 +773,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              brandMessage = input;
          }
      }

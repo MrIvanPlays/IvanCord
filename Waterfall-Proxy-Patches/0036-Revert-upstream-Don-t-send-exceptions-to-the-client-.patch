@@ -32,10 +32,10 @@ index fb3df35b2a0b9099d2bc2c9f9d870f32cdb89398..a4d58bcf738c639a474401f1a4fb0654
  
      @Override
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index dc57b050c15dafb16a0e7e6fef0a17c65ee05059..301b8309330ac4d41ec914d31a03a97e5ea4509e 100644
+index b93e3fc161542b0adc457ee679df1567cd2738ea..972e301886ae20f58b929bf91ab010d50ef96993 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -43,3 +43,4 @@ kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sen
+@@ -44,3 +44,4 @@ kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sen
  command_plugins_message=Plugins ({0}): {1}
  internal_error_executing=\u00a7cAn internal error occurred whilst executing this command, please check the console log for details.
  internal_error_completing=\u00a7cAn internal error occurred whilst tab completing this command, please check the console log for details.
