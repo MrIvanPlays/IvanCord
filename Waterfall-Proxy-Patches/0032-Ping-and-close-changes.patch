@@ -7,10 +7,24 @@ close on exception whenever a channel is initializing and close without
 response on proxy ping if result is null.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 60101d2e135a97429f5a6ee3ebf2cd8e48235f5b..802a1d65c9a683ab356f59ef4bcc7a21200837f3 100644
+index 60101d2e135a97429f5a6ee3ebf2cd8e48235f5b..31ea1826b2e7bc4723289fc718f713fd4f985b17 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -285,6 +285,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -210,6 +210,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                         }
+ 
+                         ServerPing legacy = result.getResponse();
++                        // IvanCord start - do not send ping if result is null
++                        if ( legacy == null )
++                        {
++                            ch.close();
++                            return;
++                        }
++                        // IvanCord end
+                         String kickMessage;
+ 
+                         if ( v1_5 )
+@@ -285,6 +292,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
