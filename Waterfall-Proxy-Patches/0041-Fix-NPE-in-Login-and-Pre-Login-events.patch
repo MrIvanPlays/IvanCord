@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Outfluencer <48880402+Outfluencer@users.noreply.github.com>
+Date: Sun, 10 Jul 2022 20:39:40 +0300
+Subject: [PATCH] Fix NPE in Login and Pre-Login events
+
+If you cancel a Login or a PreLoginEvent without setting a disconnect message,
+you will get a NPE. This patch adds a null check to prevent the NPE and disconnects
+the player with the regular kick message if a disconnect message was not set.
+
+Fixes SpigotMC/BungeeCord#3355
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 63ba39da658e0a658d54e37027dca3ffa6f5cfb2..05b9c147f96e16823febbe119cad43676503038f 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -469,7 +469,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                     // IvanCord start - implement LoginCancelledEvent
+                     new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent();
+                     // IvanCord end
++                    // IvanCord start - fix npe from not specifying a cancel reason in PreLoginEvent
++                    if ( result.getCancelReasonComponents() != null )
++                    {
+                     disconnect( result.getCancelReasonComponents() );
++                    } else
++                    {
++                        disconnect( bungee.getTranslation( "kick_message" ) );
++                    }
++                    // IvanCord end
+                     return;
+                 }
+                 if ( ch.isClosed() )
+@@ -607,7 +615,15 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                     // IvanCord start - implement login cancelled event
+                     new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent();
+                     // IvanCord end
++                    // IvanCord start - fix npe from not specifying a cancel reason in LoginEvent
++                    if ( result.getCancelReasonComponents() != null )
++                    {
+                     disconnect( result.getCancelReasonComponents() );
++                    } else
++                    {
++                        disconnect( bungee.getTranslation( "kick_message" ) );
++                    }
++                    // IvanCord end
+                     return;
+                 }
+                 if ( ch.isClosed() )

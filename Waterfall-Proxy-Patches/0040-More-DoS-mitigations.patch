@@ -11,7 +11,7 @@ Updated to 1.19 by MrIvanPlays
 Co-authored-by: Ivan Pekov <ivan@mrivanplays.com>
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-index f33df1f37bda8327f12a55329b65f67d783c653c..7504b4df773660b288273573cdbfb2d42fd010b9 100644
+index f33df1f37bda8327f12a55329b65f67d783c653c..73f2308500b8b78b41d2e2523722034bd4b3c5c1 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 @@ -7,9 +7,17 @@ import io.netty.handler.codec.ByteToMessageDecoder;
@@ -32,7 +32,7 @@ index f33df1f37bda8327f12a55329b65f67d783c653c..7504b4df773660b288273573cdbfb2d4
      private static boolean DIRECT_WARNING;
  
      @Override
-@@ -46,6 +54,44 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
+@@ -46,6 +54,47 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
                  {
                      throw new CorruptedFrameException( "Empty Packet!" );
                  }
@@ -50,7 +50,10 @@ index f33df1f37bda8327f12a55329b65f67d783c653c..7504b4df773660b288273573cdbfb2d4
 +                            // than any of these, so no need for special casing
 +                            if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_19 )
 +                            {
-+                                maxLength = 832;
++                                // TODO: Temp disabled. Needs investigation!!!
++                                // me (MrIvanPlays) logging into a server with respectively the account MrIvanPlays
++                                // gets 832 length, but it looks like it's different per account and needs more investigation.
++                                maxLength = -1;
 +                                break;
 +                            }
 +                            maxLength = 66;
@@ -67,7 +70,7 @@ index f33df1f37bda8327f12a55329b65f67d783c653c..7504b4df773660b288273573cdbfb2d4
 +                            maxLength = 1619;
 +                            break;
 +                    }
-+                    if ( length > maxLength )
++                    if ( maxLength != -1 && length > maxLength )
 +                    {
 +                        com.mrivanplays.ivancord.shared.Errors.oversizedPacket( packetCount, maxLength, length );
 +                    }
@@ -102,19 +105,6 @@ index 7dbbfd3cd0212154ce27b1134e64b715d42e8096..1e5370117770a6daf7c22de2773c6ddd
 +    }
 +    // IvanCord end
  }
-diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index 836b47221de5bbd894dba3773a7af8c593a07c8f..b64e229f2b6e88e9d6a43e05745421ae41f2e239 100644
---- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-+++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-@@ -50,7 +50,7 @@ public class LoginRequest extends DefinedPacket
-     public int expectedMaxLength(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
-         // Accommodate the rare (but likely malicious) use of UTF-8 usernames, since it is technically
-         // legal on the protocol level.
--        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return -1;
-+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return 832; // IvanCord
-         return 1 + (16 * 4);
-     }
-     // Waterfall end
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 index c6d36cdbae92f3c483d390a6e971fff301f50a8a..487c1db411e8f9ff1feb20f4ced03ecdef7c53ec 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
@@ -177,24 +167,14 @@ index d4f27a5dba93817753beae73b5b0be0b87b7eef2..47ea350a4904ba8816e77a0b01f806bd
              ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
  
 diff --git a/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java b/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java
-index 15d4214c05eb4b83aa17665c909560d4c318f29c..f60493e14b26745644e6335a5eab1c0b16795df8 100644
+index 15d4214c05eb4b83aa17665c909560d4c318f29c..77b3a0a648214663db9c6d2b688e540baf9ad5f5 100644
 --- a/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java
 +++ b/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java
-@@ -15,6 +15,27 @@ public class Errors
+@@ -15,6 +15,17 @@ public class Errors
      private final QuietException UNEXPECTED_BUFFER_END = newError( "Buffer end reached unexpectedly" );
      private final QuietException BAD_FRAME_LENGTH = newError( "length wider than 21-bit" );
      private final QuietException DISCARD = newError( "Discard handler is added to the pipeline" );
 +    private final QuietException OVERSIZED_PACKET = newError( "A packet could not be framed because it was too large" );
-+    private final QuietException NO_PROTOCOL_SPECIFIED = newError( "No protocol specified" );
-+
-+    public void noProtocolSpecified()
-+    {
-+        if ( DEBUG )
-+        {
-+            throw new IllegalArgumentException( "No protocol specified" );
-+        }
-+        throw NO_PROTOCOL_SPECIFIED;
-+    }
 +
 +    public void oversizedPacket(int packetCount, int expected, int actual)
 +    {
