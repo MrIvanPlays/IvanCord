@@ -1,0 +1,504 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ivan Pekov <ivan@mrivanplays.com>
+Date: Sun, 10 Jul 2022 21:54:29 +0300
+Subject: [PATCH] Skins api
+
+This adds a way into IvanCord for plugins to modify the skin of a connection
+locally (locally meaning on the IvanCord instance the plugin modifying the skin
+is installed). Using this API will NOT modify the skin of the player the skin
+is set to globally (globally meaning changing the skin of the corresponding
+mojang/microsoft minecraft account bound to the specific username/uuid or on
+other servers using IvanCord).
+
+An example of setting a player's skin to Notch's skin in the LoginEvent:
+```java
+PendingConnection con = event.getConnection();
+event.registerIntent(this);
+getProxy()
+    .getSkinProvider()
+    .getSkin("Notch")
+    .whenComplete(
+        (skin, e) -> {
+          if (e != null) {
+            getLogger().log(Level.SEVERE, "Error whilst setting skin", e);
+            return;
+          }
+          con.setSkin(skin);
+          event.completeIntent(this);
+        });
+```
+
+Storing the set skin of a player is the plugin modifying the skin's
+responcibility.
+
+There's a cache of 20 minutes for each skin retrieved by the skins api.
+
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/skin/Skin.java b/api/src/main/java/com/mrivanplays/ivancord/api/skin/Skin.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..79ceb9c108490a6bea86266efc2df100f1e260f3
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/skin/Skin.java
+@@ -0,0 +1,40 @@
++package com.mrivanplays.ivancord.api.skin;
++
++import java.util.UUID;
++import lombok.AccessLevel;
++import lombok.EqualsAndHashCode;
++import lombok.Getter;
++import lombok.RequiredArgsConstructor;
++import net.md_5.bungee.protocol.Property;
++
++/**
++ * Represents a player skin.
++ *
++ * @author MrIvanPlays
++ */
++@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
++@Getter
++@EqualsAndHashCode
++public final class Skin
++{
++
++    /**
++     * Returns the "textures" {@link Property} of this skin.
++     */
++    private final Property property;
++
++    /**
++     * Returns the owner of this skin's username. This does not mean it is the
++     * name of the player whom this skin is set to, it means the username
++     * according to sessionserver.mojang.com.
++     */
++    private final String ownerUsername;
++
++    /**
++     * Returns the owner of this skin's {@link UUID}. This does not mean it is
++     * the uuid of the player whom this skin is set ot, it means the online uuid
++     * according to api.mojang.com.
++     */
++    private final UUID ownerUuid;
++
++}
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/skin/SkinProvider.java b/api/src/main/java/com/mrivanplays/ivancord/api/skin/SkinProvider.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..af9222297d7d611552e267958914a6ce8895e378
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/skin/SkinProvider.java
+@@ -0,0 +1,35 @@
++package com.mrivanplays.ivancord.api.skin;
++
++import java.util.UUID;
++import java.util.concurrent.CompletableFuture;
++
++/**
++ * Returns the skin provider.
++ * <br><b>WARNING: Every method call may be cached, so it may not return the up
++ * to date skin.</b>
++ *
++ * @author MrIvanPlays
++ */
++public interface SkinProvider
++{
++
++    /**
++     * Returns the {@link Skin} of the specified {@code ownerUsername}. If none,
++     * {@code null} result would be given in the returned
++     * {@link CompletableFuture}
++     *
++     * @param ownerUsername the username of the player skin is wanted
++     * @return future which may be fulfilled with the skin.
++     */
++    CompletableFuture<Skin> getSkin(String ownerUsername);
++
++    /**
++     * Returns the {@link Skin} of the specified {@link UUID} {@code ownerUuid}.
++     * If none, {@code null} result would be given in the returned
++     * {@link CompletableFuture}
++     *
++     * @param ownerUuid the uuid of the player skin is wanted
++     * @return future which may be fulfilled with the skin.
++     */
++    CompletableFuture<Skin> getSkin(UUID ownerUuid);
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index 1568ebe294c028eb380c10fb306c32b6f8ce5416..45e9a8b4ab11fb51d635573a8dcbdb61eddf5682 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -372,6 +372,13 @@ public abstract class ProxyServer
+      */
+     public abstract ProxiedPlayer getPlayerFromProto(com.mrivanplays.ivancord.api.command.arguments.PlayerArgument.ProtoPlayer protoPlayer);
+ 
++    /**
++     * Returns the {@link com.mrivanplays.ivancord.api.skin.Skin} provider.
++     *
++     * @return skin provider
++     */
++    public abstract com.mrivanplays.ivancord.api.skin.SkinProvider getSkinProvider();
++
+     // IvanCord end
+ 
+ }
+diff --git a/api/src/main/java/net/md_5/bungee/api/connection/PendingConnection.java b/api/src/main/java/net/md_5/bungee/api/connection/PendingConnection.java
+index f497395eb2587b46fab991f3cf5f6285320126cc..23d9398a99285b510b6cc322b87f1e50b5dc3a77 100644
+--- a/api/src/main/java/net/md_5/bungee/api/connection/PendingConnection.java
++++ b/api/src/main/java/net/md_5/bungee/api/connection/PendingConnection.java
+@@ -89,4 +89,32 @@ public interface PendingConnection extends Connection
+      * @return Whether the client is using a legacy client.
+      */
+     boolean isLegacy();
++
++    // IvanCord start
++
++    /**
++     * Returns the {@link com.mrivanplays.ivancord.api.skin.Skin} of this
++     * connection. May be null. The nullability may depend on which time you're
++     * trying to access it.
++     *
++     * @return skin of the connection
++     */
++    com.mrivanplays.ivancord.api.skin.Skin getSkin();
++
++    /**
++     * Sets a new {@link com.mrivanplays.ivancord.api.skin.Skin} for this
++     * connection. The set skin will only apply if it's being set in
++     * {@link net.md_5.bungee.api.event.ServerConnectEvent} or events which
++     * fire
++     * <b>BEFORE</b> ServerConnectEvent. Otherwise, setting the skin won't take
++     * effect immediately, rather it may take effect when the connection
++     * switches servers.
++     * <br><b>WARNING: This only sets the skin of this connection only in this
++     * IvanCord instance. Does not globally modify the skin of the account,
++     * neither it can set it on other servers running IvanCord.</b>
++     *
++     * @param skin the skin to set.
++     */
++    void setSkin(com.mrivanplays.ivancord.api.skin.Skin skin);
++    // IvanCord end
+ }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Property.java b/protocol/src/main/java/net/md_5/bungee/protocol/Property.java
+index 2e0b1d73a15edbe1ba678f7aaddbbd70d32e7839..3d399b5aea9115e29841988369a715813ef3862c 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Property.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Property.java
+@@ -3,14 +3,30 @@ package net.md_5.bungee.protocol;
+ import lombok.AllArgsConstructor;
+ import lombok.Data;
+ 
++// IvanCord start - document
++/**
++ * Represents a player profile property.
++ */
++// IvanCord end
+ @Data
+ @AllArgsConstructor
+ public class Property
+ {
+ 
++    // IvanCord start - document
++    /**
++     * Returns the property name.
++     */
+     private String name;
++    /**
++     * Returns the property value.
++     */
+     private String value;
++    /**
++     * Returns the property signature (if any/needed).
++     */
+     private String signature;
++    // IvanCord end
+ 
+     public Property(String name, String value)
+     {
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/BungeeSkinProvider.java b/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/BungeeSkinProvider.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e2f5c5d5e55e013da7e1a511809ac3fd63f51e93
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/BungeeSkinProvider.java
+@@ -0,0 +1,128 @@
++package com.mrivanplays.ivancord.api.skin;
++
++import com.google.common.cache.CacheBuilder;
++import com.google.common.cache.CacheLoader;
++import com.google.common.cache.LoadingCache;
++import com.google.gson.JsonElement;
++import com.google.gson.JsonObject;
++import io.github.waterfallmc.waterfall.utils.UUIDUtils;
++import java.io.InputStreamReader;
++import java.io.Reader;
++import java.net.URL;
++import java.time.Duration;
++import java.util.UUID;
++import java.util.concurrent.CompletableFuture;
++import java.util.logging.Level;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.protocol.Property;
++
++public class BungeeSkinProvider implements SkinProvider
++{
++
++    private final BungeeCord bungee;
++
++    private LoadingCache<String, UUID> cachedUuids;
++    private LoadingCache<UUID, Skin> skinsCache;
++
++    public BungeeSkinProvider(BungeeCord bungee)
++    {
++        this.bungee = bungee;
++        this.cachedUuids = CacheBuilder.newBuilder().build( new CacheLoader<String, UUID>()
++        {
++
++            @Override
++            public UUID load(String key) throws Exception
++            {
++                URL url = new URL( "https://api.mojang.com/users/profiles/minecraft/" + key );
++                try ( Reader in = new InputStreamReader( url.openStream() ) )
++                {
++                    return UUIDUtils.fromMojangString( BungeeCord.getInstance().gson.fromJson( in, JsonObject.class ).get( "id" ).getAsString() );
++                }
++            }
++        } );
++        this.skinsCache = CacheBuilder.newBuilder().expireAfterWrite( Duration.ofMinutes( 20 ) ).build( new CacheLoader<UUID, Skin>()
++        {
++
++            @Override
++            public Skin load(UUID key) throws Exception
++            {
++                URL url = new URL( "https://sessionserver.mojang.com/session/minecraft/profile/" + UUIDUtils.undash( key.toString() ) + "?unsigned=false" );
++                try ( Reader in = new InputStreamReader( url.openStream() ) )
++                {
++                    JsonObject json = BungeeCord.getInstance().gson.fromJson( in, JsonObject.class );
++                    Property textures = null;
++                    for ( JsonElement element : json.getAsJsonArray( "properties" ) )
++                    {
++                        JsonObject property = element.getAsJsonObject();
++                        String name = property.get( "name" ).getAsString();
++                        if ( name.equalsIgnoreCase( "textures" ) )
++                        {
++                            textures = new Property( "textures", property.get( "value" ).getAsString(), property.get( "signature" ).getAsString() );
++                            break;
++                        }
++                    }
++                    if ( textures == null )
++                    {
++                        return null;
++                    }
++                    return new Skin( textures, json.get( "name" ).getAsString(), key );
++                }
++            }
++        } );
++    }
++
++    @Override
++    public CompletableFuture<Skin> getSkin(String ownerUsername)
++    {
++        if ( bungee.getConfig().isOnlineMode() )
++        {
++            ProxiedPlayer player = bungee.getPlayer( ownerUsername );
++            if ( player != null )
++            {
++                return getSkin( player.getUniqueId() );
++            }
++        }
++        return getSkin( CompletableFuture.supplyAsync( () ->
++        {
++            try
++            {
++                return cachedUuids.get( ownerUsername );
++            } catch ( Throwable e )
++            {
++                bungee.getLogger().log( Level.SEVERE, "An error retrieving online uuid for " + ownerUsername + " (IvanCord Skins API call) ", e );
++                return null;
++            }
++        }, bungee.getScheduler().scheduler ) );
++    }
++
++    @Override
++    public CompletableFuture<Skin> getSkin(UUID ownerUuid)
++    {
++        return getSkin( CompletableFuture.completedFuture( ownerUuid ) );
++    }
++
++    private CompletableFuture<Skin> getSkin(CompletableFuture<UUID> ownerUuidFuture)
++    {
++        return ownerUuidFuture.thenApplyAsync( uuid ->
++        {
++            if ( uuid == null )
++            {
++                return null;
++            }
++            try
++            {
++                return skinsCache.get( uuid );
++            } catch ( Throwable e )
++            {
++                bungee.getLogger().log( Level.SEVERE, "An error retrieving skin for uuid " + uuid, e );
++                return null;
++            }
++        }, bungee.getScheduler().scheduler );
++    }
++
++    public void cacheSkin(Skin skin)
++    {
++        skinsCache.put( skin.getOwnerUuid(), skin );
++    }
++}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/SkinCreator.java b/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/SkinCreator.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..b13931eaf4271bb8098b3a2b111af4de4101d4dc
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/SkinCreator.java
+@@ -0,0 +1,12 @@
++package com.mrivanplays.ivancord.api.skin;
++
++import java.util.UUID;
++import net.md_5.bungee.protocol.Property;
++
++public class SkinCreator
++{
++    public static Skin createSkin(Property property, String ownerUsername, UUID ownerUuid)
++    {
++        return new Skin( property, ownerUsername, ownerUuid );
++    }
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index cee9d72ae58be4a8674a4c5d40f87fd49a35c2d9..ba9fbafce40a0614dc1bce01333f4100ec4a9617 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -192,6 +192,7 @@ public class BungeeCord extends ProxyServer
+     private ServicesManager servicesManager;
+     @Getter
+     private Playerdata playerdata = new Playerdata();
++    @Getter private com.mrivanplays.ivancord.api.skin.BungeeSkinProvider skinProvider;
+     // IvanCord end
+ 
+     {
+@@ -269,6 +270,8 @@ public class BungeeCord extends ProxyServer
+         getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.commands.op.CommandDeop() );
+         // IvanCord end
+ 
++        this.skinProvider = new com.mrivanplays.ivancord.api.skin.BungeeSkinProvider(this); // IvanCord
++
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         {
+             if ( EncryptionUtil.nativeFactory.load() )
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 5030bff828d7c450f68f57552f713553176d830b..cd752d4ecafbdb6ae3811f9a7f177180104a9026 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -137,8 +137,71 @@ public class ServerConnector extends PacketHandler
+                 properties = newp;
+             }
+ 
++            // IvanCord start
++            boolean messedWithProperties = false;
++            if ( properties.length > 0 )
++            {
++                net.md_5.bungee.protocol.Property[] copy = Arrays.copyOf( properties, properties.length );
++                boolean found = false;
++                for ( int i = 0; i < copy.length; i++ )
++                {
++                    net.md_5.bungee.protocol.Property current = copy[i];
++                    if ( current.getName().equalsIgnoreCase( "textures" ) )
++                    {
++                        if ( user.getPendingConnection().getSkin() == null )
++                        {
++                            user.getPendingConnection().setSkin( com.mrivanplays.ivancord.api.skin.SkinCreator.createSkin( current, user.getName(), user.getUniqueId() ) );
++                        } else
++                        {
++                            net.md_5.bungee.protocol.Property skinProperty = user.getPendingConnection().getSkin().getProperty();
++                            if ( !skinProperty.getValue().equalsIgnoreCase( current.getValue() ) )
++                            {
++                                copy[i] = skinProperty;
++                                messedWithProperties = true;
++                            }
++                        }
++                        found = true;
++                        break;
++                    }
++                }
++
++                if ( !found )
++                {
++                    if ( user.getPendingConnection().getSkin() != null )
++                    {
++                        messedWithProperties = true;
++                        net.md_5.bungee.protocol.Property[] newCopy = Arrays.copyOf( properties, properties.length + 1 );
++                        newCopy[newCopy.length - 1] = user.getPendingConnection().getSkin().getProperty();
++                        properties = newCopy;
++                    }
++                } else if ( messedWithProperties )
++                {
++                    properties = copy;
++                }
++            } else if ( user.getPendingConnection().getSkin() != null )
++            {
++                messedWithProperties = true;
++                properties = new net.md_5.bungee.protocol.Property[1];
++                properties[0] = user.getPendingConnection().getSkin().getProperty();
++            }
++            // IvanCord end
++
+             // If we touched any properties, then append them
+             if (properties.length > 0) {
++                // IvanCord start - modify profile
++                if ( messedWithProperties )
++                {
++                    if ( profile != null )
++                    {
++                        profile.setProperties( properties );
++                        user.getPendingConnection().setLoginProfile( profile );
++                    } else
++                    {
++                        // set a profile only with properties because bungee does not care about name and uuid at this point
++                        user.getPendingConnection().setLoginProfile( new LoginResult( null, null, properties ) );
++                    }
++                }
++                // IvanCord end
+                 newHost += "\00" + BungeeCord.getInstance().gson.toJson(properties);
+             }
+ 
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 05b9c147f96e16823febbe119cad43676503038f..9e082ddc03e91e5f16a35942f699d6b4f8418fb5 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -111,11 +111,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Getter
+     private UUID offlineId;
+     @Getter
++    @lombok.Setter // IvanCord
+     private LoginResult loginProfile;
+     @Getter
+     private boolean legacy;
+     @Getter
+     private String extraDataInHandshake = "";
++    @Getter @lombok.Setter com.mrivanplays.ivancord.api.skin.Skin skin; // IvanCord
+ 
+     @Override
+     public boolean shouldHandle(PacketWrapper packet) throws Exception
+@@ -552,6 +554,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                         loginProfile = obj;
+                         name = obj.getName();
+                         uniqueId = Util.getUUID( obj.getId() );
++                        // IvanCord start - cache skin of this player for future use if wanted
++                        if ( obj.getProperties() != null )
++                        {
++                            for ( net.md_5.bungee.protocol.Property property : obj.getProperties() )
++                            {
++                                if ( property.getName().equalsIgnoreCase( "textures" ) )
++                                {
++                                    com.mrivanplays.ivancord.api.skin.Skin skin = com.mrivanplays.ivancord.api.skin.SkinCreator.createSkin( property, name, uniqueId );
++                                    bungee.getSkinProvider().cacheSkin( skin );
++                                    if ( getSkin() == null )
++                                    {
++                                        setSkin( skin );
++                                    }
++                                    break;
++                                }
++                            }
++                        }
++                        // IvanCord end
+                         finish();
+                         return;
+                     }
