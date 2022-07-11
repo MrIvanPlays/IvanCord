@@ -29,9 +29,11 @@ getProxy()
 ```
 
 Storing the set skin of a player is the plugin modifying the skin's
-responcibility.
+responsibility.
 
-There's a cache of 20 minutes for each skin retrieved by the skins api.
+There's a cache of 1 hour for each skin retrieved by the skins api or cached
+by IvanCord (if IvanCord is running in online mode it will cache the skins
+of joining players in the skins api so they're accessible immediately)
 
 diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/skin/Skin.java b/api/src/main/java/com/mrivanplays/ivancord/api/skin/Skin.java
 new file mode 100644
@@ -212,27 +214,22 @@ index 2e0b1d73a15edbe1ba678f7aaddbbd70d32e7839..3d399b5aea9115e29841988369a71581
      {
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/BungeeSkinProvider.java b/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/BungeeSkinProvider.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..e2f5c5d5e55e013da7e1a511809ac3fd63f51e93
+index 0000000000000000000000000000000000000000..5ae6b6ac573a9909ecd9e24e2782c485a19961ee
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/BungeeSkinProvider.java
-@@ -0,0 +1,128 @@
+@@ -0,0 +1,83 @@
 +package com.mrivanplays.ivancord.api.skin;
 +
-+import com.google.common.cache.CacheBuilder;
-+import com.google.common.cache.CacheLoader;
-+import com.google.common.cache.LoadingCache;
 +import com.google.gson.JsonElement;
 +import com.google.gson.JsonObject;
++import com.mrivanplays.ivancord.util.Cache;
 +import io.github.waterfallmc.waterfall.utils.UUIDUtils;
-+import java.io.InputStreamReader;
-+import java.io.Reader;
-+import java.net.URL;
 +import java.time.Duration;
 +import java.util.UUID;
 +import java.util.concurrent.CompletableFuture;
-+import java.util.logging.Level;
 +import net.md_5.bungee.BungeeCord;
 +import net.md_5.bungee.api.connection.ProxiedPlayer;
++import net.md_5.bungee.http.HttpClient;
 +import net.md_5.bungee.protocol.Property;
 +
 +public class BungeeSkinProvider implements SkinProvider
@@ -240,53 +237,37 @@ index 0000000000000000000000000000000000000000..e2f5c5d5e55e013da7e1a511809ac3fd
 +
 +    private final BungeeCord bungee;
 +
-+    private LoadingCache<String, UUID> cachedUuids;
-+    private LoadingCache<UUID, Skin> skinsCache;
++    private Cache<String, UUID> cachedUuids;
++    private Cache<UUID, Skin> skinsCache;
 +
 +    public BungeeSkinProvider(BungeeCord bungee)
 +    {
 +        this.bungee = bungee;
-+        this.cachedUuids = CacheBuilder.newBuilder().build( new CacheLoader<String, UUID>()
-+        {
 +
-+            @Override
-+            public UUID load(String key) throws Exception
-+            {
-+                URL url = new URL( "https://api.mojang.com/users/profiles/minecraft/" + key );
-+                try ( Reader in = new InputStreamReader( url.openStream() ) )
-+                {
-+                    return UUIDUtils.fromMojangString( BungeeCord.getInstance().gson.fromJson( in, JsonObject.class ).get( "id" ).getAsString() );
-+                }
-+            }
-+        } );
-+        this.skinsCache = CacheBuilder.newBuilder().expireAfterWrite( Duration.ofMinutes( 20 ) ).build( new CacheLoader<UUID, Skin>()
-+        {
++        this.cachedUuids = new Cache<>( bungee, null, (username) -> HttpClient.get( "https://api.mojang.com/users/profiles/minecraft/" + username, BungeeCord.getInstance().bossEventLoopGroup.next() ).thenApply( s -> UUIDUtils.fromMojangString( BungeeCord.getInstance().gson.fromJson( s, JsonObject.class ).get( "id" ).getAsString() ) ) );
 +
-+            @Override
-+            public Skin load(UUID key) throws Exception
++        this.skinsCache = new Cache<>( bungee, Duration.ofHours( 1 ), (key) ->
++        {
++            return HttpClient.get( "https://sessionserver.mojang.com/session/minecraft/profile/" + UUIDUtils.undash( key.toString() ) + "?unsigned=false", BungeeCord.getInstance().bossEventLoopGroup.next() ).thenApply( in ->
 +            {
-+                URL url = new URL( "https://sessionserver.mojang.com/session/minecraft/profile/" + UUIDUtils.undash( key.toString() ) + "?unsigned=false" );
-+                try ( Reader in = new InputStreamReader( url.openStream() ) )
++                JsonObject json = BungeeCord.getInstance().gson.fromJson( in, JsonObject.class );
++                Property textures = null;
++                for ( JsonElement element : json.getAsJsonArray( "properties" ) )
 +                {
-+                    JsonObject json = BungeeCord.getInstance().gson.fromJson( in, JsonObject.class );
-+                    Property textures = null;
-+                    for ( JsonElement element : json.getAsJsonArray( "properties" ) )
++                    JsonObject property = element.getAsJsonObject();
++                    String name = property.get( "name" ).getAsString();
++                    if ( name.equalsIgnoreCase( "textures" ) )
 +                    {
-+                        JsonObject property = element.getAsJsonObject();
-+                        String name = property.get( "name" ).getAsString();
-+                        if ( name.equalsIgnoreCase( "textures" ) )
-+                        {
-+                            textures = new Property( "textures", property.get( "value" ).getAsString(), property.get( "signature" ).getAsString() );
-+                            break;
-+                        }
++                        textures = new Property( "textures", property.get( "value" ).getAsString(), property.get( "signature" ).getAsString() );
++                        break;
 +                    }
-+                    if ( textures == null )
-+                    {
-+                        return null;
-+                    }
-+                    return new Skin( textures, json.get( "name" ).getAsString(), key );
 +                }
-+            }
++                if ( textures == null )
++                {
++                    return null;
++                }
++                return new Skin( textures, json.get( "name" ).getAsString(), key );
++            } );
 +        } );
 +    }
 +
@@ -301,17 +282,7 @@ index 0000000000000000000000000000000000000000..e2f5c5d5e55e013da7e1a511809ac3fd
 +                return getSkin( player.getUniqueId() );
 +            }
 +        }
-+        return getSkin( CompletableFuture.supplyAsync( () ->
-+        {
-+            try
-+            {
-+                return cachedUuids.get( ownerUsername );
-+            } catch ( Throwable e )
-+            {
-+                bungee.getLogger().log( Level.SEVERE, "An error retrieving online uuid for " + ownerUsername + " (IvanCord Skins API call) ", e );
-+                return null;
-+            }
-+        }, bungee.getScheduler().scheduler ) );
++        return getSkin( cachedUuids.get( ownerUsername ) );
 +    }
 +
 +    @Override
@@ -322,21 +293,7 @@ index 0000000000000000000000000000000000000000..e2f5c5d5e55e013da7e1a511809ac3fd
 +
 +    private CompletableFuture<Skin> getSkin(CompletableFuture<UUID> ownerUuidFuture)
 +    {
-+        return ownerUuidFuture.thenApplyAsync( uuid ->
-+        {
-+            if ( uuid == null )
-+            {
-+                return null;
-+            }
-+            try
-+            {
-+                return skinsCache.get( uuid );
-+            } catch ( Throwable e )
-+            {
-+                bungee.getLogger().log( Level.SEVERE, "An error retrieving skin for uuid " + uuid, e );
-+                return null;
-+            }
-+        }, bungee.getScheduler().scheduler );
++        return ownerUuidFuture.thenComposeAsync( uuid -> skinsCache.get( uuid ), bungee.getScheduler().scheduler );
 +    }
 +
 +    public void cacheSkin(Skin skin)
@@ -361,6 +318,150 @@ index 0000000000000000000000000000000000000000..b13931eaf4271bb8098b3a2b111af4de
 +    {
 +        return new Skin( property, ownerUsername, ownerUuid );
 +    }
++}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/util/Cache.java b/proxy/src/main/java/com/mrivanplays/ivancord/util/Cache.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..3e9ae5d9ac62d3c9dfa015accd06f4fc0b827143
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/util/Cache.java
+@@ -0,0 +1,138 @@
++package com.mrivanplays.ivancord.util;
++
++import com.google.common.annotations.VisibleForTesting;
++import com.mrivanplays.ivancord.scheduler.SchedulerExecutor;
++import java.time.Duration;
++import java.util.Map;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.concurrent.locks.ReadWriteLock;
++import java.util.concurrent.locks.ReentrantReadWriteLock;
++import java.util.function.Function;
++import net.md_5.bungee.BungeeCord;
++
++public final class Cache<K, V>
++{
++
++    private Map<K, V> underlyingMap = new ConcurrentHashMap<>();
++    private Map<K, CompletableFuture<Void>> tasks = new ConcurrentHashMap<>();
++    private ReadWriteLock lock = new ReentrantReadWriteLock();
++    private final Duration expiresAfterWrite;
++    private final Function<K, CompletableFuture<V>> loader;
++    private final SchedulerExecutor executorService;
++
++    public Cache(BungeeCord bungee, Duration expiresAfterWrite, Function<K, CompletableFuture<V>> loader)
++    {
++        this.expiresAfterWrite = expiresAfterWrite;
++        this.loader = loader;
++        this.executorService = bungee.getScheduler().scheduler;
++    }
++
++    @VisibleForTesting
++    Cache(Duration expiresAfterWrite, Function<K, CompletableFuture<V>> loader, SchedulerExecutor executorService)
++    {
++        this.expiresAfterWrite = expiresAfterWrite;
++        this.loader = loader;
++        this.executorService = executorService;
++    }
++
++    public CompletableFuture<V> get(K key)
++    {
++        lock.readLock().lock();
++        try
++        {
++            if ( underlyingMap.containsKey( key ) )
++            {
++                return CompletableFuture.completedFuture( underlyingMap.get( key ) );
++            }
++        } finally
++        {
++            lock.readLock().unlock();
++        }
++        return CompletableFuture.supplyAsync( () -> loader.apply( key ), executorService ).thenCompose( v -> v ).thenApply( v ->
++        {
++            if ( expiresAfterWrite != null )
++            {
++                this.scheduleRemovalTask( key );
++            }
++            lock.writeLock().lock();
++            try
++            {
++                underlyingMap.put( key, v );
++                return v;
++            } finally
++            {
++                lock.writeLock().unlock();
++            }
++        } );
++    }
++
++    public void put(K key, V value)
++    {
++        lock.writeLock().lock();
++        try
++        {
++            if ( underlyingMap.containsKey( key ) )
++            {
++                underlyingMap.replace( key, value );
++                if ( expiresAfterWrite != null )
++                {
++                    tasks.remove( key ).cancel( true );
++                    this.scheduleRemovalTask( key );
++                }
++            } else
++            {
++                underlyingMap.put( key, value );
++                if ( expiresAfterWrite != null )
++                {
++                    this.scheduleRemovalTask( key );
++                }
++            }
++        } finally
++        {
++            lock.writeLock().unlock();
++        }
++    }
++
++    public int size()
++    {
++        lock.readLock().lock();
++        try
++        {
++            return underlyingMap.size();
++        } finally
++        {
++            lock.readLock().unlock();
++        }
++    }
++
++    private void scheduleRemovalTask(K key)
++    {
++        tasks.put( key, CompletableFuture.runAsync( () ->
++        {
++            try
++            {
++                Thread.sleep( expiresAfterWrite.toMillis() );
++            } catch ( InterruptedException e )
++            {
++                Thread.currentThread().interrupt();
++            }
++            lock.writeLock().lock();
++            try
++            {
++                underlyingMap.remove( key );
++            } finally
++            {
++                lock.writeLock().unlock();
++            }
++            tasks.remove( key );
++        }, executorService ) );
++    }
++
++    @VisibleForTesting
++    void shutdownScheduler()
++    {
++        executorService.shutdownNow0();
++    }
++
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index cee9d72ae58be4a8674a4c5d40f87fd49a35c2d9..ba9fbafce40a0614dc1bce01333f4100ec4a9617 100644
@@ -502,3 +603,96 @@ index 05b9c147f96e16823febbe119cad43676503038f..9e082ddc03e91e5f16a35942f699d6b4
                          finish();
                          return;
                      }
+diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
+index bbed9090237b8df7d770e18bf75d10f4a19bae98..b8d48de1c60ca33f2b6f0059007a85693df53a62 100644
+--- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
++++ b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
+@@ -33,6 +33,23 @@ public class HttpClient
+             new io.netty.resolver.dns.DnsAddressResolverGroup(PipelineUtils.getDatagramChannelFactory(), io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider.INSTANCE); // IvanCord
+     // Waterfall End
+ 
++    // IvanCord start - add HttpClient.get with future return value
++    public static java.util.concurrent.CompletableFuture<String> get(String url, EventLoop eventLoop)
++    {
++        java.util.concurrent.CompletableFuture<String> ret = new java.util.concurrent.CompletableFuture<>();
++        get( url, eventLoop, ( result, error ) ->
++        {
++            if ( error != null )
++            {
++                ret.completeExceptionally( error );
++                return;
++            }
++            ret.complete( result );
++        } );
++        return ret;
++    }
++    // IvanCord end
++
+     @SuppressWarnings("UnusedAssignment")
+     public static void get(String url, EventLoop eventLoop, final Callback<String> callback)
+     {
+diff --git a/proxy/src/test/java/com/mrivanplays/ivancord/util/CacheTest.java b/proxy/src/test/java/com/mrivanplays/ivancord/util/CacheTest.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..7eef170d2cd1bc6d24e3b4a28871b41f9164bc18
+--- /dev/null
++++ b/proxy/src/test/java/com/mrivanplays/ivancord/util/CacheTest.java
+@@ -0,0 +1,59 @@
++package com.mrivanplays.ivancord.util;
++
++import com.mrivanplays.ivancord.scheduler.SchedulerExecutor;
++import java.time.Duration;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ExecutionException;
++import org.junit.After;
++import org.junit.Assert;
++import org.junit.Test;
++
++public class CacheTest
++{
++
++    private Cache<String, String> cache = new Cache<>( Duration.ofMillis( 500 ), CompletableFuture::completedFuture, SchedulerExecutor.create() );
++
++    @Test
++    public void testExpiration()
++    {
++        System.out.println( "Starting test expiration" );
++        cache.get( "foo" );
++
++        try
++        {
++            Thread.sleep( 550 );
++        } catch ( InterruptedException ignored )
++        {
++        }
++
++        Assert.assertEquals( 0, cache.size() );
++        System.out.println( "Expiration test successful" );
++    }
++
++    @Test
++    public void testReplacement() throws ExecutionException, InterruptedException
++    {
++        System.out.println( "Starting test replacement" );
++        // WARNING: This is test code! IT IS NOT THE PROPER USAGE OF FUTURES!!!!!
++        cache.get( "foo" ).get();
++
++        cache.put( "foo", "bar" );
++
++        String testValue = cache.get( "foo" ).get();
++        int sizeBefore = cache.size();
++
++        Thread.sleep( 550 );
++
++        Assert.assertEquals( 1, sizeBefore );
++        Assert.assertEquals( 0, cache.size() );
++        Assert.assertEquals( "bar", testValue );
++        System.out.println( "Test replacement successful" );
++    }
++
++    @After
++    public void afterAll()
++    {
++        cache.shutdownScheduler();
++    }
++
++}
