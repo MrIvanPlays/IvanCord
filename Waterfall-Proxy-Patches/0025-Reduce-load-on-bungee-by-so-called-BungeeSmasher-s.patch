@@ -185,10 +185,10 @@ index ade7a2602645306116762f961662407bf1e08863..5e7410ed81ea00f2ac36990277abf8f7
  
      <!-- Waterfall start - copy license files into jar -->
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index da7dc8e4bda0b86641e5c1e782f26795f2796529..53a1fb1f1c427bd0d5d3bfc9ef71311d44ee88aa 100644
+index f49b0fee397851e8430b3d269190fe27f5f675ca..3fc8ab88dc4a4ea5e7e475673f49f39282ada27a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -408,7 +408,7 @@ public class BungeeCord extends ProxyServer
+@@ -427,7 +427,7 @@ public class BungeeCord extends ProxyServer
                  }
              };
              new ServerBootstrap()
@@ -197,7 +197,7 @@ index da7dc8e4bda0b86641e5c1e782f26795f2796529..53a1fb1f1c427bd0d5d3bfc9ef71311d
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( PipelineUtils.SERVER_CHILD )
-@@ -435,7 +435,7 @@ public class BungeeCord extends ProxyServer
+@@ -454,7 +454,7 @@ public class BungeeCord extends ProxyServer
                          }
                      }
                  };
@@ -300,7 +300,7 @@ index b688029296955d6bd1d54f88910476a36c4517a2..58b8380fbd3ff3c3bddfc8d3d958f641
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
-index 3733742927e88c0674644b6944a707ab16ba6939..bbed9090237b8df7d770e18bf75d10f4a19bae98 100644
+index 9120cf661d698238ddb2f1bfc0f7277936834101..b8d48de1c60ca33f2b6f0059007a85693df53a62 100644
 --- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 +++ b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 @@ -30,7 +30,7 @@ public class HttpClient
@@ -311,8 +311,8 @@ index 3733742927e88c0674644b6944a707ab16ba6939..bbed9090237b8df7d770e18bf75d10f4
 +            new io.netty.resolver.dns.DnsAddressResolverGroup(PipelineUtils.getDatagramChannelFactory(), io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider.INSTANCE); // IvanCord
      // Waterfall End
  
-     @SuppressWarnings("UnusedAssignment")
-@@ -111,7 +111,7 @@ public class HttpClient
+     // IvanCord start - add HttpClient.get with future return value
+@@ -128,7 +128,7 @@ public class HttpClient
  
      private static void getWithNettyResolver(EventLoop eventLoop, URI uri, int port, ChannelFutureListener future, Callback<String> callback, boolean ssl) {
          java.net.InetSocketAddress address = java.net.InetSocketAddress.createUnresolved(uri.getHost(), port);
@@ -321,7 +321,7 @@ index 3733742927e88c0674644b6944a707ab16ba6939..bbed9090237b8df7d770e18bf75d10f4
                  option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT ).resolver(dnsResolverGroup).remoteAddress( address ).connect().addListener( future );
      }
  
-@@ -130,7 +130,7 @@ public class HttpClient
+@@ -147,7 +147,7 @@ public class HttpClient
              }
              addressCache.put( uri.getHost(), inetHost );
          }

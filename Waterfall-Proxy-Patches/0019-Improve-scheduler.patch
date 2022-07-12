@@ -36,7 +36,7 @@ index 8a2474878121c84b21c1d52112996b1e025f123c..271d0412a065283dae526b3931060aa9
      //
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 971c02d81e1410cf23c52343ecb5c37bb0f6cc69..ad096e6575ef1798346f191f41e1e9fec295d954 100644
+index 655676c3053bcae9c8879fb702fa9286de755eac..6a513a3378af0e8056b453fad99659b02e644043 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -609,7 +609,7 @@ public final class PluginManager
@@ -140,10 +140,10 @@ index 0000000000000000000000000000000000000000..00ff4769884de0b635144bc7ca134f35
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 53a1fb1f1c427bd0d5d3bfc9ef71311d44ee88aa..57e235666c7af0a9982cc05e2667b5d2ab929810 100644
+index bd77392969aa1a6ff690109ab459e191c1703fde..94fbd95dfc42a6b248b8dfaf8427549dcd21fe02 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -531,6 +531,17 @@ public class BungeeCord extends ProxyServer
+@@ -527,6 +527,17 @@ public class BungeeCord extends ProxyServer
          {
              pluginManager.disablePlugin( plugin );
          }

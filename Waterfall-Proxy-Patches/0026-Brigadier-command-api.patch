@@ -909,12 +909,12 @@ index 0000000000000000000000000000000000000000..cf484b95c9aea0ee9fe15714941d6fc5
 +    public static final String[] EMPTY_ARRAY = new String[0];
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-index 6ca9f8e4adb03e3974b9b8eca86aa7e8e75c4af8..1568ebe294c028eb380c10fb306c32b6f8ce5416 100644
+index 0a182becd4b499772377d0fb87af9740363ae121..0a286a9dbd597bcac862b52401bbf1670011021a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
-@@ -364,6 +364,14 @@ public abstract class ProxyServer
+@@ -409,6 +409,14 @@ public abstract class ProxyServer
       */
-     public abstract Collection<OfflinePlayer> getOfflinePlayers();
+     public abstract Collection<com.mrivanplays.ivancord.api.connection.OfflinePlayer> getOfflinePlayers();
  
 +    /**
 +     * Returns a {@link ProxiedPlayer} from a {@link com.mrivanplays.ivancord.api.command.arguments.PlayerArgument.ProtoPlayer}
@@ -2330,10 +2330,10 @@ index 21aa9675081adf6213c37aba51a33b4fae39a859..31408d5506dfef5a0b6f22444746e946
          } else
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 57e235666c7af0a9982cc05e2667b5d2ab929810..edd43f8232dd1947833381375546dcad110922d7 100644
+index 3fc8ab88dc4a4ea5e7e475673f49f39282ada27a..9e71f3f514096aacc6fcb104d03389da37c2c5d5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -887,5 +887,22 @@ public class BungeeCord extends ProxyServer
+@@ -919,5 +919,22 @@ public class BungeeCord extends ProxyServer
      {
          return playerdata.getOfflinePlayers();
      }

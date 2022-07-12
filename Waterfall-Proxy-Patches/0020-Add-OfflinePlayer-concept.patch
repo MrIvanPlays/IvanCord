@@ -1,0 +1,1049 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MrIvanPlays <pekov.ivan@abv.bg>
+Date: Wed, 21 Aug 2019 21:21:33 +0300
+Subject: [PATCH] Add OfflinePlayer concept
+
+
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java b/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..927adb17d69c8bf75927979e302fdb27265fea0a
+--- /dev/null
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/connection/OfflinePlayer.java
+@@ -0,0 +1,53 @@
++package com.mrivanplays.ivancord.api.connection;
++
++import java.util.Optional;
++import java.util.UUID;
++
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++
++/**
++ * Represents a player, which is probably offline.
++ */
++public interface OfflinePlayer
++{
++
++    /**
++     * Returns the name of the player. Can be null in case the proxy couldn't
++     * find it.
++     *
++     * @return name of the offline player or null
++     */
++    String getName();
++
++    /**
++     * Returns the unique id of the player. That is the uuid that the proxy will
++     * use if that offline player hasn't played before, or the uuid the offline
++     * player has if played before.
++     *
++     * @return unique id
++     */
++    UUID getUniqueId();
++
++    /**
++     * Returns whenever this player has played before.
++     *
++     * @return <code>true</code> if played, <code>false</code> otherwise
++     */
++    boolean hasPlayedBefore();
++
++    /**
++     * Gets the specified offline player as a online player. The optional
++     * will be empty if the player is not online.
++     *
++     * @return optional of player
++     */
++    Optional<ProxiedPlayer> getPlayer();
++
++    /**
++     * Returns the last known server where the player was.
++     *
++     * @return optional of the last known server of the player
++     */
++    Optional<ServerInfo> getLastServer();
++}
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index 1a789e83a7e14bfbb4c2254a0be1018691ec2d2a..0a182becd4b499772377d0fb87af9740363ae121 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -338,6 +338,77 @@ public abstract class ProxyServer
+      */
+     public abstract ServicesManager getServicesManager();
+ 
++    /**
++     * Returns a {@link com.mrivanplays.ivancord.api.connection.OfflinePlayer}, specified by his name. This method
++     * will never return null
++     *
++     * @param name the name of the player you want to get
++     * @return offline player
++     * @deprecated thread blocking method and IO unsafe. use {@link #offlinePlayer(String)} or {@link #offlinePlayerIfPresent(String)}
++     */
++    @Deprecated
++    public com.mrivanplays.ivancord.api.connection.OfflinePlayer getOfflinePlayer(String name)
++    {
++        return offlinePlayer( name ).join();
++    }
++
++    /**
++     * Returns a {@link com.mrivanplays.ivancord.api.connection.OfflinePlayer}, specified by his name. This method
++     * will never return null.
++     *
++     * @param name the name of the player you want to get
++     * @return offline player
++     */
++    public abstract java.util.concurrent.CompletableFuture<com.mrivanplays.ivancord.api.connection.OfflinePlayer> offlinePlayer(String name);
++
++    /**
++     * Returns a {@link com.mrivanplays.ivancord.api.connection.OfflinePlayer} only if such is present
++     * for the specified name.
++     *
++     * @param name the name of the player you want to get if present
++     * @return offline player if present
++     */
++    public abstract com.mrivanplays.ivancord.api.connection.OfflinePlayer offlinePlayerIfPresent(String name);
++
++    /**
++     * Returns a {@link com.mrivanplays.ivancord.api.connection.OfflinePlayer}, specified by his unique id. This
++     * will never return null
++     *
++     * @param uuid the unique id of the player you want to get
++     * @return offline player
++     * @deprecated thread blocking method and IO unsafe. use {@link #offlinePlayer(UUID)} or {@link #offlinePlayerIfPresent(UUID)}
++     */
++    @Deprecated
++    public com.mrivanplays.ivancord.api.connection.OfflinePlayer getOfflinePlayer(UUID uuid)
++    {
++        return offlinePlayer( uuid ).join();
++    }
++
++    /**
++     * Returns a {@link com.mrivanplays.ivancord.api.connection.OfflinePlayer}, specified by his unique id. This method
++     * will never return null.
++     *
++     * @param uuid the unique id of the player you want to get
++     * @return offline player
++     */
++    public abstract java.util.concurrent.CompletableFuture<com.mrivanplays.ivancord.api.connection.OfflinePlayer> offlinePlayer(UUID uuid);
++
++    /**
++     * Returns a {@link com.mrivanplays.ivancord.api.connection.OfflinePlayer} only if such is present
++     * for the specified {@link UUID}.
++     *
++     * @param uuid the uuid of the player you want to get if present
++     * @return offline player if present
++     */
++    public abstract com.mrivanplays.ivancord.api.connection.OfflinePlayer offlinePlayerIfPresent(UUID uuid);
++
++    /**
++     * Returns a immutable copy of all known players, that are currently offline.
++     *
++     * @return offline players
++     */
++    public abstract Collection<com.mrivanplays.ivancord.api.connection.OfflinePlayer> getOfflinePlayers();
++
+     // IvanCord end
+ 
+ }
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/BungeeOfflinePlayer.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/BungeeOfflinePlayer.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4b91e441d89e36f05a6094304857745451c392b8
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/BungeeOfflinePlayer.java
+@@ -0,0 +1,44 @@
++package com.mrivanplays.ivancord.connection;
++
++import java.util.Optional;
++import java.util.UUID;
++
++import com.mrivanplays.ivancord.api.connection.OfflinePlayer;
++import lombok.AllArgsConstructor;
++import lombok.EqualsAndHashCode;
++import lombok.Getter;
++import lombok.ToString;
++import lombok.experimental.Accessors;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.config.ServerInfo;
++import net.md_5.bungee.api.connection.ProxiedPlayer;
++
++@Getter
++@ToString
++@EqualsAndHashCode
++@AllArgsConstructor
++public class BungeeOfflinePlayer implements OfflinePlayer
++{
++
++    private String name;
++    private UUID uniqueId;
++    @Accessors(fluent = true)
++    private boolean hasPlayedBefore;
++    private ServerInfo lastKnownServer;
++
++    @Override
++    public Optional<ProxiedPlayer> getPlayer()
++    {
++        return Optional.ofNullable( BungeeCord.getInstance().getPlayer( uniqueId ) );
++    }
++
++    @Override
++    public Optional<ServerInfo> getLastServer()
++    {
++        if ( getPlayer().isPresent() )
++        {
++            return Optional.of( getPlayer().get().getServer().getInfo() );
++        }
++        return Optional.ofNullable( lastKnownServer );
++    }
++}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/NameUUIDCache.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/NameUUIDCache.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f03129fed6b953cc8e01f91369d2e815c2c0f854
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/NameUUIDCache.java
+@@ -0,0 +1,69 @@
++package com.mrivanplays.ivancord.connection;
++
++import com.google.gson.JsonArray;
++import com.google.gson.JsonObject;
++import com.mrivanplays.ivancord.util.Cache;
++import io.github.waterfallmc.waterfall.utils.UUIDUtils;
++import java.util.HashSet;
++import java.util.Set;
++import java.util.UUID;
++import java.util.concurrent.CompletableFuture;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.http.HttpClient;
++
++public class NameUUIDCache
++{
++
++    private final BungeeCord bungee;
++
++    private Cache<String, UUID> nameToUuidCache;
++    private Set<UUID> explicitlyNullNames;
++    private final UUID NULL_UUID = UUID.fromString( "00000000-0000-0000-0000-000000000000" );
++
++    public NameUUIDCache(BungeeCord bungee)
++    {
++        this.bungee = bungee;
++        this.explicitlyNullNames = new HashSet<>();
++        this.nameToUuidCache = new Cache<>( bungee, null, (username) -> HttpClient.get( "https://api.mojang.com/users/profiles/minecraft/" + username, bungee.bossEventLoopGroup.next() ).thenApply( s ->
++        {
++            if ( s == null )
++            {
++                return NULL_UUID;
++            }
++            return UUIDUtils.fromMojangString( bungee.gson.fromJson( s, JsonObject.class ).get( "id" ).getAsString() );
++        } ) );
++    }
++
++    public CompletableFuture<UUID> nameToUuid(String name)
++    {
++        return nameToUuidCache.get( name ).thenApply( uuid ->
++        {
++            if ( uuid.equals( NULL_UUID ) )
++            {
++                return null;
++            }
++            return uuid;
++        } );
++    }
++
++    public CompletableFuture<String> uuidToName(UUID uuid)
++    {
++        if ( explicitlyNullNames.contains( uuid ) )
++        {
++            return CompletableFuture.completedFuture( null );
++        }
++        return nameToUuidCache.findKey( uuid ).map( CompletableFuture::completedFuture ).orElse( HttpClient.get( "https://api.mojang.com/user/profiles/" + UUIDUtils.undash( uuid.toString() ) + "/names", bungee.bossEventLoopGroup.next() ).thenApply( s ->
++        {
++            if ( s == null )
++            {
++                explicitlyNullNames.add( uuid );
++                return null;
++            }
++            JsonArray array = bungee.gson.fromJson( s, JsonArray.class );
++            String name = array.get( array.size() - 1 ).getAsJsonObject().get( "name" ).getAsString();
++            nameToUuidCache.put( name, uuid );
++            return name;
++        } ) );
++    }
++
++}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..8caec2b512237c87e0193e15269215b85c53fbd3
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
+@@ -0,0 +1,352 @@
++package com.mrivanplays.ivancord.connection;
++
++import com.google.common.base.Preconditions;
++import com.google.common.collect.ImmutableList;
++import com.google.gson.Gson;
++import com.google.gson.JsonArray;
++import com.google.gson.JsonElement;
++import com.google.gson.JsonObject;
++import com.mrivanplays.ivancord.api.connection.OfflinePlayer;
++import java.io.File;
++import java.io.FileInputStream;
++import java.io.FileOutputStream;
++import java.io.IOException;
++import java.io.InputStreamReader;
++import java.io.OutputStreamWriter;
++import java.io.Reader;
++import java.io.Writer;
++import java.nio.charset.StandardCharsets;
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.Collection;
++import java.util.Collections;
++import java.util.List;
++import java.util.Map;
++import java.util.UUID;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.concurrent.locks.ReadWriteLock;
++import java.util.concurrent.locks.ReentrantReadWriteLock;
++import java.util.logging.Level;
++import lombok.Getter;
++import net.md_5.bungee.BungeeCord;
++import net.md_5.bungee.api.config.ServerInfo;
++
++public class Playerdata
++{
++
++    private final BungeeCord bungee;
++    @Getter
++    private final NameUUIDCache nameUUIDCache;
++    private File file;
++    private Gson gson;
++
++    private Map<UUID, OfflinePlayer> offlinePlayerCache;
++    private ReadWriteLock lock = new ReentrantReadWriteLock();
++
++    public Playerdata(BungeeCord bungee)
++    {
++        this.file = new File( "playerdata.json" );
++        this.bungee = bungee;
++        this.nameUUIDCache = new NameUUIDCache( bungee );
++        this.gson = bungee.gson;
++        this.offlinePlayerCache = new ConcurrentHashMap<>();
++    }
++
++    public Collection<OfflinePlayer> getOfflinePlayers()
++    {
++        lock.readLock().lock();
++        try
++        {
++            OfflinePlayer[] ret = new OfflinePlayer[0];
++            int i = 0;
++            for ( OfflinePlayer player : offlinePlayerCache.values() )
++            {
++                if ( !player.getPlayer().isPresent() )
++                {
++                    if ( ret.length <= i )
++                    {
++                        ret = Arrays.copyOf( ret, i + 1 );
++                    }
++                    ret[i] = player;
++                }
++                i++;
++            }
++
++            if ( ret.length == 0 )
++            {
++                return Collections.emptyList();
++            }
++            return ImmutableList.copyOf( ret );
++        } finally
++        {
++            lock.readLock().unlock();
++        }
++    }
++
++    public void createOrModify(String name, UUID uuid, ServerInfo lastServer)
++    {
++        lock.writeLock().lock();
++        try
++        {
++            if ( offlinePlayerCache.containsKey( uuid ) )
++            {
++                OfflinePlayer current = offlinePlayerCache.get( uuid );
++                offlinePlayerCache.replace( uuid, new BungeeOfflinePlayer( name, uuid, current.hasPlayedBefore(), lastServer ) );
++            } else
++            {
++                // try to search for old entries with old name, and then put new stuff
++                List<UUID> toRemove = new ArrayList<>();
++                for ( Map.Entry<UUID, OfflinePlayer> entry : offlinePlayerCache.entrySet() )
++                {
++                    if ( entry.getValue().getName() != null && entry.getValue().getName().equalsIgnoreCase( name ) )
++                    {
++                        toRemove.add( entry.getKey() );
++                    }
++                    if ( entry.getValue().getUniqueId().equals( uuid ) )
++                    {
++                        toRemove.add( entry.getKey() );
++                    }
++                }
++                while ( toRemove.size() > 0 )
++                {
++                    offlinePlayerCache.remove( toRemove.remove( 0 ) );
++                }
++
++                offlinePlayerCache.put( uuid, new BungeeOfflinePlayer( name, uuid, true, lastServer ) );
++            }
++        } finally
++        {
++            lock.writeLock().unlock();
++        }
++    }
++
++    public OfflinePlayer getOfflinePlayerIfPresent(String name)
++    {
++        Preconditions.checkNotNull( name, "name" );
++        lock.readLock().lock();
++        try
++        {
++            for ( Map.Entry<UUID, OfflinePlayer> entry : offlinePlayerCache.entrySet() )
++            {
++                if ( entry.getValue().getName() != null && entry.getValue().getName().equalsIgnoreCase( name ) )
++                {
++                    return entry.getValue();
++                }
++            }
++            return null;
++        } finally
++        {
++            lock.readLock().unlock();
++        }
++    }
++
++    public OfflinePlayer getOfflinePlayerIfPresent(UUID uuid)
++    {
++        Preconditions.checkNotNull( uuid, "uuid" );
++        lock.readLock().lock();
++        try
++        {
++            if ( offlinePlayerCache.containsKey( uuid ) )
++            {
++                return offlinePlayerCache.get( uuid );
++            }
++            return null;
++        } finally
++        {
++            lock.readLock().unlock();
++        }
++    }
++
++    public CompletableFuture<OfflinePlayer> getOfflinePlayer(String name)
++    {
++        OfflinePlayer present = this.getOfflinePlayerIfPresent( name );
++        if ( present != null )
++        {
++            return CompletableFuture.completedFuture( present );
++        }
++        if ( !bungee.getConfig().isOnlineMode() )
++        {
++            UUID uuid = UUID.nameUUIDFromBytes( ( "OfflinePlayer:" + name ).getBytes( StandardCharsets.UTF_8 ) );
++            OfflinePlayer ret = new BungeeOfflinePlayer( name, uuid, false, null );
++            lock.writeLock().lock();
++            try
++            {
++                offlinePlayerCache.put( uuid, ret );
++                return CompletableFuture.completedFuture( ret );
++            } finally
++            {
++                lock.writeLock().unlock();
++            }
++        }
++        return nameUUIDCache.nameToUuid( name ).thenApply( uuid ->
++        {
++            if ( uuid == null )
++            {
++                uuid = UUID.nameUUIDFromBytes( ( "OfflinePlayer:" + name ).getBytes( StandardCharsets.UTF_8 ) );
++            }
++            OfflinePlayer ret = new BungeeOfflinePlayer( name, uuid, false, null );
++            lock.writeLock().lock();
++            try
++            {
++                offlinePlayerCache.put( uuid, ret );
++                return ret;
++            } finally
++            {
++                lock.writeLock().unlock();
++            }
++        } );
++    }
++
++    public CompletableFuture<OfflinePlayer> getOfflinePlayer(UUID uuid)
++    {
++        OfflinePlayer present = this.getOfflinePlayerIfPresent( uuid );
++        if ( present != null )
++        {
++            return CompletableFuture.completedFuture( present );
++        }
++        if ( !bungee.getConfig().isOnlineMode() )
++        {
++            OfflinePlayer ret = new BungeeOfflinePlayer( null, uuid, false, null );
++            lock.writeLock().lock();
++            try
++            {
++                offlinePlayerCache.put( uuid, ret );
++                return CompletableFuture.completedFuture( ret );
++            } finally
++            {
++                lock.writeLock().unlock();
++            }
++        }
++        return nameUUIDCache.uuidToName( uuid ).thenApply( name ->
++        {
++            OfflinePlayer ret = new BungeeOfflinePlayer( name, uuid, false, null );
++            lock.writeLock().lock();
++            try
++            {
++                offlinePlayerCache.put( uuid, ret );
++                return ret;
++            } finally
++            {
++                lock.writeLock().unlock();
++            }
++        } );
++    }
++
++    public void load()
++    {
++        bungee.getLogger().info( "Loading offline player data..." );
++        if ( !file.exists() )
++        {
++            createFile();
++            return;
++        }
++        try ( Reader reader = new InputStreamReader( new FileInputStream( file ), StandardCharsets.UTF_8 ) )
++        {
++            JsonArray array = gson.fromJson( reader, JsonArray.class );
++            if ( array == null || array.size() == 0 )
++            {
++                return;
++            }
++
++            for ( JsonElement element : array )
++            {
++                if ( !element.isJsonObject() )
++                {
++                    continue;
++                }
++                JsonObject object = element.getAsJsonObject();
++                UUID uniqueId = UUID.fromString( object.get( "uuid" ).getAsString() );
++                boolean playedBefore = true;
++                if ( object.has( "hasPlayedBefore" ) )
++                {
++                    playedBefore = object.get( "hasPlayedBefore" ).getAsBoolean();
++                }
++                String name = null;
++                if ( object.has( "name" ) )
++                {
++                    name = object.get( "name" ).getAsString();
++                }
++                ServerInfo lastKnownServer = null;
++                if ( object.has( "lastKnownServer" ) )
++                {
++                    lastKnownServer = BungeeCord.getInstance().getServerInfo( object.get( "lastKnownServer" ).getAsString() );
++                }
++                lock.writeLock().lock();
++                try
++                {
++                    offlinePlayerCache.put( uniqueId, new BungeeOfflinePlayer( name, uniqueId, playedBefore, lastKnownServer ) );
++                } finally
++                {
++                    lock.writeLock().unlock();
++                }
++            }
++        } catch ( IOException e )
++        {
++            bungee.getLogger().log( Level.SEVERE, "I/O occurred whilst reading playerdata", e );
++        }
++        bungee.getLogger().info( "Loaded offline player data" );
++    }
++
++    public void save()
++    {
++        bungee.getLogger().info( "Saving offline player data..." );
++        if ( file.exists() )
++        {
++            File rename = new File( "playerdata.json.old" );
++            if ( rename.exists() )
++            {
++                rename.delete();
++            }
++            file.renameTo( rename );
++            file = new File( "playerdata.json" );
++        }
++        if ( file.exists() )
++        {
++            file.delete();
++        }
++        createFile();
++        try ( Writer writer = new OutputStreamWriter( new FileOutputStream( file ) ) )
++        {
++            JsonArray array = new JsonArray();
++            lock.readLock().lock();
++            try
++            {
++                for ( OfflinePlayer player : offlinePlayerCache.values() )
++                {
++                    JsonObject object = new JsonObject();
++                    if ( player.getName() != null )
++                    {
++                        object.addProperty( "name", player.getName() );
++                    }
++                    object.addProperty( "uuid", player.getUniqueId().toString() );
++                    if ( player.getLastServer().isPresent() )
++                    {
++                        object.addProperty( "lastKnownServer", player.getLastServer().get().getName() );
++                    }
++                    object.addProperty( "hasPlayedBefore", player.hasPlayedBefore() );
++                    array.add( object );
++                }
++            } finally
++            {
++                lock.readLock().unlock();
++            }
++            gson.toJson( array, writer );
++        } catch ( IOException e )
++        {
++            bungee.getLogger().log( Level.SEVERE, "An I/O occurred whilst saving playerdata", e );
++        }
++        bungee.getLogger().info( "Offline player data saved" );
++    }
++
++    private void createFile()
++    {
++        try
++        {
++            file.createNewFile();
++        } catch ( IOException e )
++        {
++            bungee.getLogger().log( Level.SEVERE, "An I/O occurred whilst trying to create playerdata file", e );
++        }
++    }
++}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/util/Cache.java b/proxy/src/main/java/com/mrivanplays/ivancord/util/Cache.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e7b3db01e30aaabf158cd6ee34c34f8a47886508
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/util/Cache.java
+@@ -0,0 +1,158 @@
++package com.mrivanplays.ivancord.util;
++
++import com.google.common.annotations.VisibleForTesting;
++import com.mrivanplays.ivancord.scheduler.SchedulerExecutor;
++import java.time.Duration;
++import java.util.Map;
++import java.util.Optional;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.concurrent.locks.ReadWriteLock;
++import java.util.concurrent.locks.ReentrantReadWriteLock;
++import java.util.function.Function;
++import net.md_5.bungee.BungeeCord;
++
++public final class Cache<K, V>
++{
++
++    private Map<K, V> underlyingMap = new ConcurrentHashMap<>();
++    private Map<K, CompletableFuture<Void>> tasks = new ConcurrentHashMap<>();
++    private ReadWriteLock lock = new ReentrantReadWriteLock();
++    private final Duration expiresAfterWrite;
++    private final Function<K, CompletableFuture<V>> loader;
++    private final SchedulerExecutor executorService;
++
++    public Cache(BungeeCord bungee, Duration expiresAfterWrite, Function<K, CompletableFuture<V>> loader)
++    {
++        this.expiresAfterWrite = expiresAfterWrite;
++        this.loader = loader;
++        this.executorService = bungee.getScheduler().scheduler;
++    }
++
++    @VisibleForTesting
++    Cache(Duration expiresAfterWrite, Function<K, CompletableFuture<V>> loader, SchedulerExecutor executorService)
++    {
++        this.expiresAfterWrite = expiresAfterWrite;
++        this.loader = loader;
++        this.executorService = executorService;
++    }
++
++    public CompletableFuture<V> get(K key)
++    {
++        lock.readLock().lock();
++        try
++        {
++            if ( underlyingMap.containsKey( key ) )
++            {
++                return CompletableFuture.completedFuture( underlyingMap.get( key ) );
++            }
++        } finally
++        {
++            lock.readLock().unlock();
++        }
++        return CompletableFuture.supplyAsync( () -> loader.apply( key ), executorService ).thenCompose( v -> v ).thenApply( v ->
++        {
++            if ( expiresAfterWrite != null )
++            {
++                this.scheduleRemovalTask( key );
++            }
++            lock.writeLock().lock();
++            try
++            {
++                underlyingMap.put( key, v );
++                return v;
++            } finally
++            {
++                lock.writeLock().unlock();
++            }
++        } );
++    }
++
++    public Optional<K> findKey(V value)
++    {
++        lock.readLock().lock();
++        try
++        {
++            for ( Map.Entry<K, V> entry : underlyingMap.entrySet() )
++            {
++                if ( entry.getValue().equals( value ) )
++                {
++                    return Optional.of( entry.getKey() );
++                }
++            }
++            return Optional.empty();
++        } finally
++        {
++            lock.readLock().unlock();
++        }
++    }
++
++    public void put(K key, V value)
++    {
++        lock.writeLock().lock();
++        try
++        {
++            if ( underlyingMap.containsKey( key ) )
++            {
++                underlyingMap.replace( key, value );
++                if ( expiresAfterWrite != null )
++                {
++                    tasks.remove( key ).cancel( true );
++                    this.scheduleRemovalTask( key );
++                }
++            } else
++            {
++                underlyingMap.put( key, value );
++                if ( expiresAfterWrite != null )
++                {
++                    this.scheduleRemovalTask( key );
++                }
++            }
++        } finally
++        {
++            lock.writeLock().unlock();
++        }
++    }
++
++    public int size()
++    {
++        lock.readLock().lock();
++        try
++        {
++            return underlyingMap.size();
++        } finally
++        {
++            lock.readLock().unlock();
++        }
++    }
++
++    private void scheduleRemovalTask(K key)
++    {
++        tasks.put( key, CompletableFuture.runAsync( () ->
++        {
++            try
++            {
++                Thread.sleep( expiresAfterWrite.toMillis() );
++            } catch ( InterruptedException e )
++            {
++                Thread.currentThread().interrupt();
++            }
++            lock.writeLock().lock();
++            try
++            {
++                underlyingMap.remove( key );
++            } finally
++            {
++                lock.writeLock().unlock();
++            }
++            tasks.remove( key );
++        }, executorService ) );
++    }
++
++    @VisibleForTesting
++    void shutdownScheduler()
++    {
++        executorService.shutdownNow0();
++    }
++
++}
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index 94fbd95dfc42a6b248b8dfaf8427549dcd21fe02..f49b0fee397851e8430b3d269190fe27f5f675ca 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -188,6 +188,7 @@ public class BungeeCord extends ProxyServer
+     // IvanCord start
+     @Getter
+     private ServicesManager servicesManager;
++    @Getter private final com.mrivanplays.ivancord.connection.Playerdata playerdata;
+     // IvanCord end
+ 
+     {
+@@ -263,6 +264,28 @@ public class BungeeCord extends ProxyServer
+         getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.commands.op.CommandDeop() );
+         // IvanCord end
+ 
++        // IvanCord start
++        playerdata = new com.mrivanplays.ivancord.connection.Playerdata( this );
++        playerdata.load();
++        scheduler.scheduler.execute( new Runnable() {
++
++            @Override
++            public void run()
++            {
++                try
++                {
++                    Thread.sleep( TimeUnit.HOURS.toMillis( 2 ) );
++                } catch ( InterruptedException e )
++                {
++                    Thread.currentThread().interrupt();
++                }
++                playerdata.save();
++                scheduler.scheduler.execute( this );
++            }
++        } );
++
++        // IvanCord end
++
+         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         {
+             if ( EncryptionUtil.nativeFactory.load() )
+@@ -527,6 +550,7 @@ public class BungeeCord extends ProxyServer
+         {
+             pluginManager.disablePlugin( plugin );
+         }
++        playerdata.save();
+         scheduler.scheduler.shutdownNow0();
+         while ( true )
+         {
+@@ -864,4 +888,36 @@ public class BungeeCord extends ProxyServer
+     {
+         return new BungeeTitle();
+     }
++
++    // IvanCord start
++    @Override
++    public java.util.concurrent.CompletableFuture<com.mrivanplays.ivancord.api.connection.OfflinePlayer> offlinePlayer(String name)
++    {
++        return playerdata.getOfflinePlayer( name );
++    }
++
++    @Override
++    public com.mrivanplays.ivancord.api.connection.OfflinePlayer offlinePlayerIfPresent(String name)
++    {
++        return playerdata.getOfflinePlayerIfPresent( name );
++    }
++
++    @Override
++    public java.util.concurrent.CompletableFuture<com.mrivanplays.ivancord.api.connection.OfflinePlayer> offlinePlayer(UUID uuid)
++    {
++        return playerdata.getOfflinePlayer( uuid );
++    }
++
++    @Override
++    public com.mrivanplays.ivancord.api.connection.OfflinePlayer offlinePlayerIfPresent(UUID uuid)
++    {
++        return playerdata.getOfflinePlayerIfPresent( uuid );
++    }
++
++    @Override
++    public Collection<com.mrivanplays.ivancord.api.connection.OfflinePlayer> getOfflinePlayers()
++    {
++        return playerdata.getOfflinePlayers();
++    }
++    // IvanCord end
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index 6aaf3d45bc327b85c32458140e5f8365cdd214b7..ed70925d3c9c50029c36805056090084c7de0e7e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -71,6 +71,9 @@ public class UpstreamBridge extends PacketHandler
+         bungee.getPluginManager().callEvent( event );
+         con.getTabListHandler().onDisconnect();
+         BungeeCord.getInstance().removeConnection( con );
++        // IvanCord start
++        BungeeCord.getInstance().getPlayerdata().createOrModify( con.getName(), con.getUniqueId(), con.getServer() != null ? con.getServer().getInfo() : null );
++        // IvanCord end
+ 
+         if ( con.getServer() != null )
+         {
+diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
+index 3733742927e88c0674644b6944a707ab16ba6939..9120cf661d698238ddb2f1bfc0f7277936834101 100644
+--- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
++++ b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
+@@ -33,6 +33,23 @@ public class HttpClient
+             new io.netty.resolver.dns.DnsAddressResolverGroup(PipelineUtils.getDatagramChannel(), io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider.INSTANCE);
+     // Waterfall End
+ 
++    // IvanCord start - add HttpClient.get with future return value
++    public static java.util.concurrent.CompletableFuture<String> get(String url, EventLoop eventLoop)
++    {
++        java.util.concurrent.CompletableFuture<String> ret = new java.util.concurrent.CompletableFuture<>();
++        get( url, eventLoop, ( result, error ) ->
++        {
++            if ( error != null )
++            {
++                ret.completeExceptionally( error );
++                return;
++            }
++            ret.complete( result );
++        } );
++        return ret;
++    }
++    // IvanCord end
++
+     @SuppressWarnings("UnusedAssignment")
+     public static void get(String url, EventLoop eventLoop, final Callback<String> callback)
+     {
+diff --git a/proxy/src/test/java/com/mrivanplays/ivancord/connection/ArrayCopyTest.java b/proxy/src/test/java/com/mrivanplays/ivancord/connection/ArrayCopyTest.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..600238d7c9a6d5ec491414a873d20978bf5d98be
+--- /dev/null
++++ b/proxy/src/test/java/com/mrivanplays/ivancord/connection/ArrayCopyTest.java
+@@ -0,0 +1,55 @@
++package com.mrivanplays.ivancord.connection;
++
++import java.util.Arrays;
++import java.util.HashSet;
++import java.util.Set;
++import org.junit.After;
++import org.junit.Assert;
++import org.junit.Before;
++import org.junit.Test;
++
++public class ArrayCopyTest
++{
++
++    private Set<String> subject;
++
++    @Before
++    public void init()
++    {
++        subject = new HashSet<>( Arrays.asList( "foo", "bar", "baz", "aa", "bbb" ) );
++    }
++
++    @Test
++    public void testArrayCopy()
++    {
++        String[] array = new String[0];
++        int i = 0;
++        for ( String subj : subject )
++        {
++            if ( array.length <= i )
++            {
++                array = Arrays.copyOf( array, i + 1 );
++            }
++            array[i] = subj;
++            i++;
++        }
++
++        boolean foundNull = false;
++        for ( int j = 0; j < array.length; j++ )
++        {
++            String val = array[j];
++            if ( val == null )
++            {
++                foundNull = true;
++                break;
++            }
++        }
++        Assert.assertFalse( foundNull );
++    }
++
++    @After
++    public void terminate()
++    {
++        subject.clear();
++    }
++}
+diff --git a/proxy/src/test/java/com/mrivanplays/ivancord/util/CacheTest.java b/proxy/src/test/java/com/mrivanplays/ivancord/util/CacheTest.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..4773983e7493bcad853029f290d9468422f0600c
+--- /dev/null
++++ b/proxy/src/test/java/com/mrivanplays/ivancord/util/CacheTest.java
+@@ -0,0 +1,59 @@
++package com.mrivanplays.ivancord.util;
++
++import com.mrivanplays.ivancord.scheduler.SchedulerExecutor;
++import java.time.Duration;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ExecutionException;
++import org.junit.After;
++import org.junit.Assert;
++import org.junit.Test;
++
++public class CacheTest
++{
++
++    private Cache<String, String> cache = new Cache<>( Duration.ofMillis( 500 ), CompletableFuture::completedFuture, SchedulerExecutor.create() );
++
++    @Test
++    public void testExpiration()
++    {
++        System.out.println( "Starting test expiration" );
++        cache.get( "foo" );
++
++        try
++        {
++            Thread.sleep( 550 );
++        } catch ( InterruptedException ignored )
++        {
++        }
++
++        Assert.assertEquals( 0, cache.size() );
++        System.out.println( "Expiration test successful" );
++    }
++
++    @Test
++    public void testReplacement() throws ExecutionException, InterruptedException
++    {
++        System.out.println( "Starting test replacement" );
++        // WARNING: This is test code! IT IS NOT THE PROPER USAGE OF FUTURES!!!!!
++        cache.get( "foo" ).get();
++
++        cache.put( "foo", "bar" );
++
++        String testValue = cache.get( "foo" ).get();
++        int sizeBefore = cache.size();
++
++        Thread.sleep( 550 );
++
++        Assert.assertEquals( 1, sizeBefore );
++        Assert.assertEquals( 0, cache.size() );
++        Assert.assertEquals( "bar", testValue );
++        System.out.println( "Test replacement successful" );
++    }
++
++    @After
++    public void afterAll()
++    {
++        cache.shutdownScheduler();
++    }
++
++}
+\ No newline at end of file

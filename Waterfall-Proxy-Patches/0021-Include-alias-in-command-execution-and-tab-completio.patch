@@ -38,7 +38,7 @@ index b45663279d13bfc903433afaef38954ca6952be7..b1e818a0c3b9fb2f8cf479eb66142df9
      /**
       * Check if this command can be executed by the given sender.
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 655676c3053bcae9c8879fb702fa9286de755eac..971c02d81e1410cf23c52343ecb5c37bb0f6cc69 100644
+index 6a513a3378af0e8056b453fad99659b02e644043..ad096e6575ef1798346f191f41e1e9fec295d954 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -214,7 +214,7 @@ public final class PluginManager
