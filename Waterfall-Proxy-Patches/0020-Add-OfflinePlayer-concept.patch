@@ -272,7 +272,7 @@ index 0000000000000000000000000000000000000000..f03129fed6b953cc8e01f91369d2e815
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..67f9dfaa1e5b7d5ad4ace34086b2137327fd5d4b
+index 0000000000000000000000000000000000000000..8f8c7cb50b2233eccd63809122853e71b23687d2
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
 @@ -0,0 +1,351 @@
@@ -547,7 +547,7 @@ index 0000000000000000000000000000000000000000..67f9dfaa1e5b7d5ad4ace34086b21373
 +                ServerInfo lastKnownServer = null;
 +                if ( object.has( "lastKnownServer" ) )
 +                {
-+                    lastKnownServer = BungeeCord.getInstance().getServerInfo( object.get( "lastKnownServer" ).getAsString() );
++                    lastKnownServer = bungee.getServerInfo( object.get( "lastKnownServer" ).getAsString() );
 +                }
 +                lock.writeLock().lock();
 +                try
@@ -792,55 +792,51 @@ index 0000000000000000000000000000000000000000..e7b3db01e30aaabf158cd6ee34c34f8a
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 94fbd95dfc42a6b248b8dfaf8427549dcd21fe02..f49b0fee397851e8430b3d269190fe27f5f675ca 100644
+index 94fbd95dfc42a6b248b8dfaf8427549dcd21fe02..c16203e032763a1ee0f2b5457e088d5b743be950 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -188,6 +188,7 @@ public class BungeeCord extends ProxyServer
+@@ -188,6 +188,8 @@ public class BungeeCord extends ProxyServer
      // IvanCord start
      @Getter
      private ServicesManager servicesManager;
-+    @Getter private final com.mrivanplays.ivancord.connection.Playerdata playerdata;
++    @Getter private com.mrivanplays.ivancord.connection.Playerdata playerdata;
++    private final java.util.concurrent.ScheduledExecutorService autoSaveExecutor = java.util.concurrent.Executors.newSingleThreadScheduledExecutor();
      // IvanCord end
  
      {
-@@ -263,6 +264,28 @@ public class BungeeCord extends ProxyServer
-         getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.commands.op.CommandDeop() );
-         // IvanCord end
+@@ -316,6 +318,12 @@ public class BungeeCord extends ProxyServer
+         pluginManager.loadPlugins();
+         config.load();
  
 +        // IvanCord start
 +        playerdata = new com.mrivanplays.ivancord.connection.Playerdata( this );
 +        playerdata.load();
-+        scheduler.scheduler.execute( new Runnable() {
-+
-+            @Override
-+            public void run()
-+            {
-+                try
-+                {
-+                    Thread.sleep( TimeUnit.HOURS.toMillis( 2 ) );
-+                } catch ( InterruptedException e )
-+                {
-+                    Thread.currentThread().interrupt();
-+                }
-+                playerdata.save();
-+                scheduler.scheduler.execute( this );
-+            }
-+        } );
-+
++        autoSaveExecutor.scheduleAtFixedRate( playerdata::save, 2, 2, TimeUnit.HOURS );
 +        // IvanCord end
 +
-         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         if ( config.isForgeSupport() )
          {
-             if ( EncryptionUtil.nativeFactory.load() )
-@@ -527,6 +550,7 @@ public class BungeeCord extends ProxyServer
+             registerChannel( ForgeConstants.FML_TAG );
+@@ -527,6 +535,18 @@ public class BungeeCord extends ProxyServer
          {
              pluginManager.disablePlugin( plugin );
          }
 +        playerdata.save();
++        autoSaveExecutor.shutdownNow();
++        while ( true )
++        {
++            try
++            {
++                autoSaveExecutor.awaitTermination( Long.MAX_VALUE, TimeUnit.NANOSECONDS );
++                break;
++            } catch ( InterruptedException ignored )
++            {
++            }
++        }
          scheduler.scheduler.shutdownNow0();
          while ( true )
          {
-@@ -864,4 +888,36 @@ public class BungeeCord extends ProxyServer
+@@ -864,4 +884,36 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }

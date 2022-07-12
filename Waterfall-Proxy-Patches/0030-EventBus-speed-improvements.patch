@@ -343,10 +343,10 @@ index 0000000000000000000000000000000000000000..6ef2afb8df2c419053b52438df478b42
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 9e71f3f514096aacc6fcb104d03389da37c2c5d5..acbdb6d9262fadc380d8195bf3e9a8636ed2700f 100644
+index e114f39d1e4bc25616fb5abb5d168641bf056fba..52e144b9dc990028ac3285cea61f59aced0f2fc0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -241,7 +241,9 @@ public class BungeeCord extends ProxyServer
+@@ -242,7 +242,9 @@ public class BungeeCord extends ProxyServer
          logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
          // Waterfall end
  

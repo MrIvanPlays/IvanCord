@@ -185,10 +185,10 @@ index ade7a2602645306116762f961662407bf1e08863..5e7410ed81ea00f2ac36990277abf8f7
  
      <!-- Waterfall start - copy license files into jar -->
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index f49b0fee397851e8430b3d269190fe27f5f675ca..3fc8ab88dc4a4ea5e7e475673f49f39282ada27a 100644
+index c16203e032763a1ee0f2b5457e088d5b743be950..a8a2499555b007b6ee6a4534d5727a4bd56d51da 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -427,7 +427,7 @@ public class BungeeCord extends ProxyServer
+@@ -412,7 +412,7 @@ public class BungeeCord extends ProxyServer
                  }
              };
              new ServerBootstrap()
@@ -197,7 +197,7 @@ index f49b0fee397851e8430b3d269190fe27f5f675ca..3fc8ab88dc4a4ea5e7e475673f49f392
                      .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
                      .childAttr( PipelineUtils.LISTENER, info )
                      .childHandler( PipelineUtils.SERVER_CHILD )
-@@ -454,7 +454,7 @@ public class BungeeCord extends ProxyServer
+@@ -439,7 +439,7 @@ public class BungeeCord extends ProxyServer
                          }
                      }
                  };

@@ -336,25 +336,26 @@ index 0000000000000000000000000000000000000000..b13931eaf4271bb8098b3a2b111af4de
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index acbdb6d9262fadc380d8195bf3e9a8636ed2700f..f2aea686941f7e9c8004b3b80ae03f3abde335b8 100644
+index 52e144b9dc990028ac3285cea61f59aced0f2fc0..c6cc01edfe0e8a115ae59e3de036f38bbdfa2075 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -189,6 +189,7 @@ public class BungeeCord extends ProxyServer
-     @Getter
+@@ -190,6 +190,7 @@ public class BungeeCord extends ProxyServer
      private ServicesManager servicesManager;
-     @Getter private final com.mrivanplays.ivancord.connection.Playerdata playerdata;
-+    @Getter private com.mrivanplays.ivancord.api.skin.BungeeSkinProvider skinProvider;
+     @Getter private com.mrivanplays.ivancord.connection.Playerdata playerdata;
+     private final java.util.concurrent.ScheduledExecutorService autoSaveExecutor = java.util.concurrent.Executors.newSingleThreadScheduledExecutor();
++    @Getter private final com.mrivanplays.ivancord.api.skin.BungeeSkinProvider skinProvider;
      // IvanCord end
  
      {
-@@ -286,6 +287,7 @@ public class BungeeCord extends ProxyServer
-             }
-         } );
- 
-+        this.skinProvider = new com.mrivanplays.ivancord.api.skin.BungeeSkinProvider(this);
+@@ -267,6 +268,8 @@ public class BungeeCord extends ProxyServer
+         getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.commands.op.CommandDeop() );
          // IvanCord end
  
++        this.skinProvider = new com.mrivanplays.ivancord.api.skin.BungeeSkinProvider( this ); // IvanCord
++
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
+         {
+             if ( EncryptionUtil.nativeFactory.load() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 index 5030bff828d7c450f68f57552f713553176d830b..cd752d4ecafbdb6ae3811f9a7f177180104a9026 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
