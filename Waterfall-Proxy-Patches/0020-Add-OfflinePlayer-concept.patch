@@ -272,10 +272,10 @@ index 0000000000000000000000000000000000000000..f03129fed6b953cc8e01f91369d2e815
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..8caec2b512237c87e0193e15269215b85c53fbd3
+index 0000000000000000000000000000000000000000..67f9dfaa1e5b7d5ad4ace34086b2137327fd5d4b
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/Playerdata.java
-@@ -0,0 +1,352 @@
+@@ -0,0 +1,351 @@
 +package com.mrivanplays.ivancord.connection;
 +
 +import com.google.common.base.Preconditions;
@@ -369,8 +369,7 @@ index 0000000000000000000000000000000000000000..8caec2b512237c87e0193e15269215b8
 +        {
 +            if ( offlinePlayerCache.containsKey( uuid ) )
 +            {
-+                OfflinePlayer current = offlinePlayerCache.get( uuid );
-+                offlinePlayerCache.replace( uuid, new BungeeOfflinePlayer( name, uuid, current.hasPlayedBefore(), lastServer ) );
++                offlinePlayerCache.replace( uuid, new BungeeOfflinePlayer( name, uuid, true, lastServer ) );
 +            } else
 +            {
 +                // try to search for old entries with old name, and then put new stuff
