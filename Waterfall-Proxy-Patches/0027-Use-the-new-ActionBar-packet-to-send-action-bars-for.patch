@@ -6,7 +6,7 @@ Subject: [PATCH] Use the new ActionBar packet to send action bars for 1.17+
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 1aec33ccb03c64775e43c7f03ba35a24ab6708f7..4bd37a26cbc4de69c33d7272876261763d224c54 100644
+index e2ff0656737e6cda1ef71f15a0dda89dc3d8de59..d2bf589cf2414c9ef2d25180771befc959fa3908 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -1,5 +1,6 @@
@@ -16,7 +16,7 @@ index 1aec33ccb03c64775e43c7f03ba35a24ab6708f7..4bd37a26cbc4de69c33d727287626176
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClearTitles;
-@@ -243,5 +244,9 @@ public abstract class AbstractPacketHandler
+@@ -242,5 +243,9 @@ public abstract class AbstractPacketHandler
      public void handle(EntityAttributes entityAttributes) throws Exception
      {
      }
@@ -27,7 +27,7 @@ index 1aec33ccb03c64775e43c7f03ba35a24ab6708f7..4bd37a26cbc4de69c33d727287626176
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index ede436afbb17438521f70de846a0818f48e4c677..9fd9d239b90d45c76ad1294eac0f1610b433604f 100644
+index 581da9d7051264a679d85a92bb442f58ec36507b..7393b64c72b29e5411dbd24b535f7054b01bbdc7 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -11,6 +11,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
@@ -38,16 +38,17 @@ index ede436afbb17438521f70de846a0818f48e4c677..9fd9d239b90d45c76ad1294eac0f1610
  import net.md_5.bungee.protocol.packet.BossBar;
  import net.md_5.bungee.protocol.packet.Chat;
  import net.md_5.bungee.protocol.packet.ClearTitles;
-@@ -354,6 +355,14 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x4A ),
-                     map( ProtocolConstants.MINECRAFT_1_19, 0x49 )
+@@ -373,6 +374,15 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x3F ),
+                     map( ProtocolConstants.MINECRAFT_1_19_1, 0x42 )
              );
 +            // IvanCord start
 +            TO_CLIENT.registerPacket(
 +                    ActionBar.class,
 +                    ActionBar::new,
 +                    map( ProtocolConstants.MINECRAFT_1_17, 0x41 ),
-+                    map( ProtocolConstants.MINECRAFT_1_19, 0x40 )
++                    map( ProtocolConstants.MINECRAFT_1_19, 0x40 ),
++                    map( ProtocolConstants.MINECRAFT_1_19_1, 0x43 )
 +            );
 +            // IvanCord end
  

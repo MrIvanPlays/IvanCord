@@ -168,7 +168,7 @@ index 074fefc87a22fb4495dac9a2bb7e4a7c4d8fe6b5..fdf32d89fdde0c2eb76a8d928e51c9ae
          bungee.start();
          bungee.getLogger().info( "Enabled IvanCord version " + bungee.getVersion() ); // IvanCord - rebranding
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index ba7fc59cb2a8a1cc6cf50c2e964d61b308ef0162..e218b14ecf886b5db5d6a6df9ece79657fbbf25e 100644
+index 8181d76bde75645d7be22b24cea4ca651938f88c..e8480ff4319f51e9c869e6931cbaa845fe6229bd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -315,6 +315,13 @@ public class ServerConnector extends PacketHandler

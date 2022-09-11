@@ -65,10 +65,10 @@ index 0000000000000000000000000000000000000000..f140b0195e9661e364dafab7c3aba7ec
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 24893418f948768e1b21ba672815a41956a9e947..b688029296955d6bd1d54f88910476a36c4517a2 100644
+index 975b6996cb4c5030e340f75385b4f8e3efbc4549..2cb441b9b63238f21fdba48d083a5ac2294a0446 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -70,6 +70,7 @@ import net.md_5.bungee.protocol.packet.StatusResponse;
+@@ -71,6 +71,7 @@ import net.md_5.bungee.protocol.packet.StatusResponse;
  import net.md_5.bungee.util.AllowedCharacters;
  import net.md_5.bungee.util.BufUtil;
  import net.md_5.bungee.util.QuietException;
@@ -76,7 +76,7 @@ index 24893418f948768e1b21ba672815a41956a9e947..b688029296955d6bd1d54f88910476a3
  
  @RequiredArgsConstructor
  public class InitialHandler extends PacketHandler implements PendingConnection
-@@ -148,6 +149,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -149,6 +150,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              ch.close();
          }
@@ -86,43 +86,37 @@ index 24893418f948768e1b21ba672815a41956a9e947..b688029296955d6bd1d54f88910476a3
      }
  
      @Override
-@@ -439,11 +443,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -444,12 +448,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
-+                    // IvanCord start - implement LoginCancelledEvent
-+                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent();
-+                    // IvanCord end
-                     disconnect( result.getCancelReasonComponents() );
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent(); // IvanCord
+                     BaseComponent[] reason = result.getCancelReasonComponents();
+                     disconnect( ( reason != null ) ? reason : TextComponent.fromLegacyText( bungee.getTranslation( "kick_message" ) ) );
                      return;
                  }
                  if ( ch.isClosed() )
                  {
-+                    // IvanCord start - implement LoginCancelledEvent
-+                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).callEvent();
-+                    // IvanCord end
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).callEvent(); // IvanCord
                      return;
                  }
                  if ( onlineMode )
-@@ -571,11 +581,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -597,12 +603,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
-+                    // IvanCord start - implement login cancelled event
-+                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent();
-+                    // IvanCord end
-                     disconnect( result.getCancelReasonComponents() );
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent(); // IvanCord
+                     BaseComponent[] reason = result.getCancelReasonComponents();
+                     disconnect( ( reason != null ) ? reason : TextComponent.fromLegacyText( bungee.getTranslation( "kick_message" ) ) );
                      return;
                  }
                  if ( ch.isClosed() )
                  {
-+                    // IvanCord start - implement LoginCancelledEvent
-+                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).callEvent();
-+                    // IvanCord end
++                    new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.CLIENT ).callEvent(); // IvanCord
                      return;
                  }
  
-@@ -610,6 +626,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -637,6 +645,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
                              userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
                          }

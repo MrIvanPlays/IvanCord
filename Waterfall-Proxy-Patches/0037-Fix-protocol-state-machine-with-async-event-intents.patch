@@ -19,10 +19,10 @@ It is also possible to send the LoginRequest packet twice if an intent is regist
 PreLoginEvent so I checked if we already got a LoginRequest.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 31ea1826b2e7bc4723289fc718f713fd4f985b17..63ba39da658e0a658d54e37027dca3ffa6f5cfb2 100644
+index b4f31f8d1ff5e79445f50fcfb3cf310edb3e2f88..601e3f253e2e22a99b3e64ac6a8d625cc2452d1a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -87,6 +87,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -88,6 +88,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Getter
      private LoginRequest loginRequest;
      private EncryptionRequest request;
@@ -30,7 +30,7 @@ index 31ea1826b2e7bc4723289fc718f713fd4f985b17..63ba39da658e0a658d54e37027dca3ff
      @Getter
      private PluginMessage brandMessage;
      @Getter
-@@ -119,7 +120,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -120,7 +121,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public boolean shouldHandle(PacketWrapper packet) throws Exception
      {
@@ -39,7 +39,7 @@ index 31ea1826b2e7bc4723289fc718f713fd4f985b17..63ba39da658e0a658d54e37027dca3ff
      }
  
      private enum State
-@@ -270,8 +271,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -271,8 +272,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void handle(StatusRequest statusRequest) throws Exception
      {
@@ -50,7 +50,7 @@ index 31ea1826b2e7bc4723289fc718f713fd4f985b17..63ba39da658e0a658d54e37027dca3ff
          ServerInfo forced = AbstractReconnectHandler.getForcedHost( this );
          final String motd = ( forced != null ) ? forced.getMotd() : listener.getMotd();
          final int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
-@@ -309,6 +311,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -310,6 +312,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                          {
                              bungee.getConnectionThrottle().unthrottle( getSocketAddress() );
                          }
@@ -58,7 +58,7 @@ index 31ea1826b2e7bc4723289fc718f713fd4f985b17..63ba39da658e0a658d54e37027dca3ff
                      }
                  };
  
-@@ -323,8 +326,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -324,8 +327,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          {
              pingBack.done( getPingInfo( motd, protocol ), null );
          }
@@ -68,7 +68,7 @@ index 31ea1826b2e7bc4723289fc718f713fd4f985b17..63ba39da658e0a658d54e37027dca3ff
      }
  
      private static final boolean ACCEPT_INVALID_PACKETS = Boolean.parseBoolean(System.getProperty("waterfall.acceptInvalidPackets", "false"));
-@@ -409,7 +411,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -410,7 +412,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void handle(LoginRequest loginRequest) throws Exception
      {

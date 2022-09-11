@@ -82,11 +82,11 @@ index 30672e8c39b5590a9ba356a9d66bc52f9446ff7c..da9b8701c60709441fed6e0234573494
          }
  
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index a96e9209a361892560a1c0c2573d882c5b7fdd33..eefe6010a1c68a78f407527b55e28b36a00f6790 100644
+index 5c105cb9ff18d1b2cc63996fb72754348b949691..8559d1b65d3f387eaee2876fe3632b32246d52de 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -41,3 +41,4 @@ command_ip=\u00a79IP of {0} is {1}
- illegal_chat_characters=\u00a7cillegal characters in chat ({0})
+@@ -42,3 +42,4 @@ command_ip=\u00a79IP of {0} is {1}
+ illegal_chat_characters=\u00a7cIllegal characters in chat ({0})
  kick_message=\u00a7cYou have been kicked off the proxy.
  kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
 +command_plugins_message=Plugins ({0}): {1}

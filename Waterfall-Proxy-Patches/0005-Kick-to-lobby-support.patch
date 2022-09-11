@@ -51,7 +51,7 @@ index 06d74844fe24fb7bdc33dc81c8ec28280e7a1c12..238bc3c1f43aa5bd6de34f4355ede2de
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 97c4b210e1ea6e52f8ab7273ba5111fbe0651aac..31ac791d12b3edf1ac1ed9cffa3f5f209d5a3488 100644
+index 59d204ceb163ec6f52d753809f3024ec6717c207..2182449a57f371220a18aee652eb67d20528911e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -29,6 +29,7 @@ import net.md_5.bungee.ServerConnection.KeepAliveData;
@@ -62,7 +62,7 @@ index 97c4b210e1ea6e52f8ab7273ba5111fbe0651aac..31ac791d12b3edf1ac1ed9cffa3f5f20
  import net.md_5.bungee.api.chat.BaseComponent;
  import net.md_5.bungee.api.chat.TextComponent;
  import net.md_5.bungee.api.config.ServerInfo;
-@@ -594,14 +595,46 @@ public class DownstreamBridge extends PacketHandler
+@@ -595,14 +596,46 @@ public class DownstreamBridge extends PacketHandler
          {
              def = null;
          }
@@ -114,11 +114,11 @@ index 97c4b210e1ea6e52f8ab7273ba5111fbe0651aac..31ac791d12b3edf1ac1ed9cffa3f5f20
          throw CancelSendSignal.INSTANCE;
      }
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index 58380d4a9f612538bed3076565cda2b46a349567..a96e9209a361892560a1c0c2573d882c5b7fdd33 100644
+index 76ad621f4624db01306c3e5672a29c6422daa2f2..5c105cb9ff18d1b2cc63996fb72754348b949691 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -40,3 +40,4 @@ command_perms_permission=\u00a79- {0}
+@@ -41,3 +41,4 @@ command_perms_permission=\u00a79- {0}
  command_ip=\u00a79IP of {0} is {1}
- illegal_chat_characters=\u00a7cillegal characters in chat ({0})
+ illegal_chat_characters=\u00a7cIllegal characters in chat ({0})
  kick_message=\u00a7cYou have been kicked off the proxy.
 +kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}

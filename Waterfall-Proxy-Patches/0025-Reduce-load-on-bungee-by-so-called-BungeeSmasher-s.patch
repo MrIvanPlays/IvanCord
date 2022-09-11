@@ -6,7 +6,7 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
 diff --git a/pom.xml b/pom.xml
-index cc7deb801fa86362c59bb91e75bfe158174a4bce..97937dd3c98f544a805aed5b6c4d7eec493beede 100644
+index 29b9f7482d7c9274f67ce2810116d40be6cc1318..c9de4251d428a70ca5ed50cdb2759453a85d9bdd 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -46,6 +46,7 @@
@@ -48,10 +48,10 @@ index f20104a23600f34c10f020ab7c055a5ea371e254..951adc0d4298e4e2a6be06d8c9fd0865
      private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index bafef27c6934a9f0604737d244a118c634a96455..adace29451b75b67bc5e828b1cbd29f1c76ee3db 100644
+index 561a9522db8f27fec14e9bc43a1e979721f427d7..cc50cb2fefa2cc0ced0692ec5a04ab463eb3df1c 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -153,8 +153,13 @@ public abstract class DefinedPacket
+@@ -148,8 +148,13 @@ public abstract class DefinedPacket
          int out = 0;
          int bytes = 0;
          byte in;
@@ -166,10 +166,10 @@ index c0d371426a16565e735015b1f679278e0360ed1c..f33df1f37bda8327f12a55329b65f67d
      }
  }
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index ade7a2602645306116762f961662407bf1e08863..5e7410ed81ea00f2ac36990277abf8f72a7120cb 100644
+index 4cec3b3caa9f92636bf7083084e452e140517031..352f97e03359822f120361f998bda8961c411b8a 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -148,6 +148,14 @@
+@@ -155,6 +155,14 @@
              <scope>runtime</scope>
          </dependency>
          <!-- Waterfall end -->
@@ -246,10 +246,10 @@ index 67548b7e6cbb3db009335a796a16b11c9a7de29d..50d85372adfee814cd8ee434070d8e97
                  .handler( initializer )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b688029296955d6bd1d54f88910476a36c4517a2..58b8380fbd3ff3c3bddfc8d3d958f6417f912752 100644
+index 2cb441b9b63238f21fdba48d083a5ac2294a0446..646059fc664e7fdc18e046184b14f488109e54d5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -145,9 +145,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -146,9 +146,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          if ( canSendKickMessage() )
          {
              disconnect( ChatColor.RED + Util.exception( t ) );
@@ -261,7 +261,7 @@ index b688029296955d6bd1d54f88910476a36c4517a2..58b8380fbd3ff3c3bddfc8d3d958f641
          }
          // IvanCord start - implement LoginCancelledEvent
          new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY_EXCEPTION ).callEvent();
-@@ -159,7 +161,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -160,7 +162,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          if ( packet.packet == null )
          {
@@ -270,7 +270,7 @@ index b688029296955d6bd1d54f88910476a36c4517a2..58b8380fbd3ff3c3bddfc8d3d958f641
          }
      }
  
-@@ -337,6 +339,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -338,6 +340,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              handshake.setHost( split[0] );
              extraDataInHandshake = "\0" + split[1];
          }
@@ -278,7 +278,7 @@ index b688029296955d6bd1d54f88910476a36c4517a2..58b8380fbd3ff3c3bddfc8d3d958f641
  
          // SRV records can end with a . depending on DNS / client.
          if ( handshake.getHost().endsWith( "." ) )
-@@ -381,7 +384,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -382,7 +385,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  break;
              default:
@@ -287,7 +287,7 @@ index b688029296955d6bd1d54f88910476a36c4517a2..58b8380fbd3ff3c3bddfc8d3d958f641
          }
      }
  
-@@ -770,4 +773,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -789,4 +792,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              brandMessage = input;
          }
      }

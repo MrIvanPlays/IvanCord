@@ -151,18 +151,18 @@ index 03bc8c4b0cfa9733b93e74546a51bca1b15bca44..599254cc90643dd8d92fbca6dbbdf0dd
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 5e7cbc944007ac883bc1b5e6f2077e24aa528ee5..3852bf08609f3a60a7da06541f4d3b5ed162da09 100644
+index 3b5f77a2de41069444a89df0511da4bd44c3b64b..c01c1114cfa62e5a50e17f2b3229c7d7ab584817 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -26,6 +26,7 @@ import net.md_5.bungee.protocol.packet.LoginRequest;
+@@ -25,6 +25,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
+ import net.md_5.bungee.protocol.packet.LoginRequest;
  import net.md_5.bungee.protocol.packet.LoginSuccess;
  import net.md_5.bungee.protocol.packet.PingPacket;
- import net.md_5.bungee.protocol.packet.PlayerChat;
 +import net.md_5.bungee.protocol.packet.PlaySound; // IvanCord
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PlayerPosition; // IvanCord
-@@ -232,4 +233,10 @@ public abstract class AbstractPacketHandler
+@@ -231,4 +232,10 @@ public abstract class AbstractPacketHandler
      {
      }
      // Waterfall end
@@ -174,20 +174,20 @@ index 5e7cbc944007ac883bc1b5e6f2077e24aa528ee5..3852bf08609f3a60a7da06541f4d3b5e
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index c1455f909d14486d49291931fdefe4187a428963..30a931ee1bfd969ab271e310dc0e662c2ba8aab1 100644
+index e2bfe8b55f3776833355673feefd419b0614ef1c..66098510f44d9a52ddd8b8020d0faefc4eaafbdd 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -34,6 +34,7 @@ import net.md_5.bungee.protocol.packet.LoginRequest;
+@@ -33,6 +33,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
+ import net.md_5.bungee.protocol.packet.LoginRequest;
  import net.md_5.bungee.protocol.packet.LoginSuccess;
  import net.md_5.bungee.protocol.packet.PingPacket;
- import net.md_5.bungee.protocol.packet.PlayerChat;
 +import net.md_5.bungee.protocol.packet.PlaySound;
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PlayerPosition;
-@@ -432,6 +433,20 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x12 ),
-                     map( ProtocolConstants.MINECRAFT_1_19, 0x14 )
+@@ -458,6 +459,21 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x14 ),
+                     map( ProtocolConstants.MINECRAFT_1_19_1, 0x15 )
              );
 +            // play sound packet
 +            TO_CLIENT.registerPacket(
@@ -201,7 +201,8 @@ index c1455f909d14486d49291931fdefe4187a428963..30a931ee1bfd969ab271e310dc0e662c
 +                    map( ProtocolConstants.MINECRAFT_1_16, 0x19 ),
 +                    map( ProtocolConstants.MINECRAFT_1_16_2, 0x18 ),
 +                    map( ProtocolConstants.MINECRAFT_1_17, 0x19 ),
-+                    map( ProtocolConstants.MINECRAFT_1_19, 0x16 )
++                    map( ProtocolConstants.MINECRAFT_1_19, 0x16 ),
++                    map( ProtocolConstants.MINECRAFT_1_19_1, 0x17 )
 +            );
              // IvanCord end
          }
@@ -341,7 +342,7 @@ index 0000000000000000000000000000000000000000..6b8ef02070ddabb4edb23793901cd4d9
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 5abde50196f22c77d60d13ed637a73848ea6b460..a371fd2b6b9db17b345196eed818a880eef3c6c1 100644
+index 07655f95f18d6bc988103c2b294b2ca46ddc0cb7..b9f93b95a1936abfa56f23a3e8d324ccc891720c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -50,6 +50,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadRequest;

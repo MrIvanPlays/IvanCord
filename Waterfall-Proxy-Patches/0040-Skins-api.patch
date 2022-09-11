@@ -357,7 +357,7 @@ index 52e144b9dc990028ac3285cea61f59aced0f2fc0..c6cc01edfe0e8a115ae59e3de036f38b
          {
              if ( EncryptionUtil.nativeFactory.load() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 5030bff828d7c450f68f57552f713553176d830b..cd752d4ecafbdb6ae3811f9a7f177180104a9026 100644
+index 724627c84cb3e14fa349851655d9cd2e5c40f159..00345f94fc6edbc4d90020b0e2c9194b323125f0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -137,8 +137,71 @@ public class ServerConnector extends PacketHandler
@@ -433,10 +433,10 @@ index 5030bff828d7c450f68f57552f713553176d830b..cd752d4ecafbdb6ae3811f9a7f177180
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 05b9c147f96e16823febbe119cad43676503038f..9e082ddc03e91e5f16a35942f699d6b4f8418fb5 100644
+index 601e3f253e2e22a99b3e64ac6a8d625cc2452d1a..bd521de37eb78f2815a98e102858c4e54b1cd58e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -111,11 +111,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -112,11 +112,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Getter
      private UUID offlineId;
      @Getter
@@ -450,7 +450,7 @@ index 05b9c147f96e16823febbe119cad43676503038f..9e082ddc03e91e5f16a35942f699d6b4
  
      @Override
      public boolean shouldHandle(PacketWrapper packet) throws Exception
-@@ -552,6 +554,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -546,6 +548,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                          loginProfile = obj;
                          name = obj.getName();
                          uniqueId = Util.getUUID( obj.getId() );

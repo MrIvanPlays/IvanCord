@@ -322,7 +322,7 @@ index caa4c4cb50a4fbb2c6c12baa38a2430eb0852b4a..4a15f4301cf2ace03f2c4d6f7e2564e4
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 2b544c239385a2ea5990f91a0d504c79c7ae9cf8..38f4cdc1e58ac092bf11de792b6b0079748e967f 100644
+index 6810b9ccb5d29c858a4b89c6be28d805b6aa2b6a..4978bff948ec16f8a73d92f9d8fadf02f3a9cb8c 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -497,7 +497,7 @@ index 93ae5952a2c52eaef032c847785159c14506c0d0..64be26fac7635701e8cefd0ce76a34f8
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index d81bf730198dc6fbd3980683ac5fa6cbcffd17b0..ade7a2602645306116762f961662407bf1e08863 100644
+index 1036a2e773237ff0c9ee564318bfa642009e4210..4cec3b3caa9f92636bf7083084e452e140517031 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,16 @@
@@ -523,7 +523,7 @@ index d81bf730198dc6fbd3980683ac5fa6cbcffd17b0..ade7a2602645306116762f961662407b
      <description>Proxy component of the Elastic Portal Suite</description>
  
      <properties>
-@@ -64,32 +62,32 @@
+@@ -71,32 +69,32 @@
              <scope>compile</scope>
          </dependency>
          <dependency>

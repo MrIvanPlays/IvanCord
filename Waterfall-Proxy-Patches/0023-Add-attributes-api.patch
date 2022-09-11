@@ -187,7 +187,7 @@ index 07e3960d18a47b04f2a6e82140ae6fc4e117edde..5462e6e9e6a2ea43771d339d63173b22
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 3852bf08609f3a60a7da06541f4d3b5ed162da09..1aec33ccb03c64775e43c7f03ba35a24ab6708f7 100644
+index c01c1114cfa62e5a50e17f2b3229c7d7ab584817..e2ff0656737e6cda1ef71f15a0dda89dc3d8de59 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -10,6 +10,7 @@ import net.md_5.bungee.protocol.packet.ClientStatus;
@@ -198,7 +198,7 @@ index 3852bf08609f3a60a7da06541f4d3b5ed162da09..1aec33ccb03c64775e43c7f03ba35a24
  import net.md_5.bungee.protocol.packet.EntityEffect; // Waterfall
  import net.md_5.bungee.protocol.packet.EntityRemoveEffect; // Waterfall
  import net.md_5.bungee.protocol.packet.EntityStatus;
-@@ -238,5 +239,9 @@ public abstract class AbstractPacketHandler
+@@ -237,5 +238,9 @@ public abstract class AbstractPacketHandler
      public void handle(PlaySound playSound) throws Exception
      {
      }
@@ -209,7 +209,7 @@ index 3852bf08609f3a60a7da06541f4d3b5ed162da09..1aec33ccb03c64775e43c7f03ba35a24
      // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 30a931ee1bfd969ab271e310dc0e662c2ba8aab1..ede436afbb17438521f70de846a0818f48e4c677 100644
+index 66098510f44d9a52ddd8b8020d0faefc4eaafbdd..581da9d7051264a679d85a92bb442f58ec36507b 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -20,6 +20,7 @@ import net.md_5.bungee.protocol.packet.ClientSettings;
@@ -220,9 +220,9 @@ index 30a931ee1bfd969ab271e310dc0e662c2ba8aab1..ede436afbb17438521f70de846a0818f
  import net.md_5.bungee.protocol.packet.EntityStatus;
  import net.md_5.bungee.protocol.packet.GameState;
  import net.md_5.bungee.protocol.packet.EntityEffect;
-@@ -447,6 +448,23 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x19 ),
-                     map( ProtocolConstants.MINECRAFT_1_19, 0x16 )
+@@ -474,6 +475,24 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x16 ),
+                     map( ProtocolConstants.MINECRAFT_1_19_1, 0x17 )
              );
 +            // entity attributes packet
 +            TO_CLIENT.registerPacket(
@@ -239,7 +239,8 @@ index 30a931ee1bfd969ab271e310dc0e662c2ba8aab1..ede436afbb17438521f70de846a0818f
 +                    map( ProtocolConstants.MINECRAFT_1_16, 0x58 ),
 +                    map( ProtocolConstants.MINECRAFT_1_17, 0x63 ),
 +                    map( ProtocolConstants.MINECRAFT_1_18, 0x64 ),
-+                    map( ProtocolConstants.MINECRAFT_1_19, 0x65 )
++                    map( ProtocolConstants.MINECRAFT_1_19, 0x65 ),
++                    map( ProtocolConstants.MINECRAFT_1_19_1, 0x68 )
 +            );
              // IvanCord end
          }
@@ -347,7 +348,7 @@ index 0000000000000000000000000000000000000000..fe62e1d86a0c8c65717f54e5cfc83eb9
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index a416fccba6866958a2bfb60696d3f8677436bd11..8c0726b8cbb18d781e730bf508c51d31f26ed682 100644
+index b07740940f6730f1424b234ea83247312d9a56c0..d565515c406adfad95cb7038f95212213b47f8b9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -2,6 +2,7 @@ package net.md_5.bungee;

@@ -2357,7 +2357,7 @@ index a8a2499555b007b6ee6a4534d5727a4bd56d51da..e114f39d1e4bc25616fb5abb5d168641
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index cbaaccac3c56168eae2cf2272fb8ff05acf80081..5be365a715d4f0ef1a85175e22533a4dee37ce71 100644
+index 26e9506530bcea8e52b94028291f06968d545f1f..326f28e6188dab60b0c9cdf91cc14b4a0869513e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -6,12 +6,15 @@ import com.google.common.collect.Lists;
@@ -2384,7 +2384,7 @@ index cbaaccac3c56168eae2cf2272fb8ff05acf80081..5be365a715d4f0ef1a85175e22533a4d
  import net.md_5.bungee.api.ProxyServer;
  import net.md_5.bungee.api.chat.ComponentBuilder; // IvanCord
  import net.md_5.bungee.api.chat.BaseComponent;
-@@ -659,6 +663,65 @@ public class DownstreamBridge extends PacketHandler
+@@ -660,6 +664,65 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(TabCompleteResponse tabCompleteResponse) throws Exception
      {
@@ -2450,7 +2450,7 @@ index cbaaccac3c56168eae2cf2272fb8ff05acf80081..5be365a715d4f0ef1a85175e22533a4d
          List<String> commands = tabCompleteResponse.getCommands();
          if ( commands == null )
          {
-@@ -699,6 +762,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -700,6 +763,7 @@ public class DownstreamBridge extends PacketHandler
  
              con.unsafe().sendPacket( tabCompleteResponse );
          }
@@ -2458,7 +2458,7 @@ index cbaaccac3c56168eae2cf2272fb8ff05acf80081..5be365a715d4f0ef1a85175e22533a4d
  
          throw CancelSendSignal.INSTANCE;
      }
-@@ -761,6 +825,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -762,6 +826,8 @@ public class DownstreamBridge extends PacketHandler
      {
          boolean modified = false;
  
@@ -2467,7 +2467,7 @@ index cbaaccac3c56168eae2cf2272fb8ff05acf80081..5be365a715d4f0ef1a85175e22533a4d
          // Waterfall start
          Map<String, Command> commandMap = new HashMap<>();
          for ( Map.Entry<String, Command> commandEntry : bungee.getPluginManager().getCommands() ) {
-@@ -790,6 +856,43 @@ public class DownstreamBridge extends PacketHandler
+@@ -791,6 +857,43 @@ public class DownstreamBridge extends PacketHandler
                  modified = true;
              }
          }
@@ -2511,7 +2511,7 @@ index cbaaccac3c56168eae2cf2272fb8ff05acf80081..5be365a715d4f0ef1a85175e22533a4d
  
          if ( modified )
          {
-@@ -798,6 +901,68 @@ public class DownstreamBridge extends PacketHandler
+@@ -799,6 +902,68 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -2689,10 +2689,10 @@ index 28165d97190823b29a7ed91b393b1e71bfef406e..5b804c3247edcfa186e270499061730d
  
      @Override
 diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
-index eefe6010a1c68a78f407527b55e28b36a00f6790..b93e3fc161542b0adc457ee679df1567cd2738ea 100644
+index 8559d1b65d3f387eaee2876fe3632b32246d52de..fb720f9e62d86195faf105ca19af40d198f21648 100644
 --- a/proxy/src/main/resources/messages.properties
 +++ b/proxy/src/main/resources/messages.properties
-@@ -42,3 +42,5 @@ illegal_chat_characters=\u00a7cillegal characters in chat ({0})
+@@ -43,3 +43,5 @@ illegal_chat_characters=\u00a7cIllegal characters in chat ({0})
  kick_message=\u00a7cYou have been kicked off the proxy.
  kick_to_lobby=You were kicked from server {0} with reason {1} . The fallback sent you to {2}
  command_plugins_message=Plugins ({0}): {1}
