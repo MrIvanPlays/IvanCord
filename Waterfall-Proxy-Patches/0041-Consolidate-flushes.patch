@@ -1,0 +1,442 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Janmm14 <gitconfig1@janmm14.de>
+Date: Wed, 21 Sep 2022 18:36:29 +0300
+Subject: [PATCH] Consolidate flushes
+
+Leads to reduced syscalls and higher performance.
+Based on Netty FlushConsolidationHandler
+
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/netty/flush/FlushSignalingHandler.java b/proxy/src/main/java/com/mrivanplays/ivancord/netty/flush/FlushSignalingHandler.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..97778cb9156fc96f8594fb0bab6c59cc9df46e1d
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/netty/flush/FlushSignalingHandler.java
+@@ -0,0 +1,94 @@
++/*
++ * The original file is licensed under the following license:
++ *
++ * Copyright 2016 The Netty Project
++ *
++ * The Netty Project licenses this file to you under the Apache License,
++ * version 2.0 (the "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at:
++ *
++ *   https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ *
++ * ---
++ *
++ * This file is partly based on the io/netty/handler/flush/FlushConsolidationHandler.java file from Netty (v4.1).
++ * It was modified to fit to bungee's use of forwarded connections.
++ * All modifications are licensed under the "Modified BSD 3-Clause License" to be found at https://github.com/SpigotMC/BungeeCord/blob/master/LICENSE
++ */
++package com.mrivanplays.ivancord.netty.flush;
++
++import io.netty.channel.ChannelDuplexHandler;
++import io.netty.channel.ChannelHandlerContext;
++import io.netty.channel.ChannelPromise;
++
++/**
++ * Signalises a read loop is currently ongoing to {@link IvanCordFlushConsolidationHandler}.
++ */
++public final class FlushSignalingHandler extends ChannelDuplexHandler
++{
++    private IvanCordFlushConsolidationHandler target;
++
++    public FlushSignalingHandler(IvanCordFlushConsolidationHandler target)
++    {
++        this.target = target;
++    }
++
++    public void setTarget(IvanCordFlushConsolidationHandler target)
++    {
++        // flush old target
++        this.target.resetReadAndFlushIfNeeded( this.target.ctx );
++        // set new target
++        this.target = target;
++    }
++
++    @Override
++    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception
++    {
++        // This may be the last event in the read loop, so flush now!
++        target.resetReadAndFlushIfNeeded( target.ctx );
++        ctx.fireChannelReadComplete();
++    }
++
++    @Override
++    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception
++    {
++        target.readInProgress = true;
++        ctx.fireChannelRead( msg );
++    }
++
++    @Override
++    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
++    {
++        // To ensure we not miss to flush anything, do it now.
++        target.resetReadAndFlushIfNeeded( target.ctx );
++        ctx.fireExceptionCaught( cause );
++    }
++
++    @Override
++    public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception
++    {
++        // Try to flush one last time if flushes are pending before disconnect the channel.
++        target.resetReadAndFlushIfNeeded( target.ctx );
++        ctx.disconnect( promise );
++    }
++
++    @Override
++    public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception
++    {
++        // Try to flush one last time if flushes are pending before close the channel.
++        target.resetReadAndFlushIfNeeded( target.ctx );
++        ctx.close( promise );
++    }
++
++    @Override
++    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception
++    {
++        target.flushIfNeeded( target.ctx );
++    }
++}
+\ No newline at end of file
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/netty/flush/IvanCordFlushConsolidationHandler.java b/proxy/src/main/java/com/mrivanplays/ivancord/netty/flush/IvanCordFlushConsolidationHandler.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..b92d9d924c54c556a120af84ccc4ac1b0bfd45ee
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/netty/flush/IvanCordFlushConsolidationHandler.java
+@@ -0,0 +1,255 @@
++/*
++ * The original file is licensed under the following license:
++ *
++ * Copyright 2016 The Netty Project
++ *
++ * The Netty Project licenses this file to you under the Apache License,
++ * version 2.0 (the "License"); you may not use this file except in compliance
++ * with the License. You may obtain a copy of the License at:
++ *
++ *   https://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ *
++ * ---
++ *
++ * This file is based on the io/netty/handler/flush/FlushConsolidationHandler.java file from Netty (v4.1).
++ * It was modified to fit to bungee's use of forwarded connections.
++ * All modifications are licensed under the "Modified BSD 3-Clause License" to be found at
++ * https://github.com/SpigotMC/BungeeCord/blob/master/LICENSE
++ */
++package com.mrivanplays.ivancord.netty.flush;
++
++import io.netty.channel.Channel;
++import io.netty.channel.ChannelDuplexHandler;
++import io.netty.channel.ChannelHandler;
++import io.netty.channel.ChannelHandlerContext;
++import io.netty.channel.ChannelOutboundHandler;
++import io.netty.channel.ChannelOutboundInvoker;
++import io.netty.channel.ChannelPipeline;
++import io.netty.channel.ChannelPromise;
++import io.netty.util.internal.ObjectUtil;
++import java.util.concurrent.Future;
++
++/**
++ * {@link ChannelDuplexHandler} which consolidates {@link Channel#flush()} / {@link ChannelHandlerContext#flush()}
++ * operations (which also includes
++ * {@link Channel#writeAndFlush(Object)} / {@link Channel#writeAndFlush(Object, ChannelPromise)} and
++ * {@link ChannelOutboundInvoker#writeAndFlush(Object)} /
++ * {@link ChannelOutboundInvoker#writeAndFlush(Object, ChannelPromise)}).
++ * <p>
++ * Flush operations are generally speaking expensive as these may trigger a syscall on the transport level. Thus it is
++ * in most cases (where write latency can be traded with throughput) a good idea to try to minimize flush operations
++ * as much as possible.
++ * <p>
++ * If a {@link FlushSignalingHandler} signalises a read loop is currently ongoing,
++ * {@link #flush(ChannelHandlerContext)} will not be passed on to the next {@link ChannelOutboundHandler} in the
++ * {@link ChannelPipeline}, as it will pick up any pending flushes when
++ * {@link #channelReadComplete(ChannelHandlerContext)} is triggered.
++ * If no read loop is ongoing, the behavior depends on the {@code consolidateWhenNoReadInProgress} constructor argument:
++ * <ul>
++ *     <li>if {@code false}, flushes are passed on to the next handler directly;</li>
++ *     <li>if {@code true}, the invocation of the next handler is submitted as a separate task on the event loop. Under
++ *     high throughput, this gives the opportunity to process other flushes before the task gets executed, thus
++ *     batching multiple flushes into one.</li>
++ * </ul>
++ * If {@code explicitFlushAfterFlushes} is reached the flush will be forwarded as well (whether while in a read loop, or
++ * while batching outside of a read loop).
++ * <p>
++ * If the {@link Channel} becomes non-writable it will also try to execute any pending flush operations.
++ * <p>
++ * The {@link IvanCordFlushConsolidationHandler} should be put as first {@link ChannelHandler} in the
++ * {@link ChannelPipeline} to have the best effect.
++ */
++public final class IvanCordFlushConsolidationHandler extends ChannelDuplexHandler
++{
++    private final int explicitFlushAfterFlushes;
++    private final boolean consolidateWhenNoReadInProgress;
++    private final Runnable flushTask;
++    private int flushPendingCount;
++    boolean readInProgress;
++    ChannelHandlerContext ctx;
++    private Future<?> nextScheduledFlush;
++
++    /**
++     * The default number of flushes after which a flush will be forwarded to downstream handlers (whether while in a
++     * read loop, or while batching outside of a read loop).
++     */
++    public static final int DEFAULT_EXPLICIT_FLUSH_AFTER_FLUSHES = 256;
++
++    /**
++     * Creates a new instance with bungee's default values
++     *
++     * @param toClient whether this handler is for a client connection
++     * @return a new instance of IvanCordFlushConsolidationHandler
++     */
++    public static IvanCordFlushConsolidationHandler newInstance(boolean toClient)
++    {
++        // Currently the toClient boolean is ignored. It is present in case we find different parameters neccessary
++        // for client and server connections.
++        return new IvanCordFlushConsolidationHandler( 20, false );
++    }
++
++    /**
++     * Create new instance which explicit flush after {@value DEFAULT_EXPLICIT_FLUSH_AFTER_FLUSHES} pending flush
++     * operations at the latest.
++     */
++    private IvanCordFlushConsolidationHandler()
++    {
++        this( DEFAULT_EXPLICIT_FLUSH_AFTER_FLUSHES, false );
++    }
++
++    /**
++     * Create new instance which doesn't consolidate flushes when no read is in progress.
++     *
++     * @param explicitFlushAfterFlushes the number of flushes after which an explicit flush will be done.
++     */
++    private IvanCordFlushConsolidationHandler(int explicitFlushAfterFlushes)
++    {
++        this( explicitFlushAfterFlushes, false );
++    }
++
++    /**
++     * Create new instance.
++     *
++     * @param explicitFlushAfterFlushes the number of flushes after which an explicit flush will be done.
++     * @param consolidateWhenNoReadInProgress whether to consolidate flushes even when no read loop is currently
++     * ongoing.
++     */
++    private IvanCordFlushConsolidationHandler(int explicitFlushAfterFlushes, boolean consolidateWhenNoReadInProgress)
++    {
++        this.explicitFlushAfterFlushes = ObjectUtil.checkPositive( explicitFlushAfterFlushes, "explicitFlushAfterFlushes" );
++        this.consolidateWhenNoReadInProgress = consolidateWhenNoReadInProgress;
++        this.flushTask = consolidateWhenNoReadInProgress ? new Runnable()
++        {
++            @Override
++            public void run()
++            {
++                if ( flushPendingCount > 0 && !readInProgress )
++                {
++                    flushPendingCount = 0;
++                    nextScheduledFlush = null;
++                    ctx.flush();
++                } // else we'll flush when the read completes
++            }
++        } : null;
++    }
++
++    @Override
++    public void handlerAdded(ChannelHandlerContext ctx) throws Exception
++    {
++        this.ctx = ctx;
++    }
++
++    @Override
++    public void flush(ChannelHandlerContext ctx) throws Exception
++    {
++        if ( readInProgress )
++        {
++            // If there is still a read in progress we are sure we will see a channelReadComplete(...) call. Thus
++            // we only need to flush if we reach the explicitFlushAfterFlushes limit.
++            if ( ++flushPendingCount == explicitFlushAfterFlushes )
++            {
++                flushNow( ctx );
++            }
++        } else if ( consolidateWhenNoReadInProgress )
++        {
++            // Flush immediately if we reach the threshold, otherwise schedule
++            if ( ++flushPendingCount == explicitFlushAfterFlushes )
++            {
++                flushNow( ctx );
++            } else
++            {
++                scheduleFlush( ctx );
++            }
++        } else
++        {
++            // Always flush directly
++            flushNow( ctx );
++        }
++    }
++
++    @Override
++    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
++    {
++        // To ensure we not miss to flush anything, do it now.
++        resetReadAndFlushIfNeeded( ctx );
++        ctx.fireExceptionCaught( cause );
++    }
++
++    @Override
++    public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception
++    {
++        // Try to flush one last time if flushes are pending before disconnect the channel.
++        resetReadAndFlushIfNeeded( ctx );
++        ctx.disconnect( promise );
++    }
++
++    @Override
++    public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception
++    {
++        // Try to flush one last time if flushes are pending before close the channel.
++        resetReadAndFlushIfNeeded( ctx );
++        ctx.close( promise );
++    }
++
++    @Override
++    public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception
++    {
++        if ( !ctx.channel().isWritable() )
++        {
++            // The writability of the channel changed to false, so flush all consolidated flushes now to free up memory.
++            flushIfNeeded( ctx );
++        }
++        ctx.fireChannelWritabilityChanged();
++    }
++
++    @Override
++    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception
++    {
++        flushIfNeeded( ctx );
++    }
++
++    void resetReadAndFlushIfNeeded(ChannelHandlerContext ctx)
++    {
++        readInProgress = false;
++        flushIfNeeded( ctx );
++    }
++
++    void flushIfNeeded(ChannelHandlerContext ctx)
++    {
++        if ( flushPendingCount > 0 )
++        {
++            flushNow( ctx );
++        }
++    }
++
++    private void flushNow(ChannelHandlerContext ctx)
++    {
++        cancelScheduledFlush();
++        flushPendingCount = 0;
++        ctx.flush();
++    }
++
++    private void scheduleFlush(final ChannelHandlerContext ctx)
++    {
++        if ( nextScheduledFlush == null )
++        {
++            // Run as soon as possible, but still yield to give a chance for additional writes to enqueue.
++            nextScheduledFlush = ctx.channel().eventLoop().submit( flushTask );
++        }
++    }
++
++    private void cancelScheduledFlush()
++    {
++        if ( nextScheduledFlush != null )
++        {
++            nextScheduledFlush.cancel( false );
++            nextScheduledFlush = null;
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index a4d58bcf738c639a474401f1a4fb0654f8b8caec..f77046c08f2ab710677f3d8b2eea5228732915a2 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -385,7 +385,7 @@ public final class UserConnection implements ProxiedPlayer
+ 
+         pendingConnects.add( target );
+ 
+-        ChannelInitializer initializer = new ChannelInitializer()
++        ChannelInitializer<Channel> initializer = new ChannelInitializer<Channel>() // IvanCord
+         {
+             @Override
+             protected void initChannel(Channel ch) throws Exception
+@@ -394,6 +394,12 @@ public final class UserConnection implements ProxiedPlayer
+                 ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
+                 ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
+                 ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
++
++                // IvanCord start
++                ch.pipeline().addFirst( PipelineUtils.FLUSH_CONSOLIDATION, com.mrivanplays.ivancord.netty.flush.IvanCordFlushConsolidationHandler.newInstance( false ) );
++                ch.pipeline().addFirst( PipelineUtils.FLUSH_SIGNALING, new com.mrivanplays.ivancord.netty.flush.FlushSignalingHandler( UserConnection.this.ch.getFlushConsolidationHandler( true ) ) );
++                UserConnection.this.ch.setFlushSignalingTarget( ch.pipeline().get( com.mrivanplays.ivancord.netty.flush.IvanCordFlushConsolidationHandler.class ) );
++                // IvanCord end
+             }
+         };
+         ChannelFutureListener listener = new ChannelFutureListener()
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+index 487c1db411e8f9ff1feb20f4ced03ecdef7c53ec..575a19b861d28d04f74a11d31a52403221a8c684 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
+@@ -48,6 +48,27 @@ public class ChannelWrapper
+         ch.pipeline().get( MinecraftEncoder.class ).setProtocolVersion( protocol );
+     }
+ 
++    // IvanCord start
++    public void setFlushSignalingTarget(com.mrivanplays.ivancord.netty.flush.IvanCordFlushConsolidationHandler target)
++    {
++        com.mrivanplays.ivancord.netty.flush.FlushSignalingHandler handler = ch.pipeline().get( com.mrivanplays.ivancord.netty.flush.FlushSignalingHandler.class );
++        if ( handler == null )
++        {
++            ch.pipeline().addFirst( PipelineUtils.FLUSH_SIGNALING, handler = new com.mrivanplays.ivancord.netty.flush.FlushSignalingHandler( target ) );
++        }
++        handler.setTarget( target );
++    }
++    public com.mrivanplays.ivancord.netty.flush.IvanCordFlushConsolidationHandler getFlushConsolidationHandler(boolean toClient)
++    {
++        com.mrivanplays.ivancord.netty.flush.IvanCordFlushConsolidationHandler handler = ch.pipeline().get( com.mrivanplays.ivancord.netty.flush.IvanCordFlushConsolidationHandler.class );
++        if ( handler == null )
++        {
++            ch.pipeline().addFirst( PipelineUtils.FLUSH_CONSOLIDATION, handler = com.mrivanplays.ivancord.netty.flush.IvanCordFlushConsolidationHandler.newInstance( toClient ) );
++        }
++        return handler;
++    }
++    // IvanCord end
++
+     // IvanCord start
+     public void setForge(boolean forge)
+     {
+diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+index 47ea350a4904ba8816e77a0b01f806bdaa024ecf..c4c8c50456ebcd51cb9503d04be7f8550564ca20 100644
+--- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
++++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
+@@ -131,6 +131,8 @@ public class PipelineUtils
+     public static final String FRAME_PREPENDER = "frame-prepender";
+     public static final String LEGACY_DECODER = "legacy-decoder";
+     public static final String LEGACY_KICKER = "legacy-kick";
++    public static final String FLUSH_CONSOLIDATION = "flush-consolidation"; // IvanCord
++    public static final String FLUSH_SIGNALING = "flush-signaling"; // IvanCord
+     // IvanCord start - channel factories
+     private static final io.netty.channel.ChannelFactory<? extends ServerChannel> serverChannelFactory, serverChannelDomainFactory;
+     private static final io.netty.channel.ChannelFactory<? extends Channel> channelFactory, channelDomainFactory;
