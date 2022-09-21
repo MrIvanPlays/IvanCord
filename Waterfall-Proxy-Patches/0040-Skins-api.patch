@@ -214,10 +214,10 @@ index 2e0b1d73a15edbe1ba678f7aaddbbd70d32e7839..3d399b5aea9115e29841988369a71581
      {
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/BungeeSkinProvider.java b/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/BungeeSkinProvider.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..0483e8896498aba83997efa0a466db6ab50f5d22
+index 0000000000000000000000000000000000000000..7a07e52046fd0aa7ca0f87cfc8782e617803d27f
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/api/skin/BungeeSkinProvider.java
-@@ -0,0 +1,99 @@
+@@ -0,0 +1,107 @@
 +package com.mrivanplays.ivancord.api.skin;
 +
 +import com.google.gson.JsonElement;
@@ -249,6 +249,11 @@ index 0000000000000000000000000000000000000000..0483e8896498aba83997efa0a466db6a
 +            return HttpClient.get( "https://sessionserver.mojang.com/session/minecraft/profile/" + UUIDUtils.undash( key.toString() ) + "?unsigned=false", BungeeCord.getInstance().bossEventLoopGroup.next() ).thenApply( in ->
 +            {
 +                JsonObject json = BungeeCord.getInstance().gson.fromJson( in, JsonObject.class );
++                if ( json.has( "errorMessage" ) ) // I expect this to happen only on invalid uuid
++                {
++                    return null;
++                }
++                String username = json.get( "name" ).getAsString();
 +                Property textures = null;
 +                for ( JsonElement element : json.getAsJsonArray( "properties" ) )
 +                {
@@ -260,11 +265,14 @@ index 0000000000000000000000000000000000000000..0483e8896498aba83997efa0a466db6a
 +                        break;
 +                    }
 +                }
++                // since we've made the request to mojang, we shall cache the name in the NameUUIDCache
++                // mojang shut down the name history api 13th september
++                BungeeCord.getInstance().getPlayerdata().getNameUUIDCache().put( username, key );
 +                if ( textures == null )
 +                {
 +                    return null;
 +                }
-+                return new Skin( textures, json.get( "name" ).getAsString(), key );
++                return new Skin( textures, username, key );
 +            } );
 +        } );
 +    }
@@ -335,6 +343,22 @@ index 0000000000000000000000000000000000000000..b13931eaf4271bb8098b3a2b111af4de
 +        return new Skin( property, ownerUsername, ownerUuid );
 +    }
 +}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/NameUUIDCache.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/NameUUIDCache.java
+index 1145a3e4ee13c6a55027601cbc26107adbd35e53..72e127ed3e9c0025fe0fa4c050078d4525fb9402 100644
+--- a/proxy/src/main/java/com/mrivanplays/ivancord/connection/NameUUIDCache.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/NameUUIDCache.java
+@@ -33,6 +33,11 @@ public class NameUUIDCache
+         } ) );
+     }
+ 
++    public void put(String name, UUID uuid)
++    {
++        nameToUuidCache.put( name, uuid );
++    }
++
+     public CompletableFuture<UUID> nameToUuid(String name)
+     {
+         return nameToUuidCache.get( name ).thenApply( uuid ->
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 index 52e144b9dc990028ac3285cea61f59aced0f2fc0..c6cc01edfe0e8a115ae59e3de036f38bbdfa2075 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java

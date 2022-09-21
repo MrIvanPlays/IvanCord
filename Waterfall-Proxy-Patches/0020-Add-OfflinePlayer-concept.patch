@@ -197,13 +197,12 @@ index 0000000000000000000000000000000000000000..4b91e441d89e36f05a60943048577454
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/connection/NameUUIDCache.java b/proxy/src/main/java/com/mrivanplays/ivancord/connection/NameUUIDCache.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f03129fed6b953cc8e01f91369d2e815c2c0f854
+index 0000000000000000000000000000000000000000..1145a3e4ee13c6a55027601cbc26107adbd35e53
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/connection/NameUUIDCache.java
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,68 @@
 +package com.mrivanplays.ivancord.connection;
 +
-+import com.google.gson.JsonArray;
 +import com.google.gson.JsonObject;
 +import com.mrivanplays.ivancord.util.Cache;
 +import io.github.waterfallmc.waterfall.utils.UUIDUtils;
@@ -255,15 +254,15 @@ index 0000000000000000000000000000000000000000..f03129fed6b953cc8e01f91369d2e815
 +        {
 +            return CompletableFuture.completedFuture( null );
 +        }
-+        return nameToUuidCache.findKey( uuid ).map( CompletableFuture::completedFuture ).orElse( HttpClient.get( "https://api.mojang.com/user/profiles/" + UUIDUtils.undash( uuid.toString() ) + "/names", bungee.bossEventLoopGroup.next() ).thenApply( s ->
++        return nameToUuidCache.findKey( uuid ).map( CompletableFuture::completedFuture ).orElse( HttpClient.get( "https://sessionserver.mojang.com/session/minecraft/profile/" + UUIDUtils.undash( uuid.toString() ), bungee.bossEventLoopGroup.next() ).thenApply( s ->
 +        {
 +            if ( s == null )
 +            {
 +                explicitlyNullNames.add( uuid );
 +                return null;
 +            }
-+            JsonArray array = bungee.gson.fromJson( s, JsonArray.class );
-+            String name = array.get( array.size() - 1 ).getAsJsonObject().get( "name" ).getAsString();
++            JsonObject object = bungee.gson.fromJson( s, JsonObject.class );
++            String name = object.get( "name" ).getAsString();
 +            nameToUuidCache.put( name, uuid );
 +            return name;
 +        } ) );
@@ -629,10 +628,10 @@ index 0000000000000000000000000000000000000000..8f8c7cb50b2233eccd63809122853e71
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/util/Cache.java b/proxy/src/main/java/com/mrivanplays/ivancord/util/Cache.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..e7b3db01e30aaabf158cd6ee34c34f8a47886508
+index 0000000000000000000000000000000000000000..d8f6d420dabf0e6790385de011f11352a41dfe0c
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/util/Cache.java
-@@ -0,0 +1,158 @@
+@@ -0,0 +1,163 @@
 +package com.mrivanplays.ivancord.util;
 +
 +import com.google.common.annotations.VisibleForTesting;
@@ -650,7 +649,7 @@ index 0000000000000000000000000000000000000000..e7b3db01e30aaabf158cd6ee34c34f8a
 +public final class Cache<K, V>
 +{
 +
-+    private Map<K, V> underlyingMap = new ConcurrentHashMap<>();
++    private Map<K, CachedValue<V>> underlyingMap = new ConcurrentHashMap<>();
 +    private Map<K, CompletableFuture<Void>> tasks = new ConcurrentHashMap<>();
 +    private ReadWriteLock lock = new ReentrantReadWriteLock();
 +    private final Duration expiresAfterWrite;
@@ -679,7 +678,7 @@ index 0000000000000000000000000000000000000000..e7b3db01e30aaabf158cd6ee34c34f8a
 +        {
 +            if ( underlyingMap.containsKey( key ) )
 +            {
-+                return CompletableFuture.completedFuture( underlyingMap.get( key ) );
++                return CompletableFuture.completedFuture( underlyingMap.get( key ).get() );
 +            }
 +        } finally
 +        {
@@ -694,7 +693,7 @@ index 0000000000000000000000000000000000000000..e7b3db01e30aaabf158cd6ee34c34f8a
 +            lock.writeLock().lock();
 +            try
 +            {
-+                underlyingMap.put( key, v );
++                underlyingMap.put( key, v == null ? CachedValue.nil() : () -> v );
 +                return v;
 +            } finally
 +            {
@@ -708,9 +707,13 @@ index 0000000000000000000000000000000000000000..e7b3db01e30aaabf158cd6ee34c34f8a
 +        lock.readLock().lock();
 +        try
 +        {
-+            for ( Map.Entry<K, V> entry : underlyingMap.entrySet() )
++            for ( Map.Entry<K, CachedValue<V>> entry : underlyingMap.entrySet() )
 +            {
-+                if ( entry.getValue().equals( value ) )
++                if ( entry.getValue().get() == null )
++                {
++                    continue;
++                }
++                if ( entry.getValue().get().equals( value ) )
 +                {
 +                    return Optional.of( entry.getKey() );
 +                }
@@ -725,11 +728,12 @@ index 0000000000000000000000000000000000000000..e7b3db01e30aaabf158cd6ee34c34f8a
 +    public void put(K key, V value)
 +    {
 +        lock.writeLock().lock();
++        CachedValue<V> putValue = value == null ? CachedValue.nil() : () -> value;
 +        try
 +        {
 +            if ( underlyingMap.containsKey( key ) )
 +            {
-+                underlyingMap.replace( key, value );
++                underlyingMap.replace( key, putValue );
 +                if ( expiresAfterWrite != null )
 +                {
 +                    tasks.remove( key ).cancel( true );
@@ -737,7 +741,7 @@ index 0000000000000000000000000000000000000000..e7b3db01e30aaabf158cd6ee34c34f8a
 +                }
 +            } else
 +            {
-+                underlyingMap.put( key, value );
++                underlyingMap.put( key, putValue );
 +                if ( expiresAfterWrite != null )
 +                {
 +                    this.scheduleRemovalTask( key );
@@ -789,6 +793,26 @@ index 0000000000000000000000000000000000000000..e7b3db01e30aaabf158cd6ee34c34f8a
 +    {
 +        executorService.shutdownNow0();
 +    }
++
++}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/util/CachedValue.java b/proxy/src/main/java/com/mrivanplays/ivancord/util/CachedValue.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..8e0d4f406c87dfb6a033fce21a17f7aacf11338c
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/util/CachedValue.java
+@@ -0,0 +1,14 @@
++package com.mrivanplays.ivancord.util;
++
++@FunctionalInterface
++public interface CachedValue<T>
++{
++
++    static <T> CachedValue<T> nil()
++    {
++        return () -> null;
++    }
++
++    T get();
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
