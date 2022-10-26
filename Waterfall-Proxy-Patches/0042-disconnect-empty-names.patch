@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Outfluencer <48880402+Outfluencer@users.noreply.github.com>
+Date: Wed, 26 Oct 2022 20:21:51 +0300
+Subject: [PATCH] disconnect empty names
+
+it is possible to join with an empty name and send encryption responses
+with that connection so the proxy would send very weird stuff to the
+mojang auth server
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index bd521de37eb78f2815a98e102858c4e54b1cd58e..1375c172ef0d7abbcdddb403d17cd29a77e17081 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -416,6 +416,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
+         Preconditions.checkState( thisState == State.USERNAME && this.loginRequest == null, "Not expecting USERNAME" ); // IvanCord
+ 
++        // IvanCord start
++        if ( loginRequest.getData().isEmpty() )
++        {
++            disconnect( bungee.getTranslation( "name_empty" ) );
++            return;
++        }
++        // IvanCord end
++
+         if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
+         {
+             disconnect( bungee.getTranslation( "name_invalid" ) );
+diff --git a/proxy/src/main/resources/messages.properties b/proxy/src/main/resources/messages.properties
+index 1da96fdf4f0603095ab602a25265e3476b2de48c..101afa70b396fe18cc505af7539343f902e13629 100644
+--- a/proxy/src/main/resources/messages.properties
++++ b/proxy/src/main/resources/messages.properties
+@@ -46,3 +46,4 @@ command_plugins_message=Plugins ({0}): {1}
+ internal_error_executing=\u00a7cAn internal error occurred whilst executing this command, please check the console log for details.
+ internal_error_completing=\u00a7cAn internal error occurred whilst tab completing this command, please check the console log for details.
+ timeout=Server not reachable (timeout). Offline? Incorrectly configured address/port/firewall?
++name_empty=Username is empty.

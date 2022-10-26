@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Outfluencer <48880402+Outfluencer@users.noreply.github.com>
+Date: Wed, 26 Oct 2022 20:30:42 +0300
+Subject: [PATCH] fix InitialHandler exception handling behaviour
+
+checking if its possible to send a kick message and sending it to the
+client is useless here as it would call the delayed close method that
+would send the packet 250ms delayed but the HandlerBoss would close
+the connection immediately. also no need to call the channelwrapper close
+because the handler boss will close.
+
+Co-authored-by: Ivan Pekov <ivan@mrivanlays.com> - fixed message send
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 1375c172ef0d7abbcdddb403d17cd29a77e17081..b163b98fbd01cdb6229eb881ac233a0e8919a191 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -148,7 +148,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     {
+         if ( canSendKickMessage() )
+         {
+-            disconnect( ChatColor.RED + Util.exception( t ) );
++            // IvanCord start - do not double-check canSendKickMessage
++            unsafe.sendPacket( new Kick( ComponentSerializer.toString(
++                new net.md_5.bungee.api.chat.ComponentBuilder( Util.exception( t ) )
++                    .color( ChatColor.RED )
++                    .create() ) )
++            );
++            // IvanCord end
+         /* // IvanCord
+         } else
+         {
