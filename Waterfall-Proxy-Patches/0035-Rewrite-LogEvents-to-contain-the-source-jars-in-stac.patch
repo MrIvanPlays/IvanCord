@@ -254,18 +254,14 @@ index 0000000000000000000000000000000000000000..945cba532e8d2f8542a17bacfda9a94a
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/api/plugin/ExtraClassInfoLogEvent.java b/proxy/src/main/java/net/md_5/bungee/api/plugin/ExtraClassInfoLogEvent.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..47e5e9bc56324ba3b8985661668e7035bc2a3a41
+index 0000000000000000000000000000000000000000..af715da5d10b9c87f6ccbfecc0b3e136a7299d52
 --- /dev/null
 +++ b/proxy/src/main/java/net/md_5/bungee/api/plugin/ExtraClassInfoLogEvent.java
-@@ -0,0 +1,91 @@
+@@ -0,0 +1,83 @@
 +// IvanCord start
 +package net.md_5.bungee.api.plugin;
 +
 +import com.mrivanplays.ivancord.logging.DelegateLogEvent;
-+import java.util.List;
-+import java.util.Optional;
-+import java.util.Set;
-+import java.util.stream.Collectors;
 +import org.apache.logging.log4j.core.LogEvent;
 +import org.apache.logging.log4j.core.impl.ExtendedClassInfo;
 +import org.apache.logging.log4j.core.impl.ExtendedStackTraceElement;
@@ -313,24 +309,20 @@ index 0000000000000000000000000000000000000000..47e5e9bc56324ba3b8985661668e7035
 +                }
 +                 */
 +                // java 8 pleb implementation (by MrIvanPlays)
-+                // TODO: maybe not a stream??
-+                Optional<PluginClassloader> classloader = PluginClassloader.allLoaders.stream()
-+                    .filter( loader ->
-+                    {
-+                        try
-+                        {
-+                            Class.forName( element.getClassName(), false, loader );
-+                            return true;
-+                        } catch ( ClassNotFoundException e )
-+                        {
-+                            return false;
-+                        }
-+                    } )
-+                    // assume the first one is the right one
-+                    .findFirst();
-+                if ( classloader.isPresent() )
++                PluginClassloader loader = null;
++                for ( PluginClassloader input : PluginClassloader.allLoaders )
 +                {
-+                    PluginClassloader loader = classloader.get();
++                    try
++                    {
++                        Class.forName( element.getClassName(), false, input );
++                        loader = input;
++                        break;
++                    } catch ( ClassNotFoundException ignored )
++                    {
++                    }
++                }
++                if ( loader != null )
++                {
 +                    stackTrace[i] = new ExtendedStackTraceElement( element, new ExtendedClassInfo( classInfo.getExact(), loader.getFileName(), "?" ) );
 +                }
 +            }

@@ -144,7 +144,7 @@ index fe3f83cf4c9b58bff909ffe292e9916d82e56177..7b3c91b66ab7ad21852c70f410ec7707
                      try {
                          bossEventLoopGroup.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 074fefc87a22fb4495dac9a2bb7e4a7c4d8fe6b5..fdf32d89fdde0c2eb76a8d928e51c9ae71945e49 100644
+index 5acd74a6ad81c82a005964d4d3e253812b77bc39..16e1bf988f3f7ce5db3283d6a00a5399fa5fd167 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -62,6 +62,19 @@ public class BungeeCordLauncher

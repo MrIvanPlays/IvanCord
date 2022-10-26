@@ -6,7 +6,7 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
 diff --git a/pom.xml b/pom.xml
-index 29b9f7482d7c9274f67ce2810116d40be6cc1318..c9de4251d428a70ca5ed50cdb2759453a85d9bdd 100644
+index 99aa0781cb99f5dde31857827b6c95abee885e35..72d73d586bdd33ed0ef33d452c3303a03ebdbf68 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -46,6 +46,7 @@

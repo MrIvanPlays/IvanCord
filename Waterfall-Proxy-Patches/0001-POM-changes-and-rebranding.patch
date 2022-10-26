@@ -5,7 +5,7 @@ Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 405b1c2c75c0c6978bdcb64d2ea0d0bdaa307be1..22402929b79263523861ec850ee9bca2762fc623 100644
+index 5d21fd991619d1fd088a6a8d59d3cee3462ad6c3..d2179669d5db56ff4ffecf7c0a491972ee953050 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,40 @@
@@ -154,7 +154,7 @@ index 1a8b097db7f589cef292d99c38a69cdbd80dc680..255306d23e8fed3085e5d3d8cd8a36f6
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 0b48084a74eb1451b589ebe9843124378b53cc26..80d88e6f42c14058225a0d3f0b99b3cc0d78a4fd 100644
+index 7b83283b1ceb3d5884d2410af7ef9dc8de9cbed8..46325e1dcc1f49f05b3e37425d6f58dd5a46921d 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,17 @@
@@ -322,7 +322,7 @@ index caa4c4cb50a4fbb2c6c12baa38a2430eb0852b4a..4a15f4301cf2ace03f2c4d6f7e2564e4
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 6810b9ccb5d29c858a4b89c6be28d805b6aa2b6a..4978bff948ec16f8a73d92f9d8fadf02f3a9cb8c 100644
+index 8bb55d75d64e8603d53082d81932681532de3795..ea060a92a997208602315251d657f4c3d0295c84 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -589,7 +589,7 @@ index 9ef2b77a54a33c082e4d9a90e146d6fb4f89ca62..d3b769f59d618096423714dfdcbd08e4
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
-index 0db3d76ae0676f2e5716c726eca4e042b34550ac..074fefc87a22fb4495dac9a2bb7e4a7c4d8fe6b5 100644
+index 96a9998d1f118ce354217bb4eba701e3b7732405..5acd74a6ad81c82a005964d4d3e253812b77bc39 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCordLauncher.java
 @@ -54,7 +54,7 @@ public class BungeeCordLauncher
@@ -599,8 +599,8 @@ index 0db3d76ae0676f2e5716c726eca4e042b34550ac..074fefc87a22fb4495dac9a2bb7e4a7c
 -                System.err.println( "*** Please check for a new build from https://papermc.io/downloads ***" );
 +                System.err.println( "*** Please check for a new build from https://ci.mrivanplays.com/job/IvanCord/ ***" ); // IvanCord - rebranding
                  System.err.println( "*** Should this build be outdated, you will get NO support for it. ***" );
-                 System.err.println( "*** Server will start in 10 seconds ***" );
-                 Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
+                 //System.err.println( "*** Server will start in 10 seconds ***" );
+                 //Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
 @@ -63,8 +63,8 @@ public class BungeeCordLauncher
  
          BungeeCord bungee = new BungeeCord();
