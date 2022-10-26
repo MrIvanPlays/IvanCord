@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ivan Pekov <ivan@mrivanplays.com>
+Date: Wed, 26 Oct 2022 20:59:24 +0300
+Subject: [PATCH] Don't frame if input isn't readable
+
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+index f64f9c6e7dc140f876d8e19a1d3f46d95284aab3..317dc5ed0a602dc97c8d5ce1dd48eb918dfededd 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/MinecraftDecoder.java
+@@ -46,6 +46,13 @@ public class MinecraftDecoder extends MessageToMessageDecoder<Object> // IvanCor
+         }
+         boolean isByteBuf = inObj instanceof ByteBuf; ByteBuf in = isByteBuf ? (ByteBuf) inObj : ( (PacketWrapper) inObj ).buf; // IvanCord
+ 
++        // IvanCord start - don't frame if input isn't readable
++        if ( !in.isReadable() )
++        {
++            return;
++        }
++        // IvanCord end
++
+         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
+         /* IvanCord start - avoid creating buf copy
+         ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
