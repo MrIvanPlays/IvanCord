@@ -366,7 +366,7 @@ index 8d0eff49a19829134b16d230e980da5111beb907..51c2044bbd5efb85969cd0aba90267e4
      public void handle(ServerData serverData) throws Exception
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 75cb7225e6aa8f155b73f4ac06d6e8a90b9bae3a..55a7f799597ff0b82dac2ed4a4a41f8854d4d76e 100644
+index 3284c5f9dd54835533905ce22837c4b6c2995b55..c5d9c1dda6028da06f938330c876abe3c6596a5b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -31,10 +31,12 @@ import net.md_5.bungee.protocol.packet.ClientCommand;
@@ -382,7 +382,7 @@ index 75cb7225e6aa8f155b73f4ac06d6e8a90b9bae3a..55a7f799597ff0b82dac2ed4a4a41f88
  
  public class UpstreamBridge extends PacketHandler
  {
-@@ -316,6 +318,14 @@ public class UpstreamBridge extends PacketHandler
+@@ -317,6 +319,14 @@ public class UpstreamBridge extends PacketHandler
          con.getPendingConnection().relayMessage( pluginMessage );
      }
  

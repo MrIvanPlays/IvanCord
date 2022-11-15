@@ -2581,10 +2581,10 @@ index 26e9506530bcea8e52b94028291f06968d545f1f..326f28e6188dab60b0c9cdf91cc14b4a
      @Override
      public void handle(PlayerPosition pac)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 28165d97190823b29a7ed91b393b1e71bfef406e..5b804c3247edcfa186e270499061730d1797c155 100644
+index 6e92183674cf270f9e72172bd14c634c8d732517..37659e41d4d710f83d6e6a09f6aa778a81a35dbe 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -231,6 +231,95 @@ public class UpstreamBridge extends PacketHandler
+@@ -232,6 +232,95 @@ public class UpstreamBridge extends PacketHandler
          }
  
          // Waterfall end - tab limiter
@@ -2680,7 +2680,7 @@ index 28165d97190823b29a7ed91b393b1e71bfef406e..5b804c3247edcfa186e270499061730d
          List<String> suggestions = new ArrayList<>();
          boolean isRegisteredCommand = false;
  
-@@ -277,6 +366,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -278,6 +367,7 @@ public class UpstreamBridge extends PacketHandler
          {
              throw CancelSendSignal.INSTANCE;
          }

@@ -87,7 +87,7 @@ index b9f93b95a1936abfa56f23a3e8d324ccc891720c..b07740940f6730f1424b234ea8324731
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 55a7f799597ff0b82dac2ed4a4a41f8854d4d76e..6aaf3d45bc327b85c32458140e5f8365cdd214b7 100644
+index c5d9c1dda6028da06f938330c876abe3c6596a5b..31d6877ed7f96eef93013fec91e76442666f7895 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -37,6 +37,7 @@ import net.md_5.bungee.protocol.packet.TabCompleteRequest;
@@ -98,7 +98,7 @@ index 55a7f799597ff0b82dac2ed4a4a41f8854d4d76e..6aaf3d45bc327b85c32458140e5f8365
  
  public class UpstreamBridge extends PacketHandler
  {
-@@ -76,9 +77,9 @@ public class UpstreamBridge extends PacketHandler
+@@ -77,9 +78,9 @@ public class UpstreamBridge extends PacketHandler
              // Manually remove from everyone's tab list
              // since the packet from the server arrives
              // too late
@@ -111,7 +111,7 @@ index 55a7f799597ff0b82dac2ed4a4a41f8854d4d76e..6aaf3d45bc327b85c32458140e5f8365
              PlayerListItem packet = new PlayerListItem();
              packet.setAction( PlayerListItem.Action.REMOVE_PLAYER );
              PlayerListItem.Item item = new PlayerListItem.Item();
-@@ -91,6 +92,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -92,6 +93,7 @@ public class UpstreamBridge extends PacketHandler
              {
                  player.unsafe().sendPacket( packet );
              }

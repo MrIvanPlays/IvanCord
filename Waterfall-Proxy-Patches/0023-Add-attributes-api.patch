@@ -459,7 +459,7 @@ index 90d99a85844a7a31d02c2ffbd4a458d785ef9d9d..67548b7e6cbb3db009335a796a16b11c
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index ed70925d3c9c50029c36805056090084c7de0e7e..28165d97190823b29a7ed91b393b1e71bfef406e 100644
+index 07b31c2f75adfd7bced605258ac623e615c587d2..6e92183674cf270f9e72172bd14c634c8d732517 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -4,6 +4,11 @@ import com.google.common.base.Preconditions;
@@ -482,7 +482,7 @@ index ed70925d3c9c50029c36805056090084c7de0e7e..28165d97190823b29a7ed91b393b1e71
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PlayerPosition;
-@@ -331,6 +337,26 @@ public class UpstreamBridge extends PacketHandler
+@@ -332,6 +338,26 @@ public class UpstreamBridge extends PacketHandler
      }
      // IvanCord end
  
