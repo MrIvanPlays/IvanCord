@@ -360,10 +360,10 @@ index 1145a3e4ee13c6a55027601cbc26107adbd35e53..72e127ed3e9c0025fe0fa4c050078d45
      {
          return nameToUuidCache.get( name ).thenApply( uuid ->
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 52e144b9dc990028ac3285cea61f59aced0f2fc0..c6cc01edfe0e8a115ae59e3de036f38bbdfa2075 100644
+index 3c0c891ed46b27ec1a61ab3964c9388b7f4effcd..aa1d39792293649750c420da5063c2ce3560890d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -190,6 +190,7 @@ public class BungeeCord extends ProxyServer
+@@ -191,6 +191,7 @@ public class BungeeCord extends ProxyServer
      private ServicesManager servicesManager;
      @Getter private com.mrivanplays.ivancord.connection.Playerdata playerdata;
      private final java.util.concurrent.ScheduledExecutorService autoSaveExecutor = java.util.concurrent.Executors.newSingleThreadScheduledExecutor();
@@ -371,7 +371,7 @@ index 52e144b9dc990028ac3285cea61f59aced0f2fc0..c6cc01edfe0e8a115ae59e3de036f38b
      // IvanCord end
  
      {
-@@ -267,6 +268,8 @@ public class BungeeCord extends ProxyServer
+@@ -276,6 +277,8 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.commands.op.CommandDeop() );
          // IvanCord end
  
@@ -457,7 +457,7 @@ index 724627c84cb3e14fa349851655d9cd2e5c40f159..00345f94fc6edbc4d90020b0e2c9194b
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 601e3f253e2e22a99b3e64ac6a8d625cc2452d1a..bd521de37eb78f2815a98e102858c4e54b1cd58e 100644
+index 9931f3f10309d1dfc66de6463e04733ad5b8b59b..6347bffdabe5abe738c8d02271efa9a78672be7c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -112,11 +112,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -474,7 +474,7 @@ index 601e3f253e2e22a99b3e64ac6a8d625cc2452d1a..bd521de37eb78f2815a98e102858c4e5
  
      @Override
      public boolean shouldHandle(PacketWrapper packet) throws Exception
-@@ -546,6 +548,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -547,6 +549,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                          loginProfile = obj;
                          name = obj.getName();
                          uniqueId = Util.getUUID( obj.getId() );

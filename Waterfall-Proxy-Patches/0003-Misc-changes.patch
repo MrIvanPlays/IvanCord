@@ -127,10 +127,10 @@ index 663bddec7386ccb909a39b81101a9b0292d297ca..9e5d3f2b20eae64fdc68231216753718
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %paperMinecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index fe3f83cf4c9b58bff909ffe292e9916d82e56177..7b3c91b66ab7ad21852c70f410ec7707e87fbd7f 100644
+index 1033d79e6925463dd8815afa47eb2c7ee874ebb8..8c08197555fee3eccc01c19bb0e11189952c7a3a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -503,8 +503,10 @@ public class BungeeCord extends ProxyServer
+@@ -512,8 +512,10 @@ public class BungeeCord extends ProxyServer
          }
  
          getLogger().info( "Closing IO threads" );

@@ -5,7 +5,7 @@ Subject: [PATCH] Add isLegacy to ProxyPingEvent
 
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java b/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java
-index 4baa06a9c8d2ffa392d18fdeba3e80cd71ae23d0..da6247837d021e0ec38688908fffcfca17a1851f 100644
+index ddee993a41a56425897e50c3664341e932ef7a64..562b1f34a8a0a0cf7f5a84f78bf0bfd8a2952f05 100644
 --- a/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java
 +++ b/api/src/main/java/net/md_5/bungee/api/event/ProxyPingEvent.java
 @@ -25,10 +25,25 @@ public class ProxyPingEvent extends AsyncEvent<ProxyPingEvent>
@@ -35,7 +35,7 @@ index 4baa06a9c8d2ffa392d18fdeba3e80cd71ae23d0..da6247837d021e0ec38688908fffcfca
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 646059fc664e7fdc18e046184b14f488109e54d5..bfe81a937baa05abfffbdd58c5feac1b9bf0423c 100644
+index bb6a381590c93eb5243928a9dfa90ddbaf9f90f3..a8d8b3b0c4461bfb4c01a1c9b45dfbb076c387cf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -233,7 +233,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection

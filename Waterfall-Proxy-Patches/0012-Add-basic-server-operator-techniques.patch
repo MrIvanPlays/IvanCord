@@ -253,18 +253,18 @@ index 0000000000000000000000000000000000000000..8a99463de283645730f4578eb4c38ba3
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 03792b62d89ae7fca96e52fab4bb44705c39d4a5..9681e3ef7572eea094f9859c288e38d0c139f3bf 100644
+index 546186efef3cb05e4dc8174838aa3841d6b4b3e7..b76f4ae305736c2107a3bbd68b677c322ba9a970 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -109,6 +109,7 @@ public class BungeeCord extends ProxyServer
+@@ -111,6 +111,7 @@ public class BungeeCord extends ProxyServer
       */
      @Getter
      public final Configuration config = new com.mrivanplays.ivancord.conf.IvanCordConfiguration(); // IvanCord - ivancord specific configuration
 +    @Getter private com.mrivanplays.ivancord.conf.OpsConfiguration opsConfiguration = new com.mrivanplays.ivancord.conf.OpsConfiguration(); // IvanCord
      /**
-      * Localization bundle.
+      * Localization formats.
       */
-@@ -245,6 +246,8 @@ public class BungeeCord extends ProxyServer
+@@ -254,6 +255,8 @@ public class BungeeCord extends ProxyServer
  
          // IvanCord start - specific commands to IvanCord
          getPluginManager().registerCommand( null, new com.mrivanplays.ivancord.commands.CommandPlugins() );

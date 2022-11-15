@@ -5,7 +5,7 @@ Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index ea060a92a997208602315251d657f4c3d0295c84..99aa0781cb99f5dde31857827b6c95abee885e35 100644
+index bf35193c8eed08f0b73ae3b9ed76d2dba2ee7269..5d6cd2ba792d2ae373f244fffbafee3c72c5c1da 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -38,7 +38,9 @@
@@ -770,10 +770,10 @@ index 0000000000000000000000000000000000000000..4915d8d7b55c1f6d16ad55024ec807a2
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d3b769f59d618096423714dfdcbd08e4b81e6e4e..fe3f83cf4c9b58bff909ffe292e9916d82e56177 100644
+index 089815678e3f32741c4d885c394595967eaa44ed..1033d79e6925463dd8815afa47eb2c7ee874ebb8 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -172,7 +172,9 @@ public class BungeeCord extends ProxyServer
+@@ -173,7 +173,9 @@ public class BungeeCord extends ProxyServer
              .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
      @Getter
      private ConnectionThrottle connectionThrottle;
@@ -783,7 +783,7 @@ index d3b769f59d618096423714dfdcbd08e4b81e6e4e..fe3f83cf4c9b58bff909ffe292e9916d
  
      {
          // TODO: Proper fallback when we interface the manager
-@@ -231,6 +233,16 @@ public class BungeeCord extends ProxyServer
+@@ -240,6 +242,16 @@ public class BungeeCord extends ProxyServer
          getPluginManager().registerCommand( null, new CommandBungee() );
          getPluginManager().registerCommand( null, new CommandPerms() );
  
@@ -800,7 +800,7 @@ index d3b769f59d618096423714dfdcbd08e4b81e6e4e..fe3f83cf4c9b58bff909ffe292e9916d
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
          {
              if ( EncryptionUtil.nativeFactory.load() )
-@@ -268,9 +280,11 @@ public class BungeeCord extends ProxyServer
+@@ -277,9 +289,11 @@ public class BungeeCord extends ProxyServer
          bossEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Boss IO Thread #%1$d" ).build() );
          workerEventLoopGroup = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty Worker IO Thread #%1$d" ).build() );
  

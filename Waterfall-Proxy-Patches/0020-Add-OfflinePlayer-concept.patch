@@ -816,10 +816,10 @@ index 0000000000000000000000000000000000000000..8e0d4f406c87dfb6a033fce21a17f7aa
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 94fbd95dfc42a6b248b8dfaf8427549dcd21fe02..c16203e032763a1ee0f2b5457e088d5b743be950 100644
+index 9f4d1f8588dda2b5bed5361b519995caee770f10..b0df12722022fe28ae46d8f39f6faf4840922bd0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -188,6 +188,8 @@ public class BungeeCord extends ProxyServer
+@@ -189,6 +189,8 @@ public class BungeeCord extends ProxyServer
      // IvanCord start
      @Getter
      private ServicesManager servicesManager;
@@ -828,7 +828,7 @@ index 94fbd95dfc42a6b248b8dfaf8427549dcd21fe02..c16203e032763a1ee0f2b5457e088d5b
      // IvanCord end
  
      {
-@@ -316,6 +318,12 @@ public class BungeeCord extends ProxyServer
+@@ -325,6 +327,12 @@ public class BungeeCord extends ProxyServer
          pluginManager.loadPlugins();
          config.load();
  
@@ -841,7 +841,7 @@ index 94fbd95dfc42a6b248b8dfaf8427549dcd21fe02..c16203e032763a1ee0f2b5457e088d5b
          if ( config.isForgeSupport() )
          {
              registerChannel( ForgeConstants.FML_TAG );
-@@ -527,6 +535,18 @@ public class BungeeCord extends ProxyServer
+@@ -536,6 +544,18 @@ public class BungeeCord extends ProxyServer
          {
              pluginManager.disablePlugin( plugin );
          }
@@ -860,7 +860,7 @@ index 94fbd95dfc42a6b248b8dfaf8427549dcd21fe02..c16203e032763a1ee0f2b5457e088d5b
          scheduler.scheduler.shutdownNow0();
          while ( true )
          {
-@@ -864,4 +884,36 @@ public class BungeeCord extends ProxyServer
+@@ -888,4 +908,36 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }

@@ -42,15 +42,15 @@ index da0efa36f4fdb5bcfa652d67b9526a3d88dc92fa..8977aaf3836f18cea4f2f585363470ee
      /**
       * Whether we log InitialHandler connections
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 7b3c91b66ab7ad21852c70f410ec7707e87fbd7f..dc1514ff31a2990678f6ca0dac91ce94248372d3 100644
+index 8c08197555fee3eccc01c19bb0e11189952c7a3a..75c6ff5be7b166501adb6dd88df3df568c3adc19 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -108,7 +108,7 @@ public class BungeeCord extends ProxyServer
+@@ -110,7 +110,7 @@ public class BungeeCord extends ProxyServer
       * Configuration.
       */
      @Getter
 -    public final Configuration config = new WaterfallConfiguration();
 +    public final Configuration config = new com.mrivanplays.ivancord.conf.IvanCordConfiguration(); // IvanCord - ivancord specific configuration
      /**
-      * Localization bundle.
+      * Localization formats.
       */

@@ -19,7 +19,7 @@ It is also possible to send the LoginRequest packet twice if an intent is regist
 PreLoginEvent so I checked if we already got a LoginRequest.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index b4f31f8d1ff5e79445f50fcfb3cf310edb3e2f88..601e3f253e2e22a99b3e64ac6a8d625cc2452d1a 100644
+index 518edf30830d85f305aae4dae3005ac0cb3a3bd0..9931f3f10309d1dfc66de6463e04733ad5b8b59b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -88,6 +88,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -68,7 +68,7 @@ index b4f31f8d1ff5e79445f50fcfb3cf310edb3e2f88..601e3f253e2e22a99b3e64ac6a8d625c
      }
  
      private static final boolean ACCEPT_INVALID_PACKETS = Boolean.parseBoolean(System.getProperty("waterfall.acceptInvalidPackets", "false"));
-@@ -410,7 +412,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -411,7 +413,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public void handle(LoginRequest loginRequest) throws Exception
      {

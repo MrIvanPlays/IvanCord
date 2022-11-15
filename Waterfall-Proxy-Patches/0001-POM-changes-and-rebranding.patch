@@ -322,7 +322,7 @@ index caa4c4cb50a4fbb2c6c12baa38a2430eb0852b4a..4a15f4301cf2ace03f2c4d6f7e2564e4
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 8bb55d75d64e8603d53082d81932681532de3795..ea060a92a997208602315251d657f4c3d0295c84 100644
+index 26f32b376e1bf91c01ebcb5bd0ae1455710709d1..bf35193c8eed08f0b73ae3b9ed76d2dba2ee7269 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -567,19 +567,19 @@ index 1036a2e773237ff0c9ee564318bfa642009e4210..4cec3b3caa9f92636bf7083084e452e1
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 9ef2b77a54a33c082e4d9a90e146d6fb4f89ca62..d3b769f59d618096423714dfdcbd08e4b81e6e4e 100644
+index e0fcd8fbe882b0a66b4346fd5aeb46fa9c5f7497..089815678e3f32741c4d885c394595967eaa44ed 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -188,7 +188,7 @@ public class BungeeCord extends ProxyServer
+@@ -189,7 +189,7 @@ public class BungeeCord extends ProxyServer
      public BungeeCord() throws IOException
      {
          // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
 -        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Waterfall in directory with ! in path." );
 +        Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use IvanCord in directory with ! in path." ); // IvanCord - rebranding
  
-         try
-         {
-@@ -536,7 +536,7 @@ public class BungeeCord extends ProxyServer
+         reloadMessages();
+ 
+@@ -545,7 +545,7 @@ public class BungeeCord extends ProxyServer
      @Override
      public String getName()
      {
