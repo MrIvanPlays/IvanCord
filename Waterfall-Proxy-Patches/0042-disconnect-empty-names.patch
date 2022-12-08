@@ -8,7 +8,7 @@ with that connection so the proxy would send very weird stuff to the
 mojang auth server
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 6347bffdabe5abe738c8d02271efa9a78672be7c..f7ea7dacc8b4946d34020f2229d529136eaa53ff 100644
+index 993f17fe2c99c0167b6983800f7f956180ae9c3b..3cb798fa237b57facce711b0481e88014aae11e9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -417,6 +417,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection

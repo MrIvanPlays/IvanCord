@@ -6,7 +6,7 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
 diff --git a/pom.xml b/pom.xml
-index 5d6cd2ba792d2ae373f244fffbafee3c72c5c1da..7b9eebeda2d55925bcc31c2fbefc408afcfe2053 100644
+index b55c9562ff2dea5c6b8d3ae47e80ddbbee3f12da..c40b85fa4b8043d4fd8f2ea59e5dd5ace8c33a70 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -46,6 +46,7 @@
@@ -48,10 +48,10 @@ index f20104a23600f34c10f020ab7c055a5ea371e254..951adc0d4298e4e2a6be06d8c9fd0865
      private static final boolean PROCESS_TRACES = Boolean.getBoolean("waterfall.bad-packet-traces");
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-index 561a9522db8f27fec14e9bc43a1e979721f427d7..cc50cb2fefa2cc0ced0692ec5a04ab463eb3df1c 100644
+index 59f2cb73d8881d28826e5479089f96914b9873af..60553e19912a2fb878d219a28cb67e72e904aa7f 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
-@@ -148,8 +148,13 @@ public abstract class DefinedPacket
+@@ -151,8 +151,13 @@ public abstract class DefinedPacket
          int out = 0;
          int bytes = 0;
          byte in;
@@ -246,7 +246,7 @@ index 67548b7e6cbb3db009335a796a16b11c9a7de29d..50d85372adfee814cd8ee434070d8e97
                  .handler( initializer )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index f00aa29a44852e950ba3966879bd0adbd3dc6e4c..bb6a381590c93eb5243928a9dfa90ddbaf9f90f3 100644
+index 204d6bf100ad8e296af69923916705bbd864208e..ba67b301e2c76cb74989b843fb69fc714ab6f368 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -146,9 +146,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection

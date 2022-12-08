@@ -151,7 +151,7 @@ index 03bc8c4b0cfa9733b93e74546a51bca1b15bca44..599254cc90643dd8d92fbca6dbbdf0dd
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 3b5f77a2de41069444a89df0511da4bd44c3b64b..c01c1114cfa62e5a50e17f2b3229c7d7ab584817 100644
+index 5606ba665f170d1c92f7a38c52cbe6253355e840..15c078afaeb2b3e596dccd146390e345e4a885c5 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -25,6 +25,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
@@ -161,8 +161,8 @@ index 3b5f77a2de41069444a89df0511da4bd44c3b64b..c01c1114cfa62e5a50e17f2b3229c7d7
 +import net.md_5.bungee.protocol.packet.PlaySound; // IvanCord
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
- import net.md_5.bungee.protocol.packet.PlayerPosition; // IvanCord
-@@ -231,4 +232,10 @@ public abstract class AbstractPacketHandler
+ import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
+@@ -241,4 +242,10 @@ public abstract class AbstractPacketHandler
      {
      }
      // Waterfall end
@@ -174,7 +174,7 @@ index 3b5f77a2de41069444a89df0511da4bd44c3b64b..c01c1114cfa62e5a50e17f2b3229c7d7
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index e2bfe8b55f3776833355673feefd419b0614ef1c..66098510f44d9a52ddd8b8020d0faefc4eaafbdd 100644
+index f4fb308e183ae5407771035298e60ff295bab379..7e3bb210d3b00d11bb7e3d3b18a072a0e74062da 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -33,6 +33,7 @@ import net.md_5.bungee.protocol.packet.LoginPayloadResponse;
@@ -184,8 +184,8 @@ index e2bfe8b55f3776833355673feefd419b0614ef1c..66098510f44d9a52ddd8b8020d0faefc
 +import net.md_5.bungee.protocol.packet.PlaySound;
  import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
- import net.md_5.bungee.protocol.packet.PlayerPosition;
-@@ -458,6 +459,21 @@ public enum Protocol
+ import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
+@@ -496,6 +497,21 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_19, 0x14 ),
                      map( ProtocolConstants.MINECRAFT_1_19_1, 0x15 )
              );

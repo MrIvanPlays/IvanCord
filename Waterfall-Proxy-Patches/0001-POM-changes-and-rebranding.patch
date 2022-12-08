@@ -125,7 +125,7 @@ index a4516ed96a91e257e7beab1479b812b185099168..37402b0ecce3076744034234f6ea638f
              return;
          }
 diff --git a/chat/pom.xml b/chat/pom.xml
-index 1a8b097db7f589cef292d99c38a69cdbd80dc680..255306d23e8fed3085e5d3d8cd8a36f6cdd2c0df 100644
+index 003b3f6c16673ebc77624c097678ac2e1a668aa3..14fb4290c767bf5b9e6ab189d6be677e5a8c985f 100644
 --- a/chat/pom.xml
 +++ b/chat/pom.xml
 @@ -4,19 +4,17 @@
@@ -154,7 +154,7 @@ index 1a8b097db7f589cef292d99c38a69cdbd80dc680..255306d23e8fed3085e5d3d8cd8a36f6
      <dependencies>
          <dependency>
 diff --git a/config/pom.xml b/config/pom.xml
-index 7b83283b1ceb3d5884d2410af7ef9dc8de9cbed8..46325e1dcc1f49f05b3e37425d6f58dd5a46921d 100644
+index 91da386a4975dbbb83b7f2182dc13a4675ac03de..962ee5d3d7ab9490581fefc7d3978056082dd582 100644
 --- a/config/pom.xml
 +++ b/config/pom.xml
 @@ -4,19 +4,17 @@
@@ -322,7 +322,7 @@ index caa4c4cb50a4fbb2c6c12baa38a2430eb0852b4a..4a15f4301cf2ace03f2c4d6f7e2564e4
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 26f32b376e1bf91c01ebcb5bd0ae1455710709d1..bf35193c8eed08f0b73ae3b9ed76d2dba2ee7269 100644
+index 2bf979de060536e0f81e5888c37b9f6ce9d3151d..9fcebdda17dba23b2a7717a851d6fd546199b7d9 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@

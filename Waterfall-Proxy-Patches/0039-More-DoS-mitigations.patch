@@ -103,7 +103,7 @@ index 7dbbfd3cd0212154ce27b1134e64b715d42e8096..1e5370117770a6daf7c22de2773c6ddd
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index 682c8784b28cdb88cf2646f401b6749ddfc76a43..08e253f634ab69da6368605c4b2f2cabd69c853c 100644
+index 3224b0d2b3a73bac3f6f03b43c4b1d3f98ac5ed6..7b5ab17a2069e20602b5dadc4de94817fb8ad434 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 @@ -67,10 +67,11 @@ public class LoginRequest extends DefinedPacket

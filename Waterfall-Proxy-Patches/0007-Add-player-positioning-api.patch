@@ -139,18 +139,18 @@ index b14463bd6864054f38988d7bdaaa105635a3a263..03bc8c4b0cfa9733b93e74546a51bca1
       * Gets this player's chat mode.
       *
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 1defe6504749a323e09a85ac5d6a976346c5e1f9..3b5f77a2de41069444a89df0511da4bd44c3b64b 100644
+index 0c334afcfc11a9893dfcbce8671d928569384e21..5606ba665f170d1c92f7a38c52cbe6253355e840 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -27,6 +27,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
- import net.md_5.bungee.protocol.packet.PingPacket;
- import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
+@@ -29,6 +29,7 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
+ import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
+ import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 +import net.md_5.bungee.protocol.packet.PlayerPosition; // IvanCord
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-@@ -215,6 +216,11 @@ public abstract class AbstractPacketHandler
+@@ -225,6 +226,11 @@ public abstract class AbstractPacketHandler
      public void handle(ServerData serverData) throws Exception
      {
      }
@@ -163,20 +163,20 @@ index 1defe6504749a323e09a85ac5d6a976346c5e1f9..3b5f77a2de41069444a89df0511da4bd
      // Waterfall start
      public void handle(EntityEffect entityEffect) throws Exception
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index ab3b9788b25862c67f2588c6ce2ab74f7b28021b..e2bfe8b55f3776833355673feefd419b0614ef1c 100644
+index edb979c5a35ee292f011b481c18618df224a6e75..f4fb308e183ae5407771035298e60ff295bab379 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -35,6 +35,7 @@ import net.md_5.bungee.protocol.packet.LoginSuccess;
- import net.md_5.bungee.protocol.packet.PingPacket;
- import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
+@@ -37,6 +37,7 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
+ import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
+ import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 +import net.md_5.bungee.protocol.packet.PlayerPosition;
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-@@ -442,6 +443,22 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_19, 0x0C ),
-                     map( ProtocolConstants.MINECRAFT_1_19_1, 0x0D )
+@@ -480,6 +481,22 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_19_1, 0x0D ),
+                     map( ProtocolConstants.MINECRAFT_1_19_3, 0x0C )
              );
 +            // IvanCord start - add player position
 +            TO_SERVER.registerPacket(
@@ -294,47 +294,19 @@ index 15f855e0acce54bf4eda48a725c40aa75a97d9ae..2241ca9b5320bb433744212c5e494d9f
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 8d0eff49a19829134b16d230e980da5111beb907..51c2044bbd5efb85969cd0aba90267e4faaa638b 100644
+index 652c202c9940fedf688e792400f4c0ab8a1de9a9..020872111781d12132c3c5fafc92454aa0490584 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -41,7 +41,7 @@ import net.md_5.bungee.api.event.ServerKickEvent;
- import net.md_5.bungee.api.event.TabCompleteResponseEvent;
- import net.md_5.bungee.api.plugin.Command;
- import net.md_5.bungee.api.score.Objective;
--import net.md_5.bungee.api.score.Position;
-+//import net.md_5.bungee.api.score.Position; // IvanCord - comment out for player positioning api
- import net.md_5.bungee.api.score.Score;
- import net.md_5.bungee.api.score.Scoreboard;
- import net.md_5.bungee.api.score.Team;
-@@ -59,6 +59,7 @@ import net.md_5.bungee.protocol.packet.EntityRemoveEffect;
- import net.md_5.bungee.protocol.packet.KeepAlive;
- import net.md_5.bungee.protocol.packet.Kick;
- import net.md_5.bungee.protocol.packet.PlayerListItem;
-+import net.md_5.bungee.protocol.packet.PlayerPosition; // IvanCord
- import net.md_5.bungee.protocol.packet.PluginMessage;
- import net.md_5.bungee.protocol.packet.Respawn;
- import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-@@ -68,6 +69,10 @@ import net.md_5.bungee.protocol.packet.ServerData;
- import net.md_5.bungee.protocol.packet.SetCompression;
- import net.md_5.bungee.protocol.packet.TabCompleteResponse;
- import net.md_5.bungee.tab.TabList;
-+// IvanCord start
-+import com.mrivanplays.ivancord.api.Position;
-+import com.mrivanplays.ivancord.api.event.PlayerChangePositionEvent;
-+// IvanCord end
- 
- @RequiredArgsConstructor
- public class DownstreamBridge extends PacketHandler
-@@ -794,6 +799,39 @@ public class DownstreamBridge extends PacketHandler
+@@ -810,6 +810,39 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
 +    // IvanCord start
 +    @Override
-+    public void handle(PlayerPosition pac)
++    public void handle(net.md_5.bungee.protocol.packet.PlayerPosition pac)
 +    {
-+        Position packetPos = new Position( pac.getX(), pac.getY(), pac.getZ(), pac.getYaw(), pac.getPitch(), pac.isOnGround() );
-+        Position conPos = con.getPosition();
++        com.mrivanplays.ivancord.api.Position packetPos = new com.mrivanplays.ivancord.api.Position( pac.getX(), pac.getY(), pac.getZ(), pac.getYaw(), pac.getPitch(), pac.isOnGround() );
++        com.mrivanplays.ivancord.api.Position conPos = con.getPosition();
 +        boolean changed = true;
 +        if ( packetPos.equals( conPos ) )
 +        {
@@ -342,7 +314,7 @@ index 8d0eff49a19829134b16d230e980da5111beb907..51c2044bbd5efb85969cd0aba90267e4
 +        }
 +        if ( changed )
 +        {
-+            PlayerChangePositionEvent event = new PlayerChangePositionEvent( con, conPos, packetPos );
++            com.mrivanplays.ivancord.api.event.PlayerChangePositionEvent event = new com.mrivanplays.ivancord.api.event.PlayerChangePositionEvent( con, conPos, packetPos );
 +            if ( event.callEvent() )
 +            {
 +                con.unsafe().sendPacket( pac );
@@ -350,8 +322,8 @@ index 8d0eff49a19829134b16d230e980da5111beb907..51c2044bbd5efb85969cd0aba90267e4
 +            {
 +                if ( !event.getMovedTo().equals( packetPos ) )
 +                {
-+                    Position pn = event.getMovedTo();
-+                    con.unsafe().sendPacket( new PlayerPosition( pn.getX(), pn.getY(), pn.getZ(), pn.getYaw(), pn.getPitch(), pn.isOnGround() ) );
++                    com.mrivanplays.ivancord.api.Position pn = event.getMovedTo();
++                    con.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.PlayerPosition( pn.getX(), pn.getY(), pn.getZ(), pn.getYaw(), pn.getPitch(), pn.isOnGround() ) );
 +                } else
 +                {
 +                    con.unsafe().sendPacket( pac );
@@ -366,31 +338,18 @@ index 8d0eff49a19829134b16d230e980da5111beb907..51c2044bbd5efb85969cd0aba90267e4
      public void handle(ServerData serverData) throws Exception
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 3284c5f9dd54835533905ce22837c4b6c2995b55..c5d9c1dda6028da06f938330c876abe3c6596a5b 100644
+index 71f05ea727712e5c3c5ba6e9e7d81826c5220a0e..19e19d24ae7ebdcce36a6186a991bb2d38ac361a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -31,10 +31,12 @@ import net.md_5.bungee.protocol.packet.ClientCommand;
- import net.md_5.bungee.protocol.packet.ClientSettings;
- import net.md_5.bungee.protocol.packet.KeepAlive;
- import net.md_5.bungee.protocol.packet.PlayerListItem;
-+import net.md_5.bungee.protocol.packet.PlayerPosition;
- import net.md_5.bungee.protocol.packet.PluginMessage;
- import net.md_5.bungee.protocol.packet.TabCompleteRequest;
- import net.md_5.bungee.protocol.packet.TabCompleteResponse;
- import net.md_5.bungee.util.AllowedCharacters;
-+import com.mrivanplays.ivancord.api.Position; // IvanCord
- 
- public class UpstreamBridge extends PacketHandler
- {
-@@ -317,6 +319,14 @@ public class UpstreamBridge extends PacketHandler
+@@ -332,6 +332,14 @@ public class UpstreamBridge extends PacketHandler
          con.getPendingConnection().relayMessage( pluginMessage );
      }
  
 +    // IvanCord start
 +    @Override
-+    public void handle(PlayerPosition pac)
++    public void handle(net.md_5.bungee.protocol.packet.PlayerPosition pac)
 +    {
-+        con.setPosition( new Position( pac.getX(), pac.getY(), pac.getZ(), pac.getYaw(), pac.getPitch(), pac.isOnGround() ) );
++        con.setPosition( new com.mrivanplays.ivancord.api.Position( pac.getX(), pac.getY(), pac.getZ(), pac.getYaw(), pac.getPitch(), pac.isOnGround() ) );
 +    }
 +    // IvanCord end
 +

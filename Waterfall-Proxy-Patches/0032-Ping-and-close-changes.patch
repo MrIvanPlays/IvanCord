@@ -7,7 +7,7 @@ close on exception whenever a channel is initializing and close without
 response on proxy ping if result is null.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index a8d8b3b0c4461bfb4c01a1c9b45dfbb076c387cf..518edf30830d85f305aae4dae3005ac0cb3a3bd0 100644
+index 4a5148e155866057b789b81f11c89b1b857ca7a0..3beb900b6742498f191231ccebf58546eda684b7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -211,6 +211,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection

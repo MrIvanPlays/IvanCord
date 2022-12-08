@@ -87,18 +87,10 @@ index b9f93b95a1936abfa56f23a3e8d324ccc891720c..b07740940f6730f1424b234ea8324731
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index c5d9c1dda6028da06f938330c876abe3c6596a5b..31d6877ed7f96eef93013fec91e76442666f7895 100644
+index 19e19d24ae7ebdcce36a6186a991bb2d38ac361a..5872854f57b4897046a09eb0d763cdbfa43f481d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -37,6 +37,7 @@ import net.md_5.bungee.protocol.packet.TabCompleteRequest;
- import net.md_5.bungee.protocol.packet.TabCompleteResponse;
- import net.md_5.bungee.util.AllowedCharacters;
- import com.mrivanplays.ivancord.api.Position; // IvanCord
-+import net.md_5.bungee.tab.ServerUnique; // IvanCord
- 
- public class UpstreamBridge extends PacketHandler
- {
-@@ -77,9 +78,9 @@ public class UpstreamBridge extends PacketHandler
+@@ -77,11 +77,13 @@ public class UpstreamBridge extends PacketHandler
              // Manually remove from everyone's tab list
              // since the packet from the server arrives
              // too late
@@ -106,14 +98,18 @@ index c5d9c1dda6028da06f938330c876abe3c6596a5b..31d6877ed7f96eef93013fec91e76442
 -            //       tab list (which is the only one supported
 -            //       currently)
 +            // IvanCord start - remove to do "This should only done with server_unique tab list"
-+            if ( con.getTabListHandler() instanceof ServerUnique )
++            if ( con.getTabListHandler() instanceof net.md_5.bungee.tab.ServerUnique )
 +            {
-             PlayerListItem packet = new PlayerListItem();
-             packet.setAction( PlayerListItem.Action.REMOVE_PLAYER );
+             PlayerListItem oldPacket = new PlayerListItem();
+             oldPacket.setAction( PlayerListItem.Action.REMOVE_PLAYER );
++            PlayerListItem packet = new PlayerListItem();
++            packet.setAction( PlayerListItem.Action.REMOVE_PLAYER );
              PlayerListItem.Item item = new PlayerListItem.Item();
-@@ -92,6 +93,7 @@ public class UpstreamBridge extends PacketHandler
-             {
-                 player.unsafe().sendPacket( packet );
+             item.setUuid( con.getUniqueId() );
+             oldPacket.setItems( new PlayerListItem.Item[]
+@@ -105,6 +107,7 @@ public class UpstreamBridge extends PacketHandler
+                     player.unsafe().sendPacket( oldPacket );
+                 }
              }
 +            } // IvanCord end
              con.getServer().disconnect( "Quitting" );
