@@ -55,10 +55,10 @@ index d565515c406adfad95cb7038f95212213b47f8b9..724627c84cb3e14fa349851655d9cd2e
                  brand.release();
              }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 020872111781d12132c3c5fafc92454aa0490584..27c2178ada870a9367c96b22244678cd26df2dd2 100644
+index 8a354c997e3d96fd40179449707859f61049e361..28f3bd556c8a8439a97a7d7ae920d52ffd913ef1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -323,7 +323,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -335,7 +335,7 @@ public class DownstreamBridge extends PacketHandler
              Preconditions.checkState( !serverBrand.contains( bungee.getName() ), "Cannot connect proxy to itself!" );
  
              brand = ByteBufAllocator.DEFAULT.heapBuffer();

@@ -376,7 +376,7 @@ index 052829bff45f992a0a9246ca419234e57ad2a405..15f855e0acce54bf4eda48a725c40aa7
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 2c8add8b11d71add0bcba073e71ec7af905b91e2..652c202c9940fedf688e792400f4c0ab8a1de9a9 100644
+index 2c8add8b11d71add0bcba073e71ec7af905b91e2..7b72fa65b7bfedfe0bf554db29ee78e369b4c548 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -150,11 +150,13 @@ public class DownstreamBridge extends PacketHandler
@@ -393,16 +393,41 @@ index 2c8add8b11d71add0bcba073e71ec7af905b91e2..652c202c9940fedf688e792400f4c0ab
          con.sendPacket( packet );
      }
  
-@@ -181,6 +183,8 @@ public class DownstreamBridge extends PacketHandler
-         // Waterfall end
+@@ -184,17 +186,31 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public void handle(PlayerListItemRemove playerList) throws Exception
+     {
+-        con.getTabListHandler().onUpdate( TabList.rewrite( playerList ) );
++        // IvanCord start - implement waterfall skip rewrites
++        boolean skipRewrites = bungee.getConfig().isDisableTabListRewrite();
++        con.getTabListHandler().onUpdate( skipRewrites ? playerList : TabList.rewrite( playerList ) );
++        if ( !skipRewrites )
++        {
+         throw CancelSendSignal.INSTANCE; // Always throw because of profile rewriting
++        }
++        // IvanCord end
+     }
+ 
+     @Override
+     public void handle(PlayerListItemUpdate playerList) throws Exception
+     {
+-        con.getTabListHandler().onUpdate( TabList.rewrite( playerList ) );
++        // IvanCord start - implement waterfall skip rewrites
++        boolean skipRewrites = bungee.getConfig().isDisableTabListRewrite();
++        con.getTabListHandler().onUpdate( skipRewrites ? playerList : TabList.rewrite( playerList ) );
++        if ( !skipRewrites )
++        {
+         throw CancelSendSignal.INSTANCE; // Always throw because of profile rewriting
++        }
++        // IvanCord end
      }
  
 +    // IvanCord start - remove these from handling
 +    /*
      @Override
-     public void handle(PlayerListItemRemove playerList) throws Exception
+     public void handle(ScoreboardObjective objective) throws Exception
      {
-@@ -296,6 +300,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -296,6 +312,8 @@ public class DownstreamBridge extends PacketHandler
              }
          }
      }
@@ -411,7 +436,7 @@ index 2c8add8b11d71add0bcba073e71ec7af905b91e2..652c202c9940fedf688e792400f4c0ab
  
      @Override
      @SuppressWarnings("checkstyle:avoidnestedblocks")
-@@ -725,6 +731,8 @@ public class DownstreamBridge extends PacketHandler
+@@ -725,6 +743,8 @@ public class DownstreamBridge extends PacketHandler
          }
      }
  
@@ -420,7 +445,7 @@ index 2c8add8b11d71add0bcba073e71ec7af905b91e2..652c202c9940fedf688e792400f4c0ab
      // Waterfall start
      @Override
      public void handle(EntityEffect entityEffect) throws Exception
-@@ -752,6 +760,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -752,6 +772,7 @@ public class DownstreamBridge extends PacketHandler
          return entityId;
      }
      // Waterfall end
