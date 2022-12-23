@@ -6,6 +6,24 @@ Subject: [PATCH] Consolidate flushes
 Leads to reduced syscalls and higher performance.
 Based on Netty FlushConsolidationHandler
 
+diff --git a/pom.xml b/pom.xml
+index c40b85fa4b8043d4fd8f2ea59e5dd5ace8c33a70..06e0ee5a2fa7327ed1bbeaad58748449533645b6 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -20,6 +20,13 @@
+             <url>https://github.com/SpigotMC/BungeeCord/blob/master/LICENSE</url>
+             <distribution>repo</distribution>
+         </license>
++        <!-- IvanCord start -->
++        <license>
++            <name>Apache License Version 2.0</name>
++            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
++            <comments>Applies only to original versions of files in proxy/src/main/java/com/mrivanplays/ivancord/netty/flush/</comments>
++        </license>
++        <!-- IvanCord end -->
+     </licenses>
+ 
+     <developers>
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/netty/flush/FlushSignalingHandler.java b/proxy/src/main/java/com/mrivanplays/ivancord/netty/flush/FlushSignalingHandler.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..97778cb9156fc96f8594fb0bab6c59cc9df46e1d
@@ -369,37 +387,27 @@ index 0000000000000000000000000000000000000000..b92d9d924c54c556a120af84ccc4ac1b
 +    }
 +}
 \ No newline at end of file
-diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a4d58bcf738c639a474401f1a4fb0654f8b8caec..f77046c08f2ab710677f3d8b2eea5228732915a2 100644
---- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-+++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -385,7 +385,7 @@ public final class UserConnection implements ProxiedPlayer
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index 33759c3fb7af4c7c8385a875f3483b2bce56d17c..60ca3d7d41d57d5e1561aa6e03902ed385f0ec87 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -474,6 +474,11 @@ public class ServerConnector extends PacketHandler
+         user.setServer( server );
+         ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new DownstreamBridge( bungee, user, server ) );
  
-         pendingConnects.add( target );
- 
--        ChannelInitializer initializer = new ChannelInitializer()
-+        ChannelInitializer<Channel> initializer = new ChannelInitializer<Channel>() // IvanCord
-         {
-             @Override
-             protected void initChannel(Channel ch) throws Exception
-@@ -394,6 +394,12 @@ public final class UserConnection implements ProxiedPlayer
-                 ch.pipeline().addAfter( PipelineUtils.FRAME_DECODER, PipelineUtils.PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
-                 ch.pipeline().addAfter( PipelineUtils.FRAME_PREPENDER, PipelineUtils.PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, false, getPendingConnection().getVersion() ) );
-                 ch.pipeline().get( HandlerBoss.class ).setHandler( new ServerConnector( bungee, UserConnection.this, target ) );
++        // IvanCord start - update the flush handler connections (the get/set methods add the channel handlers if needed)
++        ch.setFlushSignalingTarget( user.getCh().getFlushConsolidationHandler( false ) );
++        user.getCh().setFlushSignalingTarget( ch.getFlushConsolidationHandler( true ) );
++        // IvanCord end
 +
-+                // IvanCord start
-+                ch.pipeline().addFirst( PipelineUtils.FLUSH_CONSOLIDATION, com.mrivanplays.ivancord.netty.flush.IvanCordFlushConsolidationHandler.newInstance( false ) );
-+                ch.pipeline().addFirst( PipelineUtils.FLUSH_SIGNALING, new com.mrivanplays.ivancord.netty.flush.FlushSignalingHandler( UserConnection.this.ch.getFlushConsolidationHandler( true ) ) );
-+                UserConnection.this.ch.setFlushSignalingTarget( ch.pipeline().get( com.mrivanplays.ivancord.netty.flush.IvanCordFlushConsolidationHandler.class ) );
-+                // IvanCord end
-             }
-         };
-         ChannelFutureListener listener = new ChannelFutureListener()
+         bungee.getPluginManager().callEvent( new ServerSwitchEvent( user, from ) );
+ 
+         thisState = State.FINISHED;
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-index 487c1db411e8f9ff1feb20f4ced03ecdef7c53ec..575a19b861d28d04f74a11d31a52403221a8c684 100644
+index 487c1db411e8f9ff1feb20f4ced03ecdef7c53ec..2ae26de622aebd3dcd9ff11468f41cf170a216da 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
-@@ -48,6 +48,27 @@ public class ChannelWrapper
+@@ -48,6 +48,29 @@ public class ChannelWrapper
          ch.pipeline().get( MinecraftEncoder.class ).setProtocolVersion( protocol );
      }
  
@@ -410,8 +418,10 @@ index 487c1db411e8f9ff1feb20f4ced03ecdef7c53ec..575a19b861d28d04f74a11d31a524032
 +        if ( handler == null )
 +        {
 +            ch.pipeline().addFirst( PipelineUtils.FLUSH_SIGNALING, handler = new com.mrivanplays.ivancord.netty.flush.FlushSignalingHandler( target ) );
++        } else
++        {
++            handler.setTarget( target );
 +        }
-+        handler.setTarget( target );
 +    }
 +    public com.mrivanplays.ivancord.netty.flush.IvanCordFlushConsolidationHandler getFlushConsolidationHandler(boolean toClient)
 +    {

@@ -381,10 +381,10 @@ index 3c0c891ed46b27ec1a61ab3964c9388b7f4effcd..aa1d39792293649750c420da5063c2ce
          {
              if ( EncryptionUtil.nativeFactory.load() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 724627c84cb3e14fa349851655d9cd2e5c40f159..00345f94fc6edbc4d90020b0e2c9194b323125f0 100644
+index 64a58cf6ee5ffa606d5292a0b1a4c1c2a87bfb0d..33759c3fb7af4c7c8385a875f3483b2bce56d17c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-@@ -137,8 +137,71 @@ public class ServerConnector extends PacketHandler
+@@ -136,8 +136,71 @@ public class ServerConnector extends PacketHandler
                  properties = newp;
              }
  

@@ -8,10 +8,10 @@ Replaced by janmm14's original implementation, found here:
 https://github.com/SpigotMC/BungeeCord/commit/f9583a7652c04e42b6b6a43268750d4a31a256b6
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index fb3df35b2a0b9099d2bc2c9f9d870f32cdb89398..a4d58bcf738c639a474401f1a4fb0654f8b8caec 100644
+index 0d3d49e0dbc33f29caf4f9b004102d81bda02b8f..44f5d30e5ef9ee58219b5f07ad6bf5412bcbcc22 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -443,8 +443,19 @@ public final class UserConnection implements ProxiedPlayer
+@@ -440,8 +440,19 @@ public final class UserConnection implements ProxiedPlayer
  
      private String connectionFailMessage(Throwable cause)
      {

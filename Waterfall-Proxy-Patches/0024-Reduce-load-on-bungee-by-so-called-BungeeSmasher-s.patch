@@ -233,10 +233,10 @@ index 35d533252b7009bd5f4c14b265cea0bc05f11b91..25c321a1bc62b969839cc0a2462fbbf4
                  {
                      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 67548b7e6cbb3db009335a796a16b11c9a7de29d..50d85372adfee814cd8ee434070d8e97c685494f 100644
+index eabce031182702bd58cd58b80ea5c454787a7e03..30ce46d97f6aae6f650bfcbf621bf61bcb529fd5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -415,7 +415,7 @@ public final class UserConnection implements ProxiedPlayer
+@@ -412,7 +412,7 @@ public final class UserConnection implements ProxiedPlayer
              }
          };
          Bootstrap b = new Bootstrap()

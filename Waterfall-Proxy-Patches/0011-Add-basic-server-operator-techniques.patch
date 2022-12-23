@@ -22,13 +22,13 @@ index 151e4e97773d87d2b73e727f635e7140fc1a6a69..fc2257080e1efc3b5f8f80cfa795a2ec
      // IvanCord end
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 599254cc90643dd8d92fbca6dbbdf0ddacedf07d..07e3960d18a47b04f2a6e82140ae6fc4e117edde 100644
+index 03bc8c4b0cfa9733b93e74546a51bca1b15bca44..673beb3bdb049041e8b15200c5eed8546ab7260a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-@@ -428,4 +428,22 @@ public interface ProxiedPlayer extends Connection, CommandSender
-     void playSound(Position position, String sound, SoundCategory category, float volume, float pitch);
- 
-     // IvanCord end
+@@ -412,4 +412,22 @@ public interface ProxiedPlayer extends Connection, CommandSender
+      */
+     @Deprecated // IvanCord
+     Scoreboard getScoreboard();
 +
 +    // IvanCord start - add global op system
 +
@@ -274,10 +274,10 @@ index 546186efef3cb05e4dc8174838aa3841d6b4b3e7..b76f4ae305736c2107a3bbd68b677c32
  
          if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 1fcdbb9e150b5730485d7f7c21fc98ab3c9fe46b..90d99a85844a7a31d02c2ffbd4a458d785ef9d9d 100644
+index 2241ca9b5320bb433744212c5e494d9f827bfa83..3f12f152155243760d8bace5b238beaa464e29a5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -114,6 +114,10 @@ public final class UserConnection implements ProxiedPlayer
+@@ -111,6 +111,10 @@ public final class UserConnection implements ProxiedPlayer
      @Getter
      private Position position;
      // IvanCord end
@@ -288,7 +288,7 @@ index 1fcdbb9e150b5730485d7f7c21fc98ab3c9fe46b..90d99a85844a7a31d02c2ffbd4a458d7
      @Getter
      private int compressionThreshold = -1;
      // Used for trying multiple servers in order
-@@ -192,6 +196,9 @@ public final class UserConnection implements ProxiedPlayer
+@@ -189,6 +193,9 @@ public final class UserConnection implements ProxiedPlayer
          {
              forgeClientHandler.setFmlTokenInHandshake( true );
          }
@@ -298,7 +298,7 @@ index 1fcdbb9e150b5730485d7f7c21fc98ab3c9fe46b..90d99a85844a7a31d02c2ffbd4a458d7
      }
  
      public void sendPacket(PacketWrapper packet)
-@@ -615,7 +622,15 @@ public final class UserConnection implements ProxiedPlayer
+@@ -612,7 +619,15 @@ public final class UserConnection implements ProxiedPlayer
      @Override
      public boolean hasPermission(String permission)
      {
@@ -315,20 +315,22 @@ index 1fcdbb9e150b5730485d7f7c21fc98ab3c9fe46b..90d99a85844a7a31d02c2ffbd4a458d7
      }
  
      @Override
-@@ -837,6 +852,13 @@ public final class UserConnection implements ProxiedPlayer
-         new SoundPlayedEvent( this, position,
-                 PlaySound.NAME_FUNCTION.apply( sound, getPendingConnection().getVersion() ), volume, pitch, category.ordinal() ).callEvent();
+@@ -811,6 +826,15 @@ public final class UserConnection implements ProxiedPlayer
+         return serverSentScoreboard;
      }
-+
+ 
++    // IvanCord start
 +    @Override
 +    public void setGlobalOp(boolean globalOp)
 +    {
 +        BungeeCord.getInstance().getOpsConfiguration().setOp( getUniqueId(), globalOp );
 +        this.globalOp = globalOp;
 +    }
-     // IvanCord end
- 
++    // IvanCord end
++
      // IvanCord start - comment this. Not used anywhere, so...
+     /*
+     // Waterfall start
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java b/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
 index da9b8701c60709441fed6e02345734940935ef4d..57b0bc776f76a8c6a444e68458fffff65197036d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/YamlConfig.java
