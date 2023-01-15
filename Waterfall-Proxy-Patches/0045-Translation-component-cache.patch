@@ -1,0 +1,486 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ivan Pekov <ivan@mrivanplays.com>
+Date: Sun, 15 Jan 2023 17:18:05 +0200
+Subject: [PATCH] Translation component cache
+
+
+diff --git a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
+index 3668ab3e1f96189b78501855315230b9a82a2575..46d77079e9780ce762a5f8e0f010b8cc6fb1c4b2 100644
+--- a/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
++++ b/api/src/main/java/com/mrivanplays/ivancord/api/command/CommandDispatcherProxy.java
+@@ -296,13 +296,19 @@ public final class CommandDispatcherProxy
+                     {
+                         if ( !node.getRequirement().test( sender ) )
+                         {
+-                            sender.sendMessage( TextComponent.fromLegacyText( legacyCommand.getPermissionMessage() != null ? legacyCommand.getPermissionMessage() : proxy.getTranslation( "no_permission" ) ) );
++                            if ( legacyCommand.getPermissionMessageComponent() != null )
++                            {
++                                sender.sendMessage( legacyCommand.getPermissionMessageComponent() );
++                            } else
++                            {
++                                sender.sendMessage( proxy.getTranslationComponent( "no_permission" ) );
++                            }
+                             return 2;
+                         }
+                     } catch ( Throwable e1 )
+                     {
+                         // plugins make me cry
+-                        sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_executing" ) ) );
++                        sender.sendMessage( proxy.getTranslationComponent( "internal_error_executing" ) );
+                         proxy.getLogger().log( Level.WARNING, "Requirement test for command node " + node.getName() + " encountered an exception", e1 );
+ 
+                         String[] args = Constants.EMPTY_ARRAY;
+@@ -339,7 +345,7 @@ public final class CommandDispatcherProxy
+             translation = "internal_error_completing";
+             errorMessage = "Error in completing command";
+         }
+-        sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( translation ) ) );
++        sender.sendMessage( proxy.getTranslationComponent( translation ) );
+         proxy.getLogger().log( Level.WARNING, errorMessage, e );
+ 
+         String[] args = Constants.EMPTY_ARRAY;
+@@ -403,7 +409,7 @@ public final class CommandDispatcherProxy
+         } catch ( Throwable e )
+         {
+             // plugins being plugins
+-            sender.sendMessage( TextComponent.fromLegacyText( proxy.getTranslation( "internal_error_completing" ) ) );
++            sender.sendMessage( proxy.getTranslationComponent( "internal_error_completing" ) );
+             proxy.getLogger().log( Level.WARNING, "Error in completing command", e );
+             String[] args = Constants.EMPTY_ARRAY;
+             if ( input.indexOf( ' ' ) != -1 )
+diff --git a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+index c05627b5a7ed11f076660bcb06690a367c01c117..237e62ab5fbb173164a3982a90c60c892b3af099 100644
+--- a/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
++++ b/api/src/main/java/net/md_5/bungee/api/ProxyServer.java
+@@ -61,6 +61,10 @@ public abstract class ProxyServer
+      */
+     public abstract String getTranslation(String name, Object... args);
+ 
++    // IvanCord start
++    public abstract net.md_5.bungee.api.chat.BaseComponent[] getTranslationComponent(String name, Object... args);
++    // IvanCord end
++
+     /**
+      * Gets the main logger which can be used as a suitable replacement for
+      * {@link System#out} and {@link System#err}.
+diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
+index b1e818a0c3b9fb2f8cf479eb66142df9f9442a0a..703c4ee5394ae1f289a844b5a003892073926eb9 100644
+--- a/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
++++ b/api/src/main/java/net/md_5/bungee/api/plugin/Command.java
+@@ -18,8 +18,9 @@ public abstract class Command
+     private final String name;
+     private final String permission;
+     private final String[] aliases;
+-    @Setter(AccessLevel.PROTECTED)
++    //@Setter(AccessLevel.PROTECTED) // IvanCord
+     private String permissionMessage;
++    private net.md_5.bungee.api.chat.BaseComponent[] permissionMessageComponent; // IvanCord
+ 
+     /**
+      * Construct a new command with no permissions or aliases.
+@@ -85,4 +86,17 @@ public abstract class Command
+     {
+         return permission == null || permission.isEmpty() || sender.hasPermission( permission );
+     }
++
++    // IvanCord start - setPermissionMessage
++    protected void setPermissionMessage(String permissionMessage)
++    {
++        this.permissionMessage = permissionMessage;
++        this.permissionMessageComponent = net.md_5.bungee.api.chat.TextComponent.fromLegacyText( net.md_5.bungee.api.ChatColor.translateAlternateColorCodes( '&', permissionMessage ) );
++    }
++    protected void setPermissionMessageComponent(net.md_5.bungee.api.chat.BaseComponent[] permissionMessageComponent)
++    {
++        this.permissionMessageComponent = permissionMessageComponent;
++        this.permissionMessage = net.md_5.bungee.api.chat.BaseComponent.toLegacyText( permissionMessageComponent );
++    }
++    // IvanCord end
+ }
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/TranslationCache.java b/proxy/src/main/java/com/mrivanplays/ivancord/TranslationCache.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..ddb700276c71a3a008d401cd568257d8fcc64742
+--- /dev/null
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/TranslationCache.java
+@@ -0,0 +1,51 @@
++package com.mrivanplays.ivancord;
++
++import java.text.Format;
++import java.text.MessageFormat;
++import java.util.Enumeration;
++import java.util.Map;
++import java.util.ResourceBundle;
++import java.util.concurrent.ConcurrentHashMap;
++import net.md_5.bungee.api.ChatColor;
++import net.md_5.bungee.api.chat.BaseComponent;
++import net.md_5.bungee.api.chat.TextComponent;
++
++public class TranslationCache
++{
++
++    private Map<String, BaseComponent[]> componentCache = new ConcurrentHashMap<>();
++    private Map<String, Format> formatsCache = new ConcurrentHashMap<>();
++
++    public TranslationCache(ResourceBundle values)
++    {
++        Enumeration<String> keys = values.getKeys();
++        while ( keys.hasMoreElements() )
++        {
++            String key = keys.nextElement();
++            String val = values.getString( key );
++            this.formatsCache.computeIfAbsent( key, ($) -> new MessageFormat( val ) );
++            if ( val.indexOf( '{' ) != -1 )
++            {
++                continue;
++            }
++            this.componentCache.computeIfAbsent( key, ($) -> TextComponent.fromLegacyText( ChatColor.translateAlternateColorCodes( '&', val ) ) );
++        }
++    }
++
++    public String getTranslation(String name, Object... args)
++    {
++        Format format = this.formatsCache.get( name );
++        return ( format != null ) ? format.format( args ) : "<translation '" + name + "' missing>";
++    }
++
++    public BaseComponent[] getTranslationComponent(String name, Object... args)
++    {
++        if ( this.componentCache.containsKey( name ) )
++        {
++            return this.componentCache.get( name );
++        }
++
++        return TextComponent.fromLegacyText( ChatColor.translateAlternateColorCodes( '&', this.getTranslation( name, args ) ) );
++    }
++
++}
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandKick.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandKick.java
+index d3a273d4ada5f2807861c49a744a94e4dbb66fec..3725352dfeca2d35f2a9c15ae148f4d2e6d8dbb6 100644
+--- a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandKick.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandKick.java
+@@ -27,20 +27,20 @@ public class CommandKick extends Command implements TabExecutor
+     {
+         if ( args.length == 0 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "username_needed" ) );
++            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "username_needed" ) );
+         } else
+         {
+             ProxiedPlayer player = ProxyServer.getInstance().getPlayer( args[0] );
+ 
+             if ( player == null )
+             {
+-                sender.sendMessage( TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "user_not_online" ) ) );
++                sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "user_not_online" ) );
+                 return;
+             }
+ 
+             if ( args.length == 1 )
+             {
+-                player.disconnect( TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( "kick_message" ) ) );
++                player.disconnect( ProxyServer.getInstance().getTranslationComponent( "kick_message" ) );
+             } else
+             {
+                 String[] reason = new String[ args.length - 1 ];
+diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/util/ICUtil.java b/proxy/src/main/java/com/mrivanplays/ivancord/util/ICUtil.java
+index 4915d8d7b55c1f6d16ad55024ec807a2b18870eb..14421eda3f61f2e5ab2cc74c4ff104806f8072b2 100644
+--- a/proxy/src/main/java/com/mrivanplays/ivancord/util/ICUtil.java
++++ b/proxy/src/main/java/com/mrivanplays/ivancord/util/ICUtil.java
+@@ -2,13 +2,12 @@ package com.mrivanplays.ivancord.util;
+ 
+ import net.md_5.bungee.api.ProxyServer;
+ import net.md_5.bungee.api.chat.BaseComponent;
+-import net.md_5.bungee.api.chat.TextComponent;
+ 
+ public class ICUtil
+ {
+ 
+     public static BaseComponent[] translation(String translation, Object... args)
+     {
+-        return TextComponent.fromLegacyText( ProxyServer.getInstance().getTranslation( translation, args ) );
++        return ProxyServer.getInstance().getTranslationComponent( translation, args );
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+index aa1d39792293649750c420da5063c2ce3560890d..29a49d994f1def75aa7a4402981aff8c35fba9c9 100644
+--- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
++++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
+@@ -123,7 +123,7 @@ public class BungeeCord extends ProxyServer
+     /**
+      * Localization formats.
+      */
+-    private Map<String, Format> messageFormats;
++    private com.mrivanplays.ivancord.TranslationCache messageFormats; // IvanCord
+     public EventLoopGroup bossEventLoopGroup, workerEventLoopGroup;
+     /**
+      * locations.yml save thread.
+@@ -635,14 +635,18 @@ public class BungeeCord extends ProxyServer
+ 
+     public final void reloadMessages()
+     {
+-        Map<String, Format> cachedFormats = new HashMap<>();
++        //Map<String, Format> cachedFormats = new HashMap<>(); // IvanCord
+ 
+         File file = new File( "messages.properties" );
+         if ( file.isFile() )
+         {
+             try ( FileReader rd = new FileReader( file ) )
+             {
++                /* // IvanCord start - replace
+                 cacheResourceBundle( cachedFormats, new PropertyResourceBundle( rd ) );
++                 */
++                this.messageFormats = new com.mrivanplays.ivancord.TranslationCache( new PropertyResourceBundle( rd ) );
++                // IvanCord end
+             } catch ( IOException ex )
+             {
+                 getLogger().log( Level.SEVERE, "Could not load custom messages.properties", ex );
+@@ -657,9 +661,12 @@ public class BungeeCord extends ProxyServer
+         {
+             baseBundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
+         }
++        /* // IvanCord start - replace
+         cacheResourceBundle( cachedFormats, baseBundle );
+ 
+         messageFormats = Collections.unmodifiableMap( cachedFormats );
++         */
++        this.messageFormats = new com.mrivanplays.ivancord.TranslationCache( baseBundle );
+     }
+ 
+     private void cacheResourceBundle(Map<String, Format> map, ResourceBundle resourceBundle)
+@@ -674,10 +681,22 @@ public class BungeeCord extends ProxyServer
+     @Override
+     public String getTranslation(String name, Object... args)
+     {
++        /* // IvanCord start - replace
+         Format format = messageFormats.get( name );
+         return ( format != null ) ? format.format( args ) : "<translation '" + name + "' missing>";
++         */
++        return this.messageFormats.getTranslation( name, args );
++        // IvanCord end
+     }
+ 
++    // IvanCord start - getTranslationComponent
++    @Override
++    public BaseComponent[] getTranslationComponent(String name, Object... args)
++    {
++        return this.messageFormats.getTranslationComponent( name, args );
++    }
++    // IvanCord end
++
+     @Override
+     @SuppressWarnings("unchecked")
+     public Collection<ProxiedPlayer> getPlayers()
+diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+index 44f5d30e5ef9ee58219b5f07ad6bf5412bcbcc22..500137bcebfe570ee80b8b468c098e5a5a5221fb 100644
+--- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
++++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
+@@ -353,7 +353,7 @@ public final class UserConnection implements ProxiedPlayer
+                 callback.done( ServerConnectRequest.Result.ALREADY_CONNECTED, null );
+             }
+             else // IvanCord - fix dumb connection message behaviour
+-            if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connected" ) ); // Waterfall
++            if (request.isSendFeedback()) sendMessage( bungee.getTranslationComponent( "already_connected" ) ); // Waterfall // IvanCord
+             return;
+         }
+         if ( pendingConnects.contains( target ) )
+@@ -363,7 +363,7 @@ public final class UserConnection implements ProxiedPlayer
+                 callback.done( ServerConnectRequest.Result.ALREADY_CONNECTING, null );
+             }
+             else // IvanCord - fix dumb connection message behaviour
+-            if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "already_connecting" ) ); // Waterfall
++            if (request.isSendFeedback()) sendMessage( bungee.getTranslationComponent( "already_connecting" ) ); // Waterfall // IvanCord
+             return;
+         }
+         // IvanCord start
+@@ -374,7 +374,7 @@ public final class UserConnection implements ProxiedPlayer
+                 callback.done( ServerConnectRequest.Result.UNAUTHORISED, null );
+             } else
+             {
+-                sendMessage( bungee.getTranslation( "no_server_permission" ) );
++                sendMessage( bungee.getTranslationComponent( "no_server_permission" ) );
+             }
+             return;
+         }
+@@ -412,7 +412,7 @@ public final class UserConnection implements ProxiedPlayer
+                     ServerInfo def = updateAndGetNextServer( target );
+                     if ( request.isRetry() && def != null && ( getServer() == null || def != getServer().getInfo() ) )
+                     {
+-                        if (request.isSendFeedback()) sendMessage( bungee.getTranslation( "fallback_lobby" ) ); // Waterfall
++                        if (request.isSendFeedback()) sendMessage( bungee.getTranslationComponent( "fallback_lobby" ) ); // Waterfall // IvanCord
+                         connect( def, null, true, ServerConnectEvent.Reason.LOBBY_FALLBACK, request.getConnectTimeout(), request.isSendFeedback() ); // Waterfall
+                     } else if ( dimensionChange )
+                     {
+diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
+index 1fd5a546c74f78bbcade89de657f73bbd1395c7e..639e0712f7c4f259837ab3be1e65258ca870df13 100644
+--- a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
++++ b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
+@@ -17,13 +17,13 @@ public class CommandIP extends PlayerCommand
+     {
+         if ( args.length < 1 )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "username_needed" ) );
++            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "username_needed" ) ); // IvanCord
+             return;
+         }
+         ProxiedPlayer user = ProxyServer.getInstance().getPlayer( args[0] );
+         if ( user == null )
+         {
+-            sender.sendMessage( ProxyServer.getInstance().getTranslation( "user_not_online" ) );
++            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "user_not_online" ) ); // IvanCord
+         } else
+         {
+             sender.sendMessage( ProxyServer.getInstance().getTranslation( "command_ip", args[0], user.getSocketAddress() ) );
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index 8894c215550004c0e68fd7090310d5597ef876ff..d2a7dce21447613aa6d4e01a079dfc6bf4c49025 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -102,7 +102,7 @@ public class DownstreamBridge extends PacketHandler
+ 
+         // Waterfall start
+         ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
+-        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), TextComponent.fromLegacyText( bungee.getTranslation( "server_went_down" ) ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.EXCEPTION ) );
++        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), bungee.getTranslationComponent( "server_went_down" ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.EXCEPTION ) ); // IvanCord
+         if ( event.isCancelled() && event.getCancelServer() != null )
+         {
+             server.setObsolete( true );
+@@ -129,7 +129,7 @@ public class DownstreamBridge extends PacketHandler
+         {
+             // Waterfall start
+             ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
+-            ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), TextComponent.fromLegacyText( bungee.getTranslation( "lost_connection" ) ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.LOST_CONNECTION ) );
++            ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), bungee.getTranslationComponent( "lost_connection" ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.LOST_CONNECTION ) ); // IvanCord
+             if ( event.isCancelled() && event.getCancelServer() != null )
+             {
+                 server.setObsolete( true );
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index da040794c88f2389beb3401d9768cfc529430fec..84deae3ea9f3ce59036436ac0a13805f3c12594e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -426,30 +426,30 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         // IvanCord start
+         if ( loginRequest.getData().isEmpty() )
+         {
+-            disconnect( bungee.getTranslation( "name_empty" ) );
++            disconnect( bungee.getTranslationComponent( "name_empty" ) );
+             return;
+         }
+         // IvanCord end
+ 
+         if ( !AllowedCharacters.isValidName( loginRequest.getData(), onlineMode ) )
+         {
+-            disconnect( bungee.getTranslation( "name_invalid" ) );
++            disconnect( bungee.getTranslationComponent( "name_invalid" ) ); // IvanCord
+             return;
+         }
+ 
+         if ( BungeeCord.getInstance().config.isEnforceSecureProfile() && getVersion() < ProtocolConstants.MINECRAFT_1_19_3 )
+         {
+-            if ( handshake.getProtocolVersion() < ProtocolConstants.MINECRAFT_1_19 ) {disconnect(bungee.getTranslation("secure_profile_unsupported"));} // Waterfall - Tell old clients to update if secure profiles are required
++            if ( handshake.getProtocolVersion() < ProtocolConstants.MINECRAFT_1_19 ) {disconnect(bungee.getTranslationComponent("secure_profile_unsupported"));} // Waterfall - Tell old clients to update if secure profiles are required // IvanCord
+             PlayerPublicKey publicKey = loginRequest.getPublicKey();
+             if ( publicKey == null )
+             {
+-                disconnect( bungee.getTranslation( "secure_profile_required" ) );
++                disconnect( bungee.getTranslationComponent( "secure_profile_required" ) ); // IvanCord
+                 return;
+             }
+ 
+             if ( Instant.ofEpochMilli( publicKey.getExpiry() ).isBefore( Instant.now() ) )
+             {
+-                disconnect( bungee.getTranslation( "secure_profile_expired" ) );
++                disconnect( bungee.getTranslationComponent( "secure_profile_expired" ) ); // IvanCord
+                 return;
+             }
+ 
+@@ -457,7 +457,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             {
+                 if ( !EncryptionUtil.check( publicKey, null ) )
+                 {
+-                    disconnect( bungee.getTranslation( "secure_profile_invalid" ) );
++                    disconnect( bungee.getTranslationComponent( "secure_profile_invalid" ) ); // IvanCord
+                     return;
+                 }
+             }
+@@ -468,7 +468,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         int limit = BungeeCord.getInstance().config.getPlayerLimit();
+         if ( limit > 0 && bungee.getOnlineCount() >= limit )
+         {
+-            disconnect( bungee.getTranslation( "proxy_full" ) );
++            disconnect( bungee.getTranslationComponent( "proxy_full" ) ); // IvanCord
+             return;
+         }
+ 
+@@ -476,7 +476,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         // We can just check by UUID here as names are based on UUID
+         if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
+         {
+-            disconnect( bungee.getTranslation( "already_connected_proxy" ) );
++            disconnect( bungee.getTranslationComponent( "already_connected_proxy" ) ); // IvanCord
+             return;
+         }
+ 
+@@ -490,7 +490,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 {
+                     new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent(); // IvanCord
+                     BaseComponent[] reason = result.getCancelReasonComponents();
+-                    disconnect( ( reason != null ) ? reason : TextComponent.fromLegacyText( bungee.getTranslation( "kick_message" ) ) );
++                    disconnect( ( reason != null ) ? reason : bungee.getTranslationComponent( "kick_message" ) ); // IvanCord
+                     return;
+                 }
+                 if ( ch.isClosed() )
+@@ -584,10 +584,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                         finish();
+                         return;
+                     }
+-                    disconnect( bungee.getTranslation( "offline_mode_player" ) );
++                    disconnect( bungee.getTranslationComponent( "offline_mode_player" ) ); // IvanCord
+                 } else
+                 {
+-                    disconnect( bungee.getTranslation( "mojang_fail" ) );
++                    disconnect( bungee.getTranslationComponent( "mojang_fail" ) ); // IvanCord
+                     bungee.getLogger().log( Level.SEVERE, "Error authenticating " + getName() + " with minecraft.net", error );
+                 }
+             }
+@@ -618,7 +618,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+ 
+                 if ( !secure )
+                 {
+-                    disconnect( bungee.getTranslation( "secure_profile_invalid" ) );
++                    disconnect( bungee.getTranslationComponent( "secure_profile_invalid" ) ); // IvanCord
+                     return;
+                 }
+             }
+@@ -632,14 +632,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             if ( oldName != null )
+             {
+                 // TODO See #1218
+-                oldName.disconnect( bungee.getTranslation( "already_connected_proxy" ) );
++                oldName.disconnect( bungee.getTranslationComponent( "already_connected_proxy" ) ); // IvanCord
+             }
+             // And then also for their old UUID
+             ProxiedPlayer oldID = bungee.getPlayer( getUniqueId() );
+             if ( oldID != null )
+             {
+                 // TODO See #1218
+-                oldID.disconnect( bungee.getTranslation( "already_connected_proxy" ) );
++                oldID.disconnect( bungee.getTranslationComponent( "already_connected_proxy" ) ); // IvanCord
+             }
+         } else
+         {
+@@ -648,7 +648,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             if ( oldName != null )
+             {
+                 // TODO See #1218
+-                disconnect( bungee.getTranslation( "already_connected_proxy" ) );
++                disconnect( bungee.getTranslationComponent( "already_connected_proxy" ) ); // IvanCord
+                 return;
+             }
+ 
+@@ -663,7 +663,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+                 {
+                     new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent(); // IvanCord
+                     BaseComponent[] reason = result.getCancelReasonComponents();
+-                    disconnect( ( reason != null ) ? reason : TextComponent.fromLegacyText( bungee.getTranslation( "kick_message" ) ) );
++                    disconnect( ( reason != null ) ? reason : bungee.getTranslationComponent( "kick_message" ) ); // IvanCord
+                     return;
+                 }
+                 if ( ch.isClosed() )
