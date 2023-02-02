@@ -20,13 +20,14 @@ index 9fcebdda17dba23b2a7717a851d6fd546199b7d9..b55c9562ff2dea5c6b8d3ae47e80ddbb
          <module>query</module>
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlert.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlert.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..39f8ea16065200f62e391658d0e6c0c33cecf836
+index 0000000000000000000000000000000000000000..b025b65c4b5899708eccbe9a1f47cd28347d6fcf
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandAlert.java
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,48 @@
 +package com.mrivanplays.ivancord.modules;
 +
 +import com.mrivanplays.ivancord.util.ICUtil;
++import java.util.Locale;
 +import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.CommandSender;
 +import net.md_5.bungee.api.ProxyServer;
@@ -50,7 +51,7 @@ index 0000000000000000000000000000000000000000..39f8ea16065200f62e391658d0e6c0c3
 +        } else
 +        {
 +            StringBuilder builder = new StringBuilder();
-+            if ( args[0].startsWith( "&h" ) )
++            if ( args[0].toLowerCase( Locale.ROOT ).startsWith( "&h" ) )
 +            {
 +                // Remove &h
 +                args[0] = args[0].substring( 2 );
@@ -260,13 +261,15 @@ index 0000000000000000000000000000000000000000..d3a273d4ada5f2807861c49a744a94e4
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..71a6d808da8fe2e01bc6c67f415ac90179578d3e
+index 0000000000000000000000000000000000000000..909156cbc4f933c2dc5e5fa75c5c04e06d2b6c82
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,64 @@
 +package com.mrivanplays.ivancord.modules;
 +
 +import java.util.ArrayList;
++import java.util.Collection;
++import java.util.Collections;
 +import java.util.List;
 +import com.mrivanplays.ivancord.util.ICUtil;
 +import net.md_5.bungee.Util;
@@ -276,11 +279,12 @@ index 0000000000000000000000000000000000000000..71a6d808da8fe2e01bc6c67f415ac901
 +import net.md_5.bungee.api.config.ServerInfo;
 +import net.md_5.bungee.api.connection.ProxiedPlayer;
 +import net.md_5.bungee.api.plugin.Command;
++import net.md_5.bungee.api.plugin.TabExecutor;
 +
 +/**
 + * Command to list all players connected to the proxy.
 + */
-+public class CommandList extends Command
++public class CommandList extends Command implements TabExecutor
 +{
 +
 +    public CommandList()
@@ -291,6 +295,8 @@ index 0000000000000000000000000000000000000000..71a6d808da8fe2e01bc6c67f415ac901
 +    @Override
 +    public void execute(CommandSender sender, String[] args)
 +    {
++        boolean hideEmptyServers = ( args.length == 0 ) || !args[0].equalsIgnoreCase( "all" );
++
 +        for ( ServerInfo server : ProxyServer.getInstance().getServersCopy().values() )
 +        {
 +            if ( !server.canAccess( sender ) )
@@ -298,8 +304,14 @@ index 0000000000000000000000000000000000000000..71a6d808da8fe2e01bc6c67f415ac901
 +                continue;
 +            }
 +
++            Collection<ProxiedPlayer> serverPlayers = server.getPlayers();
++            if ( hideEmptyServers && serverPlayers.isEmpty() )
++            {
++                continue;
++            }
++
 +            List<String> players = new ArrayList<>();
-+            for ( ProxiedPlayer player : server.getPlayers() )
++            for ( ProxiedPlayer player : serverPlayers )
 +            {
 +                players.add( player.getDisplayName() );
 +            }
@@ -309,6 +321,12 @@ index 0000000000000000000000000000000000000000..71a6d808da8fe2e01bc6c67f415ac901
 +        }
 +
 +        sender.sendMessage( ICUtil.translation( "total_players", ProxyServer.getInstance().getOnlineCount() ) );
++    }
++
++    @Override
++    public Iterable<String> onTabComplete(CommandSender sender, String[] args)
++    {
++        return ( args.length > 1 ) ? Collections.emptyList() : Collections.singletonList( "all" );
 +    }
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandSend.java

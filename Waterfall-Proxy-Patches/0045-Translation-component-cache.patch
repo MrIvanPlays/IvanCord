@@ -310,10 +310,10 @@ index 44f5d30e5ef9ee58219b5f07ad6bf5412bcbcc22..500137bcebfe570ee80b8b468c098e5a
                      } else if ( dimensionChange )
                      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
-index 1fd5a546c74f78bbcade89de657f73bbd1395c7e..639e0712f7c4f259837ab3be1e65258ca870df13 100644
+index beba1fa7b51652ad2477666996a7a2eab0263c40..0363c2ff77362ee7d4463adf2c776d903a96a533 100644
 --- a/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
 +++ b/proxy/src/main/java/net/md_5/bungee/command/CommandIP.java
-@@ -17,13 +17,13 @@ public class CommandIP extends PlayerCommand
+@@ -20,13 +20,13 @@ public class CommandIP extends PlayerCommand
      {
          if ( args.length < 1 )
          {
@@ -328,7 +328,7 @@ index 1fd5a546c74f78bbcade89de657f73bbd1395c7e..639e0712f7c4f259837ab3be1e65258c
 +            sender.sendMessage( ProxyServer.getInstance().getTranslationComponent( "user_not_online" ) ); // IvanCord
          } else
          {
-             sender.sendMessage( ProxyServer.getInstance().getTranslation( "command_ip", args[0], user.getSocketAddress() ) );
+             sender.sendMessage( new ComponentBuilder()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 index 8894c215550004c0e68fd7090310d5597ef876ff..d2a7dce21447613aa6d4e01a079dfc6bf4c49025 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java

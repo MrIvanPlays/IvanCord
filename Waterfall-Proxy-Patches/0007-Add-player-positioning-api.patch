@@ -110,7 +110,7 @@ index 0000000000000000000000000000000000000000..cf92ce1221e8d7b19f7b4f12e6e1d639
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index b14463bd6864054f38988d7bdaaa105635a3a263..03bc8c4b0cfa9733b93e74546a51bca1b15bca44 100644
+index bee575a7741726c9493f8ec8c65f98ee1083eb0a..d57cc2512df9d9ceaa78027c2296d7666cf147ca 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -13,6 +13,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
@@ -120,7 +120,7 @@ index b14463bd6864054f38988d7bdaaa105635a3a263..03bc8c4b0cfa9733b93e74546a51bca1
 +import com.mrivanplays.ivancord.api.Position; // IvanCord
  
  /**
-  * Represents a player who's connection is being connected to somewhere else,
+  * Represents a player whose connection is being connected to somewhere else,
 @@ -283,6 +284,16 @@ public interface ProxiedPlayer extends Connection, CommandSender
       */
      byte getViewDistance();

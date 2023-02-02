@@ -9,7 +9,7 @@ All score and team packets are not handled by the proxy in no way. They
 dont either register!
 
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 22a73d471f251b119d1eb3ed3abfd975f13960b0..b14463bd6864054f38988d7bdaaa105635a3a263 100644
+index a9f0f20a8f2b3769cc49a38de457593ae7a66686..bee575a7741726c9493f8ec8c65f98ee1083eb0a 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -397,6 +397,8 @@ public interface ProxiedPlayer extends Connection, CommandSender

@@ -162,7 +162,7 @@ index 0000000000000000000000000000000000000000..8c83c3172888a0f83960a380bdce1198
 +    }
 +}
 diff --git a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
-index 673beb3bdb049041e8b15200c5eed8546ab7260a..befa2568b88d8e8811458fd59dfa76812399a5f8 100644
+index 9d3cea6fd6db68ac4dbbdaaa2d3cd06d8b826245..012408ead7b69bfa3ba4abbb21afdcfe404021c4 100644
 --- a/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 +++ b/api/src/main/java/net/md_5/bungee/api/connection/ProxiedPlayer.java
 @@ -1,5 +1,9 @@
