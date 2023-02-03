@@ -6,7 +6,7 @@ Subject: [PATCH] Reduce use of ServerData packet
 Avoids the popup message box "Chat messages can't be verified"
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index bac688d24e96b588d954a9953185e4147d7de35e..8894c215550004c0e68fd7090310d5597ef876ff 100644
+index e83fa08da12a9542fa1d21267275e53cc286a640..3be3417372e3a605c8c396f8fff55cfd610f81a1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -89,6 +89,7 @@ public class DownstreamBridge extends PacketHandler
@@ -17,7 +17,7 @@ index bac688d24e96b588d954a9953185e4147d7de35e..8894c215550004c0e68fd7090310d559
  
      @Override
      public void exception(Throwable t) throws Exception
-@@ -1023,9 +1024,11 @@ public class DownstreamBridge extends PacketHandler
+@@ -1034,9 +1035,11 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public void handle(ServerData serverData) throws Exception
      {

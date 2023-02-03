@@ -330,7 +330,7 @@ index beba1fa7b51652ad2477666996a7a2eab0263c40..0363c2ff77362ee7d4463adf2c776d90
          {
              sender.sendMessage( new ComponentBuilder()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 8894c215550004c0e68fd7090310d5597ef876ff..d2a7dce21447613aa6d4e01a079dfc6bf4c49025 100644
+index 3be3417372e3a605c8c396f8fff55cfd610f81a1..a9db428054ced3c75d7dc318613f5f029623e2e0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -102,7 +102,7 @@ public class DownstreamBridge extends PacketHandler
