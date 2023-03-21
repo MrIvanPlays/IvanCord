@@ -19,7 +19,7 @@ It is also possible to send the LoginRequest packet twice if an intent is regist
 PreLoginEvent so I checked if we already got a LoginRequest.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 3beb900b6742498f191231ccebf58546eda684b7..32f55bce2d7883778f20634f2ca4d90afafb135a 100644
+index 9c6e4907ea81129e3c0070ffecda5e62f6fa2e7a..9d01d9f3fc132530b7d4919051a83e24d45fbea5 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -88,6 +88,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection

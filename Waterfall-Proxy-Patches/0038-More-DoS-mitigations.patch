@@ -103,7 +103,7 @@ index 7dbbfd3cd0212154ce27b1134e64b715d42e8096..1e5370117770a6daf7c22de2773c6ddd
 +    // IvanCord end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
-index 3224b0d2b3a73bac3f6f03b43c4b1d3f98ac5ed6..7b5ab17a2069e20602b5dadc4de94817fb8ad434 100644
+index d0e37793d1154ea08e9af1a6b8ec13942b89a918..31a2f0377c4d6ad437098fe305cb40e66dcd70c9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/LoginRequest.java
 @@ -67,10 +67,11 @@ public class LoginRequest extends DefinedPacket
@@ -115,8 +115,8 @@ index 3224b0d2b3a73bac3f6f03b43c4b1d3f98ac5ed6..7b5ab17a2069e20602b5dadc4de94817
          // Accommodate the rare (but likely malicious) use of UTF-8 usernames, since it is technically
          // legal on the protocol level.
 -        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return -1;
-+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return 1 + (16 * 4) + 1024; // IvanCord
-         return 1 + (16 * 4);
++        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_19) return 1 + (16 * 3) + 1024; // IvanCord
+         return 1 + (16 * 3);
      }
      // Waterfall end
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java

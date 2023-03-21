@@ -36,10 +36,10 @@ index 8a2474878121c84b21c1d52112996b1e025f123c..271d0412a065283dae526b3931060aa9
      //
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 655676c3053bcae9c8879fb702fa9286de755eac..6a513a3378af0e8056b453fad99659b02e644043 100644
+index b91cd8b1b28f9471ba176691020e9b39a7b791d9..80050649bef0fe40d16c7bbcfe9892fea0a7c109 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -609,7 +609,7 @@ public final class PluginManager
+@@ -610,7 +610,7 @@ public final class PluginManager
          unregisterCommands( plugin );
          proxy.getServicesManager().unregisterAll( plugin );
          proxy.getScheduler().cancel( plugin );

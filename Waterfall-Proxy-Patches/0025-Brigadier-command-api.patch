@@ -928,7 +928,7 @@ index 0a182becd4b499772377d0fb87af9740363ae121..0a286a9dbd597bcac862b52401bbf167
  
  }
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b27339a3f17c0 100644
+index 17f70c7c3aa7ea200c6d8346d1df69df2b9f5b63..5021d5459bdc000c2e0f69e8717a22b8c9600505 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 @@ -7,6 +7,12 @@ import com.google.common.eventbus.Subscribe;
@@ -944,7 +944,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
  import java.io.File;
  import java.io.InputStream;
  import java.lang.reflect.Method;
-@@ -64,9 +70,10 @@ public final class PluginManager
+@@ -65,9 +71,10 @@ public final class PluginManager
      private final Map<String, Plugin> plugins = new LinkedHashMap<>();
      private final MutableGraph<String> dependencyGraph = GraphBuilder.directed().build();
      private final LibraryLoader libraryLoader;
@@ -957,7 +957,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
      private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
  
      @SuppressWarnings("unchecked")
-@@ -93,6 +100,7 @@ public final class PluginManager
+@@ -94,6 +101,7 @@ public final class PluginManager
              proxy.getLogger().warning( "Could not initialize LibraryLoader (missing dependencies?)" );
          }
          this.libraryLoader = libraryLoader;
@@ -965,7 +965,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
      }
  
      /**
-@@ -103,13 +111,29 @@ public final class PluginManager
+@@ -104,13 +112,29 @@ public final class PluginManager
       */
      public void registerCommand(Plugin plugin, Command command)
      {
@@ -995,7 +995,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
  
      /**
       * Unregister a command so it will no longer be executed.
-@@ -118,8 +142,12 @@ public final class PluginManager
+@@ -119,8 +143,12 @@ public final class PluginManager
       */
      public void unregisterCommand(Command command)
      {
@@ -1008,7 +1008,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
      }
  
      /**
-@@ -129,14 +157,20 @@ public final class PluginManager
+@@ -130,14 +158,20 @@ public final class PluginManager
       */
      public void unregisterCommands(Plugin plugin)
      {
@@ -1029,7 +1029,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
      private Command getCommandIfEnabled(String commandName, CommandSender sender)
      {
          String commandLower = commandName.toLowerCase( Locale.ROOT );
-@@ -149,6 +183,8 @@ public final class PluginManager
+@@ -150,6 +184,8 @@ public final class PluginManager
  
          return commandMap.get( commandLower );
      }
@@ -1038,7 +1038,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
  
      /**
       * Checks if the command is registered and can possibly be executed by the
-@@ -160,9 +196,25 @@ public final class PluginManager
+@@ -161,9 +197,25 @@ public final class PluginManager
       */
      public boolean isExecutableCommand(String commandName, CommandSender sender)
      {
@@ -1065,7 +1065,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
      public boolean dispatchCommand(CommandSender sender, String commandLine)
      {
          return dispatchCommand( sender, commandLine, null );
-@@ -181,6 +233,47 @@ public final class PluginManager
+@@ -182,6 +234,47 @@ public final class PluginManager
       */
      public boolean dispatchCommand(CommandSender sender, String commandLine, List<String> tabResults)
      {
@@ -1113,7 +1113,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
          String[] split = commandLine.split( " ", -1 );
          // Check for chat that only contains " "
          if ( split.length == 0 || split[0].isEmpty() )
-@@ -238,6 +331,7 @@ public final class PluginManager
+@@ -239,6 +332,7 @@ public final class PluginManager
          // Waterfall end
              }
          return true;
@@ -1121,7 +1121,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
      }
  
      // Waterfall start - Add method to tab-complete command names
-@@ -253,6 +347,9 @@ public final class PluginManager
+@@ -254,6 +348,9 @@ public final class PluginManager
       * @return The tab-complete suggestions
       */
      public List<String> tabCompleteCommand(CommandSender sender, String commandLine) {
@@ -1131,7 +1131,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
          List<String> suggestions = new java.util.ArrayList<>();
  
          if (commandLine.indexOf(' ') == -1) {
-@@ -272,9 +369,17 @@ public final class PluginManager
+@@ -273,9 +370,17 @@ public final class PluginManager
          }
  
          return suggestions;
@@ -1149,7 +1149,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
      /**
       * Returns the {@link Plugin} objects corresponding to all loaded plugins.
       *
-@@ -546,7 +651,8 @@ public final class PluginManager
+@@ -547,7 +652,8 @@ public final class PluginManager
       */
      public Collection<Map.Entry<String, Command>> getCommands()
      {
@@ -1159,7 +1159,7 @@ index ad096e6575ef1798346f191f41e1e9fec295d954..7ea5d8f345d768a7174e993a124b2733
      }
  
      boolean isTransitiveDepend(PluginDescription plugin, PluginDescription depend)
-@@ -640,4 +746,17 @@ public final class PluginManager
+@@ -641,4 +747,17 @@ public final class PluginManager
          return plugins.containsKey( plugin.getDescription().getName() );
      }
      // IvanCord end
@@ -1893,7 +1893,7 @@ index 0000000000000000000000000000000000000000..2305506d309c9c671eb0492a61c00cc6
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
-index 80a16f6559b473995ef47dd67f6b878499c0eae2..9703776598fe303691777b04fae49ea4772925af 100644
+index 05761bf51352a931c98804c4fe22715150c16669..29f509e12f434dc97807e82880d0f355e0fe0f10 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/Commands.java
 @@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
@@ -1916,7 +1916,7 @@ index 80a16f6559b473995ef47dd67f6b878499c0eae2..9703776598fe303691777b04fae49ea4
  import io.netty.buffer.ByteBuf;
  import java.util.ArrayDeque;
  import java.util.Collection;
-@@ -324,19 +330,34 @@ public class Commands extends DefinedPacket
+@@ -325,19 +331,34 @@ public class Commands extends DefinedPacket
              {
              }
          };
@@ -1956,16 +1956,16 @@ index 80a16f6559b473995ef47dd67f6b878499c0eae2..9703776598fe303691777b04fae49ea4
          };
          private static final ArgumentSerializer<Byte> BYTE = new ArgumentSerializer<Byte>()
          {
-@@ -352,7 +373,7 @@ public class Commands extends DefinedPacket
+@@ -353,7 +374,7 @@ public class Commands extends DefinedPacket
                  buf.writeByte( t );
              }
          };
--        private static final ArgumentSerializer<FloatArgumentType> FLOAT = new ArgumentSerializer<FloatArgumentType>()
-+        private static final ProperArgumentSerializer<FloatArgumentType> FLOAT = new ProperArgumentSerializer<FloatArgumentType>() // IvanCord
+-        private static final ArgumentSerializer<FloatArgumentType> FLOAT_RANGE = new ArgumentSerializer<FloatArgumentType>()
++        private static final ProperArgumentSerializer<FloatArgumentType> FLOAT_RANGE = new ProperArgumentSerializer<FloatArgumentType>() // IvanCord
          {
              @Override
              protected FloatArgumentType read(ByteBuf buf)
-@@ -380,8 +401,22 @@ public class Commands extends DefinedPacket
+@@ -381,8 +402,22 @@ public class Commands extends DefinedPacket
                      buf.writeFloat( t.getMaximum() );
                  }
              }
@@ -1984,12 +1984,12 @@ index 80a16f6559b473995ef47dd67f6b878499c0eae2..9703776598fe303691777b04fae49ea4
 +            }
 +            // IvanCord end
          };
--        private static final ArgumentSerializer<DoubleArgumentType> DOUBLE = new ArgumentSerializer<DoubleArgumentType>()
-+        private static final ProperArgumentSerializer<DoubleArgumentType> DOUBLE = new ProperArgumentSerializer<DoubleArgumentType>() // IvanCord
+-        private static final ArgumentSerializer<DoubleArgumentType> DOUBLE_RANGE = new ArgumentSerializer<DoubleArgumentType>()
++        private static final ProperArgumentSerializer<DoubleArgumentType> DOUBLE_RANGE = new ProperArgumentSerializer<DoubleArgumentType>() // IvanCord
          {
              @Override
              protected DoubleArgumentType read(ByteBuf buf)
-@@ -409,8 +444,22 @@ public class Commands extends DefinedPacket
+@@ -410,8 +445,22 @@ public class Commands extends DefinedPacket
                      buf.writeDouble( t.getMaximum() );
                  }
              }
@@ -2008,12 +2008,12 @@ index 80a16f6559b473995ef47dd67f6b878499c0eae2..9703776598fe303691777b04fae49ea4
 +            }
 +            // IvanCord end
          };
--        private static final ArgumentSerializer<IntegerArgumentType> INTEGER = new ArgumentSerializer<IntegerArgumentType>()
-+        private static final ProperArgumentSerializer<IntegerArgumentType> INTEGER = new ProperArgumentSerializer<IntegerArgumentType>() // IvanCord
+-        private static final ArgumentSerializer<IntegerArgumentType> INTEGER_RANGE = new ArgumentSerializer<IntegerArgumentType>()
++        private static final ProperArgumentSerializer<IntegerArgumentType> INTEGER_RANGE = new ProperArgumentSerializer<IntegerArgumentType>() // IvanCord
          {
              @Override
              protected IntegerArgumentType read(ByteBuf buf)
-@@ -438,8 +487,22 @@ public class Commands extends DefinedPacket
+@@ -439,6 +488,20 @@ public class Commands extends DefinedPacket
                      buf.writeInt( t.getMaximum() );
                  }
              }
@@ -2032,12 +2032,18 @@ index 80a16f6559b473995ef47dd67f6b878499c0eae2..9703776598fe303691777b04fae49ea4
 +            }
 +            // IvanCord end
          };
--        private static final ArgumentSerializer<LongArgumentType> LONG = new ArgumentSerializer<LongArgumentType>()
-+        private static final ProperArgumentSerializer<LongArgumentType> LONG = new ProperArgumentSerializer<LongArgumentType>() // IvanCord
+         private static final ArgumentSerializer<Integer> INTEGER = new ArgumentSerializer<Integer>()
+         {
+@@ -454,7 +517,7 @@ public class Commands extends DefinedPacket
+                 buf.writeInt( t );
+             }
+         };
+-        private static final ArgumentSerializer<LongArgumentType> LONG_RANGE = new ArgumentSerializer<LongArgumentType>()
++        private static final ProperArgumentSerializer<LongArgumentType> LONG_RANGE = new ProperArgumentSerializer<LongArgumentType>() // IvanCord
          {
              @Override
              protected LongArgumentType read(ByteBuf buf)
-@@ -467,6 +530,20 @@ public class Commands extends DefinedPacket
+@@ -482,6 +545,20 @@ public class Commands extends DefinedPacket
                      buf.writeLong( t.getMaximum() );
                  }
              }
@@ -2058,7 +2064,7 @@ index 80a16f6559b473995ef47dd67f6b878499c0eae2..9703776598fe303691777b04fae49ea4
          };
          private static final ProperArgumentSerializer<StringArgumentType> STRING = new ProperArgumentSerializer<StringArgumentType>()
          {
-@@ -520,19 +597,112 @@ public class Commands extends DefinedPacket
+@@ -535,19 +612,112 @@ public class Commands extends DefinedPacket
              }
          };
  
@@ -2152,14 +2158,14 @@ index 80a16f6559b473995ef47dd67f6b878499c0eae2..9703776598fe303691777b04fae49ea4
          {
              register( "brigadier:bool", VOID );
 +            PROPER_PROVIDERS.put( BoolArgumentType.class, BOOLEAN ); // IvanCord
-             register( "brigadier:float", FLOAT );
-+            PROPER_PROVIDERS.put( FloatArgumentType.class, FLOAT ); // IvanCord
-             register( "brigadier:double", DOUBLE );
-+            PROPER_PROVIDERS.put( DoubleArgumentType.class, DOUBLE ); // IvanCord
-             register( "brigadier:integer", INTEGER );
-+            PROPER_PROVIDERS.put( IntegerArgumentType.class, INTEGER ); // IvanCord
-             register( "brigadier:long", LONG );
-+            PROPER_PROVIDERS.put( LongArgumentType.class, LONG ); // IvanCord
+             register( "brigadier:float", FLOAT_RANGE );
++            PROPER_PROVIDERS.put( FloatArgumentType.class, FLOAT_RANGE ); // IvanCord
+             register( "brigadier:double", DOUBLE_RANGE );
++            PROPER_PROVIDERS.put( DoubleArgumentType.class, DOUBLE_RANGE ); // IvanCord
+             register( "brigadier:integer", INTEGER_RANGE );
++            PROPER_PROVIDERS.put( IntegerArgumentType.class, INTEGER_RANGE ); // IvanCord
+             register( "brigadier:long", LONG_RANGE );
++            PROPER_PROVIDERS.put( LongArgumentType.class, LONG_RANGE ); // IvanCord
  
              register( "brigadier:string", STRING );
              PROPER_PROVIDERS.put( StringArgumentType.class, STRING );
@@ -2171,7 +2177,7 @@ index 80a16f6559b473995ef47dd67f6b878499c0eae2..9703776598fe303691777b04fae49ea4
              register( "minecraft:block_pos", VOID );
              register( "minecraft:column_pos", VOID );
              register( "minecraft:vec3", VOID );
-@@ -542,7 +712,9 @@ public class Commands extends DefinedPacket
+@@ -557,7 +727,9 @@ public class Commands extends DefinedPacket
              register( "minecraft:item_stack", VOID );
              register( "minecraft:item_predicate", VOID );
              register( "minecraft:color", VOID );
@@ -2181,7 +2187,67 @@ index 80a16f6559b473995ef47dd67f6b878499c0eae2..9703776598fe303691777b04fae49ea4
              register( "minecraft:message", VOID );
              register( "minecraft:nbt_compound_tag", VOID ); // 1.14
              register( "minecraft:nbt_tag", VOID ); // 1.14
-@@ -788,15 +960,28 @@ public class Commands extends DefinedPacket
+@@ -597,7 +769,7 @@ public class Commands extends DefinedPacket
+                 get( "brigadier:long", LONG_RANGE ),
+                 get( "brigadier:string", STRING ),
+                 get( "minecraft:entity", BYTE ),
+-                get( "minecraft:game_profile", VOID ),
++                get( "minecraft:game_profile", GAME_PROFILE ), // IvanCord
+                 get( "minecraft:block_pos", VOID ),
+                 get( "minecraft:column_pos", VOID ),
+                 get( "minecraft:vec3", VOID ),
+@@ -606,8 +778,8 @@ public class Commands extends DefinedPacket
+                 get( "minecraft:block_predicate", VOID ),
+                 get( "minecraft:item_stack", VOID ),
+                 get( "minecraft:item_predicate", VOID ),
+-                get( "minecraft:color", VOID ),
+-                get( "minecraft:component", VOID ),
++                get( "minecraft:color", COLOR ), // IvanCord
++                get( "minecraft:component", COMPONENT ), // IvanCord
+                 get( "minecraft:message", VOID ),
+                 get( "minecraft:nbt_compound_tag", VOID ),
+                 get( "minecraft:nbt_tag", VOID ),
+@@ -649,7 +821,7 @@ public class Commands extends DefinedPacket
+                 get( "brigadier:long", LONG_RANGE ),
+                 get( "brigadier:string", STRING ),
+                 get( "minecraft:entity", BYTE ),
+-                get( "minecraft:game_profile", VOID ),
++                get( "minecraft:game_profile", GAME_PROFILE ), // IvanCord
+                 get( "minecraft:block_pos", VOID ),
+                 get( "minecraft:column_pos", VOID ),
+                 get( "minecraft:vec3", VOID ),
+@@ -658,8 +830,8 @@ public class Commands extends DefinedPacket
+                 get( "minecraft:block_predicate", VOID ),
+                 get( "minecraft:item_stack", VOID ),
+                 get( "minecraft:item_predicate", VOID ),
+-                get( "minecraft:color", VOID ),
+-                get( "minecraft:component", VOID ),
++                get( "minecraft:color", COLOR ), // IvanCord
++                get( "minecraft:component", COMPONENT ), // IvanCord
+                 get( "minecraft:message", VOID ),
+                 get( "minecraft:nbt_compound_tag", VOID ),
+                 get( "minecraft:nbt_tag", VOID ),
+@@ -701,7 +873,7 @@ public class Commands extends DefinedPacket
+                 get( "brigadier:long", LONG_RANGE ),
+                 get( "brigadier:string", STRING ),
+                 get( "minecraft:entity", BYTE ),
+-                get( "minecraft:game_profile", VOID ),
++                get( "minecraft:game_profile", GAME_PROFILE ), // IvanCord
+                 get( "minecraft:block_pos", VOID ),
+                 get( "minecraft:column_pos", VOID ),
+                 get( "minecraft:vec3", VOID ),
+@@ -710,8 +882,8 @@ public class Commands extends DefinedPacket
+                 get( "minecraft:block_predicate", VOID ),
+                 get( "minecraft:item_stack", VOID ),
+                 get( "minecraft:item_predicate", VOID ),
+-                get( "minecraft:color", VOID ),
+-                get( "minecraft:component", VOID ),
++                get( "minecraft:color", COLOR ), // IvanCord
++                get( "minecraft:component", COMPONENT ), // IvanCord
+                 get( "minecraft:message", VOID ),
+                 get( "minecraft:nbt_compound_tag", VOID ),
+                 get( "minecraft:nbt_tag", VOID ),
+@@ -853,15 +1025,28 @@ public class Commands extends DefinedPacket
      {
  
          public static final SuggestionProvider ASK_SERVER = new DummyProvider( "minecraft:ask_server" );
@@ -2210,7 +2276,7 @@ index 80a16f6559b473995ef47dd67f6b878499c0eae2..9703776598fe303691777b04fae49ea4
          }
  
          private static void registerDummy(String name)
-@@ -814,9 +999,20 @@ public class Commands extends DefinedPacket
+@@ -879,9 +1064,20 @@ public class Commands extends DefinedPacket
  
          private static String getKey(SuggestionProvider<DummyProvider> provider)
          {
@@ -2357,7 +2423,7 @@ index 352067e095309dbe7a4fb5dfcb2d60fa377e8e01..2be6c7ecb7dcb5db4a83a5a5d7a98fd2
      // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 28f3bd556c8a8439a97a7d7ae920d52ffd913ef1..e83fa08da12a9542fa1d21267275e53cc286a640 100644
+index bfa563e22e8c0616cb28bd3ed64602201c8b4e31..9a7a907499988c48e1c245ea8aa23e4d5ed5f556 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -6,12 +6,15 @@ import com.google.common.collect.Lists;

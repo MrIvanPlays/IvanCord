@@ -163,7 +163,7 @@ index 0c334afcfc11a9893dfcbce8671d928569384e21..5606ba665f170d1c92f7a38c52cbe625
      // Waterfall start
      public void handle(EntityEffect entityEffect) throws Exception
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index edb979c5a35ee292f011b481c18618df224a6e75..11411d5736a3ff76f2a69a3842ccf4c9bb524734 100644
+index 41151deb189db4b7fe7a378cc4370a3479f11a96..4b974a11d381110597baf8c23db189bc96ac66e9 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 @@ -37,6 +37,7 @@ import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
@@ -174,9 +174,9 @@ index edb979c5a35ee292f011b481c18618df224a6e75..11411d5736a3ff76f2a69a3842ccf4c9
  import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.protocol.packet.Respawn;
  import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
-@@ -480,6 +481,23 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_19_1, 0x0D ),
-                     map( ProtocolConstants.MINECRAFT_1_19_3, 0x0C )
+@@ -508,6 +509,23 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_19_3, 0x0C ),
+                     map( ProtocolConstants.MINECRAFT_1_19_4, 0x0D )
              );
 +            // IvanCord start - add player position
 +            TO_SERVER.registerPacket(
@@ -295,7 +295,7 @@ index 15f855e0acce54bf4eda48a725c40aa75a97d9ae..2241ca9b5320bb433744212c5e494d9f
      @Override
      public ProxiedPlayer.ChatMode getChatMode()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 7b72fa65b7bfedfe0bf554db29ee78e369b4c548..8a354c997e3d96fd40179449707859f61049e361 100644
+index 8fdbc2935d7ca850709d260c5fd0f858c825bd77..0d9e970114fd2ebf4d1140e5052c36a2a37f0311 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -822,6 +822,39 @@ public class DownstreamBridge extends PacketHandler

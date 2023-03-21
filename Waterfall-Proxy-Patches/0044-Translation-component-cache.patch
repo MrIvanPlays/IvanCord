@@ -330,10 +330,10 @@ index beba1fa7b51652ad2477666996a7a2eab0263c40..0363c2ff77362ee7d4463adf2c776d90
          {
              sender.sendMessage( new ComponentBuilder()
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 3be3417372e3a605c8c396f8fff55cfd610f81a1..a9db428054ced3c75d7dc318613f5f029623e2e0 100644
+index 9a7a907499988c48e1c245ea8aa23e4d5ed5f556..22471bf34e8abf979d9f98432c757730a0e82c99 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -102,7 +102,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -101,7 +101,7 @@ public class DownstreamBridge extends PacketHandler
  
          // Waterfall start
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
@@ -342,7 +342,7 @@ index 3be3417372e3a605c8c396f8fff55cfd610f81a1..a9db428054ced3c75d7dc318613f5f02
          if ( event.isCancelled() && event.getCancelServer() != null )
          {
              server.setObsolete( true );
-@@ -129,7 +129,7 @@ public class DownstreamBridge extends PacketHandler
+@@ -128,7 +128,7 @@ public class DownstreamBridge extends PacketHandler
          {
              // Waterfall start
              ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
@@ -352,7 +352,7 @@ index 3be3417372e3a605c8c396f8fff55cfd610f81a1..a9db428054ced3c75d7dc318613f5f02
              {
                  server.setObsolete( true );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index da040794c88f2389beb3401d9768cfc529430fec..84deae3ea9f3ce59036436ac0a13805f3c12594e 100644
+index 8135d8404818fd63942cebd743c78cd4a44c0e3b..ef303d112f820adcc3d288ca526417f0a5fa55ac 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -426,30 +426,30 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -453,16 +453,16 @@ index da040794c88f2389beb3401d9768cfc529430fec..84deae3ea9f3ce59036436ac0a13805f
              if ( oldName != null )
              {
                  // TODO See #1218
--                oldName.disconnect( bungee.getTranslation( "already_connected_proxy" ) );
-+                oldName.disconnect( bungee.getTranslationComponent( "already_connected_proxy" ) ); // IvanCord
+-                disconnect( bungee.getTranslation( "already_connected_proxy" ) );
++                disconnect( bungee.getTranslationComponent( "already_connected_proxy" ) ); // IvanCord
              }
              // And then also for their old UUID
              ProxiedPlayer oldID = bungee.getPlayer( getUniqueId() );
              if ( oldID != null )
              {
                  // TODO See #1218
--                oldID.disconnect( bungee.getTranslation( "already_connected_proxy" ) );
-+                oldID.disconnect( bungee.getTranslationComponent( "already_connected_proxy" ) ); // IvanCord
+-                disconnect( bungee.getTranslation( "already_connected_proxy" ) );
++                disconnect( bungee.getTranslationComponent( "already_connected_proxy" ) ); // IvanCord
              }
          } else
          {

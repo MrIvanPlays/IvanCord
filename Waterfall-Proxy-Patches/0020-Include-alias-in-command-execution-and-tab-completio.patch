@@ -38,10 +38,10 @@ index b45663279d13bfc903433afaef38954ca6952be7..b1e818a0c3b9fb2f8cf479eb66142df9
      /**
       * Check if this command can be executed by the given sender.
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 6a513a3378af0e8056b453fad99659b02e644043..ad096e6575ef1798346f191f41e1e9fec295d954 100644
+index 80050649bef0fe40d16c7bbcfe9892fea0a7c109..17f70c7c3aa7ea200c6d8346d1df69df2b9f5b63 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -214,7 +214,7 @@ public final class PluginManager
+@@ -215,7 +215,7 @@ public final class PluginManager
                          sender.getName(), commandLine
                      } );
                  }
@@ -50,7 +50,7 @@ index 6a513a3378af0e8056b453fad99659b02e644043..ad096e6575ef1798346f191f41e1e9fe
          // Waterfall start - split command & tab complete exception handlers for exception event
          } catch ( Exception ex ) {
              sender.sendMessage( ChatColor.RED + "An internal error occurred whilst executing this command, please check the console log for details." );
-@@ -225,7 +225,7 @@ public final class PluginManager
+@@ -226,7 +226,7 @@ public final class PluginManager
              } else if ( commandLine.contains( " " ) && command instanceof TabExecutor )
              {
          try { // Waterfall - split command & tab complete exception handlers for exception event

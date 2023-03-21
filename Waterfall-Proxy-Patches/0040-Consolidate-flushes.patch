@@ -7,7 +7,7 @@ Leads to reduced syscalls and higher performance.
 Based on Netty FlushConsolidationHandler
 
 diff --git a/pom.xml b/pom.xml
-index c40b85fa4b8043d4fd8f2ea59e5dd5ace8c33a70..06e0ee5a2fa7327ed1bbeaad58748449533645b6 100644
+index a25c57a5438702047758c8bd5fc26b268594a247..c03d02bccf480e76060eeb938c87b0f7574b9acf 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -20,6 +20,13 @@

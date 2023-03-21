@@ -103,19 +103,19 @@ index 849ba1cf93a234f71b363073904efa52ca6d7ce5..d4d7323a084ccae0444c428a266ead50
  {
  
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 2357f38012a483622c5e1e2d3990a9cf1639ef65..edb979c5a35ee292f011b481c18618df224a6e75 100644
+index 8bf14d561362599cf77593e25fee7b35a07cfd0a..41151deb189db4b7fe7a378cc4370a3479f11a96 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -140,6 +140,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_17, 0x0D ),
-                     map( ProtocolConstants.MINECRAFT_1_19, 0x0A )
+@@ -144,6 +144,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_19, 0x0A ),
+                     map( ProtocolConstants.MINECRAFT_1_19_4, 0xB )
              );
 +            // IvanCord start - stop this from registering
 +            /*
              // Waterfall start
              TO_CLIENT.registerPacket(
                      EntityEffect.class,
-@@ -154,6 +156,7 @@ public enum Protocol
+@@ -158,6 +160,7 @@ public enum Protocol
                      map(ProtocolConstants.MINECRAFT_1_9, -1)
              );
              // Waterfall end
@@ -123,18 +123,18 @@ index 2357f38012a483622c5e1e2d3990a9cf1639ef65..edb979c5a35ee292f011b481c18618df
              TO_CLIENT.registerPacket(
                      PlayerListItem.class, // PlayerInfo
                      PlayerListItem::new,
-@@ -183,6 +186,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_19, 0x0E ),
-                     map( ProtocolConstants.MINECRAFT_1_19_3, 0x0D )
+@@ -188,6 +191,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_19_3, 0x0D ),
+                     map( ProtocolConstants.MINECRAFT_1_19_4, 0xF )
              );
 +            // IvanCord start - remove these from handling
 +            /*
              TO_CLIENT.registerPacket(
                      ScoreboardObjective.class,
                      ScoreboardObjective::new,
-@@ -239,6 +244,8 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_19_1, 0x58 ),
-                     map( ProtocolConstants.MINECRAFT_1_19_3, 0x56 )
+@@ -248,6 +253,8 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_19_3, 0x56 ),
+                     map( ProtocolConstants.MINECRAFT_1_19_4, 0x5A )
              );
 +             */
 +            // IvanCord end
@@ -376,7 +376,7 @@ index 052829bff45f992a0a9246ca419234e57ad2a405..15f855e0acce54bf4eda48a725c40aa7
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 2c8add8b11d71add0bcba073e71ec7af905b91e2..7b72fa65b7bfedfe0bf554db29ee78e369b4c548 100644
+index b5681063f0ed4444a6bb522d025b4d412bad667b..8fdbc2935d7ca850709d260c5fd0f858c825bd77 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -150,11 +150,13 @@ public class DownstreamBridge extends PacketHandler

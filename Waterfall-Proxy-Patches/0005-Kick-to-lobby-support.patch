@@ -51,7 +51,7 @@ index 06d74844fe24fb7bdc33dc81c8ec28280e7a1c12..238bc3c1f43aa5bd6de34f4355ede2de
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index 89b98b3604685e9f1ebc7a16b9bb81a325e2a1bd..2c8add8b11d71add0bcba073e71ec7af905b91e2 100644
+index e01f65acec3390ee6ad9307f488c57eea6ccc57b..b5681063f0ed4444a6bb522d025b4d412bad667b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -29,6 +29,7 @@ import net.md_5.bungee.ServerConnection.KeepAliveData;

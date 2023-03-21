@@ -34,10 +34,10 @@ index 68157dd4b994ec15c7cbb70834821c7929117104..11b3f05ed0d06b7afca7287da6316c02
      private final ProxyServer proxy;
      private final PluginDescription desc;
 diff --git a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-index 7ea5d8f345d768a7174e993a124b27339a3f17c0..8b958d760d28bd03496071889d73ba70b6ed472b 100644
+index 5021d5459bdc000c2e0f69e8717a22b8c9600505..30cd389b5cb36109d3095f6d1fccf13d195747d4 100644
 --- a/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
 +++ b/api/src/main/java/net/md_5/bungee/api/plugin/PluginManager.java
-@@ -75,11 +75,21 @@ public final class PluginManager
+@@ -76,11 +76,21 @@ public final class PluginManager
      private Map<String, PluginDescription> toLoad = new HashMap<>();
      //private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create(); // IvanCord
      private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
@@ -59,8 +59,8 @@ index 7ea5d8f345d768a7174e993a124b27339a3f17c0..8b958d760d28bd03496071889d73ba70
 +        // IvanCord end
  
          // Ignore unknown entries in the plugin descriptions
-         Constructor yamlConstructor = new Constructor();
-@@ -615,7 +625,8 @@ public final class PluginManager
+         Constructor yamlConstructor = new Constructor( new LoaderOptions() );
+@@ -616,7 +626,8 @@ public final class PluginManager
                      "Listener %s has registered using deprecated subscribe annotation! Please update to @EventHandler.", listener );
          }
           */

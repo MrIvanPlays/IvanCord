@@ -5,7 +5,7 @@ Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 5d21fd991619d1fd088a6a8d59d3cee3462ad6c3..d2179669d5db56ff4ffecf7c0a491972ee953050 100644
+index 6774bed3a30becab0797892bcacd5dfc0912d5dd..aad63cabb6aed3f6548a45ed5e0cfe1d2de83e47 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,40 @@
@@ -64,7 +64,7 @@ index 5d21fd991619d1fd088a6a8d59d3cee3462ad6c3..d2179669d5db56ff4ffecf7c0a491972
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 688f1b9957fb92946a25b3d4d1a78bd9a59eae3c..e7c42ab910c758b84de46425485f4ee9bd4708a4 100644
+index 0c510f9fc7696e8a55154fc63b58486a8c499874..bfe511c57537a22c10bac8bca0a2a63a6af11233 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,17 @@
@@ -286,7 +286,7 @@ index fb0916983e49e85466cecf72d63072695743a20c..c2b774e155b82bc2903b7eef0d2d772b
  
      <dependencies>
 diff --git a/native/pom.xml b/native/pom.xml
-index caa4c4cb50a4fbb2c6c12baa38a2430eb0852b4a..4a15f4301cf2ace03f2c4d6f7e2564e4630960b2 100644
+index e137dfcc7364ee9aecf5cfaed335b18864b38f92..66427c9af0e4e4492090610a0ad1c88ac0a14ad5 100644
 --- a/native/pom.xml
 +++ b/native/pom.xml
 @@ -4,19 +4,24 @@
@@ -322,7 +322,7 @@ index caa4c4cb50a4fbb2c6c12baa38a2430eb0852b4a..4a15f4301cf2ace03f2c4d6f7e2564e4
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 2bf979de060536e0f81e5888c37b9f6ce9d3151d..9fcebdda17dba23b2a7717a851d6fd546199b7d9 100644
+index 7ff4a01324c5e8c5a89b46f13f50312bd3e6aa1e..7a1ca5bd87954038bc11d843c03bb208c1c69143 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -434,8 +434,8 @@ index 2bf979de060536e0f81e5888c37b9f6ce9d3151d..9fcebdda17dba23b2a7717a851d6fd54
 +
      <properties>
          <build.number>unknown</build.number>
-         <lombok.version>1.18.22</lombok.version>
-@@ -356,7 +346,7 @@
+         <lombok.version>1.18.26</lombok.version>
+@@ -366,7 +356,7 @@
                      <plugin>
                          <groupId>org.projectlombok</groupId>
                          <artifactId>lombok-maven-plugin</artifactId>
@@ -444,7 +444,7 @@ index 2bf979de060536e0f81e5888c37b9f6ce9d3151d..9fcebdda17dba23b2a7717a851d6fd54
                          <executions>
                              <execution>
                                  <id>delombok</id>
-@@ -374,9 +364,10 @@
+@@ -384,9 +374,10 @@
                      <plugin>
                          <groupId>org.apache.maven.plugins</groupId>
                          <artifactId>maven-javadoc-plugin</artifactId>
@@ -457,7 +457,7 @@ index 2bf979de060536e0f81e5888c37b9f6ce9d3151d..9fcebdda17dba23b2a7717a851d6fd54
                          <executions>
                              <execution>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index 93ae5952a2c52eaef032c847785159c14506c0d0..64be26fac7635701e8cefd0ce76a34f81f94e7a2 100644
+index 221469b9a8fa7650b8336a3c6c15a9097db5fd5f..47b67ae06aac4d7165be433adf0e537c07ccb615 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -4,19 +4,17 @@
@@ -497,7 +497,7 @@ index 93ae5952a2c52eaef032c847785159c14506c0d0..64be26fac7635701e8cefd0ce76a34f8
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 1036a2e773237ff0c9ee564318bfa642009e4210..4cec3b3caa9f92636bf7083084e452e140517031 100644
+index d3801c9b575ba3376a3e80b17e0a0b00d469956a..da7eb00143d6310a3e704f4d9ad4bb2a8a734c67 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,16 @@
@@ -523,7 +523,7 @@ index 1036a2e773237ff0c9ee564318bfa642009e4210..4cec3b3caa9f92636bf7083084e452e1
      <description>Proxy component of the Elastic Portal Suite</description>
  
      <properties>
-@@ -71,32 +69,32 @@
+@@ -64,32 +62,32 @@
              <scope>compile</scope>
          </dependency>
          <dependency>
@@ -653,7 +653,7 @@ index 0dd69778bd9132a26267a9200697ec721bc3b178..30672e8c39b5590a9ba356a9d66bc52f
              SocketAddress address = Util.getAddr( addr );
              ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
 diff --git a/query/pom.xml b/query/pom.xml
-index 72eb14e2939a1accfa721d7ea47abb5a599b4125..0af0d045aca95946b9dc455496bba2e7e0a9c3a8 100644
+index 81af545700ffb05e27a35bd6fa19b318a0f448d1..c54f025b502dc7f003567f626180830c83088c66 100644
 --- a/query/pom.xml
 +++ b/query/pom.xml
 @@ -4,19 +4,24 @@
@@ -688,7 +688,7 @@ index 72eb14e2939a1accfa721d7ea47abb5a599b4125..0af0d045aca95946b9dc455496bba2e7
  
      <dependencies>
          <dependency>
-@@ -26,8 +31,8 @@
+@@ -25,8 +30,8 @@
              <scope>compile</scope>
          </dependency>
          <dependency>
