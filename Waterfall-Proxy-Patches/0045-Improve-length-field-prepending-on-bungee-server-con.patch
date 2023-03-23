@@ -17,18 +17,20 @@ Netty's LengthFieldPrepender also uses an extra buffer for the length
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldExtraBufPrepender.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldExtraBufPrepender.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..0829b88f208e06fa046c5eb8026d9716a15efe63
+index 0000000000000000000000000000000000000000..5a827bf89dc79cb8468052c2fe56e6767b3a0fb8
 --- /dev/null
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldExtraBufPrepender.java
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,24 @@
 +// IvanCord start
 +package net.md_5.bungee.protocol;
 +
 +import io.netty.buffer.ByteBuf;
++import io.netty.channel.ChannelHandler;
 +import io.netty.channel.ChannelHandlerContext;
 +import io.netty.handler.codec.MessageToMessageEncoder;
 +import java.util.List;
 +
++@ChannelHandler.Sharable
 +public class Varint21LengthFieldExtraBufPrepender extends MessageToMessageEncoder<ByteBuf>
 +{
 +

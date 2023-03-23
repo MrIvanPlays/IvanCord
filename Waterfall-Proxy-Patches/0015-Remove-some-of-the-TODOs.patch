@@ -87,7 +87,7 @@ index 07655f95f18d6bc988103c2b294b2ca46ddc0cb7..ede114af8586967befb7d97c9c9252fa
          user.getPendingConnects().remove( target );
          user.setServerJoinQueue( null );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 19e19d24ae7ebdcce36a6186a991bb2d38ac361a..5872854f57b4897046a09eb0d763cdbfa43f481d 100644
+index 1f801a65c36886f981386c6918e825cf2acb9831..d1ee4b65711f7e4a79115ebb932ef0042852c212 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -77,11 +77,13 @@ public class UpstreamBridge extends PacketHandler

@@ -272,14 +272,14 @@ index 18422669106553a2e6555c47ef06a8eaf891a989..66747e0570c07e392c6133fe08b8f150
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index d72208e751c65c2812b5bf204095a3c23aff4681..895e47dea9d00bcd8a5067ba12440cb33724f3cf 100644
+index d72208e751c65c2812b5bf204095a3c23aff4681..a48661b147d561d7f114f3ad49452b010c03e5e9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -54,6 +54,7 @@ public class UpstreamBridge extends PacketHandler
          BungeeCord.getInstance().addConnection( con );
          con.getTabListHandler().onConnect();
          con.unsafe().sendPacket( BungeeCord.getInstance().registerChannels( con.getPendingConnection().getVersion() ) );
-+        con.unsafe().sendPacket( new net.md_5.bungee.protocol.packet.Title( net.md_5.bungee.protocol.packet.Title.Action.RESET ) ); // IvanCord - author Outfluencer <48880402+Outfluencer@users.noreply.github.com>
++        con.sendTitle( bungee.createTitle().reset() ); // IvanCord
      }
  
      @Override

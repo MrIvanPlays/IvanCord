@@ -2658,7 +2658,7 @@ index bfa563e22e8c0616cb28bd3ed64602201c8b4e31..9a7a907499988c48e1c245ea8aa23e4d
      @Override
      public void handle(net.md_5.bungee.protocol.packet.PlayerPosition pac)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 656f9ff6765371a8729627fd1d6acdb087a0e4e1..f3f5f3c9e968fa289eae85dad9d6b8f8c88898a9 100644
+index 8cdde7b0e138d220ab1cd71bcd84a4641f98e43a..830aef41a11113c3709f5a4a075c07f46d130a3f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -246,6 +246,95 @@ public class UpstreamBridge extends PacketHandler

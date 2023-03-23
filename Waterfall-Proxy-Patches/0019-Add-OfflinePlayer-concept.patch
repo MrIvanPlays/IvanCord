@@ -898,7 +898,7 @@ index 9f4d1f8588dda2b5bed5361b519995caee770f10..b0df12722022fe28ae46d8f39f6faf48
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 5872854f57b4897046a09eb0d763cdbfa43f481d..6b1728ee845680d1229aec9e36c2768c1a064e88 100644
+index d1ee4b65711f7e4a79115ebb932ef0042852c212..a46df9a81c55cc1ecbcc822194ca2383f55c4559 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -71,6 +71,9 @@ public class UpstreamBridge extends PacketHandler
