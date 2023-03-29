@@ -1,0 +1,196 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Janmm14 <gitconfig1@janmm14.de>
+Date: Wed, 29 Mar 2023 10:14:20 +0300
+Subject: [PATCH] Speed up writing of Varint21
+
+Benchmarks indicate this is 20-50% faster (higher when writing longer varints).
+
+With just being a few nanoseconds per operation this is likely just a small
+improvement and not a noticeable difference overall. As we rarely have to
+touch that part of the code, I think it is okay to have this optimized,
+unrolled loop and condensed write calls here.
+
+In further benchmarks I made there was no significant difference leaving out
+the 0x7F mask for the uppermost bit, so I added it to be similar to the code
+in astei's blog post.
+
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+index 60553e19912a2fb878d219a28cb67e72e904aa7f..c60f0f354e073403a92d1bf8ac5800665ca4040c 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/DefinedPacket.java
+@@ -183,8 +183,9 @@ public abstract class DefinedPacket
+ 
+     public static void writeVarInt(int value, ByteBuf output)
+     {
++        /* // IvanCord start - optimise
+         int part;
+-        while ( true )
++        while ( true ) // diff on change
+         {
+             part = value & 0x7F;
+ 
+@@ -201,7 +202,53 @@ public abstract class DefinedPacket
+                 break;
+             }
+         }
++         */
++        if ( ( value & 0xFFFFFF80 ) == 0 )
++        {
++            output.writeByte( value );
++        } else if ( ( value & 0xFFFFC000 ) == 0 )
++        {
++            output.writeShort( ( value & 0x7F | 0x80 ) << 8 | ( value >>> 7 & 0x7F ) );
++        } else if ( ( value & 0xFFE00000 ) == 0 )
++        {
++            output.writeMedium( ( value & 0x7F | 0x80 ) << 16 | ( value >>> 7 & 0x7F | 0x80 ) << 8 | ( value >>> 14 & 0x7F ) );
++        } else if ( ( value & 0xF0000000 ) == 0 )
++        {
++            output.writeInt( ( value & 0x7F | 0x80 ) << 24 | ( value >>> 7 & 0x7F | 0x80 ) << 16 | ( value >>> 14 & 0x7F | 0x80 ) << 8 | ( value >>> 21 & 0x7F ) );
++        } else
++        {
++            output.writeInt( ( value & 0x7F | 0x80 ) << 24 | ( value >>> 7 & 0x7F | 0x80 ) << 16 | ( value >>> 14 & 0x7F | 0x80 ) << 8 | ( value >>> 21 & 0x7F | 0x80 ) );
++            output.writeByte( value >>> 28 );
++        }
++        // IvanCord end
++    }
++
++    // IvanCord start - writeVarInt but with length
++    public static void writeVarInt(int value, ByteBuf output, int len)
++    {
++        switch ( len )
++        {
++            case 1:
++                output.writeByte( value );
++                break;
++            case 2:
++                output.writeShort( ( value & 0x7F | 0x80 ) << 8 | ( value >>> 7 & 0x7F ) );
++                break;
++            case 3:
++                output.writeMedium( ( value & 0x7F | 0x80 ) << 16 | ( value >>> 7 & 0x7F | 0x80 ) << 8 | ( value >>> 14 & 0x7F ) );
++                break;
++            case 4:
++                output.writeInt( ( value & 0x7F | 0x80 ) << 24 | ( value >>> 7 & 0x7F | 0x80 ) << 16 | ( value >>> 14 & 0x7F | 0x80 ) << 8 | ( value >>> 21 & 0x7F ) );
++                break;
++            case 5:
++                output.writeInt( ( value & 0x7F | 0x80 ) << 24 | ( value >>> 7 & 0x7F | 0x80 ) << 16 | ( value >>> 14 & 0x7F | 0x80 ) << 8 | ( value >>> 21 & 0x7F | 0x80 ) );
++                output.writeByte( value >>> 28 );
++                break;
++            default:
++                throw new IllegalArgumentException( "Invalid varint len: " + len );
++        }
+     }
++    // IvanCord end
+ 
+     public static int readVarShort(ByteBuf buf)
+     {
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldExtraBufPrepender.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldExtraBufPrepender.java
+index f5ba162aa1d52531b8bc963fdd229dddbc15f82d..2d9bda6657c4f2c678967b0cba81b6bacc3fa2d8 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldExtraBufPrepender.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldExtraBufPrepender.java
+@@ -17,8 +17,11 @@ public class Varint21LengthFieldExtraBufPrepender extends MessageToMessageEncode
+     protected void encode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception
+     {
+         int bodyLen = msg.readableBytes();
+-        ByteBuf lenBuf = ctx.alloc().ioBuffer( Varint21LengthFieldPrepender.varintSize( bodyLen ) );
+-        DefinedPacket.writeVarInt( bodyLen, lenBuf );
++        // IvanCord start
++        int headerLen = Varint21LengthFieldPrepender.varintSize( bodyLen );
++        ByteBuf lenBuf = ctx.alloc().ioBuffer( headerLen );
++        DefinedPacket.writeVarInt( bodyLen, lenBuf, headerLen );
++        // IvanCord end
+         out.add( lenBuf );
+         out.add( msg.retain() );
+     }
+diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
+index 2bf03e0a7302266697e818677d67fe6fb80e0733..0346bc8f800ed5ce0906bfbc7b78579839381d21 100644
+--- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
++++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
+@@ -29,7 +29,7 @@ public class Varint21LengthFieldPrepender extends MessageToByteEncoder<Object> /
+         int headerLen = varintSize( bodyLen );
+         out.ensureWritable( headerLen + bodyLen );
+ 
+-        DefinedPacket.writeVarInt( bodyLen, out );
++        DefinedPacket.writeVarInt( bodyLen, out, headerLen ); // IvanCord
+         out.writeBytes( msg );
+         // IvanCord start
+         if ( isPacketWrapper )
+diff --git a/protocol/src/test/java/net/md_5/bungee/protocol/VarintWriteTest.java b/protocol/src/test/java/net/md_5/bungee/protocol/VarintWriteTest.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..0808abcd254d35da70e0d9fceaa76d48743e2fd1
+--- /dev/null
++++ b/protocol/src/test/java/net/md_5/bungee/protocol/VarintWriteTest.java
+@@ -0,0 +1,74 @@
++// IvanCord start
++package net.md_5.bungee.protocol;
++
++import io.netty.buffer.ByteBuf;
++import io.netty.buffer.Unpooled;
++import java.util.Random;
++import org.junit.Assert;
++import org.junit.Test;
++
++public class VarintWriteTest
++{
++
++    private final int[] ints = new Random( 8132264708911581L ).ints( 4096 ).toArray();
++
++    private static void originalVarintWrite(int value, ByteBuf output)
++    {
++        int part;
++        while ( true )
++        {
++            part = value & 0x7F;
++
++            value >>>= 7;
++            if ( value != 0 )
++            {
++                part |= 0x80;
++            }
++
++            output.writeByte( part );
++
++            if ( value == 0 )
++            {
++                break;
++            }
++        }
++    }
++
++    @Test
++    public void testWriteVarint()
++    {
++        for ( int i : ints )
++        {
++            ByteBuf expected = Unpooled.buffer( 5 );
++            originalVarintWrite( i, expected );
++
++            ByteBuf actual = Unpooled.buffer( 5 );
++            DefinedPacket.writeVarInt( i, actual );
++
++            Assert.assertArrayEquals( "Number " + i, expected.array(), actual.array() );
++
++            expected.release();
++            actual.release();
++        }
++    }
++
++    @Test
++    public void testWriteVarintWithLen()
++    {
++        for ( int i : ints )
++        {
++            ByteBuf expected = Unpooled.buffer( 5 );
++            originalVarintWrite( i, expected );
++
++            ByteBuf actual = Unpooled.buffer( 5 );
++            DefinedPacket.writeVarInt( i, actual, Varint21LengthFieldPrepender.varintSize( i ) );
++
++            Assert.assertArrayEquals( "Number " + i, expected.array(), actual.array() );
++
++            expected.release();
++            actual.release();
++        }
++    }
++
++}
++// IvanCord end
