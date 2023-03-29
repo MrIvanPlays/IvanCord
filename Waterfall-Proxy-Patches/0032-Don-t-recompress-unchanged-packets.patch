@@ -135,12 +135,12 @@ index 8eba797b5454ddb5d313dadfbc6d368771189a81..15de569fadca626721145a174e8c7a2d
          }
      }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
-index d4c3df44a79d6bccdf05b92ecaa8baffc863fbd4..71b5abc429630d9a03f7af3e08809f4847300202 100644
+index 9c924660d180aa52efd0a5da5d888359a35ca05a..2bf03e0a7302266697e818677d67fe6fb80e0733 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21LengthFieldPrepender.java
-@@ -6,18 +6,34 @@ import io.netty.channel.ChannelHandlerContext;
- import io.netty.handler.codec.MessageToByteEncoder;
- 
+@@ -9,18 +9,34 @@ import io.netty.handler.codec.MessageToByteEncoder;
+  * Prepend length of the message as a Varint21 by writing length and data to a new buffer
+  */
  @ChannelHandler.Sharable
 -public class Varint21LengthFieldPrepender extends MessageToByteEncoder<ByteBuf>
 +public class Varint21LengthFieldPrepender extends MessageToByteEncoder<Object> // IvanCord
@@ -174,7 +174,7 @@ index d4c3df44a79d6bccdf05b92ecaa8baffc863fbd4..71b5abc429630d9a03f7af3e08809f48
 +        // IvanCord end
      }
  
-     private static int varintSize(int paramInt)
+     static int varintSize(int paramInt)
 diff --git a/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java b/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java
 index d07cf46274f12b89bfc17b0cf46776009c4b7406..677474876145571ffba932331545124cf43447c0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/compress/PacketCompressor.java

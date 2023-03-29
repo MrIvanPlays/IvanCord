@@ -102,7 +102,7 @@ index 8c91732f0701029dab1408f5b884e91cdfa8fd79..0c379f4c32c799d2ea559c9d9dca63d2
  
      private int setupTFO(int incoming)
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 448c6caa4bc55f69805bc9664e942855caaff0f1..fad67ed9bfc38e5deb29e6da428f32f004b484b8 100644
+index eff179733441c035133643704328be0270f5bd43..7b33b6f342ad2098b1cc8a868abe0dcc0d43b6f9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -41,6 +41,13 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
@@ -141,7 +141,7 @@ index 448c6caa4bc55f69805bc9664e942855caaff0f1..fad67ed9bfc38e5deb29e6da428f32f0
  
      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 7e593e2983f49e6f39a2a1b2ed5a2d2199049ce5..0d3d49e0dbc33f29caf4f9b004102d81bda02b8f 100644
+index d8a96e52c7da233f1fec3ad80a0e0a307b731154..9827ecd73f46a1a42cdd5e3080b20aaa77dc503c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -366,6 +366,19 @@ public final class UserConnection implements ProxiedPlayer

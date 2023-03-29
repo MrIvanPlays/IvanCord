@@ -438,10 +438,10 @@ index 487c1db411e8f9ff1feb20f4ced03ecdef7c53ec..2ae26de622aebd3dcd9ff11468f41cf1
      public void setForge(boolean forge)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 47ea350a4904ba8816e77a0b01f806bdaa024ecf..c4c8c50456ebcd51cb9503d04be7f8550564ca20 100644
+index 0c55b3b50e7350dc6fad07968ade3d6d9b82494f..7c3ee3290a647583af8090366400bccff63882bd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -131,6 +131,8 @@ public class PipelineUtils
+@@ -136,6 +136,8 @@ public class PipelineUtils
      public static final String FRAME_PREPENDER = "frame-prepender";
      public static final String LEGACY_DECODER = "legacy-decoder";
      public static final String LEGACY_KICKER = "legacy-kick";

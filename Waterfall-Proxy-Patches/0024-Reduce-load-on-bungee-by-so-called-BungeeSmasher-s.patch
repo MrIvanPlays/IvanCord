@@ -151,7 +151,7 @@ index 237955ab5262adc730c1e976659809d4aec1a338..a8cb2aa76de78bf35837b0b3cbcaaf10
  
      public OverflowPacketException(String message)
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-index c0d371426a16565e735015b1f679278e0360ed1c..f33df1f37bda8327f12a55329b65f67d783c653c 100644
+index 3a802ca425185feede16c6a3ffb7c4200e8ea67f..f31dd0d0242bba8150a48d03bec31130c1f3a1f2 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 @@ -60,6 +60,9 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
@@ -185,7 +185,7 @@ index da7eb00143d6310a3e704f4d9ad4bb2a8a734c67..5fd7e2460747f0aeb0bfbbb8fb28055a
  
      <!-- Waterfall start - copy license files into jar -->
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index b0df12722022fe28ae46d8f39f6faf4840922bd0..352067e095309dbe7a4fb5dfcb2d60fa377e8e01 100644
+index a948362bf673d82eaff19c9b5a53f4515df76ff9..a461b1f04de6e4a7b0a7fb6ff314da94fef17f2d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -421,7 +421,7 @@ public class BungeeCord extends ProxyServer
@@ -207,7 +207,7 @@ index b0df12722022fe28ae46d8f39f6faf4840922bd0..352067e095309dbe7a4fb5dfcb2d60fa
          }
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 1ea654f18260c90143ff99b9273aa8a5fd965745..448c6caa4bc55f69805bc9664e942855caaff0f1 100644
+index 634dfca778a3d6e104031f4b7fdbfbd2d9714ca6..eff179733441c035133643704328be0270f5bd43 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
 @@ -183,7 +183,7 @@ public class BungeeServerInfo implements ServerInfo
@@ -217,7 +217,7 @@ index 1ea654f18260c90143ff99b9273aa8a5fd965745..448c6caa4bc55f69805bc9664e942855
 -                .channel( PipelineUtils.getChannel( socketAddress ) )
 +                .channelFactory( PipelineUtils.getChannelFactory( socketAddress ) ) // IvanCord
                  .group( BungeeCord.getInstance().workerEventLoopGroup )
-                 .handler( PipelineUtils.BASE )
+                 .handler( PipelineUtils.BASE_SERVERSIDE )
                  .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/ConnectionThrottle.java b/proxy/src/main/java/net/md_5/bungee/ConnectionThrottle.java
 index 35d533252b7009bd5f4c14b265cea0bc05f11b91..25c321a1bc62b969839cc0a2462fbbf46c77f5ce 100644
@@ -233,7 +233,7 @@ index 35d533252b7009bd5f4c14b265cea0bc05f11b91..25c321a1bc62b969839cc0a2462fbbf4
                  {
                      @Override
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index eabce031182702bd58cd58b80ea5c454787a7e03..30ce46d97f6aae6f650bfcbf621bf61bcb529fd5 100644
+index 0f60af267f2308ecb523a969c698b04c28f6cd2a..d89e9bebb9c30d6bbab443226aafbdc5e1a6bf08 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -412,7 +412,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -412,10 +412,10 @@ index 29cf4b4fc6f954c16bf41a7818bc1ae67b0cbcdd..3470aad02d79a5666e9a158036156c7a
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index c23c1106b51134a4bad5ad589aa28990b5182cfe..8afe70bc0f893f61de2e9a856aa4d505074fe3b2 100644
+index bb429f899c631ac8cf272802dafe0ddca0940740..f651a2444923e38af8a599659b6b349d0210f397 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -59,14 +59,14 @@ public class PipelineUtils
+@@ -62,14 +62,14 @@ public class PipelineUtils
  
              if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
              {
@@ -432,7 +432,7 @@ index c23c1106b51134a4bad5ad589aa28990b5182cfe..8afe70bc0f893f61de2e9a856aa4d505
                  return;
              }
  
-@@ -120,6 +120,11 @@ public class PipelineUtils
+@@ -125,6 +125,11 @@ public class PipelineUtils
      public static final String FRAME_PREPENDER = "frame-prepender";
      public static final String LEGACY_DECODER = "legacy-decoder";
      public static final String LEGACY_KICKER = "legacy-kick";
@@ -444,7 +444,7 @@ index c23c1106b51134a4bad5ad589aa28990b5182cfe..8afe70bc0f893f61de2e9a856aa4d505
  
      private static boolean epoll;
  
-@@ -137,6 +142,13 @@ public class PipelineUtils
+@@ -142,6 +147,13 @@ public class PipelineUtils
                  ProxyServer.getInstance().getLogger().log( Level.WARNING, "Epoll is not working, falling back to NIO: {0}", Util.exception( Epoll.unavailabilityCause() ) );
              }
          }
@@ -458,7 +458,7 @@ index c23c1106b51134a4bad5ad589aa28990b5182cfe..8afe70bc0f893f61de2e9a856aa4d505
      }
  
      public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
-@@ -144,6 +156,21 @@ public class PipelineUtils
+@@ -149,6 +161,21 @@ public class PipelineUtils
          return epoll ? new EpollEventLoopGroup( threads, factory ) : new NioEventLoopGroup( threads, factory );
      }
  
@@ -480,7 +480,7 @@ index c23c1106b51134a4bad5ad589aa28990b5182cfe..8afe70bc0f893f61de2e9a856aa4d505
      public static Class<? extends ServerChannel> getServerChannel(SocketAddress address)
      {
          if ( address instanceof DomainSocketAddress )
-@@ -156,6 +183,21 @@ public class PipelineUtils
+@@ -161,6 +188,21 @@ public class PipelineUtils
          return epoll ? EpollServerSocketChannel.class : NioServerSocketChannel.class;
      }
  
@@ -502,7 +502,7 @@ index c23c1106b51134a4bad5ad589aa28990b5182cfe..8afe70bc0f893f61de2e9a856aa4d505
      public static Class<? extends Channel> getChannel(SocketAddress address)
      {
          if ( address instanceof DomainSocketAddress )
-@@ -168,6 +210,14 @@ public class PipelineUtils
+@@ -173,6 +215,14 @@ public class PipelineUtils
          return epoll ? EpollSocketChannel.class : NioSocketChannel.class;
      }
  

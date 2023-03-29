@@ -320,7 +320,7 @@ index e8480ff4319f51e9c869e6931cbaa845fe6229bd..07655f95f18d6bc988103c2b294b2ca4
              user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 052829bff45f992a0a9246ca419234e57ad2a405..15f855e0acce54bf4eda48a725c40aa75a97d9ae 100644
+index 91d7cefd315fe75d16a18f83d9760733e9412fe9..a20a3537fbf126f2ee94dfaffbc6a9805009b6e9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -127,15 +127,22 @@ public final class UserConnection implements ProxiedPlayer

@@ -43,10 +43,10 @@ index 2c217d3c1aeccdb0ea22144e916c8589a7b683f5..9c6e4907ea81129e3c0070ffecda5e62
                          unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
                          if ( bungee.getConnectionThrottle() != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 8afe70bc0f893f61de2e9a856aa4d505074fe3b2..d4f27a5dba93817753beae73b5b0be0b87b7eef2 100644
+index f651a2444923e38af8a599659b6b349d0210f397..8660806d75868e4199b3ca41785525d3d4d59dd1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -106,6 +106,16 @@ public class PipelineUtils
+@@ -109,6 +109,16 @@ public class PipelineUtils
  
              BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
          }
@@ -61,9 +61,9 @@ index 8afe70bc0f893f61de2e9a856aa4d505074fe3b2..d4f27a5dba93817753beae73b5b0be0b
 +        }
 +        // IvanCord end
      };
-     public static final Base BASE = new Base();
-     private static final KickStringWriter legacyKicker = new KickStringWriter();
-@@ -251,5 +261,15 @@ public class PipelineUtils
+     public static final Base BASE = new Base( false );
+     public static final Base BASE_SERVERSIDE = new Base( true );
+@@ -262,5 +272,15 @@ public class PipelineUtils
  
              ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
          }

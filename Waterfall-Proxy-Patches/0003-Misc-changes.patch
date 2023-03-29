@@ -127,7 +127,7 @@ index 663bddec7386ccb909a39b81101a9b0292d297ca..9e5d3f2b20eae64fdc68231216753718
                      <PatternMatch key=",BungeeCord" pattern="[%d{HH:mm:ss}] [%t/%level]: %paperMinecraftFormatting{%msg}{strip}%n" />
                  </LoggerNamePatternSelector>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 1033d79e6925463dd8815afa47eb2c7ee874ebb8..8c08197555fee3eccc01c19bb0e11189952c7a3a 100644
+index 1e08c014db874d7c49c2d7ea2126aa4f20777522..3a2d640ba4898e00963896678314ac9fedfd0f35 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -512,8 +512,10 @@ public class BungeeCord extends ProxyServer
@@ -186,7 +186,7 @@ index 8181d76bde75645d7be22b24cea4ca651938f88c..e8480ff4319f51e9c869e6931cbaa845
              // Update debug info from login packet
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index b44d13e59ada151a4e444f9a5e82737e4f426d36..052829bff45f992a0a9246ca419234e57ad2a405 100644
+index bc0af8a536b400545c8c1412bbcf923a9b4c3093..91d7cefd315fe75d16a18f83d9760733e9412fe9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -324,7 +324,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -297,10 +297,10 @@ index 6dc5633f5241ad6a1619500d37790e5c24c67155..d45a6140780f592d9f8c67cf2f7cb834
              if ( packet instanceof PacketWrapper )
              {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 2a21243b99600efc0cb65ffd1fe08d1b946ecebc..302bcbb0f04468e7466e77e283e6d814af3ad0f4 100644
+index af65e192a4f613fba7874e0ad268fc876ca072a8..cea3c5e38c7ef22be4e8af939b476093bc0b109c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -183,6 +183,7 @@ public class PipelineUtils
+@@ -192,6 +192,7 @@ public class PipelineUtils
                  // IP_TOS is not supported (Windows XP / Windows Server 2003)
              }
              ch.config().setOption( ChannelOption.TCP_NODELAY, true );

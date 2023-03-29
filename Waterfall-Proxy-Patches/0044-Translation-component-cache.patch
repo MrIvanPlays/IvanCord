@@ -201,7 +201,7 @@ index 4915d8d7b55c1f6d16ad55024ec807a2b18870eb..14421eda3f61f2e5ab2cc74c4ff10480
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index aa1d39792293649750c420da5063c2ce3560890d..29a49d994f1def75aa7a4402981aff8c35fba9c9 100644
+index 83b693fa14fc342abb4da8555e891d25f3d7d307..3bcfc9e8d554237ea26414fe3a9c13f6dd0b54e0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -123,7 +123,7 @@ public class BungeeCord extends ProxyServer
@@ -270,7 +270,7 @@ index aa1d39792293649750c420da5063c2ce3560890d..29a49d994f1def75aa7a4402981aff8c
      @SuppressWarnings("unchecked")
      public Collection<ProxiedPlayer> getPlayers()
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 44f5d30e5ef9ee58219b5f07ad6bf5412bcbcc22..500137bcebfe570ee80b8b468c098e5a5a5221fb 100644
+index 22e5e9bce8a59c18752b61e5c4ad645d9d979f2e..378c4e1a8eb1ccffd22164d408ca713ee870aedd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -353,7 +353,7 @@ public final class UserConnection implements ProxiedPlayer

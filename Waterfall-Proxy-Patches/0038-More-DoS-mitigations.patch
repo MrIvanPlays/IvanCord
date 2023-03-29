@@ -11,7 +11,7 @@ Updated to 1.19 by MrIvanPlays
 Co-authored-by: Ivan Pekov <ivan@mrivanplays.com>
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
-index f33df1f37bda8327f12a55329b65f67d783c653c..14099bf062467e010d497be2052c3ed9e59ef2f1 100644
+index f31dd0d0242bba8150a48d03bec31130c1f3a1f2..3633bad9350b9c5c8fe8778212c88d21a132fa9e 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Varint21FrameDecoder.java
 @@ -7,9 +7,17 @@ import io.netty.handler.codec.ByteToMessageDecoder;
@@ -132,10 +132,10 @@ index c6d36cdbae92f3c483d390a6e971fff301f50a8a..487c1db411e8f9ff1feb20f4ced03ecd
          ch.pipeline().get( MinecraftEncoder.class ).setProtocolVersion( protocol );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index d4f27a5dba93817753beae73b5b0be0b87b7eef2..47ea350a4904ba8816e77a0b01f806bdaa024ecf 100644
+index 8660806d75868e4199b3ca41785525d3d4d59dd1..0c55b3b50e7350dc6fad07968ade3d6d9b82494f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -79,7 +79,7 @@ public class PipelineUtils
+@@ -82,7 +82,7 @@ public class PipelineUtils
  
  
              try {
@@ -144,42 +144,35 @@ index d4f27a5dba93817753beae73b5b0be0b87b7eef2..47ea350a4904ba8816e77a0b01f806bd
              } catch (Exception e) {
                  e.printStackTrace();
                  ch.close();
-@@ -118,6 +118,7 @@ public class PipelineUtils
+@@ -120,8 +120,9 @@ public class PipelineUtils
+         }
          // IvanCord end
      };
-     public static final Base BASE = new Base();
-+    public static final Base LIMITED_BASE = new Base( true ); // IvanCord - Add LIMITED_BASE for connections from clients
+-    public static final Base BASE = new Base( false );
+-    public static final Base BASE_SERVERSIDE = new Base( true );
++    public static final Base BASE = new Base( false, false ); // IvanCord - add fromClient parameter
++    public static final Base BASE_SERVERSIDE = new Base( true, false ); // IvanCord - add fromClient parameter
++    public static final Base LIMITED_BASE = new Base( false, true ); // IvanCord - Add LIMITED_BASE for connections from clients
      private static final KickStringWriter legacyKicker = new KickStringWriter();
      private static final Varint21LengthFieldPrepender framePrepender = new Varint21LengthFieldPrepender();
-     public static final String TIMEOUT_HANDLER = "timeout";
-@@ -237,9 +238,18 @@ public class PipelineUtils
-     private static final int HIGH_MARK = Integer.getInteger( "net.md_5.bungee.high_mark", 2 << 20 ); // 2 mb
-     private static final WriteBufferWaterMark MARK = new WriteBufferWaterMark( LOW_MARK, HIGH_MARK );
- 
-+    @lombok.RequiredArgsConstructor // IvanCord
-     public static final class Base extends ChannelInitializer<Channel>
+     private static final Varint21LengthFieldExtraBufPrepender serverFramePrepender = new Varint21LengthFieldExtraBufPrepender();
+@@ -248,6 +249,7 @@ public class PipelineUtils
      {
  
-+        // IvanCord start
-+        private final boolean fromClient;
-+        public Base()
-+        {
-+            this( false );
-+        }
-+        // IvanCord end
-+
+         private boolean toServer = false;
++        private boolean fromClient = false; // IvanCord
+ 
          @Override
          public void initChannel(Channel ch) throws Exception
-         {
-@@ -255,7 +265,7 @@ public class PipelineUtils
+@@ -264,7 +266,7 @@ public class PipelineUtils
              ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
              ch.config().setWriteBufferWaterMark( MARK );
  
 -            ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
 +            ch.pipeline().addLast( FRAME_DECODER, fromClient ? new Varint21FrameDecoder( true ) : new Varint21FrameDecoder() ); // IvanCord - limit decoding length for client packets
              ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
-             ch.pipeline().addLast( FRAME_PREPENDER, framePrepender );
- 
+             // No encryption bungee -> server, therefore use extra buffer to avoid copying everything for length prepending
+             // Not used bungee -> client as header would need to be encrypted separately through expensive JNI call
 diff --git a/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java b/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java
 index 15d4214c05eb4b83aa17665c909560d4c318f29c..77b3a0a648214663db9c6d2b688e540baf9ad5f5 100644
 --- a/shared/src/main/java/com/mrivanplays/ivancord/shared/Errors.java

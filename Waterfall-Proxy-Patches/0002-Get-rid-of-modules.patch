@@ -261,10 +261,10 @@ index 0000000000000000000000000000000000000000..d3a273d4ada5f2807861c49a744a94e4
 +}
 diff --git a/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..909156cbc4f933c2dc5e5fa75c5c04e06d2b6c82
+index 0000000000000000000000000000000000000000..b6b684a4f31426757f7b5db60f9e969eb97bbeb9
 --- /dev/null
 +++ b/proxy/src/main/java/com/mrivanplays/ivancord/modules/CommandList.java
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,63 @@
 +package com.mrivanplays.ivancord.modules;
 +
 +import java.util.ArrayList;
@@ -272,7 +272,6 @@ index 0000000000000000000000000000000000000000..909156cbc4f933c2dc5e5fa75c5c04e0
 +import java.util.Collections;
 +import java.util.List;
 +import com.mrivanplays.ivancord.util.ICUtil;
-+import net.md_5.bungee.Util;
 +import net.md_5.bungee.api.ChatColor;
 +import net.md_5.bungee.api.CommandSender;
 +import net.md_5.bungee.api.ProxyServer;
@@ -317,7 +316,7 @@ index 0000000000000000000000000000000000000000..909156cbc4f933c2dc5e5fa75c5c04e0
 +            }
 +            players.sort( String.CASE_INSENSITIVE_ORDER );
 +
-+            sender.sendMessage( ICUtil.translation( "command_list", server.getName(), server.getPlayers().size(), Util.format( players, ChatColor.RESET + ", " ) ) );
++            sender.sendMessage( ICUtil.translation( "command_list", server.getName(), server.getPlayers().size(), String.format( ChatColor.RESET + ", ", players ) ) );
 +        }
 +
 +        sender.sendMessage( ICUtil.translation( "total_players", ProxyServer.getInstance().getOnlineCount() ) );
@@ -788,7 +787,7 @@ index 0000000000000000000000000000000000000000..4915d8d7b55c1f6d16ad55024ec807a2
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 089815678e3f32741c4d885c394595967eaa44ed..1033d79e6925463dd8815afa47eb2c7ee874ebb8 100644
+index b0f59a8a90758ad3a82b617ab26ae2ecaf507ae3..1e08c014db874d7c49c2d7ea2126aa4f20777522 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -173,7 +173,9 @@ public class BungeeCord extends ProxyServer
