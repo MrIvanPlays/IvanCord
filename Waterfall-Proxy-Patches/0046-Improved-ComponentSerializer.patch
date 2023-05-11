@@ -1,0 +1,101 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Laivy <dnlfg.contato@gmail.com>
+Date: Thu, 11 May 2023 09:02:30 +0300
+Subject: [PATCH] Improved ComponentSerializer
+
+- Enhanced ComponentSerializer#toString methods
+  Now they follow the default Minecraft's component json format. Multiple
+  BaseComponents are now serialized as JsonArray
+
+diff --git a/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java b/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java
+index 22e8637159b8c115cfe1e39d39fc14a80e30dd6d..976e15089c8f27369a691f75100ff43cee6de088 100644
+--- a/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java
++++ b/chat/src/main/java/net/md_5/bungee/chat/ComponentSerializer.java
+@@ -27,7 +27,7 @@ import net.md_5.bungee.api.chat.hover.content.TextSerializer;
+ public class ComponentSerializer implements JsonDeserializer<BaseComponent>
+ {
+ 
+-    private static final JsonParser JSON_PARSER = new JsonParser();
++    // IvanCord - removed JsonParser instance
+     private static final Gson gson = new GsonBuilder().
+             registerTypeAdapter( BaseComponent.class, new ComponentSerializer() ).
+             registerTypeAdapter( TextComponent.class, new TextComponentSerializer() ).
+@@ -62,7 +62,7 @@ public class ComponentSerializer implements JsonDeserializer<BaseComponent>
+ 
+     public static BaseComponent[] parse(String json)
+     {
+-        JsonElement jsonElement = JSON_PARSER.parse( json );
++        JsonElement jsonElement = JsonParser.parseString( json ); // IvanCord
+ 
+         if ( jsonElement.isJsonArray() )
+         {
+@@ -78,6 +78,12 @@ public class ComponentSerializer implements JsonDeserializer<BaseComponent>
+ 
+     public static String toString(Object object)
+     {
++        // IvanCord start - improve ComponentSerializer
++        if ( object instanceof BaseComponent[] )
++        {
++            return toString( (BaseComponent[]) object );
++        }
++        // IvanCord end
+         return gson.toJson( object );
+     }
+ 
+@@ -88,12 +94,28 @@ public class ComponentSerializer implements JsonDeserializer<BaseComponent>
+ 
+     public static String toString(BaseComponent... components)
+     {
++        // IvanCord start - improve ComponentSerializer
++        if ( components.length == 0 )
++        {
++            return new com.google.gson.JsonArray().toString();
++        }
++        // IvanCord end
+         if ( components.length == 1 )
+         {
+             return gson.toJson( components[0] );
+         } else
+         {
++            // IvanCord start - improve ComponentSerializer - follow spec
++            /*
+             return gson.toJson( new TextComponent( components ) );
++             */
++            com.google.gson.JsonArray array = new com.google.gson.JsonArray();
++            for ( BaseComponent component : components )
++            {
++                array.add( gson.toJsonTree( component ) );
++            }
++            return array.toString();
++            // IvanCord end
+         }
+     }
+ 
+diff --git a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+index d212d76cba05f3477e16c1146fdcdafda67b9296..f71dfcafdd6af002a45aaef75e43883165dba62b 100644
+--- a/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
++++ b/chat/src/test/java/net/md_5/bungee/api/chat/ComponentsTest.java
+@@ -602,8 +602,8 @@ public class ComponentsTest
+         ComponentBuilder builder = new ComponentBuilder();
+         BaseComponent[] a = TextComponent.fromLegacyText( "§4§n44444§rdd§6§l6666" );
+ 
+-        String expected = "{\"extra\":[{\"underlined\":true,\"color\":\"dark_red\",\"text\":\"44444\"},{\"color\":"
+-                + "\"white\",\"text\":\"dd\"},{\"bold\":true,\"color\":\"gold\",\"text\":\"6666\"}],\"text\":\"\"}";
++        String expected = "[{\"underlined\":true,\"color\":\"dark_red\",\"text\":\"44444\"},{\"color\":\"white\"," +
++            "\"text\":\"dd\"},{\"bold\":true,\"color\":\"gold\",\"text\":\"6666\"}]"; // IvanCord
+         Assert.assertEquals( expected, ComponentSerializer.toString( a ) );
+ 
+         builder.append( a );
+@@ -616,9 +616,9 @@ public class ComponentsTest
+ 
+         String test2 = ComponentSerializer.toString( builder.create() );
+         Assert.assertEquals(
+-                "{\"extra\":[{\"underlined\":true,\"color\":\"dark_red\",\"text\":\"44444\"},"
+-                        + "{\"color\":\"white\",\"text\":\"dd\"},{\"bold\":true,\"color\":\"gold\",\"text\":\"6666\"},"
+-                        + "{\"color\":\"white\",\"text\":\"rrrr\"}],\"text\":\"\"}",
++                "[{\"underlined\":true,\"color\":\"dark_red\",\"text\":\"44444\"}," +
++                    "{\"color\":\"white\",\"text\":\"dd\"},{\"bold\":true,\"color\":\"gold\",\"text\":\"6666\"}," +
++                    "{\"color\":\"white\",\"text\":\"rrrr\"}]", // IvanCord
+                 test2 );
+     }
+ 
