@@ -2396,10 +2396,10 @@ index 21aa9675081adf6213c37aba51a33b4fae39a859..31408d5506dfef5a0b6f22444746e946
          } else
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a461b1f04de6e4a7b0a7fb6ff314da94fef17f2d..81d79f9bf72957b39c84e66927197e84449091d4 100644
+index 62c6e3b9228f022d1a724e6a7221f08719a6d68f..7e06288c589b2ce8cf3a130d1c5d5131959a6414 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -939,5 +939,22 @@ public class BungeeCord extends ProxyServer
+@@ -948,5 +948,22 @@ public class BungeeCord extends ProxyServer
      {
          return playerdata.getOfflinePlayers();
      }
@@ -2658,10 +2658,10 @@ index bfa563e22e8c0616cb28bd3ed64602201c8b4e31..9a7a907499988c48e1c245ea8aa23e4d
      @Override
      public void handle(net.md_5.bungee.protocol.packet.PlayerPosition pac)
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 8cdde7b0e138d220ab1cd71bcd84a4641f98e43a..830aef41a11113c3709f5a4a075c07f46d130a3f 100644
+index 91330693ae7241b4a0fd8d1ef154c2a0fd5a5ebf..c493e6ef7cb8f1a7d42b9a9e77841429f18dd74f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -246,6 +246,95 @@ public class UpstreamBridge extends PacketHandler
+@@ -249,6 +249,95 @@ public class UpstreamBridge extends PacketHandler
          }
  
          // Waterfall end - tab limiter
@@ -2757,7 +2757,7 @@ index 8cdde7b0e138d220ab1cd71bcd84a4641f98e43a..830aef41a11113c3709f5a4a075c07f4
          List<String> suggestions = new ArrayList<>();
          boolean isRegisteredCommand = false;
  
-@@ -292,6 +381,7 @@ public class UpstreamBridge extends PacketHandler
+@@ -295,6 +384,7 @@ public class UpstreamBridge extends PacketHandler
          {
              throw CancelSendSignal.INSTANCE;
          }

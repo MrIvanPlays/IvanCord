@@ -343,7 +343,7 @@ index 0000000000000000000000000000000000000000..6ef2afb8df2c419053b52438df478b42
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 81d79f9bf72957b39c84e66927197e84449091d4..48938230b4afb7a2d71f9099bd14a7ebd468fc6f 100644
+index 7e06288c589b2ce8cf3a130d1c5d5131959a6414..800134a3a74f7e637de05d630a4c10e50d29bdfb 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -251,7 +251,9 @@ public class BungeeCord extends ProxyServer

@@ -12,7 +12,7 @@ because the handler boss will close.
 Co-authored-by: Ivan Pekov <ivan@mrivanlays.com> - fixed message send
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 237f643152dce1d9cb52d3776ffaecdecbfb8fcb..8135d8404818fd63942cebd743c78cd4a44c0e3b 100644
+index d0214fc70f5a4ac29beae55d063ba96011977827..d53bb73da46657ca5626ca642578506f3d3a685e 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -148,7 +148,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection

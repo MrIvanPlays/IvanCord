@@ -6,7 +6,7 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
 diff --git a/pom.xml b/pom.xml
-index 7bf2b3dbdfde3cd1724a9b4a1fbdbf4ae9936721..a25c57a5438702047758c8bd5fc26b268594a247 100644
+index 60820ac4747b4dae1ccdddd2f5efee271c92855c..b0be6d81e5a36ae3d601c4e89935268e24a89e59 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -46,6 +46,7 @@
@@ -166,13 +166,13 @@ index 3a802ca425185feede16c6a3ffb7c4200e8ea67f..f31dd0d0242bba8150a48d03bec31130
      }
  }
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index da7eb00143d6310a3e704f4d9ad4bb2a8a734c67..5fd7e2460747f0aeb0bfbbb8fb28055a1236a9aa 100644
+index 1f7b71448f03fd129e8510a86ef06607fd3380b6..af6bc11811079ceff81b6dd3f68e476f050c8d6e 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -148,6 +148,14 @@
+             <version>1.9.10</version>
              <scope>runtime</scope>
          </dependency>
-         <!-- Waterfall end -->
 +        <!-- IvanCord start -->
 +        <dependency>
 +            <groupId>com.mrivanplays</groupId>
@@ -185,18 +185,9 @@ index da7eb00143d6310a3e704f4d9ad4bb2a8a734c67..5fd7e2460747f0aeb0bfbbb8fb28055a
  
      <!-- Waterfall start - copy license files into jar -->
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index a948362bf673d82eaff19c9b5a53f4515df76ff9..a461b1f04de6e4a7b0a7fb6ff314da94fef17f2d 100644
+index 6571b8d6010990b276916078124cc8abe7665e9f..62c6e3b9228f022d1a724e6a7221f08719a6d68f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -421,7 +421,7 @@ public class BungeeCord extends ProxyServer
-                 }
-             };
-             new ServerBootstrap()
--                    .channel( PipelineUtils.getServerChannel( info.getSocketAddress() ) )
-+                    .channelFactory( PipelineUtils.getServerChannelFactory( info.getSocketAddress() ) ) // IvanCord
-                     .option( ChannelOption.SO_REUSEADDR, true ) // TODO: Move this elsewhere!
-                     .childAttr( PipelineUtils.LISTENER, info )
-                     .childHandler( PipelineUtils.SERVER_CHILD )
 @@ -448,7 +448,7 @@ public class BungeeCord extends ProxyServer
                          }
                      }
@@ -206,19 +197,6 @@ index a948362bf673d82eaff19c9b5a53f4515df76ff9..a461b1f04de6e4a7b0a7fb6ff314da94
              }
          }
      }
-diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-index 634dfca778a3d6e104031f4b7fdbfbd2d9714ca6..eff179733441c035133643704328be0270f5bd43 100644
---- a/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-+++ b/proxy/src/main/java/net/md_5/bungee/BungeeServerInfo.java
-@@ -183,7 +183,7 @@ public class BungeeServerInfo implements ServerInfo
-             }
-         };
-         new Bootstrap()
--                .channel( PipelineUtils.getChannel( socketAddress ) )
-+                .channelFactory( PipelineUtils.getChannelFactory( socketAddress ) ) // IvanCord
-                 .group( BungeeCord.getInstance().workerEventLoopGroup )
-                 .handler( PipelineUtils.BASE_SERVERSIDE )
-                 .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, BungeeCord.getInstance().getConfig().getRemotePingTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/ConnectionThrottle.java b/proxy/src/main/java/net/md_5/bungee/ConnectionThrottle.java
 index 35d533252b7009bd5f4c14b265cea0bc05f11b91..25c321a1bc62b969839cc0a2462fbbf46c77f5ce 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ConnectionThrottle.java
@@ -232,21 +210,8 @@ index 35d533252b7009bd5f4c14b265cea0bc05f11b91..25c321a1bc62b969839cc0a2462fbbf4
                  .build( new CacheLoader<InetAddress, AtomicInteger>()
                  {
                      @Override
-diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 0f60af267f2308ecb523a969c698b04c28f6cd2a..d89e9bebb9c30d6bbab443226aafbdc5e1a6bf08 100644
---- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-+++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-@@ -412,7 +412,7 @@ public final class UserConnection implements ProxiedPlayer
-             }
-         };
-         Bootstrap b = new Bootstrap()
--                .channel( PipelineUtils.getChannel( target.getAddress() ) )
-+                .channelFactory( PipelineUtils.getChannelFactory( target.getAddress() ) ) // IvanCord
-                 .group( ch.getHandle().eventLoop() )
-                 .handler( initializer )
-                 .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, request.getConnectTimeout() )
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 806ecd375e2ff832fa25278a8fdebd990355fbb8..618fabf947047187becfcc3c251299f563f43516 100644
+index e3c23364de2bf6d3614d0a3539a64f14146eab7d..e5771ca34e95bb07f9241a4ce7cdf7ebd1e342c7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -146,9 +146,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -270,7 +235,7 @@ index 806ecd375e2ff832fa25278a8fdebd990355fbb8..618fabf947047187becfcc3c251299f5
          }
      }
  
-@@ -339,6 +341,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -349,6 +351,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              handshake.setHost( split[0] );
              extraDataInHandshake = "\0" + split[1];
          }
@@ -278,7 +243,7 @@ index 806ecd375e2ff832fa25278a8fdebd990355fbb8..618fabf947047187becfcc3c251299f5
  
          // SRV records can end with a . depending on DNS / client.
          if ( handshake.getHost().endsWith( "." ) )
-@@ -383,7 +386,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -393,7 +396,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  }
                  break;
              default:
@@ -287,7 +252,7 @@ index 806ecd375e2ff832fa25278a8fdebd990355fbb8..618fabf947047187becfcc3c251299f5
          }
      }
  
-@@ -790,4 +793,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -800,4 +803,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              brandMessage = input;
          }
      }
@@ -300,7 +265,7 @@ index 806ecd375e2ff832fa25278a8fdebd990355fbb8..618fabf947047187becfcc3c251299f5
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
-index 9120cf661d698238ddb2f1bfc0f7277936834101..b8d48de1c60ca33f2b6f0059007a85693df53a62 100644
+index eb8a87456812a7a14195eb17932d55a92931ac6f..d97161138360f27cb028dc23bc4943291630c2a9 100644
 --- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 +++ b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 @@ -30,7 +30,7 @@ public class HttpClient
@@ -312,24 +277,6 @@ index 9120cf661d698238ddb2f1bfc0f7277936834101..b8d48de1c60ca33f2b6f0059007a8569
      // Waterfall End
  
      // IvanCord start - add HttpClient.get with future return value
-@@ -128,7 +128,7 @@ public class HttpClient
- 
-     private static void getWithNettyResolver(EventLoop eventLoop, URI uri, int port, ChannelFutureListener future, Callback<String> callback, boolean ssl) {
-         java.net.InetSocketAddress address = java.net.InetSocketAddress.createUnresolved(uri.getHost(), port);
--        new Bootstrap().channel( PipelineUtils.getChannel( null ) ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
-+        new Bootstrap().channelFactory( PipelineUtils.getChannelFactory( null ) ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ). // IvanCord
-                 option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT ).resolver(dnsResolverGroup).remoteAddress( address ).connect().addListener( future );
-     }
- 
-@@ -147,7 +147,7 @@ public class HttpClient
-             }
-             addressCache.put( uri.getHost(), inetHost );
-         }
--        new Bootstrap().channel( PipelineUtils.getChannel( null ) ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ).
-+        new Bootstrap().channelFactory( PipelineUtils.getChannelFactory( null ) ).group( eventLoop ).handler( new HttpInitializer( callback, ssl, uri.getHost(), port ) ). // IvanCord
-                 option( ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT ).remoteAddress( inetHost, port ).connect().addListener( future );
-     }
-     // Waterfall End
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java b/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
 index d45a6140780f592d9f8c67cf2f7cb83496a14681..9d768f9bd262bb87e904f8b35a5d2978e2a86c9c 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/ChannelWrapper.java
@@ -412,10 +359,10 @@ index 29cf4b4fc6f954c16bf41a7818bc1ae67b0cbcdd..3470aad02d79a5666e9a158036156c7a
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index bb429f899c631ac8cf272802dafe0ddca0940740..f651a2444923e38af8a599659b6b349d0210f397 100644
+index 8ee81218411de824cf78255c5ccb3390bb5b70c7..4fd6f300d70309687b7cc4167f4cc3b67e1a27da 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -62,14 +62,14 @@ public class PipelineUtils
+@@ -63,14 +63,14 @@ public class PipelineUtils
  
              if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
              {
@@ -432,86 +379,32 @@ index bb429f899c631ac8cf272802dafe0ddca0940740..f651a2444923e38af8a599659b6b349d
                  return;
              }
  
-@@ -125,6 +125,11 @@ public class PipelineUtils
+@@ -126,6 +126,7 @@ public class PipelineUtils
      public static final String FRAME_PREPENDER = "frame-prepender";
      public static final String LEGACY_DECODER = "legacy-decoder";
      public static final String LEGACY_KICKER = "legacy-kick";
-+    // IvanCord start - channel factories
-+    private static final io.netty.channel.ChannelFactory<? extends ServerChannel> serverChannelFactory, serverChannelDomainFactory;
-+    private static final io.netty.channel.ChannelFactory<? extends Channel> channelFactory, channelDomainFactory;
-+    private static final io.netty.channel.ChannelFactory<? extends DatagramChannel> datagramChannelFactory;
-+    // IvanCord end
++    private static final ChannelFactory<? extends DatagramChannel> datagramChannelFactory; // IvanCord
  
      private static boolean epoll;
- 
-@@ -142,6 +147,13 @@ public class PipelineUtils
-                 ProxyServer.getInstance().getLogger().log( Level.WARNING, "Epoll is not working, falling back to NIO: {0}", Util.exception( Epoll.unavailabilityCause() ) );
-             }
-         }
-+        // IvanCord start
-+        serverChannelFactory = epoll ? EpollServerSocketChannel::new : NioServerSocketChannel::new;
-+        serverChannelDomainFactory = epoll ? EpollServerDomainSocketChannel::new : null;
-+        channelFactory = epoll ? EpollSocketChannel::new : NioSocketChannel::new;
-+        channelDomainFactory = epoll ? EpollDomainSocketChannel::new : null;
-+        datagramChannelFactory = epoll ? EpollDatagramChannel::new : NioDatagramChannel::new;
-+        // IvanCord end
+     // Waterfall start: netty reflection -> factory
+@@ -155,6 +156,7 @@ public class PipelineUtils
+         channelFactory = epoll ? EpollSocketChannel::new : NioSocketChannel::new;
+         channelDomainFactory = epoll ? EpollDomainSocketChannel::new : null;
+         // Waterfall end
++        datagramChannelFactory = epoll ? EpollDatagramChannel::new : NioDatagramChannel::new; // IvanCord
      }
  
      public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
-@@ -149,6 +161,21 @@ public class PipelineUtils
-         return epoll ? new EpollEventLoopGroup( threads, factory ) : new NioEventLoopGroup( threads, factory );
+@@ -213,7 +215,14 @@ public class PipelineUtils
+         return channelFactory;
      }
- 
+     // Waterfall end
 +    // IvanCord start
-+    public static io.netty.channel.ChannelFactory<? extends ServerChannel> getServerChannelFactory(SocketAddress address)
-+    {
-+        if ( address instanceof DomainSocketAddress )
-+        {
-+            Preconditions.checkState( epoll, "Epoll required to have UNIX sockets" );
-+
-+            return serverChannelDomainFactory;
-+        }
-+
-+        return serverChannelFactory;
-+    }
-+
-+    @Deprecated
-+    // IvanCord end
-     public static Class<? extends ServerChannel> getServerChannel(SocketAddress address)
-     {
-         if ( address instanceof DomainSocketAddress )
-@@ -161,6 +188,21 @@ public class PipelineUtils
-         return epoll ? EpollServerSocketChannel.class : NioServerSocketChannel.class;
-     }
- 
-+    // IvanCord start
-+    public static io.netty.channel.ChannelFactory<? extends Channel> getChannelFactory(SocketAddress address)
-+    {
-+        if ( address instanceof DomainSocketAddress )
-+        {
-+            Preconditions.checkState( epoll, "Epoll required to have UNIX sockets" );
-+
-+            return channelDomainFactory;
-+        }
-+
-+        return channelFactory;
-+    }
-+
-+    @Deprecated
-+    // IvanCord end
-     public static Class<? extends Channel> getChannel(SocketAddress address)
-     {
-         if ( address instanceof DomainSocketAddress )
-@@ -173,6 +215,14 @@ public class PipelineUtils
-         return epoll ? EpollSocketChannel.class : NioSocketChannel.class;
-     }
- 
-+    // IvanCord start
-+    public static io.netty.channel.ChannelFactory<? extends DatagramChannel> getDatagramChannelFactory()
++    public static ChannelFactory<? extends DatagramChannel> getDatagramChannelFactory()
 +    {
 +        return datagramChannelFactory;
 +    }
-+
+ 
 +    @Deprecated
 +    // IvanCord end
      public static Class<? extends DatagramChannel> getDatagramChannel()

@@ -5,7 +5,7 @@ Subject: [PATCH] POM changes and rebranding
 
 
 diff --git a/api/pom.xml b/api/pom.xml
-index 6774bed3a30becab0797892bcacd5dfc0912d5dd..aad63cabb6aed3f6548a45ed5e0cfe1d2de83e47 100644
+index ca4db06f287fdd91a1adadd2660f2ea9e00577b8..30026a41dd5bd2e04dd7810968e6441c65e3a919 100644
 --- a/api/pom.xml
 +++ b/api/pom.xml
 @@ -4,42 +4,40 @@
@@ -64,7 +64,7 @@ index 6774bed3a30becab0797892bcacd5dfc0912d5dd..aad63cabb6aed3f6548a45ed5e0cfe1d
              <scope>compile</scope>
          </dependency>
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index 0c510f9fc7696e8a55154fc63b58486a8c499874..bfe511c57537a22c10bac8bca0a2a63a6af11233 100644
+index f9ec2c1c172b3cf02f446d04b4f596f6685aabd9..edb8e55a4003ceffe2f66844b546d5ca2894ddfa 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -4,19 +4,17 @@
@@ -322,7 +322,7 @@ index e137dfcc7364ee9aecf5cfaed335b18864b38f92..66427c9af0e4e4492090610a0ad1c88a
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index 7ff4a01324c5e8c5a89b46f13f50312bd3e6aa1e..7a1ca5bd87954038bc11d843c03bb208c1c69143 100644
+index effad6f922b5e1a6fdd6a0c70b9ace40d84ea4ec..c4b05c66f1a12ee4c08d99b4e6bdccee66349619 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -435,7 +435,7 @@ index 7ff4a01324c5e8c5a89b46f13f50312bd3e6aa1e..7a1ca5bd87954038bc11d843c03bb208
      <properties>
          <build.number>unknown</build.number>
          <lombok.version>1.18.26</lombok.version>
-@@ -366,7 +356,7 @@
+@@ -395,7 +385,7 @@
                      <plugin>
                          <groupId>org.projectlombok</groupId>
                          <artifactId>lombok-maven-plugin</artifactId>
@@ -444,7 +444,7 @@ index 7ff4a01324c5e8c5a89b46f13f50312bd3e6aa1e..7a1ca5bd87954038bc11d843c03bb208
                          <executions>
                              <execution>
                                  <id>delombok</id>
-@@ -384,9 +374,10 @@
+@@ -413,9 +403,10 @@
                      <plugin>
                          <groupId>org.apache.maven.plugins</groupId>
                          <artifactId>maven-javadoc-plugin</artifactId>
@@ -497,7 +497,7 @@ index 221469b9a8fa7650b8336a3c6c15a9097db5fd5f..47b67ae06aac4d7165be433adf0e537c
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index d3801c9b575ba3376a3e80b17e0a0b00d469956a..da7eb00143d6310a3e704f4d9ad4bb2a8a734c67 100644
+index 85160ee41687933c18d5b6c206eacbcbc7578c94..1f7b71448f03fd129e8510a86ef06607fd3380b6 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -4,18 +4,16 @@
@@ -567,7 +567,7 @@ index d3801c9b575ba3376a3e80b17e0a0b00d469956a..da7eb00143d6310a3e704f4d9ad4bb2a
              <scope>compile</scope>
          </dependency>
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 87b1698fd0ce0b7fc0a3d5e6b895efb6539b1e03..b0f59a8a90758ad3a82b617ab26ae2ecaf507ae3 100644
+index 8cfeeecaa70c0bc637bc72665a52407b33cacf00..cfdf59642098454f3341eb6aff09a532b5cd3413 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -189,7 +189,7 @@ public class BungeeCord extends ProxyServer

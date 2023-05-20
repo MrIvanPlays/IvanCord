@@ -8,7 +8,7 @@ Replaced by janmm14's original implementation, found here:
 https://github.com/SpigotMC/BungeeCord/commit/f9583a7652c04e42b6b6a43268750d4a31a256b6
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 9827ecd73f46a1a42cdd5e3080b20aaa77dc503c..22e5e9bce8a59c18752b61e5c4ad645d9d979f2e 100644
+index f174cb7f89dc81b75420200ee2d60093d23c9c63..15d5eaf8f6bfa4e390bbdaa1046bb62daca5f035 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -440,8 +440,19 @@ public final class UserConnection implements ProxiedPlayer

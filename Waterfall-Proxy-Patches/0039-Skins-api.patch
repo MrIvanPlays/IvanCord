@@ -360,7 +360,7 @@ index 1145a3e4ee13c6a55027601cbc26107adbd35e53..72e127ed3e9c0025fe0fa4c050078d45
      {
          return nameToUuidCache.get( name ).thenApply( uuid ->
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 48938230b4afb7a2d71f9099bd14a7ebd468fc6f..83b693fa14fc342abb4da8555e891d25f3d7d307 100644
+index 800134a3a74f7e637de05d630a4c10e50d29bdfb..7da87f8122ed016c2ec4dc16789836a9e8afb1db 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -191,6 +191,7 @@ public class BungeeCord extends ProxyServer
@@ -457,7 +457,7 @@ index 64a58cf6ee5ffa606d5292a0b1a4c1c2a87bfb0d..33759c3fb7af4c7c8385a875f3483b2b
              }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 9d01d9f3fc132530b7d4919051a83e24d45fbea5..5952fa21b4d2d6b9a3f6cfc951fb39e11d0d8179 100644
+index d43eba5843cfe286b4eae57433c2394eb2dbf29f..b0276f0359f1ee5cd0cdbd615367de4ffc05defc 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -112,11 +112,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
@@ -474,7 +474,7 @@ index 9d01d9f3fc132530b7d4919051a83e24d45fbea5..5952fa21b4d2d6b9a3f6cfc951fb39e1
  
      @Override
      public boolean shouldHandle(PacketWrapper packet) throws Exception
-@@ -547,6 +549,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -557,6 +559,24 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                          loginProfile = obj;
                          name = obj.getName();
                          uniqueId = Util.getUUID( obj.getId() );

@@ -5,7 +5,7 @@ Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index 7a1ca5bd87954038bc11d843c03bb208c1c69143..7bf2b3dbdfde3cd1724a9b4a1fbdbf4ae9936721 100644
+index c4b05c66f1a12ee4c08d99b4e6bdccee66349619..60820ac4747b4dae1ccdddd2f5efee271c92855c 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -38,7 +38,9 @@
@@ -787,7 +787,7 @@ index 0000000000000000000000000000000000000000..4915d8d7b55c1f6d16ad55024ec807a2
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index b0f59a8a90758ad3a82b617ab26ae2ecaf507ae3..1e08c014db874d7c49c2d7ea2126aa4f20777522 100644
+index cfdf59642098454f3341eb6aff09a532b5cd3413..f084b212e07342c2cee918157335b676e369d0ef 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -173,7 +173,9 @@ public class BungeeCord extends ProxyServer

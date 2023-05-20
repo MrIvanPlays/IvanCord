@@ -260,7 +260,7 @@ index 0000000000000000000000000000000000000000..f23fe50e8c9a22ce934f5797f9e75fb2
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index a20a3537fbf126f2ee94dfaffbc6a9805009b6e9..4b59d49a8e9082724bb37d4e8ad4a0fa88286523 100644
+index 657a2ec2ac1a4e726d4faa547f760439108467b0..736e4103f7182927d6a45f73e7e873b4a57565db 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -66,6 +66,7 @@ import net.md_5.bungee.tab.ServerUnique;
@@ -340,10 +340,10 @@ index 8fdbc2935d7ca850709d260c5fd0f858c825bd77..0d9e970114fd2ebf4d1140e5052c36a2
      public void handle(ServerData serverData) throws Exception
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 5c6fb6c92016fb9dcddc84ec514ad3f123dda96e..1f801a65c36886f981386c6918e825cf2acb9831 100644
+index e5df9f35eb6eb3a611efc18126284ef8aa08de99..13cc67e228cd0b500ad46e937c88a26cd21f6886 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -332,6 +332,14 @@ public class UpstreamBridge extends PacketHandler
+@@ -335,6 +335,14 @@ public class UpstreamBridge extends PacketHandler
          con.getPendingConnection().relayMessage( pluginMessage );
      }
  

@@ -7,10 +7,10 @@ close on exception whenever a channel is initializing and close without
 response on proxy ping if result is null.
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 2c217d3c1aeccdb0ea22144e916c8589a7b683f5..9c6e4907ea81129e3c0070ffecda5e62f6fa2e7a 100644
+index 1617d8202fc362f8c50656606a08c3d675ff1af8..94b1d997c64140caccb96fc94253e99e075e0b49 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -211,6 +211,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -221,6 +221,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                          }
  
                          ServerPing legacy = result.getResponse();
@@ -24,7 +24,7 @@ index 2c217d3c1aeccdb0ea22144e916c8589a7b683f5..9c6e4907ea81129e3c0070ffecda5e62
                          String kickMessage;
  
                          if ( v1_5 )
-@@ -286,6 +293,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -296,6 +303,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                      @Override
                      public void done(ProxyPingEvent pingResult, Throwable error)
                      {
@@ -43,10 +43,10 @@ index 2c217d3c1aeccdb0ea22144e916c8589a7b683f5..9c6e4907ea81129e3c0070ffecda5e62
                          unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
                          if ( bungee.getConnectionThrottle() != null )
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index f651a2444923e38af8a599659b6b349d0210f397..8660806d75868e4199b3ca41785525d3d4d59dd1 100644
+index 4fd6f300d70309687b7cc4167f4cc3b67e1a27da..b6777880a4baeafecc2744098b1998a9c6066b6b 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -109,6 +109,16 @@ public class PipelineUtils
+@@ -110,6 +110,16 @@ public class PipelineUtils
  
              BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
          }

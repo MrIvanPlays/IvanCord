@@ -65,7 +65,7 @@ index 0000000000000000000000000000000000000000..f140b0195e9661e364dafab7c3aba7ec
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index ae842636f99251c0a9856aa6bbb5a061d2d34a6c..806ecd375e2ff832fa25278a8fdebd990355fbb8 100644
+index ca0e3764a4842819fda5eb8cb6b3524e42dc378d..e3c23364de2bf6d3614d0a3539a64f14146eab7d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 @@ -71,6 +71,7 @@ import net.md_5.bungee.protocol.packet.StatusResponse;
@@ -86,7 +86,7 @@ index ae842636f99251c0a9856aa6bbb5a061d2d34a6c..806ecd375e2ff832fa25278a8fdebd99
      }
  
      @Override
-@@ -445,12 +449,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -455,12 +459,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
@@ -101,7 +101,7 @@ index ae842636f99251c0a9856aa6bbb5a061d2d34a6c..806ecd375e2ff832fa25278a8fdebd99
                      return;
                  }
                  if ( onlineMode )
-@@ -598,12 +604,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -608,12 +614,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( result.isCancelled() )
                  {
@@ -116,7 +116,7 @@ index ae842636f99251c0a9856aa6bbb5a061d2d34a6c..806ecd375e2ff832fa25278a8fdebd99
                      return;
                  }
  
-@@ -638,6 +646,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -648,6 +656,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
                              userCon.connect( server, null, true, ServerConnectEvent.Reason.JOIN_PROXY );
                          }

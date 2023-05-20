@@ -7,7 +7,7 @@ Leads to reduced syscalls and higher performance.
 Based on Netty FlushConsolidationHandler
 
 diff --git a/pom.xml b/pom.xml
-index a25c57a5438702047758c8bd5fc26b268594a247..c03d02bccf480e76060eeb938c87b0f7574b9acf 100644
+index b0be6d81e5a36ae3d601c4e89935268e24a89e59..e81e0a9de4be021c7de64bfaeb5c3d9471b34718 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -20,6 +20,13 @@
@@ -438,15 +438,15 @@ index 487c1db411e8f9ff1feb20f4ced03ecdef7c53ec..2ae26de622aebd3dcd9ff11468f41cf1
      public void setForge(boolean forge)
      {
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 0c55b3b50e7350dc6fad07968ade3d6d9b82494f..7c3ee3290a647583af8090366400bccff63882bd 100644
+index 9adb473501a8db3c4a4fa0c30c3594337e6fbe24..056bc63753c628cb7d45cb07dcdf42157b91acd4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -136,6 +136,8 @@ public class PipelineUtils
-     public static final String FRAME_PREPENDER = "frame-prepender";
+@@ -138,6 +138,8 @@ public class PipelineUtils
      public static final String LEGACY_DECODER = "legacy-decoder";
      public static final String LEGACY_KICKER = "legacy-kick";
+     private static final ChannelFactory<? extends DatagramChannel> datagramChannelFactory; // IvanCord
 +    public static final String FLUSH_CONSOLIDATION = "flush-consolidation"; // IvanCord
 +    public static final String FLUSH_SIGNALING = "flush-signaling"; // IvanCord
-     // IvanCord start - channel factories
-     private static final io.netty.channel.ChannelFactory<? extends ServerChannel> serverChannelFactory, serverChannelDomainFactory;
-     private static final io.netty.channel.ChannelFactory<? extends Channel> channelFactory, channelDomainFactory;
+ 
+     private static boolean epoll;
+     // Waterfall start: netty reflection -> factory

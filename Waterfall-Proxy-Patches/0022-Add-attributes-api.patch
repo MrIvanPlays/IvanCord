@@ -374,7 +374,7 @@ index ede114af8586967befb7d97c9c9252fa127922ee..1d8374d168ead318ac5780594710ae6f
              user.unsafe().sendPacket( new EntityStatus( user.getClientEntityId(), login.isReducedDebugInfo() ? EntityStatus.DEBUG_INFO_REDUCED : EntityStatus.DEBUG_INFO_NORMAL ) );
              // And immediate respawn
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 94f8d561ec8746bd5f01ae4c8ddae536780bfe73..0f60af267f2308ecb523a969c698b04c28f6cd2a 100644
+index 8794546ad2f7e5ebf34becc5f1a85607f7430265..660eb37f6dc7c3fd208e54372825a59b731c99d2 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
@@ -462,7 +462,7 @@ index 94f8d561ec8746bd5f01ae4c8ddae536780bfe73..0f60af267f2308ecb523a969c698b04c
  
      // IvanCord start - comment this. Not used anywhere, so...
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index a46df9a81c55cc1ecbcc822194ca2383f55c4559..8cdde7b0e138d220ab1cd71bcd84a4641f98e43a 100644
+index 62357b88cf118c9051a6aeaae667b8856e0598ba..91330693ae7241b4a0fd8d1ef154c2a0fd5a5ebf 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -4,6 +4,11 @@ import com.google.common.base.Preconditions;
@@ -485,7 +485,7 @@ index a46df9a81c55cc1ecbcc822194ca2383f55c4559..8cdde7b0e138d220ab1cd71bcd84a464
  import net.md_5.bungee.protocol.packet.KeepAlive;
  import net.md_5.bungee.protocol.packet.PlayerListItem;
  import net.md_5.bungee.protocol.packet.PlayerListItemRemove;
-@@ -346,6 +352,26 @@ public class UpstreamBridge extends PacketHandler
+@@ -349,6 +355,26 @@ public class UpstreamBridge extends PacketHandler
      }
      // IvanCord end
  

@@ -8,10 +8,10 @@ with that connection so the proxy would send very weird stuff to the
 mojang auth server
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 5952fa21b4d2d6b9a3f6cfc951fb39e11d0d8179..237f643152dce1d9cb52d3776ffaecdecbfb8fcb 100644
+index b0276f0359f1ee5cd0cdbd615367de4ffc05defc..d0214fc70f5a4ac29beae55d063ba96011977827 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -417,6 +417,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -427,6 +427,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      {
          Preconditions.checkState( thisState == State.USERNAME && this.loginRequest == null, "Not expecting USERNAME" ); // IvanCord
  

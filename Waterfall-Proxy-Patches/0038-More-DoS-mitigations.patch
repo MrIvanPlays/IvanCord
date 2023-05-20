@@ -132,10 +132,10 @@ index c6d36cdbae92f3c483d390a6e971fff301f50a8a..487c1db411e8f9ff1feb20f4ced03ecd
          ch.pipeline().get( MinecraftEncoder.class ).setProtocolVersion( protocol );
      }
 diff --git a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-index 8660806d75868e4199b3ca41785525d3d4d59dd1..0c55b3b50e7350dc6fad07968ade3d6d9b82494f 100644
+index b6777880a4baeafecc2744098b1998a9c6066b6b..9adb473501a8db3c4a4fa0c30c3594337e6fbe24 100644
 --- a/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
 +++ b/proxy/src/main/java/net/md_5/bungee/netty/PipelineUtils.java
-@@ -82,7 +82,7 @@ public class PipelineUtils
+@@ -83,7 +83,7 @@ public class PipelineUtils
  
  
              try {
@@ -144,7 +144,7 @@ index 8660806d75868e4199b3ca41785525d3d4d59dd1..0c55b3b50e7350dc6fad07968ade3d6d
              } catch (Exception e) {
                  e.printStackTrace();
                  ch.close();
-@@ -120,8 +120,9 @@ public class PipelineUtils
+@@ -121,8 +121,9 @@ public class PipelineUtils
          }
          // IvanCord end
      };

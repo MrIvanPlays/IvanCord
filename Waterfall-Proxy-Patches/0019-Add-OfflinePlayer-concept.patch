@@ -816,7 +816,7 @@ index 0000000000000000000000000000000000000000..8e0d4f406c87dfb6a033fce21a17f7aa
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d7cf2f27aaab7b61e7270ba61c41e2c979f85daa..a948362bf673d82eaff19c9b5a53f4515df76ff9 100644
+index bb1ba0df5403954a0d0a40ab7c18f6f25ed6823a..6571b8d6010990b276916078124cc8abe7665e9f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -189,6 +189,8 @@ public class BungeeCord extends ProxyServer
@@ -860,7 +860,7 @@ index d7cf2f27aaab7b61e7270ba61c41e2c979f85daa..a948362bf673d82eaff19c9b5a53f451
          scheduler.scheduler.shutdownNow0();
          while ( true )
          {
-@@ -888,4 +908,36 @@ public class BungeeCord extends ProxyServer
+@@ -897,4 +917,36 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }
@@ -898,7 +898,7 @@ index d7cf2f27aaab7b61e7270ba61c41e2c979f85daa..a948362bf673d82eaff19c9b5a53f451
 +    // IvanCord end
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index d1ee4b65711f7e4a79115ebb932ef0042852c212..a46df9a81c55cc1ecbcc822194ca2383f55c4559 100644
+index 8e928a28f9fd67e9b41c0a80512f772feb75a055..62357b88cf118c9051a6aeaae667b8856e0598ba 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -71,6 +71,9 @@ public class UpstreamBridge extends PacketHandler
@@ -912,7 +912,7 @@ index d1ee4b65711f7e4a79115ebb932ef0042852c212..a46df9a81c55cc1ecbcc822194ca2383
          if ( con.getServer() != null )
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
-index 3733742927e88c0674644b6944a707ab16ba6939..9120cf661d698238ddb2f1bfc0f7277936834101 100644
+index c3683c30acbc5826f5751adb67288a5997b64bf9..eb8a87456812a7a14195eb17932d55a92931ac6f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 +++ b/proxy/src/main/java/net/md_5/bungee/http/HttpClient.java
 @@ -33,6 +33,23 @@ public class HttpClient

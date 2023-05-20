@@ -201,7 +201,7 @@ index 4915d8d7b55c1f6d16ad55024ec807a2b18870eb..14421eda3f61f2e5ab2cc74c4ff10480
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 83b693fa14fc342abb4da8555e891d25f3d7d307..3bcfc9e8d554237ea26414fe3a9c13f6dd0b54e0 100644
+index 7da87f8122ed016c2ec4dc16789836a9e8afb1db..0bec8470071d46114ad33e4df8fe9dc4d2420208 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -123,7 +123,7 @@ public class BungeeCord extends ProxyServer
@@ -270,7 +270,7 @@ index 83b693fa14fc342abb4da8555e891d25f3d7d307..3bcfc9e8d554237ea26414fe3a9c13f6
      @SuppressWarnings("unchecked")
      public Collection<ProxiedPlayer> getPlayers()
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index 22e5e9bce8a59c18752b61e5c4ad645d9d979f2e..378c4e1a8eb1ccffd22164d408ca713ee870aedd 100644
+index 15d5eaf8f6bfa4e390bbdaa1046bb62daca5f035..810e2ae5a4bb51601287733c9331f9ac4de84cbd 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -353,7 +353,7 @@ public final class UserConnection implements ProxiedPlayer
@@ -352,10 +352,10 @@ index 9a7a907499988c48e1c245ea8aa23e4d5ed5f556..22471bf34e8abf979d9f98432c757730
              {
                  server.setObsolete( true );
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 8135d8404818fd63942cebd743c78cd4a44c0e3b..ef303d112f820adcc3d288ca526417f0a5fa55ac 100644
+index d53bb73da46657ca5626ca642578506f3d3a685e..5f32190c6b2934e45a47fce4a52a0438c7019443 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -426,30 +426,30 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -436,30 +436,30 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          // IvanCord start
          if ( loginRequest.getData().isEmpty() )
          {
@@ -391,7 +391,7 @@ index 8135d8404818fd63942cebd743c78cd4a44c0e3b..ef303d112f820adcc3d288ca526417f0
                  return;
              }
  
-@@ -457,7 +457,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -467,7 +467,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              {
                  if ( !EncryptionUtil.check( publicKey, null ) )
                  {
@@ -400,7 +400,7 @@ index 8135d8404818fd63942cebd743c78cd4a44c0e3b..ef303d112f820adcc3d288ca526417f0
                      return;
                  }
              }
-@@ -468,7 +468,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -478,7 +478,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          int limit = BungeeCord.getInstance().config.getPlayerLimit();
          if ( limit > 0 && bungee.getOnlineCount() >= limit )
          {
@@ -409,7 +409,7 @@ index 8135d8404818fd63942cebd743c78cd4a44c0e3b..ef303d112f820adcc3d288ca526417f0
              return;
          }
  
-@@ -476,7 +476,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -486,7 +486,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          // We can just check by UUID here as names are based on UUID
          if ( !isOnlineMode() && bungee.getPlayer( getUniqueId() ) != null )
          {
@@ -418,7 +418,7 @@ index 8135d8404818fd63942cebd743c78cd4a44c0e3b..ef303d112f820adcc3d288ca526417f0
              return;
          }
  
-@@ -490,7 +490,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -500,7 +500,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  {
                      new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent(); // IvanCord
                      BaseComponent[] reason = result.getCancelReasonComponents();
@@ -427,7 +427,7 @@ index 8135d8404818fd63942cebd743c78cd4a44c0e3b..ef303d112f820adcc3d288ca526417f0
                      return;
                  }
                  if ( ch.isClosed() )
-@@ -584,10 +584,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -594,10 +594,10 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                          finish();
                          return;
                      }
@@ -440,7 +440,7 @@ index 8135d8404818fd63942cebd743c78cd4a44c0e3b..ef303d112f820adcc3d288ca526417f0
                      bungee.getLogger().log( Level.SEVERE, "Error authenticating " + getName() + " with minecraft.net", error );
                  }
              }
-@@ -618,7 +618,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -628,7 +628,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
  
                  if ( !secure )
                  {
@@ -449,7 +449,7 @@ index 8135d8404818fd63942cebd743c78cd4a44c0e3b..ef303d112f820adcc3d288ca526417f0
                      return;
                  }
              }
-@@ -632,14 +632,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -642,14 +642,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              if ( oldName != null )
              {
                  // TODO See #1218
@@ -466,7 +466,7 @@ index 8135d8404818fd63942cebd743c78cd4a44c0e3b..ef303d112f820adcc3d288ca526417f0
              }
          } else
          {
-@@ -648,7 +648,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -658,7 +658,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
              if ( oldName != null )
              {
                  // TODO See #1218
@@ -475,7 +475,7 @@ index 8135d8404818fd63942cebd743c78cd4a44c0e3b..ef303d112f820adcc3d288ca526417f0
                  return;
              }
  
-@@ -663,7 +663,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -673,7 +673,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                  {
                      new LoginCancelledEvent( InitialHandler.this, LoginCancelledEvent.CancelReason.PROXY ).callEvent(); // IvanCord
                      BaseComponent[] reason = result.getCancelReasonComponents();

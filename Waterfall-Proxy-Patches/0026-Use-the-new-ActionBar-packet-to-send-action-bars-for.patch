@@ -102,7 +102,7 @@ index 0000000000000000000000000000000000000000..c553ba02d7f13c83f72f5e016bda8281
 +}
 +// IvanCord end
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
-index d89e9bebb9c30d6bbab443226aafbdc5e1a6bf08..d8a96e52c7da233f1fec3ad80a0e0a307b731154 100644
+index 660eb37f6dc7c3fd208e54372825a59b731c99d2..18de008f91c478298425658443b6651c3c5c54e1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 +++ b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 @@ -555,13 +555,17 @@ public final class UserConnection implements ProxiedPlayer
