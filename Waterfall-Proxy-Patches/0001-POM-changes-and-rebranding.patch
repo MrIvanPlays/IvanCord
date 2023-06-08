@@ -327,7 +327,7 @@ index 2412768b628bd1c5302fe0908238a4d53bdc07ec..6a28a27ed5eead3fdeceef3834508862
      <dependencies>
          <dependency>
 diff --git a/pom.xml b/pom.xml
-index d333a5288135bff2d78b7155e5941b78711fd4d8..9ef99561aae572dcf742a82d46bd89fde3e6e536 100644
+index d333a5288135bff2d78b7155e5941b78711fd4d8..fb312538880e8b41e105b2b758668771f3c9ae3d 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,26 +3,17 @@
@@ -430,7 +430,43 @@ index d333a5288135bff2d78b7155e5941b78711fd4d8..9ef99561aae572dcf742a82d46bd89fd
      <properties>
          <build.number>unknown</build.number>
          <lombok.version>1.18.28</lombok.version>
-@@ -365,6 +353,10 @@
+@@ -210,6 +198,7 @@
+                     </signature>
+                 </configuration>
+             </plugin>
++            <!-- IvanCord start - this a piece of trash
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-enforcer-plugin</artifactId>
+@@ -221,9 +210,13 @@
+                             <rules>
+                                 <dependencyConvergence>
+                                     <excludes>
++                                    -->
+                                         <!-- org.apache.maven:maven-resolver-provider is inconsistent -->
++                                        <!--
+                                         <exclude>org.apache.commons:commons-lang3</exclude>
++                                        -->
+                                         <!-- org.apache.maven:maven-resolver-transport-http is inconsistent -->
++                                        <!--
+                                         <exclude>org.apache.httpcomponents:httpcore</exclude>
+                                     </excludes>
+                                 </dependencyConvergence>
+@@ -235,6 +228,7 @@
+                     </execution>
+                 </executions>
+             </plugin>
++            IvanCord end -->
+         </plugins>
+     </build>
+ 
+@@ -360,11 +354,15 @@
+                                     <!-- lombok does not add @return or @param which causes warnings, so ignore -->
+                                     <doclint>none</doclint>
+                                     <sourcepath>${project.build.directory}/delombok</sourcepath>
+-                                    <additionalJOption>--no-module-directories</additionalJOption> <!-- Waterfall -->
++                                    <!-- <additionalJOption>-no-module-directories</additionalJOption> --> <!-- Waterfall --> <!-- IvanCord - remove this -->
+                                 </configuration>
                              </execution>
                          </executions>
                          <configuration>
