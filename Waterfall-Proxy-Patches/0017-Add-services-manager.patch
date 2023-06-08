@@ -536,7 +536,7 @@ index 0000000000000000000000000000000000000000..96063a5982f7f403c3f26998542517e1
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 238f616dd3bae47de868d5223646f739d05748e9..e23bacd75f1e58780f9c8405be311ec5129cf1fb 100644
+index 469cc6d5a9c4fc156e436d6068a3c61486bdb087..1bd3235475096bf8b1b9debaa44aa9127133e5d7 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -100,6 +100,8 @@ import net.md_5.bungee.util.CaseInsensitiveMap;

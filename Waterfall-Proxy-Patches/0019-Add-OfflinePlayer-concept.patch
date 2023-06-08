@@ -816,7 +816,7 @@ index 0000000000000000000000000000000000000000..8e0d4f406c87dfb6a033fce21a17f7aa
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index bb1ba0df5403954a0d0a40ab7c18f6f25ed6823a..6571b8d6010990b276916078124cc8abe7665e9f 100644
+index affc0b14bbae74e8de909014ab51773015415d06..3bd08ca622ea81e115f1d7221a38e606fd5783a3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -189,6 +189,8 @@ public class BungeeCord extends ProxyServer
@@ -860,7 +860,7 @@ index bb1ba0df5403954a0d0a40ab7c18f6f25ed6823a..6571b8d6010990b276916078124cc8ab
          scheduler.scheduler.shutdownNow0();
          while ( true )
          {
-@@ -897,4 +917,36 @@ public class BungeeCord extends ProxyServer
+@@ -892,4 +912,36 @@ public class BungeeCord extends ProxyServer
      {
          return new BungeeTitle();
      }

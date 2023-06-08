@@ -5,12 +5,12 @@ Subject: [PATCH] Get rid of modules
 
 
 diff --git a/pom.xml b/pom.xml
-index c4b05c66f1a12ee4c08d99b4e6bdccee66349619..60820ac4747b4dae1ccdddd2f5efee271c92855c 100644
+index 9ef99561aae572dcf742a82d46bd89fde3e6e536..9514b069e977214c956df54031260adebfbe6fd3 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -38,7 +38,9 @@
-         <module>log</module>
-         -->
+@@ -36,7 +36,9 @@
+         <module>event</module>
+         <!--<module>log</module>-->
          <module>log4j</module>
 +        <!-- IvanCord - remove the bungee "modules"
          <module>module</module>
@@ -787,7 +787,7 @@ index 0000000000000000000000000000000000000000..4915d8d7b55c1f6d16ad55024ec807a2
 +    }
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index cfdf59642098454f3341eb6aff09a532b5cd3413..f084b212e07342c2cee918157335b676e369d0ef 100644
+index 743f2435ef6b8ff268d5eee7fee36fc1e7ed20a4..3c2bec3fe7235982d6947a925abf6b7193c52184 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -173,7 +173,9 @@ public class BungeeCord extends ProxyServer

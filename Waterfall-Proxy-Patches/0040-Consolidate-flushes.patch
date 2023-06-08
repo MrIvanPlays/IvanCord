@@ -7,7 +7,7 @@ Leads to reduced syscalls and higher performance.
 Based on Netty FlushConsolidationHandler
 
 diff --git a/pom.xml b/pom.xml
-index b0be6d81e5a36ae3d601c4e89935268e24a89e59..e81e0a9de4be021c7de64bfaeb5c3d9471b34718 100644
+index e980817a2fa33d3e9a0014c39391cd450a6816cb..27cce8309df8fd0b32956afb37a61a813e09fe35 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -20,6 +20,13 @@
@@ -388,7 +388,7 @@ index 0000000000000000000000000000000000000000..b92d9d924c54c556a120af84ccc4ac1b
 +}
 \ No newline at end of file
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index 33759c3fb7af4c7c8385a875f3483b2bce56d17c..60ca3d7d41d57d5e1561aa6e03902ed385f0ec87 100644
+index 92a91bd418f99817363d6fa67409bf8035b536c7..64fc5f50d47e55a63435f8920dca65fd96dc153a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -474,6 +474,11 @@ public class ServerConnector extends PacketHandler

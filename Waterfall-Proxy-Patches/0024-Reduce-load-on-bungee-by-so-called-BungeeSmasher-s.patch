@@ -6,10 +6,10 @@ Subject: [PATCH] Reduce load on bungee by so-called "BungeeSmasher"s
 Co-Authored by: MrIvanPlays <ivan@mrivanplays.com> - ported to IvanCord
 
 diff --git a/pom.xml b/pom.xml
-index 60820ac4747b4dae1ccdddd2f5efee271c92855c..b0be6d81e5a36ae3d601c4e89935268e24a89e59 100644
+index 9514b069e977214c956df54031260adebfbe6fd3..e980817a2fa33d3e9a0014c39391cd450a6816cb 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -46,6 +46,7 @@
+@@ -44,6 +44,7 @@
          <module>query</module>
          <!--<module>slf4j</module>-->
          <module>native</module>
@@ -18,7 +18,7 @@ index 60820ac4747b4dae1ccdddd2f5efee271c92855c..b0be6d81e5a36ae3d601c4e89935268e
  
      <scm>
 diff --git a/protocol/pom.xml b/protocol/pom.xml
-index 47b67ae06aac4d7165be433adf0e537c07ccb615..626bc301a3f29700fea761a9397fc122b2adc1fd 100644
+index 0ae16d3206469b0864afc5afe00baedaacf19645..8384e2a3bc0e7481403c6bc03ac66afa46d3c159 100644
 --- a/protocol/pom.xml
 +++ b/protocol/pom.xml
 @@ -61,5 +61,13 @@
@@ -166,7 +166,7 @@ index 3a802ca425185feede16c6a3ffb7c4200e8ea67f..f31dd0d0242bba8150a48d03bec31130
      }
  }
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 1f7b71448f03fd129e8510a86ef06607fd3380b6..af6bc11811079ceff81b6dd3f68e476f050c8d6e 100644
+index 3c0a2629054156bc80e7e374965db3412402fe06..47b1d297c965ac5ae69a24fb2296b0fb439842de 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
 @@ -148,6 +148,14 @@
@@ -185,7 +185,7 @@ index 1f7b71448f03fd129e8510a86ef06607fd3380b6..af6bc11811079ceff81b6dd3f68e476f
  
      <!-- Waterfall start - copy license files into jar -->
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 6571b8d6010990b276916078124cc8abe7665e9f..62c6e3b9228f022d1a724e6a7221f08719a6d68f 100644
+index 3bd08ca622ea81e115f1d7221a38e606fd5783a3..7d47d6912057d4a4df46847f98aab59eb2d7b487 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -448,7 +448,7 @@ public class BungeeCord extends ProxyServer
@@ -467,7 +467,7 @@ index 8becc26a5c6bcb3c8072bd9bd550e65c2c20b71b..f9e1cd5f2cd0d74440f0bc548dbff01e
          new Bootstrap()
 diff --git a/shared/pom.xml b/shared/pom.xml
 new file mode 100644
-index 0000000000000000000000000000000000000000..c2ba4244b3b552dc8d4be20340ad054b5bef7f65
+index 0000000000000000000000000000000000000000..ea692d3a1aa1d4612ec2f9daa79941c024dfe746
 --- /dev/null
 +++ b/shared/pom.xml
 @@ -0,0 +1,32 @@
@@ -478,7 +478,7 @@ index 0000000000000000000000000000000000000000..c2ba4244b3b552dc8d4be20340ad054b
 +    <parent>
 +        <artifactId>ivancord-parent</artifactId>
 +        <groupId>com.mrivanplays</groupId>
-+        <version>1.19-R0.1-SNAPSHOT</version>
++        <version>1.20-R0.1-SNAPSHOT</version>
 +    </parent>
 +    <modelVersion>4.0.0</modelVersion>
 +

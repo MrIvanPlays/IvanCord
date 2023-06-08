@@ -255,7 +255,7 @@ index 8977aaf3836f18cea4f2f585363470eea30bd761..551258c294955e75916cdef3e93f418a
  
      /*
 diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
-index e8480ff4319f51e9c869e6931cbaa845fe6229bd..07655f95f18d6bc988103c2b294b2ca46ddc0cb7 100644
+index 689b971c52f5ad93c34327d60556872676244c73..47a7d8c946128dc75b75ab9537b5c52c8b4522d0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 +++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
 @@ -240,10 +240,12 @@ public class ServerConnector extends PacketHandler
@@ -271,7 +271,7 @@ index e8480ff4319f51e9c869e6931cbaa845fe6229bd..07655f95f18d6bc988103c2b294b2ca4
  
          if ( user.getForgeClientHandler().getClientModList() == null && !user.getForgeClientHandler().isHandshakeComplete() ) // Vanilla
          {
-@@ -292,6 +294,8 @@ public class ServerConnector extends PacketHandler
+@@ -294,6 +296,8 @@ public class ServerConnector extends PacketHandler
              user.getServer().setObsolete( true );
              user.getTabListHandler().onServerChange();
  
@@ -280,7 +280,7 @@ index e8480ff4319f51e9c869e6931cbaa845fe6229bd..07655f95f18d6bc988103c2b294b2ca4
              Scoreboard serverScoreboard = user.getServerSentScoreboard();
              if ( !user.isDisableEntityMetadataRewrite() ) { // Waterfall
              for ( Objective objective : serverScoreboard.getObjectives() )
-@@ -308,6 +312,8 @@ public class ServerConnector extends PacketHandler
+@@ -310,6 +314,8 @@ public class ServerConnector extends PacketHandler
              }
              } // Waterfall
              serverScoreboard.clear();
@@ -289,7 +289,7 @@ index e8480ff4319f51e9c869e6931cbaa845fe6229bd..07655f95f18d6bc988103c2b294b2ca4
  
              for ( UUID bossbar : user.getSentBossBars() )
              {
-@@ -332,15 +338,19 @@ public class ServerConnector extends PacketHandler
+@@ -334,16 +340,20 @@ public class ServerConnector extends PacketHandler
              }
  
              user.setDimensionChange( true );
@@ -297,7 +297,8 @@ index e8480ff4319f51e9c869e6931cbaa845fe6229bd..07655f95f18d6bc988103c2b294b2ca4
 +            /*
              if ( !user.isDisableEntityMetadataRewrite() && login.getDimension() == user.getDimension() ) // Waterfall - defer
              {
-                 user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
+                 user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(),
+                         false, login.getDeathLocation(), login.getPortalCooldown() ) );
              }
 +             */
 +            // IvanCord end
@@ -309,16 +310,16 @@ index e8480ff4319f51e9c869e6931cbaa845fe6229bd..07655f95f18d6bc988103c2b294b2ca4
 +            // if ( user.isDisableEntityMetadataRewrite() ) { // IvanCord - comment
                  // Ensure that we maintain consistency
                  user.setClientEntityId( login.getEntityId() );
- 
+                 // Only send if we are not in the same dimension
 @@ -359,7 +369,7 @@ public class ServerConnector extends PacketHandler
                  {
-                     user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
+                     user.unsafe().sendPacket( new Respawn( (Integer) login.getDimension() >= 0 ? -1 : 0, login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation(), login.getPortalCooldown() ) );
                  }
 -            }
 +            // } // IvanCord - comment
              // Waterfall end
-             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(), false, login.getDeathLocation() ) );
- 
+             user.unsafe().sendPacket( new Respawn( login.getDimension(), login.getWorldName(), login.getSeed(), login.getDifficulty(), login.getGameMode(), login.getPreviousGameMode(), login.getLevelType(), login.isDebug(), login.isFlat(),
+                     false, login.getDeathLocation(), login.getPortalCooldown() ) );
 diff --git a/proxy/src/main/java/net/md_5/bungee/UserConnection.java b/proxy/src/main/java/net/md_5/bungee/UserConnection.java
 index f49d79763f22c8f0b6e7e6caa039157d969fc169..657a2ec2ac1a4e726d4faa547f760439108467b0 100644
 --- a/proxy/src/main/java/net/md_5/bungee/UserConnection.java

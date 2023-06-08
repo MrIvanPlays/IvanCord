@@ -2396,10 +2396,10 @@ index 21aa9675081adf6213c37aba51a33b4fae39a859..31408d5506dfef5a0b6f22444746e946
          } else
          {
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 62c6e3b9228f022d1a724e6a7221f08719a6d68f..7e06288c589b2ce8cf3a130d1c5d5131959a6414 100644
+index 7d47d6912057d4a4df46847f98aab59eb2d7b487..b3b2f6f5a66ff934fa2a294f82e75adece6c5f82 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -948,5 +948,22 @@ public class BungeeCord extends ProxyServer
+@@ -943,5 +943,22 @@ public class BungeeCord extends ProxyServer
      {
          return playerdata.getOfflinePlayers();
      }
